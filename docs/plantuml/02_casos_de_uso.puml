@@ -1,0 +1,50 @@
+@startuml
+title STYLO - Casos de uso (MVP)
+left to right direction
+actor "Comprador / visitante" as C
+actor "Administrador" as A
+actor "Mercado Pago" as M
+actor "Proveedor de envíos" as L
+rectangle "STYLO ecommerce" {
+  usecase "Explorar catálogo y filtros" as U1
+  usecase "Elegir variantes" as U2
+  usecase "Ver precio, cuotas y stock" as U3
+  usecase "Gestionar carrito lateral" as U4
+  usecase "Aplicar promoción elegible" as U5
+  usecase "Comprar sin registro" as U6
+  usecase "Cotizar envío / elegir retiro" as U7
+  usecase "Pagar con Checkout Pro" as U8
+  usecase "Solicitar transferencia o\nefectivo al retirar" as U9
+  usecase "Consultar pedido con acceso seguro" as U10
+  usecase "Suscribirse al newsletter" as U11
+  usecase "Administrar productos y variantes" as U12
+  usecase "Gestionar inventario y Excel/CSV" as U13
+  usecase "Administrar pedidos y validar cobros" as U14
+  usecase "Administrar ofertas, combos, banners" as U15
+  usecase "Editar artículos y testimonios" as U16
+  usecase "Gestionar suscriptores y reportes" as U17
+}
+C --> U1
+C --> U2
+C --> U3
+C --> U4
+C --> U6
+C --> U10
+C --> U11
+U6 ..> U5 : <<include>>
+U6 ..> U7 : <<include>>
+U8 ..> U6 : <<extend>>
+U9 ..> U6 : <<extend>>
+M --> U8
+L --> U7
+A --> U12
+A --> U13
+A --> U14
+A --> U15
+A --> U16
+A --> U17
+note right of U7
+Tarifas automáticas: integración pendiente.
+WhatsApp = modalidad a coordinar.
+end note
+@enduml

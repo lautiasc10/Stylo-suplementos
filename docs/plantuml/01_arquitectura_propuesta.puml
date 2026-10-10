@@ -1,0 +1,37 @@
+@startuml
+title STYLO - Contexto y arquitectura lógica (PROPUESTA, no stack aprobado)
+left to right direction
+skinparam componentStyle rectangle
+actor "Comprador invitado" as Buyer
+actor "Administrador único" as Admin
+cloud "Servicios externos" {
+  component "Mercado Pago\nCheckout Pro + webhook" as MP
+  component "Resend\nCorreo transaccional/marketing" as Mail
+  component "Operador logístico / tarifas\nPENDIENTE PEN-01,03" as Ship
+  component "GA4 / Meta Pixel\nsegún consentimiento" as Ads
+}
+node "Vercel (confirmado)" {
+  component "Web responsive\nCatálogo + carrito + checkout\nPanel admin" as Web
+  component "API / lógica servidor\nStack a proponer por Codex" as API
+  component "Verificador de webhooks\ny conciliación" as WH
+  component "Tareas programadas\nreservas y reintentos" as Jobs
+}
+database "Supabase (confirmado)\nDatos + auth admin + Storage" as DB
+Buyer --> Web
+Admin --> Web
+Web --> API
+Web --> Ads : eventos autorizados
+API --> DB
+API --> MP : crear preferencia
+MP --> WH : notificación
+WH --> MP : consultar pago servidor-servidor
+WH --> DB : actualización idempotente
+API --> Ship : cotización (según integración)
+API --> Mail : notificaciones y newsletter
+Jobs --> DB
+Jobs --> MP : conciliación cuando aplique
+note bottom of API
+No asumir framework ni diseño de servicios definitivos.
+Codex debe justificar stack, seguridad, costos y operaciones.
+end note
+@enduml

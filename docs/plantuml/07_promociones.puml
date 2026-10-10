@@ -1,0 +1,24 @@
+@startuml
+title STYLO - Selección de mejor promoción (sin acumulación)
+start
+:Recibir carrito, medio de pago y fecha;
+:Recalcular precios y variantes en servidor;
+:Identificar cupones, ofertas, cantidades y combos;
+:Validar fechas, restricciones y elegibilidad;
+if (¿Hay promociones elegibles?) then (Sí)
+ :Calcular importe final de cada alternativa;
+ :Seleccionar la de mayor beneficio válido;
+ :Aplicar UNA alternativa según reglas confirmadas;
+else (No)
+ :Mantener precios aplicables sin promoción;
+endif
+:Recalcular envío, impuestos aplicables y total;
+:Registrar snapshot de precio y descuento;
+:Mostrar detalle claro al cliente;
+stop
+note right
+PEN-05: definir base de cálculo, prioridades,
+combos, redondeo, precio de transferencia
+y método de pago antes de implementar.
+end note
+@enduml

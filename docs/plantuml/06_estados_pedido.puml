@@ -1,0 +1,27 @@
+@startuml
+title STYLO - Estados separados de pago y entrega
+state "Pago" as Payment {
+ [*] --> Pendiente
+ Pendiente --> Aprobado : MP verificado / validación manual
+ Pendiente --> Rechazado : respuesta proveedor
+ Pendiente --> CanceladoPago : cancelación / expiración
+ Rechazado --> Pendiente : nuevo intento válido
+ Aprobado --> Reembolsado : devolución verificada
+}
+--
+state "Entrega" as Delivery {
+ [*] --> PendienteEntrega
+ PendienteEntrega --> Preparacion : inicio de preparación según política
+ Preparacion --> ListoRetirar : modalidad retiro
+ Preparacion --> Enviado : modalidad envío
+ ListoRetirar --> Entregado : retiro acreditado
+ Enviado --> Entregado : entrega acreditada
+ PendienteEntrega --> CanceladoEntrega
+ Preparacion --> CanceladoEntrega : si procede
+}
+note bottom
+No confundir pedido creado con pago acreditado.
+Transiciones concretas, reembolsos y excepciones
+se validan con PEN-04, PEN-07 y PEN-08.
+end note
+@enduml

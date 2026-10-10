@@ -1,0 +1,57 @@
+@startuml
+title STYLO - Modelo de datos conceptual (PROPUESTA, validar con Codex)
+hide circle
+skinparam linetype ortho
+entity "brands" as brands { *id : uuid -- name }
+entity "categories" as cats { *id : uuid -- name }
+entity "products" as products { *id : uuid -- brand_id : FK category_id : FK name active }
+entity "product_variants" as variants { *id : uuid -- product_id : FK sku : unique flavor size presentation price_list price_cash stock_qty }
+entity "product_images" as images { *id : uuid -- product_id : FK variant_id : FK? storage_path sort_order }
+entity "orders" as orders { *id : uuid -- guest_email payment_status fulfillment_status total_snapshot delivery_method }
+entity "order_items" as items { *id : uuid -- order_id : FK variant_id : FK qty unit_price_snapshot discount_snapshot }
+entity "payments" as payments { *id : uuid -- order_id : FK provider external_id status amount }
+entity "payment_events" as events { *id : uuid -- payment_id : FK external_event_id unique payload_ref }
+entity "inventory_movements" as moves { *id : uuid -- variant_id : FK order_id : FK? quantity_delta reason }
+entity "stock_reservations" as reserves { *id : uuid -- variant_id : FK order_id : FK qty expires_at status }
+entity "shipping_quotes" as quotes { *id : uuid -- order_id : FK? provider amount expires_at }
+entity "shipments" as ships { *id : uuid -- order_id : FK tracking fulfillment_status }
+entity "promotions" as promos { *id : uuid -- kind starts_at ends_at conditions }
+entity "coupons" as coupons { *id : uuid -- code : unique promotion_id : FK }
+entity "order_discounts" as discounts { *id : uuid -- order_id : FK promotion_id : FK amount }
+entity "bundles" as bundles { *id : uuid -- name active }
+entity "bundle_items" as bi { *id : uuid -- bundle_id : FK variant_id : FK qty }
+entity "newsletter_subscribers" as sub { *id : uuid -- email : unique consent_status }
+entity "consent_records" as consent { *id : uuid -- subscriber_id : FK purpose timestamp }
+entity "articles" as articles { *id : uuid -- title slug published }
+entity "testimonials" as testim { *id : uuid -- approved consent_recorded }
+entity "admin_audit_log" as audits { *id : uuid -- admin_id action target timestamp }
+brands ||--o{ products
+cats ||--o{ products
+products ||--o{ variants
+products ||--o{ images
+variants |o--o{ images
+orders ||--|{ items
+variants ||--o{ items
+orders ||--o{ payments
+payments ||--o{ events
+variants ||--o{ moves
+orders |o--o{ moves
+variants ||--o{ reserves
+orders ||--o{ reserves
+orders ||--o{ quotes
+orders ||--o{ ships
+orders ||--o{ discounts
+promos ||--o{ discounts
+promos ||--o{ coupons
+bundles ||--|{ bi
+variants ||--o{ bi
+sub ||--o{ consent
+note bottom of reserves
+PROPUESTA: reservas sujetas a PEN-04/PEN-07.
+No descontar definitivamente hasta pago validado.
+end note
+note bottom of orders
+Snapshots inmutables de precios, totales y envío.
+Pago y entrega son estados independientes.
+end note
+@enduml

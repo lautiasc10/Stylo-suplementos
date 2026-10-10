@@ -1,0 +1,35 @@
+@startuml
+title STYLO - Transferencia / efectivo al retirar
+actor Comprador as C
+actor Administrador as A
+participant "Frontend" as W
+participant "Backend" as B
+database "Supabase" as DB
+participant "Resend" as Mail
+C -> W : Selecciona transferencia o efectivo
+W -> B : Crear pedido
+B -> DB : Validar total, stock y reglas de reserva*
+B -> DB : Pedido pendiente de pago
+B --> W : Referencia y pasos de pago / retiro
+B -> Mail : Confirmación de solicitud, NO de pago
+alt Transferencia
+ C -> C : Efectúa pago fuera de la tienda
+ A -> B : Verifica comprobante contra banco
+else Efectivo al retirar
+ A -> B : Registra recepción del efectivo
+end
+B -> DB : Registrar aprobación manual y auditoría
+B -> DB : Transacción idempotente: descontar stock o consolidar reserva
+B -> Mail : Confirmar pago validado
+A -> B : Preparar / listo para retirar / entregar
+B -> DB : Cambiar estado logístico (independiente del pago)
+B -> Mail : Aviso de estado
+opt Falta de pago o cancelación
+ A -> B : Cancelar o aplicar expiración aprobada
+ B -> DB : Liberar reserva / revertir según corresponda
+end
+note bottom
+* PEN-04/PEN-07: fijar expiración, reservas y momento de preparación.
+Nunca etiquetar como pagado hasta validar realmente.
+end note
+@enduml

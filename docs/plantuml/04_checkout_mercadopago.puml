@@ -1,0 +1,49 @@
+@startuml
+title STYLO - Checkout Pro y webhook (flujo propuesto)
+actor Comprador as C
+participant "Tienda web" as W
+participant "Backend" as B
+database "Supabase" as S
+participant "Servicio de envíos" as L
+participant "Mercado Pago" as MP
+participant "Resend" as R
+C -> W : Selecciona variantes, modalidad y datos
+W -> B : Solicita resumen/cotización
+B -> S : Consultar precios, promociones y disponibilidad
+alt Envío automático
+ B -> L : Cotizar según dirección y paquete
+ alt Cotización disponible
+ L --> B : Importe y vigencia
+ else No disponible
+ L --> B : Error / tarifa no disponible
+ B --> W : Explicar fallo; no inventar tarifa
+ end
+else Retiro o envío coordinado
+ B -> B : Aplicar reglas y aclarar posibles costos pendientes
+end
+B --> W : Total calculado del servidor
+C -> W : Confirma compra
+W -> B : Crear pedido + iniciar pago
+B -> S : Transacción: revalidar y crear pendiente/reserva*
+note right of S
+* Política y expiración PEN-04 pendientes.
+end note
+B -> MP : Crear preferencia Checkout Pro (referencia de pedido)
+MP --> B : URL de pago
+B --> W : URL de Checkout Pro
+W --> C : Redirigir a Mercado Pago
+C -> MP : Abona
+MP -> B : Webhook no confiable por sí solo
+B -> B : Validar autenticidad y deduplicar
+B -> MP : Consultar estado real de pago
+MP --> B : Estado verificado
+alt Pago aprobado y no procesado
+ B -> S : Transacción idempotente: pago, pedido, stock, liberar reserva
+ B -> R : Solicitar correo de confirmación
+else Pendiente/rechazado/repetido
+ B -> S : Registrar evento y estado sin doble movimiento
+end
+C -> W : Retorna desde MP
+W -> B : Consultar pedido vía acceso seguro
+B --> W : Estado verificado del servidor
+@enduml
