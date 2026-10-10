@@ -29,9 +29,14 @@ Se aplicó además la [adaptación de AI Design Skills](diseno.md): tokens comun
 
 La revisión incluye 320, 390, 768, 900, 1024 y 1440 px, sin desbordamiento horizontal ni superposición de marca y controles de cabecera. Las capturas enlazadas arriba corresponden a esta versión.
 
+## Entrega en GitHub
+
+Repositorio [lautiasc10/Stylo-suplementos](https://github.com/lautiasc10/Stylo-suplementos), vinculado como `origin`. La primera base se subió a `main` en el commit `6daf3ab`. La [ejecución inicial de CI](https://github.com/lautiasc10/Stylo-suplementos/actions/runs/38095718858) pasó en GitHub: instalación limpia, tipos, 10 pruebas unitarias, build y 16 recorridos Chromium.
+
+La etiqueta `fase-1-base` identifica esta entrega revisable con sus instrucciones y documentación. Las fases siguientes se trabajan en ramas separadas y se integran tras validación. El estado de nuevos commits se consulta en [GitHub Actions](https://github.com/lautiasc10/Stylo-suplementos/actions).
+
 ## Pendientes de aceptación externa
 
-- Comprobar la ejecución remota de CI para la entrega subida al [repositorio GitHub](https://github.com/lautiasc10/Stylo-suplementos/actions). `origin` ya está configurado; `fase-1-base` identificará la primera entrega revisable.
 - Configurar Supabase de pruebas sin costo y ejecutar la migración.
 - Validar credenciales reales de pruebas, enrolamiento TOTP, cierre de sesión y políticas RLS.
 - Validar la dirección visual con el usuario.

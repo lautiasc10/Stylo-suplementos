@@ -19,7 +19,7 @@ Validar en este proyecto: usuario ajeno no entra, sesión aal1 no lee auditoría
 
 ## GitHub y Vercel
 
-El remoto `origin` apunta al [repositorio público proporcionado por el usuario](https://github.com/lautiasc10/Stylo-suplementos). El workflow de `.github/workflows/ci.yml` ejecuta tipos, pruebas, build y recorridos de navegador en cada push o pull request. No contiene secrets de GitHub. Los archivos `.env` reales, dependencias, builds y resultados locales están excluidos de Git.
+El remoto `origin` apunta al [repositorio público proporcionado por el usuario](https://github.com/lautiasc10/Stylo-suplementos). El workflow de `.github/workflows/ci.yml` ejecuta tipos, pruebas, build y recorridos de navegador en cada push de rama o pull request; las etiquetas no duplican esa ejecución. No contiene secrets de GitHub. Los archivos `.env` reales, dependencias, builds y resultados locales están excluidos de Git.
 
 Las entregas se identifican por fase. `fase-1-base` marca la primera base revisable; la validación externa se registra en [Fase 1](fase-1.md). Las siguientes fases se trabajan en ramas separadas y se integran después de la validación acordada.
 
