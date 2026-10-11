@@ -416,7 +416,7 @@ test("la galería sincroniza variantes y precios y la ficha conserva sus fotos",
   await expect(page.locator(".product-sku")).toHaveText("DEMO-1-B");
 });
 
-test("la galería pausa al interactuar y responde al movimiento reducido en vivo", async ({
+test("la galería conserva pausa y movimiento reducido en vivo", async ({
   page,
 }) => {
   await page.clock.install();
@@ -432,7 +432,7 @@ test("la galería pausa al interactuar y responde al movimiento reducido en vivo
     page.getByRole("img", { name: "Chocolate frente", exact: true }),
   ).toBeVisible();
   await page.mouse.move(0, 0);
-  await page.clock.runFor(5800);
+  await page.clock.runFor(3100);
   await expect(
     page.getByRole("img", { name: "Chocolate dorso", exact: true }),
   ).toBeVisible();
@@ -486,7 +486,7 @@ test("una foto por variante alterna sus datos y respeta sabor, precio y disponib
   const card = page.locator(".product-card");
   await card.locator(".product-image-gallery").scrollIntoViewIfNeeded();
   await page.mouse.move(0, 0);
-  await page.clock.runFor(5800);
+  await page.clock.runFor(3100);
   await expect(
     card.getByRole("img", { name: "Vainilla frente", exact: true }),
   ).toBeVisible();
@@ -520,10 +520,11 @@ test("una foto por variante alterna sus datos y respeta sabor, precio y disponib
   await expect(card.locator(".product-prices")).toContainText("47.000,00");
 });
 
-test("el glitch ocurre al cambiar la foto, termina y se cancela al reducir movimiento", async ({
+test("el crossfade automático empieza a los tres segundos, termina y respeta movimiento reducido", async ({
   page,
 }) => {
   await page.clock.install();
+  await page.clock.pauseAt(new Date());
   await page.addInitScript(
     (fixture) =>
       localStorage.setItem("stylo.catalog-preview.v1", JSON.stringify(fixture)),
@@ -531,43 +532,121 @@ test("el glitch ocurre al cambiar la foto, termina y se cancela al reducir movim
   );
   await page.goto("/vista-previa?q=proteina");
   const gallery = page.locator(".product-image-gallery");
-  await gallery.scrollIntoViewIfNeeded();
-  await expect(gallery.locator(".product-glitch-fragments")).toHaveCount(0);
-  await expect(
-    page.getByAltText("Chocolate frente", { exact: true }),
-  ).toBeVisible();
-
-  await gallery
-    .getByRole("button", { name: "Imagen anterior", exact: true })
-    .click();
-  await expect(
-    page.getByAltText("Vainilla frente", { exact: true }),
-  ).toBeVisible();
-  await expect(gallery.locator(".product-glitch-fragments")).toHaveCount(1);
-  await expect(gallery.locator(".product-glitch-fragments")).toHaveAttribute(
-    "aria-hidden",
-    "true",
+  await gallery.evaluate((element) =>
+    element.scrollIntoView({ behavior: "instant", block: "center" }),
   );
-  await expect(page.locator(".product-prices")).toContainText("47.000,00");
-  await page.clock.runFor(520);
-  await expect(gallery.locator(".product-glitch-fragments")).toHaveCount(0);
-  await expect(gallery).not.toHaveAttribute("data-animated", "true");
-
-  await gallery
-    .getByRole("button", { name: "Siguiente imagen", exact: true })
-    .click();
-  await expect(gallery.locator(".product-glitch-fragments")).toHaveCount(1);
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await expect(gallery.locator(".product-glitch-fragments")).toHaveCount(0);
-  await expect(gallery).not.toHaveAttribute("data-animated", "true");
+  await gallery.hover({ force: true });
   await expect(
     page.getByAltText("Chocolate frente", { exact: true }),
   ).toBeVisible();
-  await gallery
-    .getByRole("button", { name: "Siguiente imagen", exact: true })
-    .click();
+  await page.clock.runFor(2900);
+  await expect(
+    page.getByAltText("Chocolate frente", { exact: true }),
+  ).toBeVisible();
+  await page.clock.runFor(200);
   await expect(
     page.getByAltText("Chocolate dorso", { exact: true }),
   ).toBeVisible();
-  await expect(gallery.locator(".product-glitch-fragments")).toHaveCount(0);
+  await expect(gallery).toHaveAttribute("data-animated", "true");
+  await expect(gallery.locator(".product-frame-outgoing")).toHaveAttribute(
+    "aria-hidden",
+    "true",
+  );
+  await page.clock.runFor(450);
+  await expect(gallery.locator(".product-frame-outgoing")).toHaveCount(0);
+  await expect(gallery).not.toHaveAttribute("data-animated", "true");
+  await page.clock.runFor(2600);
+  await expect(
+    page.getByAltText("Vainilla frente", { exact: true }),
+  ).toBeVisible();
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(gallery.locator(".product-frame-outgoing")).toHaveCount(0);
+  await expect(gallery).not.toHaveAttribute("data-animated", "true");
+  await page.clock.runFor(10000);
+  await expect(
+    page.getByAltText("Vainilla frente", { exact: true }),
+  ).toBeVisible();
+  await gallery
+    .getByRole("button", { name: "Siguiente imagen", exact: true })
+    .click();
+  await expect(
+    page.getByAltText("Chocolate frente", { exact: true }),
+  ).toBeVisible();
+  await expect(gallery).not.toHaveAttribute("data-animated", "true");
+});
+
+test("las tarjetas escalonan el inicio y suspenden los cambios fuera de pantalla", async ({
+  page,
+}) => {
+  const fixture = galleryFixture();
+  fixture.catalog.products[0].images.splice(1, 1);
+  const creatine = fixture.catalog.products[1];
+  creatine.images = fixture.catalog.products[0].images.map((image, index) => {
+    const path = `${creatine.id}/00000000-0000-4000-8000-00000000090${index}.webp`;
+    fixture.images[path] = fixture.images[image.path];
+    return {
+      ...image,
+      path,
+      id: `00000000-0000-4000-8000-00000000090${index}`,
+      variantId: creatine.variants[0].id,
+      alt: `Creatina foto ${index + 1}`,
+    };
+  });
+  await page.setViewportSize({ width: 1440, height: 1600 });
+  await page.clock.install();
+  await page.addInitScript(
+    (data) =>
+      localStorage.setItem("stylo.catalog-preview.v1", JSON.stringify(data)),
+    fixture,
+  );
+  await page.goto("/vista-previa?q=prueba");
+  const creatineCard = page.locator(".product-card").filter({
+    has: page.getByRole("heading", {
+      name: "Creatina de prueba",
+      exact: true,
+    }),
+  });
+  const proteinCard = page.locator(".product-card").filter({
+    has: page.getByRole("heading", {
+      name: "Proteína de prueba",
+      exact: true,
+    }),
+  });
+  await creatineCard.locator(".product-image-gallery").scrollIntoViewIfNeeded();
+  await expect(
+    creatineCard.getByAltText("Creatina foto 1", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    proteinCard.getByAltText("Chocolate frente", { exact: true }),
+  ).toBeVisible();
+  await page.clock.runFor(3100);
+  await expect(
+    creatineCard.getByAltText("Creatina foto 2", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    proteinCard.getByAltText("Chocolate frente", { exact: true }),
+  ).toBeVisible();
+  await page.clock.runFor(320);
+  await expect(
+    proteinCard.getByAltText("Vainilla frente", { exact: true }),
+  ).toBeVisible();
+  await page.setViewportSize({ width: 1440, height: 250 });
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+  await expect
+    .poll(() =>
+      creatineCard
+        .locator(".product-image-gallery")
+        .evaluate((element) => element.getBoundingClientRect().top),
+    )
+    .toBeGreaterThan(250);
+  await expect(
+    proteinCard.locator(".product-image-gallery"),
+  ).not.toHaveAttribute("data-animated", "true");
+  await page.clock.runFor(3600);
+  await expect(
+    creatineCard.getByAltText("Creatina foto 2", { exact: true }),
+  ).toHaveCount(1);
+  await expect(
+    proteinCard.getByAltText("Vainilla frente", { exact: true }),
+  ).toHaveCount(1);
 });

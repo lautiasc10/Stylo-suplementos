@@ -1,13 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type CSSProperties,
-} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Icon } from "@/components/ui/icon";
 
 export type GalleryImage = {
@@ -18,52 +12,13 @@ export type GalleryImage = {
   href?: string;
 };
 
-// Six temporary fragments reuse the two loaded photos; no canvas or extra media.
-const glitchFragments = [
-  {
-    clip: "polygon(0 0,100% 0,100% 19%,0 27%)",
-    shift: "4%",
-    lift: "-1%",
-    tilt: "-1deg",
-  },
-  {
-    clip: "polygon(0 27%,100% 19%,100% 38%,0 34%)",
-    shift: "-5%",
-    lift: "1%",
-    tilt: "1deg",
-  },
-  {
-    clip: "polygon(0 34%,100% 38%,100% 51%,0 57%)",
-    shift: "6%",
-    lift: "-1%",
-    tilt: "-1.5deg",
-  },
-  {
-    clip: "polygon(0 57%,100% 51%,100% 69%,0 64%)",
-    shift: "-4%",
-    lift: "2%",
-    tilt: "1deg",
-  },
-  {
-    clip: "polygon(0 64%,100% 69%,100% 83%,0 87%)",
-    shift: "3%",
-    lift: "-1%",
-    tilt: "-.5deg",
-  },
-  {
-    clip: "polygon(0 87%,100% 83%,100% 100%,0 100%)",
-    shift: "-3%",
-    lift: "1%",
-    tilt: ".5deg",
-  },
-];
-
 export function ProductGallery({
   images,
   href,
   linkLabel,
   mode = "card",
-  delay = 5200,
+  delay = 3000,
+  startDelay = 0,
   onImageChange,
 }: {
   images: GalleryImage[];
@@ -71,13 +26,14 @@ export function ProductGallery({
   linkLabel?: string;
   mode?: "card" | "detail";
   delay?: number;
+  startDelay?: number;
   onImageChange?: (image: GalleryImage) => void;
 }) {
   const root = useRef<HTMLDivElement>(null);
   const request = useRef(0);
+  const firstAutomaticChange = useRef(true);
   const [active, setActive] = useState(0);
   const [previous, setPrevious] = useState<number | null>(null);
-  const [direction, setDirection] = useState(1);
   const [enhanced, setEnhanced] = useState(false);
   const [reduced, setReduced] = useState(true);
   const [visible, setVisible] = useState(false);
@@ -110,6 +66,7 @@ export function ProductGallery({
         )
       : null;
     if (observer && root.current) observer.observe(root.current);
+    else setVisible(true);
     return () => {
       request.current++;
       observer?.disconnect();
@@ -118,15 +75,36 @@ export function ProductGallery({
     };
   }, []);
 
+  useEffect(() => {
+    if (!visible || !documentVisible) {
+      request.current++;
+      setPrevious(null);
+    }
+  }, [visible, documentVisible]);
+
+  useEffect(() => {
+    if (!automatic || reduced || !visible || !documentVisible) return;
+    // Warm only the next photo while visible, rather than downloading a whole gallery.
+    const next = new window.Image();
+    next.decoding = "async";
+    next.src = images[(active + 1) % images.length].src;
+  }, [automatic, reduced, visible, documentVisible, active, images]);
+
   const showImage = useCallback(
-    (index: number, nextDirection: number) => {
+    (index: number) => {
       const sequence = ++request.current;
       if (index === active) return;
       const image = new window.Image();
-      image.onload = () => {
+      image.onload = async () => {
+        // Wait for decoding as well as download before crossfading.
+        try {
+          await image.decode();
+        } catch {
+          image.onerror?.(new Event("error"));
+          return;
+        }
         if (request.current !== sequence) return;
         setPrevious(reduced ? null : active);
-        setDirection(nextDirection);
         setActive(index);
         onImageChange?.(images[index]);
         setMessage("");
@@ -153,8 +131,11 @@ export function ProductGallery({
     )
       return;
     const timer = window.setTimeout(
-      () => showImage((active + 1) % images.length, 1),
-      delay,
+      () => {
+        firstAutomaticChange.current = false;
+        showImage((active + 1) % images.length);
+      },
+      delay + (firstAutomaticChange.current ? startDelay : 0),
     );
     return () => window.clearTimeout(timer);
   }, [
@@ -167,18 +148,19 @@ export function ProductGallery({
     active,
     images.length,
     delay,
+    startDelay,
     showImage,
   ]);
 
   useEffect(() => {
     if (previous === null) return;
-    const timer = window.setTimeout(() => setPrevious(null), 480);
+    const timer = window.setTimeout(() => setPrevious(null), 440);
     return () => window.clearTimeout(timer);
   }, [previous, active]);
 
-  function choose(index: number, nextDirection: number) {
+  function choose(index: number) {
     setPaused(true);
-    showImage(index, nextDirection);
+    showImage(index);
   }
   if (!images.length) return null;
   const current = images[active] ?? images[0];
@@ -205,37 +187,6 @@ export function ProductGallery({
         loading={mode === "card" ? "lazy" : "eager"}
         decoding="async"
       />
-      {mode === "card" && previous !== null && !reduced && images[previous] && (
-        <span
-          key={`${images[previous].id}:${current.id}`}
-          className="product-glitch-fragments"
-          aria-hidden="true"
-        >
-          {glitchFragments.map((fragment, index) => (
-            <span
-              key={index}
-              className="product-glitch-fragment"
-              style={
-                {
-                  clipPath: fragment.clip,
-                  "--glitch-shift": fragment.shift,
-                  "--glitch-lift": fragment.lift,
-                  "--glitch-tilt": fragment.tilt,
-                } as CSSProperties
-              }
-            >
-              <img
-                className="product-frame"
-                src={index % 2 ? current.src : images[previous].src}
-                alt=""
-                width={720}
-                height={720}
-                decoding="async"
-              />
-            </span>
-          ))}
-        </span>
-      )}
     </>
   );
   return (
@@ -243,9 +194,6 @@ export function ProductGallery({
       ref={root}
       className={`product-image-gallery product-image-gallery-${mode}`}
       data-animated={previous !== null && !reduced ? "true" : undefined}
-      style={{ "--gallery-direction": direction } as CSSProperties}
-      onMouseEnter={() => setInteracting(true)}
-      onMouseLeave={() => setInteracting(false)}
       onFocusCapture={() => setInteracting(true)}
       onBlurCapture={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget))
@@ -280,7 +228,7 @@ export function ProductGallery({
               type="button"
               aria-label="Imagen anterior"
               onClick={() =>
-                choose((active - 1 + images.length) % images.length, -1)
+                choose((active - 1 + images.length) % images.length)
               }
             >
               <Icon name="arrow" className="gallery-back" />
@@ -318,7 +266,7 @@ export function ProductGallery({
             <button
               type="button"
               aria-label="Siguiente imagen"
-              onClick={() => choose((active + 1) % images.length, 1)}
+              onClick={() => choose((active + 1) % images.length)}
             >
               <Icon name="arrow" />
             </button>
@@ -333,7 +281,7 @@ export function ProductGallery({
               key={image.id}
               aria-label={`Ver ${image.alt}`}
               aria-pressed={active === index}
-              onClick={() => choose(index, index > active ? 1 : -1)}
+              onClick={() => choose(index)}
             >
               <img
                 src={image.src}

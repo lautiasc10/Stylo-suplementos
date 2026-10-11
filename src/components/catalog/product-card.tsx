@@ -81,7 +81,7 @@ export function ProductCard({
             images={photos}
             href={href}
             linkLabel={`Ver ${product.name}`}
-            delay={5200 + (index % 3) * 600}
+            startDelay={(index % 5) * 180}
             onImageChange={selectPhoto}
           />
         ) : (
