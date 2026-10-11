@@ -891,12 +891,16 @@ textarea:focus-visible {
   animation-duration: 320ms;
 }
 .product-image-gallery-card[data-animated="true"] .product-frame-current {
-  animation: product-image-reconstruct var(--motion-duration) var(--motion-ease)
-    both;
+  animation: product-image-reconstruct var(--gallery-swap-duration)
+    var(--gallery-swap-ease) both;
 }
 .product-image-gallery-card[data-animated="true"] .product-frame-outgoing {
-  animation: product-image-dissolve var(--motion-duration) var(--motion-ease)
-    both;
+  animation: product-image-dissolve var(--gallery-swap-duration)
+    var(--gallery-swap-ease) both;
+}
+.product-image-gallery-card {
+  --gallery-swap-duration: calc(var(--motion-duration) + 120ms);
+  --gallery-swap-ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 .product-image-fragments,
 .product-image-fragment {
@@ -908,11 +912,15 @@ textarea:focus-visible {
   z-index: 2;
 }
 .product-image-fragment {
-  animation: product-fragment-separate var(--motion-duration) var(--motion-ease)
-    both;
+  /* Each piece follows one continuous trajectory, with no mid-flight reversal.
+     Compositor hints exist only while these temporary layers are mounted. */
+  will-change: transform, opacity;
+  animation: product-fragment-separate var(--motion-duration)
+    var(--gallery-swap-ease) var(--fragment-delay) both;
 }
 .product-image-fragment:nth-child(even) {
   animation-name: product-fragment-assemble;
+  animation-delay: calc(var(--fragment-delay) + 20ms);
 }
 .product-image-count {
   position: absolute;
@@ -1024,89 +1032,46 @@ textarea:focus-visible {
   }
 }
 @keyframes product-image-reconstruct {
-  0% {
+  from {
     opacity: 0;
-    transform: scale(0.98);
+    transform: scale(0.994);
   }
-  30% {
-    opacity: 0.15;
-  }
-  65% {
-    opacity: 1;
-    transform: scale(1.002);
-  }
-  100% {
+  to {
     opacity: 1;
     transform: scale(1);
   }
 }
 @keyframes product-image-dissolve {
-  0% {
+  from {
     opacity: 1;
     transform: scale(1);
   }
-  18% {
-    opacity: 0.75;
-  }
-  50%,
-  100% {
-    opacity: 0;
-    transform: scale(1.02);
+  to {
+    /* The incoming photograph fades over an opaque base throughout the swap. */
+    opacity: 1;
+    transform: scale(1.006);
   }
 }
 @keyframes product-fragment-separate {
-  0%,
-  100% {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  to {
     opacity: 0;
-    transform: none;
-  }
-  20% {
-    opacity: 0.9;
-    transform: translate(var(--fragment-x), var(--fragment-y))
+    transform: translate3d(var(--fragment-x), var(--fragment-y), 0)
       rotate(var(--fragment-rotation));
-  }
-  48% {
-    opacity: 0.65;
-    transform: translate(
-        calc(var(--fragment-x) * 0.55),
-        calc(var(--fragment-y) * 0.55)
-      )
-      rotate(calc(var(--fragment-rotation) * 0.65));
-  }
-  76% {
-    opacity: 0.15;
-    transform: translate(
-      calc(var(--fragment-x) * 0.15),
-      calc(var(--fragment-y) * 0.15)
-    );
   }
 }
 @keyframes product-fragment-assemble {
-  0% {
+  from {
     opacity: 0;
-    transform: translate(var(--fragment-x), var(--fragment-y))
+    transform: translate3d(var(--fragment-x), var(--fragment-y), 0)
       rotate(var(--fragment-rotation));
   }
-  20% {
-    opacity: 0.9;
-    transform: translate(var(--fragment-x), var(--fragment-y))
-      rotate(var(--fragment-rotation));
-  }
-  55% {
-    opacity: 0.6;
-    transform: translate(
-        calc(var(--fragment-x) * 0.3),
-        calc(var(--fragment-y) * 0.3)
-      )
-      rotate(calc(var(--fragment-rotation) * 0.3));
-  }
-  80% {
-    opacity: 0.15;
-    transform: none;
-  }
-  100% {
-    opacity: 0;
-    transform: none;
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotate(0deg);
   }
 }
 @media (prefers-reduced-motion: reduce) {

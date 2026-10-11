@@ -77,9 +77,10 @@ const fragments = mesh
     return {
       clipPath: `polygon(${triangle.map((point) => `${point[0]}% ${point[1]}%`).join(",")})`,
       transformOrigin: `${center[0]}% ${center[1]}%`,
-      "--fragment-x": `${((index * 7) % 19) - 9}%`,
-      "--fragment-y": `${((index * 5) % 13) - 6}%`,
-      "--fragment-rotation": `${((index * 11) % 29) - 14}deg`,
+      "--fragment-x": `${(center[0] - 50) * 0.11}%`,
+      "--fragment-y": `${(center[1] - 50) * 0.08}%`,
+      "--fragment-rotation": `${((index * 5) % 13) - 6}deg`,
+      "--fragment-delay": `${(index % 6) * 16}ms`,
     } as CSSProperties;
   });
 
@@ -217,7 +218,7 @@ export function ProductGallery({
     if (previous === null) return;
     const timer = window.setTimeout(
       () => setPrevious(null),
-      mode === "card" ? 760 : 360,
+      mode === "card" ? 860 : 360,
     );
     return () => window.clearTimeout(timer);
   }, [previous, active, mode]);

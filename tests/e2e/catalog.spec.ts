@@ -538,11 +538,11 @@ test("los fragmentos cambian solos, desaparecen y se cancelan con movimiento red
   const after = await gallery.boundingBox();
   expect(after?.width).toBe(before?.width);
   expect(after?.height).toBe(before?.height);
-  await page.clock.runFor(800);
+  await page.clock.runFor(900);
   await expect(gallery.locator(".product-image-fragments")).toHaveCount(0);
   await expect(gallery.locator(".product-frame-outgoing")).toHaveCount(0);
   await expect(gallery).not.toHaveAttribute("data-animated", "true");
-  await page.clock.runFor(2300);
+  await page.clock.runFor(2200);
   await expect(
     page.getByAltText("Vainilla frente", { exact: true }),
   ).toBeVisible();

@@ -6,15 +6,15 @@ Dirección de Fases 1 y 2: tienda deportiva con portada centrada, categorías il
 
 Se usa [landing-page-design de AI Design Skills](https://github.com/elayadesign/ai-design-skills/blob/main/skills/landing-page-design/SKILL.md), revisada el 10 de octubre de 2026, como guía adaptada al ecommerce. No se instaló un paquete ejecutable ni una skill global. Esta adaptación y las instrucciones del proyecto mantienen su aplicación en futuras iteraciones.
 
-| Criterio | Implementación local |
-| --- | --- |
-| Jerarquía | Un botón principal dorado en la portada; navegación secundaria discreta. |
-| Tipografía | Escala compartida de 12, 14, 16, 18, 20, 24, 30, 36, 48, 60 y 72 px; titulares con cortes deliberados. |
-| Espaciado | Variables compartidas de 4, 8, 12, 16, 24, 32, 40, 48, 64, 80 y 96 px. |
-| Formas | Tarjetas de radio 24 px, campos de 8 px y controles circulares o tipo píldora. |
-| Interacción | Hover, pulsación y foco visible; controles principales de al menos 48 px de altura. |
-| Movimiento | Curva común, aparición de categorías, transformación del menú y revelado de palabras de marca. |
-| Iconografía | Siete SVG Phosphor regular locales; licencia MIT conservada en `docs/licenses`. |
+| Criterio    | Implementación local                                                                                   |
+| ----------- | ------------------------------------------------------------------------------------------------------ |
+| Jerarquía   | Un botón principal dorado en la portada; navegación secundaria discreta.                               |
+| Tipografía  | Escala compartida de 12, 14, 16, 18, 20, 24, 30, 36, 48, 60 y 72 px; titulares con cortes deliberados. |
+| Espaciado   | Variables compartidas de 4, 8, 12, 16, 24, 32, 40, 48, 64, 80 y 96 px.                                 |
+| Formas      | Tarjetas de radio 24 px, campos de 8 px y controles circulares o tipo píldora.                         |
+| Interacción | Hover, pulsación y foco visible; controles principales de al menos 48 px de altura.                    |
+| Movimiento  | Curva común, aparición de categorías, transformación del menú y revelado de palabras de marca.         |
+| Iconografía | Siete SVG Phosphor regular locales; licencia MIT conservada en `docs/licenses`.                        |
 
 Los tokens viven en `src/app/globals.css`; la composición de tienda, en `src/app/storefront.css`, y los componentes de catálogo, en `src/app/catalog.css`. Usar esos valores al extender componentes. Los tamaños de ilustraciones y breakpoints son medidas de composición, no pasos nuevos de espaciado o tipografía.
 
@@ -38,7 +38,9 @@ Fase 2 incorpora filtros GET en una franja segmentada: Categoría, Marca, Sabor 
 
 Las tarjetas tienen información sobre negro, acentos dorados y un escenario blanco para las fotografías. La jerarquía separa marca, producto, presentación, disponibilidad y ambos precios. El acceso a variantes usa una línea de acción discreta. La ficha conserva su selección de variante, estados vacío/error/agotado y esqueleto de carga con movimiento reducido. La gestión usa formularios agrupados y tablas con desplazamiento contenido en móvil; bloquea controles mientras guarda o sube archivos.
 
-La referencia principal de movimiento es el video del usuario `2026-10-10 21-59-08.mkv`, revisado fotograma por fotograma. Las tarjetas alternan las fotografías automáticamente cada **3 segundos** mediante **fragmentación triangular y reconstrucción**, en lugar de un crossfade aislado. Una malla irregular de 24 triángulos reutiliza las fotos anterior y siguiente: las piezas se separan, giran y regresan a su lugar con movimiento continuo. La transición dura 700 ms y sus capas temporales se retiran a los 760 ms. No usa saltos de pasos, destellos ni recoloreado de las fotos. Es una aproximación propia al movimiento observado; no copia los fondos, contenidos ni identidad de la tienda de referencia.
+La referencia principal de movimiento es el video del usuario `2026-10-10 21-59-08.mkv`, revisado fotograma por fotograma. Las tarjetas alternan las fotografías automáticamente cada **3 segundos** mediante **fragmentación triangular y reconstrucción**. Una malla irregular de 24 triángulos reutiliza las fotos anterior y siguiente. La revisión de fluidez conserva una foto opaca como base durante todo el fundido y reemplaza los cambios bruscos de dirección por trayectorias únicas: las piezas anteriores se alejan y se desvanecen; las nuevas se acercan y se asientan. El desplazamiento se orienta desde el centro, con menor amplitud y giros de hasta 6°.
+
+El fundido con zoom sutil dura **820 ms**, con aceleración y frenado suaves. Las piezas se animan durante 700 ms y comienzan escalonadas entre 0 y 100 ms; las capas temporales se retiran a los 860 ms, después de completar el movimiento. Solo se animan opacidad y transformación; las máscaras triangulares permanecen fijas y las indicaciones de composición (`will-change`) existen únicamente en las capas temporales. No usa saltos de pasos, destellos ni recoloreado de las fotos. Es una aproximación propia al movimiento observado; no copia los fondos, contenidos ni identidad de la tienda de referencia.
 
 El primer cambio se escalona 180 ms por posición, hasta 720 ms; los siguientes mantienen el intervalo de tres segundos. Las tarjetas no muestran flechas, barra, botón de pausa ni contador: solo la foto enlazada y su etiqueta de variante. La imagen conserva proporciones, posición central y un escenario cuadrado estable. No se modifican los textos comerciales ni la estructura de información de la tarjeta. El scroll no controla la transición. No usa canvas, WebGL, videos ni nuevas dependencias.
 
