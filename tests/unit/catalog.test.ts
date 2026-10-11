@@ -146,6 +146,7 @@ describe("importación sin pérdida de datos", () => {
   it("lee un Excel real y conserva los decimales", async () => {
     const bytes = new Uint8Array(readFileSync("tests/fixtures/catalog.xlsx"));
     const rows = await readImportFile(new File([bytes], "catalog.xlsx"));
+    expect(rows[1][1]).toBe("Proteína de prueba");
     const plan = planImport(rows, demoCatalog());
     expect(plan.errors).toEqual([]);
     expect(plan.catalog.products[0].variants[0].listPrice).toBe(4900029);
