@@ -1,7 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 import { Icon } from "@/components/ui/icon";
 
 export type GalleryImage = {
@@ -11,6 +17,71 @@ export type GalleryImage = {
   variantId?: string;
   href?: string;
 };
+
+// A deterministic mesh keeps server/client markup identical. Each fragment reuses
+// an already loaded photo; the mesh exists only during a card image swap.
+const mesh = [
+  [
+    [0, 0],
+    [35, 0],
+    [66, 0],
+    [100, 0],
+  ],
+  [
+    [0, 24],
+    [31, 28],
+    [68, 21],
+    [100, 26],
+  ],
+  [
+    [0, 50],
+    [36, 46],
+    [63, 54],
+    [100, 47],
+  ],
+  [
+    [0, 75],
+    [28, 78],
+    [69, 73],
+    [100, 77],
+  ],
+  [
+    [0, 100],
+    [33, 100],
+    [65, 100],
+    [100, 100],
+  ],
+];
+const fragments = mesh
+  .slice(0, -1)
+  .flatMap((row, y) =>
+    row.slice(0, -1).flatMap((point, x) => {
+      const right = row[x + 1],
+        below = mesh[y + 1][x],
+        diagonal = mesh[y + 1][x + 1];
+      return (x + y) % 2
+        ? [
+            [point, right, below],
+            [right, diagonal, below],
+          ]
+        : [
+            [point, right, diagonal],
+            [point, diagonal, below],
+          ];
+    }),
+  )
+  .map((triangle, index) => {
+    const center = [0, 1].map(
+      (axis) => triangle.reduce((sum, point) => sum + point[axis], 0) / 3,
+    );
+    return {
+      clipPath: `polygon(${triangle.map((point) => `${point[0]}% ${point[1]}%`).join(",")})`,
+      transformOrigin: `${center[0]}% ${center[1]}%`,
+      "--fragment-x": `${((index * 7) % 19) - 9}%`,
+      "--fragment-y": `${((index * 5) % 13) - 6}%`,
+      "--fragment-rotation": `${((index * 11) % 29) - 14}deg`,
+    } as CSSProperties;
+  });
 
 export function ProductGallery({
   images,
@@ -42,7 +113,17 @@ export function ProductGallery({
   const [interacting, setInteracting] = useState(false);
   const [message, setMessage] = useState("");
   const multiple = images.length > 1;
-  const automatic = mode === "card" && multiple;
+  const automatic =
+    mode === "card" &&
+    multiple &&
+    images.some((image) => image.src !== images[0].src);
+  const playing =
+    automatic &&
+    !reduced &&
+    !paused &&
+    !interacting &&
+    visible &&
+    documentVisible;
 
   useEffect(() => {
     setEnhanced(true);
@@ -96,7 +177,7 @@ export function ProductGallery({
       if (index === active) return;
       const image = new window.Image();
       image.onload = async () => {
-        // Wait for decoding as well as download before crossfading.
+        // Wait for decoding as well as download before revealing fragments.
         try {
           await image.decode();
         } catch {
@@ -121,15 +202,7 @@ export function ProductGallery({
   );
 
   useEffect(() => {
-    if (
-      !automatic ||
-      reduced ||
-      paused ||
-      interacting ||
-      !visible ||
-      !documentVisible
-    )
-      return;
+    if (!playing) return;
     const timer = window.setTimeout(
       () => {
         firstAutomaticChange.current = false;
@@ -138,25 +211,16 @@ export function ProductGallery({
       delay + (firstAutomaticChange.current ? startDelay : 0),
     );
     return () => window.clearTimeout(timer);
-  }, [
-    automatic,
-    reduced,
-    paused,
-    interacting,
-    visible,
-    documentVisible,
-    active,
-    images.length,
-    delay,
-    startDelay,
-    showImage,
-  ]);
+  }, [playing, active, images.length, delay, startDelay, showImage]);
 
   useEffect(() => {
     if (previous === null) return;
-    const timer = window.setTimeout(() => setPrevious(null), 440);
+    const timer = window.setTimeout(
+      () => setPrevious(null),
+      mode === "card" ? 760 : 360,
+    );
     return () => window.clearTimeout(timer);
-  }, [previous, active]);
+  }, [previous, active, mode]);
 
   function choose(index: number) {
     setPaused(true);
@@ -187,12 +251,33 @@ export function ProductGallery({
         loading={mode === "card" ? "lazy" : "eager"}
         decoding="async"
       />
+      {mode === "card" && previous !== null && !reduced && images[previous] && (
+        <span
+          key={`${images[previous].id}:${current.id}`}
+          className="product-image-fragments"
+          aria-hidden="true"
+        >
+          {fragments.map((style, index) => (
+            <span key={index} className="product-image-fragment" style={style}>
+              <img
+                className="product-frame"
+                src={index % 2 ? current.src : images[previous].src}
+                alt=""
+                width={720}
+                height={720}
+                decoding="async"
+              />
+            </span>
+          ))}
+        </span>
+      )}
     </>
   );
   return (
     <div
       ref={root}
       className={`product-image-gallery product-image-gallery-${mode}`}
+      data-auto-playing={playing ? "true" : undefined}
       data-animated={previous !== null && !reduced ? "true" : undefined}
       onFocusCapture={() => setInteracting(true)}
       onBlurCapture={(event) => {
@@ -212,13 +297,13 @@ export function ProductGallery({
         ) : (
           <div className="product-frame-link">{frames}</div>
         )}
-        {multiple && (
+        {mode === "detail" && multiple && (
           <span className="product-image-count" aria-hidden="true">
             {String(active + 1).padStart(2, "0")}{" "}
             <span>/ {String(images.length).padStart(2, "0")}</span>
           </span>
         )}
-        {enhanced && multiple && (
+        {mode === "detail" && enhanced && multiple && (
           <div
             className="product-gallery-controls"
             role="group"
@@ -241,28 +326,6 @@ export function ProductGallery({
                 />
               ))}
             </div>
-            {automatic && !reduced && (
-              <button
-                type="button"
-                aria-label={
-                  paused
-                    ? "Reanudar cambio automático de imágenes"
-                    : "Pausar cambio automático de imágenes"
-                }
-                onClick={() => {
-                  request.current++;
-                  setPaused(!paused);
-                }}
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
-                  {paused ? (
-                    <path d="M8 5v14l11-7Z" />
-                  ) : (
-                    <path d="M7 5h3v14H7zm7 0h3v14h-3z" />
-                  )}
-                </svg>
-              </button>
-            )}
             <button
               type="button"
               aria-label="Siguiente imagen"
