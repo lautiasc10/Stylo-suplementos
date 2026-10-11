@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
-import { FilterOptions, FilterPanel } from "./filter-controls";
+import {
+  AutomaticFilterForm,
+  FilterOptions,
+  FilterPanel,
+} from "./filter-controls";
 import type {
   Catalog,
   CatalogFilters,
@@ -96,11 +100,18 @@ export function CatalogFilterSidebar(props: FilterProps) {
   return (
     <aside className="catalog-sidebar" aria-label="Filtros del catálogo">
       <FilterPanel activeCount={selections(props).length}>
-        <form
+        <AutomaticFilterForm
           action={action}
-          method="get"
-          className="catalog-filters"
-          key={JSON.stringify(filters)}
+          values={{
+            q: filters.q,
+            categoria: filters.category,
+            marca: filters.brand,
+            sabor: filters.flavor,
+            orden: filters.sort ?? "name",
+            disponibilidad: filters.availability,
+            min: filters.min,
+            max: filters.max,
+          }}
         >
           <div className="catalog-filter-heading">
             <h2>Filtros</h2>
@@ -130,24 +141,11 @@ export function CatalogFilterSidebar(props: FilterProps) {
                 name="q"
                 type="search"
                 defaultValue={filters.q}
-                list="catalog-suggestions"
                 maxLength={100}
                 placeholder="Producto o marca"
                 autoComplete="off"
               />
             </div>
-            <datalist id="catalog-suggestions">
-              {[
-                ...new Set([
-                  ...catalog.products.map((product) => product.name),
-                  ...catalog.brands.map((brand) => brand.name),
-                ]),
-              ]
-                .slice(0, 30)
-                .map((name) => (
-                  <option key={name} value={name} />
-                ))}
-            </datalist>
           </div>
           <div className="catalog-filter-groups">
             <FilterOptions
@@ -245,16 +243,7 @@ export function CatalogFilterSidebar(props: FilterProps) {
               </div>
             </details>
           </div>
-          <div className="catalog-filter-actions">
-            <button
-              type="submit"
-              className="catalog-filter-submit"
-              aria-label="Aplicar filtros"
-            >
-              Aplicar <Icon name="arrow" />
-            </button>
-          </div>
-        </form>
+        </AutomaticFilterForm>
       </FilterPanel>
     </aside>
   );

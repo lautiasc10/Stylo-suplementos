@@ -58,6 +58,14 @@
   min-width: 0;
 }
 .catalog-sidebar {
+  position: sticky;
+  top: var(--space-6);
+  max-height: calc(100vh - var(--space-12));
+  max-height: calc(100svh - var(--space-12));
+  overflow-y: auto;
+  scrollbar-width: thin;
+  background: var(--background);
+  z-index: 5;
   padding-right: var(--space-6);
   border-right: 1px solid var(--line);
 }
@@ -126,6 +134,9 @@
 .catalog-extra-filters {
   border-top: 1px solid var(--line);
   min-width: 0;
+}
+.catalog-filter-groups {
+  border-bottom: 1px solid var(--line);
 }
 .catalog-filter-group summary,
 .catalog-extra-filters summary,
@@ -272,10 +283,6 @@
   color: var(--foreground);
   font-size: var(--text-sm);
 }
-.catalog-filter-actions {
-  border-top: 1px solid var(--line);
-  padding-top: var(--space-6);
-}
 .catalog-filter-submit {
   display: inline-flex;
   align-items: center;
@@ -363,11 +370,18 @@
     gap: var(--space-6);
   }
   .catalog-sidebar {
+    top: var(--space-3);
+    max-height: calc(100vh - var(--space-6));
+    max-height: calc(100svh - var(--space-6));
     border: 1px solid var(--line);
     border-radius: var(--radius-control);
     padding: 0;
   }
   .catalog-panel-toggle {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--background);
     display: flex;
     min-height: 56px;
     padding: var(--space-4);
