@@ -319,7 +319,7 @@
   aspect-ratio: 1;
   overflow: hidden;
 }
-.product-card-index {
+.product-card-marker {
   position: absolute;
   top: var(--space-4);
   left: var(--space-4);
@@ -330,6 +330,10 @@
   font-size: var(--text-xs);
   pointer-events: none;
   background: #ffffffd9;
+  max-width: calc(100% - 112px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .product-placeholder {
   width: 100%;
@@ -837,7 +841,7 @@ textarea:focus-visible {
   overflow-wrap: anywhere;
 }
 
-/* Photograph transitions only: the product, SKU and prices stay selected. */
+/* Card variants follow the active photograph; detail galleries keep the chosen SKU. */
 .product-image-gallery {
   width: 100%;
   min-width: 0;

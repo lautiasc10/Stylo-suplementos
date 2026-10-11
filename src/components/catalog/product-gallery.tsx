@@ -10,7 +10,13 @@ import {
 } from "react";
 import { Icon } from "@/components/ui/icon";
 
-export type GalleryImage = { id: string; src: string; alt: string };
+export type GalleryImage = {
+  id: string;
+  src: string;
+  alt: string;
+  variantId?: string;
+  href?: string;
+};
 
 export function ProductGallery({
   images,
@@ -18,12 +24,14 @@ export function ProductGallery({
   linkLabel,
   mode = "card",
   delay = 5200,
+  onImageChange,
 }: {
   images: GalleryImage[];
   href?: string;
   linkLabel?: string;
   mode?: "card" | "detail";
   delay?: number;
+  onImageChange?: (image: GalleryImage) => void;
 }) {
   const root = useRef<HTMLDivElement>(null);
   const request = useRef(0);
@@ -80,6 +88,7 @@ export function ProductGallery({
         setPrevious(reduced ? null : active);
         setDirection(nextDirection);
         setActive(index);
+        onImageChange?.(images[index]);
         setMessage("");
       };
       image.onerror = () => {
@@ -90,7 +99,7 @@ export function ProductGallery({
       // Load only the requested photograph; keep the current one until it is ready.
       image.src = images[index].src;
     },
-    [active, images, reduced],
+    [active, images, reduced, onImageChange],
   );
 
   useEffect(() => {
@@ -175,7 +184,7 @@ export function ProductGallery({
       <div className="product-image-stage">
         {href ? (
           <Link
-            href={href}
+            href={current.href ?? href}
             className="product-frame-link"
             aria-label={linkLabel}
           >
@@ -275,7 +284,7 @@ export function ProductGallery({
         <noscript>
           <div className="product-static-images">
             {images.slice(1).map((image) => (
-              <a key={image.id} href={image.src}>
+              <a key={image.id} href={image.href ?? image.src}>
                 Ver {image.alt}
               </a>
             ))}

@@ -229,6 +229,29 @@ const normalize = (text: string) =>
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase();
+
+export function matchingVariants(
+  product: Product,
+  filters: CatalogFilters,
+): Variant[] {
+  let min: number | undefined, max: number | undefined;
+  try {
+    if (filters.min) min = parseMoney(filters.min);
+    if (filters.max) max = parseMoney(filters.max);
+  } catch {
+    return [];
+  }
+  return product.variants.filter(
+    (variant) =>
+      variant.active &&
+      (!filters.flavor || variant.flavor === filters.flavor) &&
+      (filters.availability !== "in-stock" || variant.stock > 0) &&
+      (filters.availability !== "out-of-stock" || variant.stock === 0) &&
+      (min === undefined || variant.listPrice >= min) &&
+      (max === undefined || variant.listPrice <= max),
+  );
+}
+
 export function filterCatalog(catalog: Catalog, filters: CatalogFilters) {
   const data = publicCatalog(catalog);
   const category = data.categories.find(
@@ -237,13 +260,6 @@ export function filterCatalog(catalog: Catalog, filters: CatalogFilters) {
   const terms = normalize((filters.q ?? "").slice(0, 100))
     .split(/\s+/)
     .filter(Boolean);
-  let min: number | undefined, max: number | undefined;
-  try {
-    if (filters.min) min = parseMoney(filters.min);
-    if (filters.max) max = parseMoney(filters.max);
-  } catch {
-    return [];
-  }
   return data.products
     .flatMap((product) => {
       const brand = data.brands.find((item) => item.id === product.brandId)!;
@@ -267,14 +283,7 @@ export function filterCatalog(catalog: Catalog, filters: CatalogFilters) {
       )
         return [];
       // All filters apply to the same variant, so a price/stock match cannot come from different variants.
-      const variants = product.variants.filter(
-        (variant) =>
-          (!filters.flavor || variant.flavor === filters.flavor) &&
-          (filters.availability !== "in-stock" || variant.stock > 0) &&
-          (filters.availability !== "out-of-stock" || variant.stock === 0) &&
-          (min === undefined || variant.listPrice >= min) &&
-          (max === undefined || variant.listPrice <= max),
-      );
+      const variants = matchingVariants(product, filters);
       return variants.length
         ? [
             {

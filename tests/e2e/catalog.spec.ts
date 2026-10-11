@@ -349,7 +349,7 @@ test("la franja combina categoría, marca, sabor y orden y permite quitar un fil
   expect(bounds!.height).toBeGreaterThanOrEqual(48);
 });
 
-test("las imágenes de una variante cambian sin modificar precios ni mezclar sabores", async ({
+test("la galería sincroniza variantes y precios y la ficha conserva sus fotos", async ({
   page,
 }) => {
   await page.addInitScript(
@@ -359,6 +359,24 @@ test("las imágenes de una variante cambian sin modificar precios ni mezclar sab
   );
   await page.goto("/vista-previa?q=proteina");
   const card = page.locator(".product-card");
+  await expect(
+    card.getByRole("img", { name: "Chocolate frente", exact: true }),
+  ).toBeVisible();
+  await card
+    .getByRole("button", { name: "Imagen anterior", exact: true })
+    .click();
+  await expect(
+    card.getByRole("img", { name: "Vainilla frente", exact: true }),
+  ).toBeVisible();
+  await expect(card.locator(".product-card-variant")).toContainText("Vainilla");
+  await expect(card.locator(".product-prices")).toContainText("47.000,00");
+  await expect(card.locator(".stock-badge")).toHaveText("Sin stock");
+  await expect(
+    card.getByRole("link", { name: "Ver variantes", exact: true }),
+  ).toHaveAttribute("href", /variante=00000000-0000-4000-8000-000000000051$/);
+  await card
+    .getByRole("button", { name: "Siguiente imagen", exact: true })
+    .click();
   await expect(
     card.getByRole("img", { name: "Chocolate frente", exact: true }),
   ).toBeVisible();
@@ -448,7 +466,56 @@ test("la galería pausa al interactuar y responde al movimiento reducido en vivo
     .getByRole("button", { name: "Siguiente imagen", exact: true })
     .click();
   await expect(
-    page.getByRole("img", { name: "Chocolate frente", exact: true }),
+    page.getByRole("img", { name: "Vainilla frente", exact: true }),
   ).toBeVisible();
   await expect(gallery).not.toHaveAttribute("data-animated", "true");
+});
+
+test("una foto por variante alterna sus datos y respeta sabor, precio y disponibilidad", async ({
+  page,
+}) => {
+  const fixture = galleryFixture();
+  fixture.catalog.products[0].images.splice(1, 1);
+  await page.clock.install();
+  await page.addInitScript(
+    (data) =>
+      localStorage.setItem("stylo.catalog-preview.v1", JSON.stringify(data)),
+    fixture,
+  );
+  await page.goto("/vista-previa?q=proteina");
+  const card = page.locator(".product-card");
+  await card.locator(".product-image-gallery").scrollIntoViewIfNeeded();
+  await page.mouse.move(0, 0);
+  await page.clock.runFor(5800);
+  await expect(
+    card.getByRole("img", { name: "Vainilla frente", exact: true }),
+  ).toBeVisible();
+  await expect(card.locator(".product-card-variant")).toContainText("Vainilla");
+  await expect(card.locator(".product-prices")).toContainText("47.000,00");
+  await expect(card.locator(".stock-badge")).toHaveText("Sin stock");
+  await card.getByRole("link", { name: "Ver variantes", exact: true }).click();
+  await expect(page.locator(".product-sku")).toHaveText("DEMO-1-B");
+
+  await page.goto("/vista-previa?q=proteina&sabor=Chocolate");
+  await expect(
+    card.getByRole("img", { name: "Chocolate frente", exact: true }),
+  ).toBeVisible();
+  await expect(
+    card.getByRole("button", { name: "Siguiente imagen", exact: true }),
+  ).toHaveCount(0);
+  await page.clock.runFor(11000);
+  await expect(card.locator(".product-card-variant")).toContainText(
+    "Chocolate",
+  );
+
+  await page.goto(
+    "/vista-previa?q=proteina&min=46000&max=48000&disponibilidad=out-of-stock",
+  );
+  await expect(
+    card.getByRole("img", { name: "Vainilla frente", exact: true }),
+  ).toBeVisible();
+  await expect(
+    card.getByRole("button", { name: "Siguiente imagen", exact: true }),
+  ).toHaveCount(0);
+  await expect(card.locator(".product-prices")).toContainText("47.000,00");
 });
