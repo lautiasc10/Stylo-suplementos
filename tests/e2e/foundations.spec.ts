@@ -41,9 +41,9 @@ test("categorías conservan su selección sin simular productos", async ({
   await page.locator(".category-card").filter({ hasText: "Creatinas" }).click();
   await expect(page).toHaveURL(/categoria=creatinas/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Creatinas");
-  await expect(page.getByLabel("Categoría", { exact: true })).toHaveValue(
-    "creatinas",
-  );
+  await expect(
+    page.locator('input[name="categoria"][value="creatinas"]'),
+  ).toBeChecked();
   await expect(
     page.getByRole("link", { name: "Quitar filtro Creatinas", exact: true }),
   ).toBeVisible();

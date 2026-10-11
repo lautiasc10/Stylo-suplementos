@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CatalogFilterBar } from "./filters";
+import { CatalogActiveFilters, CatalogFilterSidebar } from "./filters";
 import { ProductCard } from "./product-card";
 import {
   filterCatalog,
@@ -32,62 +32,72 @@ export function CatalogListing({
   const data = publicCatalog(catalog),
     results = filterCatalog(data, filters);
   return (
-    <>
-      <CatalogFilterBar
+    <div className="catalog-layout">
+      <CatalogFilterSidebar
         catalog={data}
         filters={filters}
         action={action}
         categories={filterCategories}
       />
-      <div className="catalog-results-heading">
-        <p role="status">
-          {results.length} {results.length === 1 ? "producto" : "productos"}
-        </p>
-        <p>Encontrá lo que acompaña tu rutina.</p>
-      </div>
-      {results.length ? (
-        <div className="product-grid">
-          {results.map(({ product, variant, brand }, index) => {
-            const category = data.categories.find((item) =>
-              product.categoryIds.includes(item.id),
-            );
-            return (
-              <ProductCard
-                key={`${product.id}:${JSON.stringify(filters)}`}
-                product={product}
-                variants={matchingVariants(product, filters)}
-                initialVariantId={variant.id}
-                brand={brand}
-                category={category}
-                index={index}
-                productPrefix={productPrefix}
-                imageBase={imageBase}
-                imageUrls={imageUrls}
-                preview={preview}
-              />
-            );
-          })}
-        </div>
-      ) : (
-        <div className="empty-state">
-          <h2>
-            {data.products.length
-              ? "No encontramos coincidencias."
-              : "Tu próxima elección empieza acá."}
-          </h2>
-          <p>
-            {data.products.length
-              ? "Probá con otros filtros o palabras de búsqueda."
-              : "Estamos preparando nuestra selección de productos."}
+      <section className="catalog-results" aria-label="Resultados del catálogo">
+        <CatalogActiveFilters
+          catalog={data}
+          filters={filters}
+          action={action}
+          categories={filterCategories}
+        />
+        <div className="catalog-results-heading">
+          <p role="status">
+            {results.length} {results.length === 1 ? "producto" : "productos"}
           </p>
-          <Link
-            href={data.products.length ? action : "/"}
-            className="button button-outline"
-          >
-            {data.products.length ? "Ver todo el catálogo" : "Volver al inicio"}
-          </Link>
+          <p>Encontrá lo que acompaña tu rutina.</p>
         </div>
-      )}
-    </>
+        {results.length ? (
+          <div className="product-grid">
+            {results.map(({ product, variant, brand }, index) => {
+              const category = data.categories.find((item) =>
+                product.categoryIds.includes(item.id),
+              );
+              return (
+                <ProductCard
+                  key={`${product.id}:${JSON.stringify(filters)}`}
+                  product={product}
+                  variants={matchingVariants(product, filters)}
+                  initialVariantId={variant.id}
+                  brand={brand}
+                  category={category}
+                  index={index}
+                  productPrefix={productPrefix}
+                  imageBase={imageBase}
+                  imageUrls={imageUrls}
+                  preview={preview}
+                />
+              );
+            })}
+          </div>
+        ) : (
+          <div className="empty-state">
+            <h2>
+              {data.products.length
+                ? "No encontramos coincidencias."
+                : "Tu próxima elección empieza acá."}
+            </h2>
+            <p>
+              {data.products.length
+                ? "Probá con otros filtros o palabras de búsqueda."
+                : "Estamos preparando nuestra selección de productos."}
+            </p>
+            <Link
+              href={data.products.length ? action : "/"}
+              className="button button-outline"
+            >
+              {data.products.length
+                ? "Ver todo el catálogo"
+                : "Volver al inicio"}
+            </Link>
+          </div>
+        )}
+      </section>
+    </div>
   );
 }

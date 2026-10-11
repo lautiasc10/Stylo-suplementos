@@ -1,40 +1,25 @@
 import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
+import { FilterOptions, FilterPanel } from "./filter-controls";
 import type {
   Catalog,
   CatalogFilters,
   CatalogGroup,
 } from "@/modules/catalog/model";
 
-export function CatalogFilterBar({
-  catalog,
-  filters,
-  action,
-  categories = catalog.categories,
-}: {
+type FilterProps = {
   catalog: Catalog;
   filters: CatalogFilters;
   action: string;
   categories?: Pick<CatalogGroup, "id" | "name" | "slug">[];
-}) {
-  const flavors = [
-    ...new Set(
-      catalog.products.flatMap((product) =>
-        product.variants.map((variant) => variant.flavor).filter(Boolean),
-      ),
-    ),
-  ].sort((a, b) => a.localeCompare(b, "es"));
-  const parameters = {
-    q: filters.q,
-    categoria: filters.category,
-    marca: filters.brand,
-    sabor: filters.flavor,
-    disponibilidad: filters.availability,
-    min: filters.min,
-    max: filters.max,
-    orden: filters.sort,
-  };
-  const selections = [
+};
+
+function selections({
+  catalog,
+  filters,
+  categories = catalog.categories,
+}: FilterProps) {
+  return [
     { key: "q", label: filters.q && `Búsqueda: ${filters.q}` },
     {
       key: "categoria",
@@ -57,6 +42,21 @@ export function CatalogFilterBar({
     { key: "min", label: filters.min && `Desde $${filters.min}` },
     { key: "max", label: filters.max && `Hasta $${filters.max}` },
   ].filter((item) => item.label);
+}
+
+export function CatalogActiveFilters(props: FilterProps) {
+  const { filters, action } = props;
+  const active = selections(props);
+  const parameters = {
+    q: filters.q,
+    categoria: filters.category,
+    marca: filters.brand,
+    sabor: filters.flavor,
+    disponibilidad: filters.availability,
+    min: filters.min,
+    max: filters.max,
+    orden: filters.sort,
+  };
   function without(key: string) {
     const query = new URLSearchParams();
     for (const [name, value] of Object.entries(parameters)) {
@@ -64,15 +64,54 @@ export function CatalogFilterBar({
     }
     return `${action}${query.size ? `?${query}` : ""}`;
   }
+  if (!active.length) return null;
   return (
-    <div className="catalog-discovery">
-      <form
-        action={action}
-        method="get"
-        className="catalog-filters"
-        key={JSON.stringify(filters)}
-      >
-        <div className="catalog-search-row">
+    <nav className="catalog-selections" aria-label="Filtros activos">
+      {active.map((item) => (
+        <Link
+          href={without(item.key)}
+          key={item.key}
+          aria-label={`Quitar filtro ${item.label}`}
+        >
+          {item.label} <Icon name="close" />
+        </Link>
+      ))}
+    </nav>
+  );
+}
+
+export function CatalogFilterSidebar(props: FilterProps) {
+  const { catalog, filters, action, categories = catalog.categories } = props;
+  const flavors = [
+    ...new Set(
+      catalog.products.flatMap((product) =>
+        product.variants
+          .filter((variant) => variant.active)
+          .map((variant) => variant.flavor)
+          .filter(Boolean),
+      ),
+    ),
+  ].sort((a, b) => a.localeCompare(b, "es"));
+
+  return (
+    <aside className="catalog-sidebar" aria-label="Filtros del catálogo">
+      <FilterPanel activeCount={selections(props).length}>
+        <form
+          action={action}
+          method="get"
+          className="catalog-filters"
+          key={JSON.stringify(filters)}
+        >
+          <div className="catalog-filter-heading">
+            <h2>Filtros</h2>
+            <Link
+              href={action}
+              className="catalog-clear"
+              aria-label="Limpiar filtros"
+            >
+              Limpiar <Icon name="close" />
+            </Link>
+          </div>
           <div className="catalog-search">
             <label htmlFor="catalog-search">Buscá por producto o marca</label>
             <div className="catalog-search-input">
@@ -93,7 +132,7 @@ export function CatalogFilterBar({
                 defaultValue={filters.q}
                 list="catalog-suggestions"
                 maxLength={100}
-                placeholder="Encontrá tu próximo suplemento"
+                placeholder="Producto o marca"
                 autoComplete="off"
               />
             </div>
@@ -110,140 +149,113 @@ export function CatalogFilterBar({
                 ))}
             </datalist>
           </div>
-          <button
-            type="submit"
-            className="catalog-filter-submit"
-            aria-label="Aplicar filtros"
-          >
-            Filtrar <Icon name="arrow" />
-          </button>
-        </div>
-        <fieldset className="catalog-filter-rail">
-          <legend className="sr-only">Afiná tu selección</legend>
-          <label className="catalog-filter-field">
-            <span>Categoría</span>
-            <span className="catalog-select-wrap">
-              <select
-                name="categoria"
-                aria-label="Categoría"
-                defaultValue={filters.category ?? ""}
-              >
-                <option value="">Todas las categorías</option>
-                {categories.map((item) => (
-                  <option key={item.id} value={item.slug}>
-                    {item.name}
-                  </option>
-                ))}
-              </select>
-            </span>
-          </label>
-          <label className="catalog-filter-field">
-            <span>Marca</span>
-            <span className="catalog-select-wrap">
-              <select
-                name="marca"
-                aria-label="Marca"
-                defaultValue={filters.brand ?? ""}
-              >
-                <option value="">Todas las marcas</option>
-                {catalog.brands.map((item) => (
-                  <option key={item.id} value={item.slug}>
-                    {item.name}
-                  </option>
-                ))}
-              </select>
-            </span>
-          </label>
-          <label className="catalog-filter-field">
-            <span>Sabor</span>
-            <span className="catalog-select-wrap">
-              <select
-                name="sabor"
-                aria-label="Sabor"
-                defaultValue={filters.flavor ?? ""}
-              >
-                <option value="">Todos los sabores</option>
-                {flavors.map((flavor) => (
-                  <option key={flavor}>{flavor}</option>
-                ))}
-              </select>
-            </span>
-          </label>
-          <label className="catalog-filter-field">
-            <span>Ordenar</span>
-            <span className="catalog-select-wrap">
-              <select
-                name="orden"
-                aria-label="Ordenar"
-                defaultValue={filters.sort ?? "name"}
-              >
-                <option value="name">Nombre: A a Z</option>
-                <option value="price-asc">Menor precio de lista</option>
-                <option value="price-desc">Mayor precio de lista</option>
-              </select>
-            </span>
-          </label>
-        </fieldset>
-        <div className="catalog-filter-footer">
-          <details
-            className="catalog-extra-filters"
-            open={Boolean(filters.availability || filters.min || filters.max)}
-          >
-            <summary>
-              Precio y disponibilidad <span aria-hidden="true">+</span>
-            </summary>
-            <div className="catalog-extra-fields">
-              <label>
-                Disponibilidad
-                <select
-                  name="disponibilidad"
-                  defaultValue={filters.availability ?? ""}
-                >
-                  <option value="">Todas</option>
-                  <option value="in-stock">Con stock</option>
-                  <option value="out-of-stock">Sin stock</option>
-                </select>
-              </label>
-              <label>
-                Desde (ARS)
-                <input
-                  name="min"
-                  inputMode="decimal"
-                  defaultValue={filters.min}
-                  placeholder="Sin mínimo"
-                  pattern="[0-9]+([.,][0-9]{1,2})?"
-                />
-              </label>
-              <label>
-                Hasta (ARS)
-                <input
-                  name="max"
-                  inputMode="decimal"
-                  defaultValue={filters.max}
-                  placeholder="Sin máximo"
-                  pattern="[0-9]+([.,][0-9]{1,2})?"
-                />
-              </label>
-            </div>
-          </details>
-          <Link href={action} className="catalog-clear">
-            Limpiar filtros <Icon name="close" />
-          </Link>
-        </div>
-      </form>
-      {selections.length > 0 && (
-        <nav className="catalog-selections" aria-label="Filtros activos">
-          {selections.map((item) => (
-            <Link
-              href={without(item.key)}
-              key={item.key}
-              aria-label={`Quitar filtro ${item.label}`}
+          <div className="catalog-filter-groups">
+            <FilterOptions
+              label="Categoría"
+              name="categoria"
+              value={filters.category}
+              options={[
+                { value: "", label: "Todas las categorías" },
+                ...categories.map((item) => ({
+                  value: item.slug,
+                  label: item.name,
+                })),
+              ]}
+            />
+            <FilterOptions
+              label="Marca"
+              name="marca"
+              value={filters.brand}
+              options={[
+                { value: "", label: "Todas las marcas" },
+                ...catalog.brands.map((item) => ({
+                  value: item.slug,
+                  label: item.name,
+                })),
+              ]}
+            />
+            <FilterOptions
+              label="Sabor"
+              name="sabor"
+              value={filters.flavor}
+              options={[
+                { value: "", label: "Todos los sabores" },
+                ...flavors.map((flavor) => ({ value: flavor, label: flavor })),
+              ]}
+            />
+            <FilterOptions
+              label="Ordenar"
+              name="orden"
+              value={filters.sort ?? "name"}
+              options={[
+                { value: "name", label: "Nombre: A a Z" },
+                { value: "price-asc", label: "Menor precio de lista" },
+                { value: "price-desc", label: "Mayor precio de lista" },
+              ]}
+            />
+            <details
+              className="catalog-extra-filters"
+              open={Boolean(filters.availability || filters.min || filters.max)}
             >
-              {item.label} <Icon name="close" />
-            </Link>
-          ))}
-        </nav>
-      )}
-    </div>
+              <summary>
+                Precio y disponibilidad{" "}
+                <span className="catalog-filter-chevron" aria-hidden="true" />
+              </summary>
+              <fieldset className="catalog-filter-options">
+                <legend>Disponibilidad</legend>
+                {[
+                  { value: "", label: "Todas" },
+                  { value: "in-stock", label: "Con stock" },
+                  { value: "out-of-stock", label: "Sin stock" },
+                ].map((option) => (
+                  <label className="catalog-filter-option" key={option.value}>
+                    <input
+                      type="radio"
+                      name="disponibilidad"
+                      value={option.value}
+                      defaultChecked={
+                        (filters.availability ?? "") === option.value
+                      }
+                    />
+                    <span>{option.label}</span>
+                  </label>
+                ))}
+              </fieldset>
+              <div className="catalog-price-fields">
+                <label>
+                  Desde (ARS)
+                  <input
+                    name="min"
+                    inputMode="decimal"
+                    defaultValue={filters.min}
+                    placeholder="Sin mínimo"
+                    pattern="[0-9]+([.,][0-9]{1,2})?"
+                  />
+                </label>
+                <label>
+                  Hasta (ARS)
+                  <input
+                    name="max"
+                    inputMode="decimal"
+                    defaultValue={filters.max}
+                    placeholder="Sin máximo"
+                    pattern="[0-9]+([.,][0-9]{1,2})?"
+                  />
+                </label>
+              </div>
+            </details>
+          </div>
+          <div className="catalog-filter-actions">
+            <button
+              type="submit"
+              className="catalog-filter-submit"
+              aria-label="Aplicar filtros"
+            >
+              Aplicar <Icon name="arrow" />
+            </button>
+          </div>
+        </form>
+      </FilterPanel>
+    </aside>
   );
 }

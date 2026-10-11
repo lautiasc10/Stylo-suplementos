@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 import { importColumns } from "../../src/modules/catalog/import";
 import { demoCatalog } from "../../src/modules/catalog/demo";
 import { readFileSync } from "node:fs";
@@ -70,6 +70,27 @@ const csv = (...rows: string[][]) =>
     [Array.from(importColumns), ...rows].map((row) => row.join(";")).join("\n"),
   );
 
+async function openFilters(page: Page) {
+  const panel = page.locator(".catalog-filter-panel");
+  if (
+    !(await panel.evaluate((element) => (element as HTMLDetailsElement).open))
+  )
+    await panel.locator(":scope > summary").click();
+}
+
+async function chooseFilter(page: Page, name: string, value: string) {
+  await openFilters(page);
+  const input = page.locator(
+    `.catalog-filters input[name="${name}"][value="${value}"]`,
+  );
+  const group = input.locator("xpath=ancestor::details[1]");
+  if (
+    !(await group.evaluate((element) => (element as HTMLDetailsElement).open))
+  )
+    await group.locator(":scope > summary").click();
+  await input.check();
+}
+
 test("catálogo filtra por la misma variante y conserva agotados", async ({
   page,
 }) => {
@@ -77,14 +98,13 @@ test("catálogo filtra por la misma variante y conserva agotados", async ({
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/vista-previa");
   await expect(page.locator(".product-card")).toHaveCount(4);
-  await page.getByLabel("Sabor", { exact: true }).selectOption("Vainilla");
-  await page.getByText("Precio y disponibilidad").click();
-  await page.getByLabel("Disponibilidad").selectOption("in-stock");
+  await chooseFilter(page, "sabor", "Vainilla");
+  await chooseFilter(page, "disponibilidad", "in-stock");
   await page.getByRole("button", { name: "Aplicar filtros" }).click();
   await expect(
     page.getByRole("heading", { name: "No encontramos coincidencias." }),
   ).toBeVisible();
-  await page.getByLabel("Disponibilidad").selectOption("out-of-stock");
+  await chooseFilter(page, "disponibilidad", "out-of-stock");
   await page.getByRole("button", { name: "Aplicar filtros" }).click();
   await expect(page.locator(".product-card")).toHaveCount(1);
   await expect(page.locator(".product-card")).toContainText("47.000,00");
@@ -106,6 +126,7 @@ test("búsqueda, orden por lista y selección de variante actualizan la ficha", 
   await expect(page.locator(".product-card h2").first()).toHaveText(
     "Shaker de prueba",
   );
+  await openFilters(page);
   await page.getByLabel("Buscá por producto o marca").fill("proteina");
   await page.getByRole("button", { name: "Aplicar filtros" }).click();
   await expect(page.locator(".product-card")).toHaveCount(1);
@@ -296,30 +317,32 @@ test("filtros públicos conservan navegación sin JavaScript", async ({
   try {
     const page = await context.newPage();
     await page.goto("/catalogo");
+    await chooseFilter(page, "categoria", "creatinas");
+    await chooseFilter(page, "orden", "price-asc");
     await page.getByLabel("Buscá por producto o marca").fill("creatina");
     await page.getByRole("button", { name: "Aplicar filtros" }).click();
     await expect(page).toHaveURL(/q=creatina/);
+    expect(new URL(page.url()).searchParams.get("categoria")).toBe("creatinas");
+    expect(new URL(page.url()).searchParams.get("orden")).toBe("price-asc");
     await expect(page.getByLabel("Buscá por producto o marca")).toHaveValue(
       "creatina",
     );
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-      "Nuestro catálogo",
+      "Creatinas",
     );
   } finally {
     await context.close();
   }
 });
 
-test("la franja combina categoría, marca, sabor y orden y permite quitar un filtro", async ({
+test("el lateral combina categoría, marca, sabor y orden y permite quitar un filtro", async ({
   page,
 }) => {
   await page.goto("/vista-previa");
-  await page.getByLabel("Categoría", { exact: true }).selectOption("proteinas");
-  await page
-    .getByLabel("Marca", { exact: true })
-    .selectOption("marca-de-prueba-a");
-  await page.getByLabel("Sabor", { exact: true }).selectOption("Chocolate");
-  await page.getByLabel("Ordenar", { exact: true }).selectOption("price-desc");
+  await chooseFilter(page, "categoria", "proteinas");
+  await chooseFilter(page, "marca", "marca-de-prueba-a");
+  await chooseFilter(page, "sabor", "Chocolate");
+  await chooseFilter(page, "orden", "price-desc");
   await page.getByRole("button", { name: "Aplicar filtros" }).click();
   await expect(page.locator(".product-card")).toHaveCount(1);
   const query = new URL(page.url()).searchParams;
@@ -332,21 +355,81 @@ test("la franja combina categoría, marca, sabor y orden y permite quitar un fil
   await page
     .getByRole("link", { name: "Quitar filtro Chocolate", exact: true })
     .click();
-  await expect(page.getByLabel("Sabor", { exact: true })).toHaveValue("");
-  await expect(page.getByLabel("Marca", { exact: true })).toHaveValue(
-    "marca-de-prueba-a",
-  );
-  await expect(page.getByLabel("Categoría", { exact: true })).toHaveValue(
-    "proteinas",
-  );
-  await expect(page.getByLabel("Ordenar", { exact: true })).toHaveValue(
-    "price-desc",
-  );
+  await expect(page.locator('input[name="sabor"][value=""]')).toBeChecked();
+  await expect(
+    page.locator('input[name="marca"][value="marca-de-prueba-a"]'),
+  ).toBeChecked();
+  await expect(
+    page.locator('input[name="categoria"][value="proteinas"]'),
+  ).toBeChecked();
+  await expect(
+    page.locator('input[name="orden"][value="price-desc"]'),
+  ).toBeChecked();
+  await openFilters(page);
   const bounds = await page
     .getByRole("button", { name: "Aplicar filtros" })
     .boundingBox();
   expect(bounds!.width).toBeLessThan(160);
   expect(bounds!.height).toBeGreaterThanOrEqual(48);
+});
+
+test("el panel lateral conserva selección con teclado y al cambiar a celular", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto("/vista-previa");
+  const sidebar = page.locator(".catalog-sidebar");
+  const panel = page.locator(".catalog-filter-panel");
+  const left = await sidebar.boundingBox();
+  const card = await page.locator(".product-card").first().boundingBox();
+  expect(left!.x + left!.width).toBeLessThan(card!.x);
+
+  await chooseFilter(page, "categoria", "");
+  await page.locator('input[name="categoria"][value=""]').focus();
+  await page.keyboard.press("ArrowDown");
+  await expect(
+    page.locator('input[name="categoria"][value="proteinas"]'),
+  ).toBeChecked();
+  await expect(
+    page.locator(".catalog-filter-group").first().locator("summary"),
+  ).toContainText("Proteínas");
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(panel).not.toHaveAttribute("open", "");
+  await expect(
+    page.getByRole("button", { name: "Aplicar filtros" }),
+  ).toBeHidden();
+  await panel.locator(":scope > summary").focus();
+  await page.keyboard.press("Enter");
+  await expect(
+    page.getByRole("button", { name: "Aplicar filtros" }),
+  ).toBeVisible();
+  await expect(
+    page.locator('input[name="categoria"][value="proteinas"]'),
+  ).toBeChecked();
+  await chooseFilter(page, "sabor", "Chocolate");
+  await chooseFilter(page, "disponibilidad", "in-stock");
+  await page.getByLabel("Desde (ARS)").fill("40000");
+  await page.getByLabel("Hasta (ARS)").fill("46000");
+  await page.getByRole("button", { name: "Aplicar filtros" }).click();
+  await expect(page.locator(".product-card")).toHaveCount(1);
+  expect(Object.fromEntries(new URL(page.url()).searchParams)).toMatchObject({
+    categoria: "proteinas",
+    sabor: "Chocolate",
+    disponibilidad: "in-stock",
+    min: "40000",
+    max: "46000",
+  });
+
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await expect(
+    page.getByRole("button", { name: "Aplicar filtros" }),
+  ).toBeVisible();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
 });
 
 test("la galería automática sincroniza variantes y la ficha conserva sus fotos", async ({
