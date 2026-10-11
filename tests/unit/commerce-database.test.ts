@@ -59,6 +59,7 @@ describe("Fase 3: precios de servidor, permisos e idempotencia", () => {
       "202610100001_foundations.sql",
       "202610100002_catalog.sql",
       "202610110001_commerce.sql",
+      "202610110002_manual_cash_sales.sql",
     ])
       await db.exec(readFileSync(`supabase/migrations/${file}`, "utf8"));
     await db.query("insert into auth.users values($1),($2)", [admin, other]);
@@ -210,4 +211,87 @@ describe("Fase 3: precios de servidor, permisos e idempotencia", () => {
       );
     });
   });
+  it("la venta en efectivo descuenta stock y registra cobro una sola vez, con revisión y auditoría", async () => {
+    const sale = (received = true, quantity = 2) =>
+      db.query<{
+        create_manual_cash_sale: { id: string; snapshot: { total: number } };
+      }>("select public.create_manual_cash_sale($1,$2::jsonb,$3::jsonb,$4)", [
+        request,
+        JSON.stringify([{ variantId: variant.id, quantity }]),
+        JSON.stringify({ name: "Cliente ficticio", phone: "" }),
+        received,
+      ]);
+    for (const [id, aal] of [
+      [null, ""],
+      [other, "aal2"],
+      [admin, "aal1"],
+    ] as const) {
+      await role(id, aal, async () => {
+        await expect(sale()).rejects.toMatchObject({ code: "42501" });
+      });
+    }
+    await role(admin, "aal2", async () => {
+      await expect(sale(false)).rejects.toThrow();
+    });
+    await role(admin, "aal2", async () => {
+      await expect(sale(true, 9)).rejects.toThrow();
+    });
+    await role(admin, "aal2", async () => {
+      const first = (await sale()).rows[0].create_manual_cash_sale;
+      const again = (await sale()).rows[0].create_manual_cash_sale;
+      expect(again.id).toBe(first.id);
+      expect(first.snapshot.total).toBe(7800000);
+      expect(
+        (
+          await db.query(
+            "select payment_status,fulfillment_status from public.commerce_orders",
+          )
+        ).rows[0],
+      ).toEqual({ payment_status: "paid", fulfillment_status: "delivered" });
+      expect(
+        (
+          await db.query<{ stock: number }>(
+            "select stock from public.catalog_variants where id=$1",
+            [variant.id],
+          )
+        ).rows[0].stock,
+      ).toBe(6);
+      expect(
+        (
+          await db.query<{ revision: number }>(
+            "select revision from public.catalog_state where id",
+          )
+        ).rows[0].revision,
+      ).toBe(2);
+      expect(
+        (
+          await db.query(
+            "select quantity_delta,previous_quantity,new_quantity from public.inventory_movements where reason='manual_cash_sale'",
+          )
+        ).rows,
+      ).toEqual([
+        { quantity_delta: -2, previous_quantity: 8, new_quantity: 6 },
+      ]);
+      expect(
+        (
+          await db.query(
+            "select id from public.admin_audit_log where action='manual_cash_sale_created'",
+          )
+        ).rows,
+      ).toHaveLength(1);
+    });
+    await role(admin, "aal2", async () => {
+      await sale();
+      await expect(order()).rejects.toMatchObject({ code: "40001" });
+    });
+    await role(admin, "aal2", async () => {
+      await sale();
+      await expect(saveCatalogStale()).rejects.toMatchObject({ code: "40001" });
+    });
+  });
 });
+function saveCatalogStale() {
+  return db.query("select public.save_catalog($1::jsonb,1)", [
+    JSON.stringify(demoCatalog()),
+  ]);
+}

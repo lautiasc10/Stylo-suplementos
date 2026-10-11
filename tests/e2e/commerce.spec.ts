@@ -79,6 +79,12 @@ test("admin configura cantidad con dos precios y checkout revalida sin guardar d
     .click();
   await expect(page.getByRole("status")).toHaveText("Promociones guardadas.");
   await page.goto("/vista-previa/producto/proteina-de-prueba");
+  await expect(
+    page.getByRole("region", { name: "Promociones disponibles" }),
+  ).toContainText("Cantidad de prueba");
+  await expect(
+    page.getByRole("region", { name: "Promociones disponibles" }),
+  ).toContainText("DESDE 2 UNIDADES");
   await page
     .getByRole("button", { name: "Agregar al carrito", exact: true })
     .click();
@@ -88,8 +94,10 @@ test("admin configura cantidad con dos precios y checkout revalida sin guardar d
     .click();
   await dialog.getByRole("link", { name: "Continuar al checkout" }).click();
   await expect(page.locator(".checkout-total")).toContainText("80.000,00");
+  await expect(page.getByRole("radio")).toHaveCount(2);
+  await expect(page.getByLabel(/Efectivo al retirar/)).toHaveCount(0);
   await page
-    .getByLabel("Transferencia · precio de efectivo", { exact: true })
+    .getByLabel("Transferencia · precio por transferencia", { exact: true })
     .check();
   await expect(page.locator(".checkout-total")).toContainText("70.000,00");
   await page
@@ -176,6 +184,15 @@ test("gestión permite editar un combo y registra un retiro una vez sin desconta
   await expect(page.locator(".promotion-row")).toContainText("49.000,00");
   await expect(page.locator(".promotion-row")).toContainText("Pago pendiente");
   await page.goto("/vista-previa/producto/proteina-de-prueba");
+  await expect(
+    page.getByRole("region", { name: "Promociones disponibles" }),
+  ).toContainText("Combo de prueba");
+  await expect(
+    page.getByRole("region", { name: "Promociones disponibles" }),
+  ).toContainText("Creatina de prueba");
+  await expect(
+    page.getByRole("region", { name: "Promociones disponibles" }),
+  ).toContainText("49.000,00");
   await page
     .getByRole("button", { name: "Agregar al carrito", exact: true })
     .click();
@@ -205,4 +222,51 @@ test("carrito público sin JavaScript no filtra datos privados ni simula pedidos
   } finally {
     await context.close();
   }
+});
+
+test("venta presencial requiere confirmar cobro y entrega, y descuenta stock una sola vez", async ({
+  page,
+}) => {
+  await page.goto("/vista-previa/pedidos");
+  await page
+    .getByRole("combobox", { name: "Tipo de registro", exact: true })
+    .selectOption("cash-sale");
+  await page
+    .getByLabel("Nombre del cliente", { exact: true })
+    .fill("Venta ficticia");
+  await page
+    .getByRole("button", { name: "Agregar presentación", exact: true })
+    .click();
+  await page.getByLabel("Cantidad 1", { exact: true }).fill("8");
+  const submit = page.getByRole("button", {
+    name: "Registrar venta en efectivo",
+    exact: true,
+  });
+  await expect(submit).toBeDisabled();
+  await page
+    .getByRole("checkbox", {
+      name: "Confirmo que cobré el efectivo y entregué los productos.",
+    })
+    .check();
+  await submit.click();
+  await expect(page.locator(".promotion-row")).toHaveCount(1);
+  await expect(page.locator(".promotion-row")).toContainText(
+    "Efectivo cobrado · Entregado",
+  );
+  await submit.click();
+  await expect(page.locator(".promotion-row")).toHaveCount(1);
+  expect(
+    await page.evaluate(
+      () =>
+        JSON.parse(localStorage.getItem("stylo.catalog-preview.v1")!).catalog
+          .products[0].variants[0].stock,
+    ),
+  ).toBe(0);
+  expect(
+    await page.evaluate(() => JSON.stringify({ ...localStorage })),
+  ).not.toContain("Venta ficticia");
+  await page.goto("/vista-previa/producto/proteina-de-prueba");
+  await expect(
+    page.getByRole("button", { name: "Sin stock", exact: true }),
+  ).toBeDisabled();
 });

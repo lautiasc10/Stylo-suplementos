@@ -1,4 +1,5 @@
 "use client";
+import { ProductPricing } from "@/components/commerce/product-pricing";
 
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
@@ -6,7 +7,6 @@ import { Icon } from "@/components/ui/icon";
 import { CategoryIllustration } from "@/components/storefront/category-illustration";
 import { ProductGallery, type GalleryImage } from "./product-gallery";
 import {
-  formatPrice,
   variantImages,
   variantLabel,
   type CatalogGroup,
@@ -120,16 +120,7 @@ export function ProductCard({
         >
           {variant.stock > 0 ? "Disponible" : "Sin stock"}
         </p>
-        <dl className="product-prices">
-          <div>
-            <dt>Precio de lista</dt>
-            <dd>{formatPrice(variant.listPrice)}</dd>
-          </div>
-          <div>
-            <dt>Efectivo / transferencia</dt>
-            <dd>{formatPrice(variant.cashPrice)}</dd>
-          </div>
-        </dl>
+        <ProductPricing variant={variant} />
         <Link href={href} className="product-card-action">
           Ver variantes <Icon name="arrow" />
         </Link>

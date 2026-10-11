@@ -17,7 +17,7 @@ En Fase 2, `catalog_snapshot` entrega lectura pública filtrada y la versión co
 
 La vista previa usa los mismos componentes y validadores con datos locales identificados como ficticios. Está limitada al ambiente y host locales, no sustituye al cliente Supabase ni permite acceso a datos o acciones admin.
 
-En [Fase 3](fase-3.md), el carrito guarda solo SKU/identificadores y cantidades en cookie HttpOnly; precios y disponibilidad se recalculan en servidor. La configuración de promociones usa revisión y RLS/MFA. PostgreSQL vuelve a calcular el precio y conserva una instantánea privada al registrar un retiro manual, con idempotencia y auditoría dentro de la transacción. Las compras online todavía no crean órdenes: lo harán tras el pago verificado en Fase 4. Carrito/checkout son dinámicos; la vista previa mantiene almacenamiento independiente y no persiste datos del comprador invitado.
+En [Fase 3](fase-3.md), el carrito guarda solo identificadores y cantidades en cookie HttpOnly; el servidor recalcula precios y disponibilidad. Promociones y cargas manuales usan revisión y RLS/MFA. PostgreSQL conserva una instantánea privada e idempotente al registrar retiros pendientes o ventas presenciales en efectivo. Estas últimas requieren confirmación de cobro/entrega y descuentan stock con movimiento, auditoría y actualización de revisión del catálogo en la misma transacción. Las compras online usan transferencia o Mercado Pago y todavía no crean órdenes: lo harán tras verificar el pago en Fase 4. Carrito/checkout son dinámicos; las ofertas se describen antes de agregar productos y la vista previa mantiene almacenamiento independiente, sin persistir datos del comprador.
 
 ## Autenticación
 

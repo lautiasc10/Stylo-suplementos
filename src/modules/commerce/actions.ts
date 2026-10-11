@@ -66,7 +66,7 @@ export async function reviewCheckout(form: FormData) {
   );
   const errors = validateGuest(input);
   const method = String(form.get("payment")) as PaymentMethod;
-  if (!["mercado-pago", "transferencia", "efectivo"].includes(method))
+  if (!["mercado-pago", "transferencia"].includes(method))
     errors.push("Elegí un medio de pago válido.");
   if (!quote.valid)
     errors.push("Revisá los productos y las cantidades del carrito.");
@@ -109,11 +109,19 @@ export async function createManualOrder(input: ManualOrderInput) {
   const { client } = await requireAdmin();
   const invalid = validateManualOrder(input);
   if (invalid) return { error: invalid };
-  const result = await client.rpc("create_manual_pickup_order", {
-    request_id: input.requestId,
-    items: input.items,
-    customer: input.customer,
-  });
+  const result = await client.rpc(
+    input.kind === "cash-sale"
+      ? "create_manual_cash_sale"
+      : "create_manual_pickup_order",
+    {
+      request_id: input.requestId,
+      items: input.items,
+      customer: input.customer,
+      ...(input.kind === "cash-sale"
+        ? { received: input.received === true }
+        : {}),
+    },
+  );
   if (result.error)
     return {
       error:
@@ -122,5 +130,6 @@ export async function createManualOrder(input: ManualOrderInput) {
           : "No pudimos crear el pedido. Revisá stock y configuración.",
     };
   revalidatePath("/admin/pedidos");
+  if (input.kind === "cash-sale") revalidatePath("/", "layout");
   return { order: result.data as { id: string; snapshot: { total: number } } };
 }

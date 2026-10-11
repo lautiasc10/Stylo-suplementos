@@ -11,7 +11,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
 import { demoCatalog } from "@/modules/catalog/demo";
-import { validateCatalog } from "@/modules/catalog/model";
+import { validateCatalog, type Catalog } from "@/modules/catalog/model";
 import {
   parseCart,
   quoteCart,
@@ -35,7 +35,7 @@ export function previewPromotions(): Promotion[] {
     throw new Error("Promociones de prueba inválidas.");
   return promotions;
 }
-export function previewCatalog() {
+export function previewCatalog(): Catalog {
   const source = localStorage.getItem("stylo.catalog-preview.v1");
   if (!source) return demoCatalog();
   const data = JSON.parse(source).catalog;
@@ -45,6 +45,8 @@ export function previewCatalog() {
 }
 const CartContext = createContext<{
   quote: CartQuote;
+  catalog: Catalog;
+  promotions: Promotion[];
   preview: boolean;
   busy: boolean;
   error: string;
@@ -64,15 +66,21 @@ export function useCart() {
 }
 export function CartProvider({
   initialQuote,
+  initialCatalog,
+  initialPromotions = [],
   children,
 }: {
   initialQuote: CartQuote;
+  initialCatalog: Catalog;
+  initialPromotions?: Promotion[];
   children: ReactNode;
 }) {
   const pathname = usePathname();
   const preview = pathname.startsWith("/vista-previa");
   const [realQuote, setRealQuote] = useState(initialQuote);
   const [localQuote, setLocalQuote] = useState(quoteCart(demoCatalog(), []));
+  const [localCatalog, setLocalCatalog] = useState(demoCatalog);
+  const [localPromotions, setLocalPromotions] = useState<Promotion[]>([]);
   const [busy, setBusy] = useState(false),
     [error, setError] = useState("");
   const lock = useRef(false);
@@ -89,7 +97,11 @@ export function CartProvider({
         const items = parseCart(
           JSON.parse(localStorage.getItem(previewKey) ?? "[]"),
         );
-        setLocalQuote(quoteCart(previewCatalog(), items, previewPromotions()));
+        const catalog = previewCatalog(),
+          promotions = previewPromotions();
+        setLocalCatalog(catalog);
+        setLocalPromotions(promotions);
+        setLocalQuote(quoteCart(catalog, items, promotions));
       } catch {
         setError("No pudimos recuperar el carrito de prueba.");
       }
@@ -175,6 +187,8 @@ export function CartProvider({
     <CartContext.Provider
       value={{
         quote,
+        catalog: preview ? localCatalog : initialCatalog,
+        promotions: preview ? localPromotions : initialPromotions,
         preview,
         busy,
         error,
@@ -199,7 +213,9 @@ export function CartProvider({
           <div className="cart-heading">
             <div>
               <p className="eyebrow">TU SELECCIÓN</p>
-              <h2 id="cart-title">Tu carrito</h2>
+              <h2 id="cart-title">
+                <Icon name="cart" /> Tu carrito
+              </h2>
             </div>
             <button
               type="button"
@@ -237,7 +253,7 @@ export function CartLink() {
         openCart();
       }}
     >
-      <Icon name="bag" />
+      <Icon name="cart" />
       <span className="cart-count" aria-hidden="true">
         {quote.quantity}
       </span>

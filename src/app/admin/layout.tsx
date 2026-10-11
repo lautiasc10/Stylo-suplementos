@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+import { AdminNavigation } from "@/components/admin/navigation";
 import "../commerce.css";
 
 export const dynamic = "force-dynamic";
@@ -31,9 +32,12 @@ export default function AdminLayout({
           Volver a la tienda
         </Link>
       </header>
-      <main id="contenido" className="admin-main">
-        {children}
-      </main>
+      <div className="admin-workspace">
+        <AdminNavigation />
+        <main id="contenido" className="admin-main">
+          {children}
+        </main>
+      </div>
     </div>
   );
 }

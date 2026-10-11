@@ -1,10 +1,10 @@
 "use client";
+import { ProductPricing } from "@/components/commerce/product-pricing";
 import { useState } from "react";
 import { CategoryIllustration } from "@/components/storefront/category-illustration";
 import { ProductGallery } from "./product-gallery";
 import { AddToCart } from "@/components/commerce/add-to-cart";
 import {
-  formatPrice,
   variantLabel,
   variantImages,
   type Product,
@@ -94,20 +94,7 @@ export function ProductDetail({
           >
             {variant.stock > 0 ? "Disponible" : "Sin stock"}
           </p>
-          <dl className="product-prices">
-            <div>
-              <dt>Precio de lista</dt>
-              <dd>{formatPrice(variant.listPrice)}</dd>
-            </div>
-            <div>
-              <dt>Efectivo / transferencia</dt>
-              <dd>{formatPrice(variant.cashPrice)}</dd>
-            </div>
-            <div>
-              <dt>SKU</dt>
-              <dd className="product-sku">{variant.sku}</dd>
-            </div>
-          </dl>
+          <ProductPricing variant={variant} showSku />
         </div>
         <p className="purchase-note">
           {preview

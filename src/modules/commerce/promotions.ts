@@ -101,7 +101,10 @@ export function validatePromotions(
 }
 
 export function priceLines(
-  lines: CartLine[],
+  lines: Pick<
+    CartLine,
+    "variantId" | "quantity" | "listPrice" | "cashPrice" | "available"
+  >[],
   promotions: Promotion[],
   method: PaymentMethod,
   now = Date.now(),

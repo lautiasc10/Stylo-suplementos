@@ -14,12 +14,13 @@ Catalog --> Checkout
 Checkout --> Actions : identificadores y cantidades
 Actions --> DB : lectura autoritativa
 Actions --> Promotions : mayor ahorro elegible
-Admin --> Actions : gestionar promociones / retiro manual
+Admin --> Actions : promociones / retiro / venta presencial cobrada
 Actions --> Orders : transacción privada + auditoría
 Checkout ..> Payments : todavía sin confirmación online
 note right of Orders
-  Pago pendiente / retiro pendiente.
-  Sin reserva ni descuento de stock.
+  Retiro pendiente: sin reserva ni descuento de stock.
+  Venta en efectivo: cobrada y entregada;
+  descuento de stock, revisión y auditoría atómicos.
   Sin acceso público ni edición de instantánea.
 end note
 @enduml

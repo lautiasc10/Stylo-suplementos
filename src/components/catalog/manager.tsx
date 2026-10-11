@@ -199,15 +199,14 @@ export function CatalogManager({
     }
   }
   const groups = tab === "brands" ? catalog.brands : catalog.categories;
-  const lowStock = publicCatalog(catalog).products
-    .flatMap((product) =>
-      product.variants
-        .filter(
-          (variant) =>
-            variant.active && variant.stock <= (catalog.lowStockThreshold ?? 0),
-        )
-        .map((variant) => ({ product, variant })),
-    );
+  const lowStock = publicCatalog(catalog).products.flatMap((product) =>
+    product.variants
+      .filter(
+        (variant) =>
+          variant.active && variant.stock <= (catalog.lowStockThreshold ?? 0),
+      )
+      .map((variant) => ({ product, variant })),
+  );
   return (
     <div className="catalog-manager">
       <nav className="manager-tabs" aria-label="Gestión del catálogo">
@@ -255,7 +254,11 @@ export function CatalogManager({
               </button>
             </div>
             <div className="manager-table-wrap">
-            <table className="manager-table products-table">
+              <table
+                className="manager-table products-table"
+                role="table"
+                aria-label="Productos y variantes"
+              >
                 <thead>
                   <tr>
                     <th>Producto</th>
@@ -265,10 +268,10 @@ export function CatalogManager({
                     <th>Acciones</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody role="rowgroup">
                   {catalog.products.map((product) => (
-                    <tr key={product.id}>
-                      <td>
+                    <tr key={product.id} role="row">
+                      <td role="cell" data-label="Producto">
                         {product.name}
                         <small>
                           {
@@ -278,24 +281,29 @@ export function CatalogManager({
                           }
                         </small>
                       </td>
-                      <td>{product.active ? "Visible" : "Oculto"}</td>
-                      <td>{product.variants.length}</td>
-                      <td>
+                      <td role="cell" data-label="Estado">
+                        {product.active ? "Visible" : "Oculto"}
+                      </td>
+                      <td role="cell" data-label="Variantes">
+                        {product.variants.length}
+                      </td>
+                      <td role="cell" data-label="Stock total">
                         {product.variants.reduce(
                           (sum, item) => sum + item.stock,
                           0,
                         )}
                       </td>
-                      <td>
+                      <td role="cell" data-label="Acciones">
                         <button
                           type="button"
                           className="text-link"
+                          aria-label={`Editar ${product.name}`}
                           onClick={() => {
                             setDraft(structuredClone(product));
                             setMessage("");
                           }}
                         >
-                          Editar {product.name}
+                          Editar
                         </button>
                         <button
                           type="button"

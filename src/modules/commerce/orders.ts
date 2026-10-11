@@ -5,10 +5,15 @@ export type ManualOrderInput = {
   requestId: string;
   items: CartItem[];
   customer: { name: string; phone: string };
+  kind?: "pickup" | "cash-sale";
+  received?: boolean;
 };
 export function validateManualOrder(input: ManualOrderInput) {
   if (
     !input ||
+    (input.kind !== undefined &&
+      !["pickup", "cash-sale"].includes(input.kind)) ||
+    (input.kind === "cash-sale" && input.received !== true) ||
     !/^[0-9a-f-]{36}$/i.test(input.requestId) ||
     typeof input.customer?.name !== "string" ||
     !input.customer.name.trim() ||
@@ -33,8 +38,9 @@ export function previewManualOrder(
   return {
     id: input.requestId,
     source: "manual" as const,
-    paymentStatus: "pending" as const,
-    fulfillmentStatus: "pending_pickup" as const,
+    paymentStatus: input.kind === "cash-sale" ? "paid" : "pending",
+    fulfillmentStatus:
+      input.kind === "cash-sale" ? "delivered" : "pending_pickup",
     customer: { ...input.customer },
     total: merchandiseTotal(quote, "efectivo"),
     snapshot: structuredClone(quote),

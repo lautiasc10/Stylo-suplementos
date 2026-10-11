@@ -13,6 +13,7 @@ export function AddToCart({
   const { busy, error, preview, change } = useCart();
   return (
     <form
+      className="add-to-cart"
       action={updateCartAndRedirect}
       onSubmit={(event) => {
         event.preventDefault();

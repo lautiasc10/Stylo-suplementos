@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { Icon } from "@/components/ui/icon";
 import { formatPrice } from "@/modules/catalog/model";
 import { updateCartAndRedirect } from "@/modules/commerce/actions";
 import { useCart } from "./cart-provider";
@@ -55,18 +56,25 @@ export function CartContents() {
                     <strong>{line.name}</strong>
                   )}
                   <p>{line.label}</p>
-                  <p className="cart-sku">{line.sku}</p>
+                  <p className="cart-sku">SKU {line.sku}</p>
                 </div>
                 <dl className="cart-line-prices">
                   <div>
-                    <dt>Lista</dt>
+                    <dt>Mercado Pago</dt>
                     <dd>{formatPrice(line.listPrice * line.quantity)}</dd>
                   </div>
                   <div>
-                    <dt>Efectivo / transferencia</dt>
+                    <dt>Transferencia</dt>
                     <dd>{formatPrice(line.cashPrice * line.quantity)}</dd>
                   </div>
                 </dl>
+                {(quote.listPricing.discount > 0 ||
+                  quote.cashPricing.discount > 0) && (
+                  <p className="cart-price-note">
+                    Importes antes de promociones. El ahorro está incluido en el
+                    resumen.
+                  </p>
+                )}
                 <div className="cart-line-actions">
                   <form
                     action={updateCartAndRedirect}
@@ -152,35 +160,37 @@ export function CartContents() {
               </li>
             ))}
           </ul>
-          <div className="cart-summary">
-            <p>Subtotal de productos</p>
+          <aside className="cart-summary" aria-label="Resumen del carrito">
+            <h2>Resumen de tu selección</h2>
             <dl>
               <div>
-                <dt>Precio de lista</dt>
+                <dt>Mercado Pago</dt>
                 <dd>{formatPrice(quote.listPricing.total)}</dd>
               </div>
               <div>
-                <dt>Efectivo / transferencia</dt>
+                <dt>Transferencia</dt>
                 <dd>{formatPrice(quote.cashPricing.total)}</dd>
               </div>
             </dl>
             <p>
-              El carrito no reserva stock. Disponibilidad y precios se revisan
-              antes de confirmar.
+              Precios según el medio de pago. Revisamos stock antes de
+              confirmar.
             </p>
             {quote.listPricing.promotion && (
-              <p>
-                Lista: {quote.listPricing.promotion} · Ahorro{" "}
+              <p className="cart-saving">
+                Mercado Pago: {quote.listPricing.promotion} · Ahorro{" "}
                 {formatPrice(quote.listPricing.discount)}
               </p>
             )}
             {quote.cashPricing.promotion && (
-              <p>
-                Efectivo / transferencia: {quote.cashPricing.promotion} · Ahorro{" "}
+              <p className="cart-saving">
+                Transferencia: {quote.cashPricing.promotion} · Ahorro{" "}
                 {formatPrice(quote.cashPricing.discount)}
               </p>
             )}
-            <p>El costo de entrega se definirá en el checkout.</p>
+            <p className="cart-help">
+              Entrega a definir en el checkout. El carrito no reserva stock.
+            </p>
             {quote.valid && (
               <Link
                 className="button button-gold"
@@ -190,7 +200,7 @@ export function CartContents() {
                 Continuar al checkout
               </Link>
             )}
-          </div>
+          </aside>
         </>
       )}
     </div>
@@ -201,7 +211,9 @@ export function CartPage() {
   return (
     <>
       <p className="eyebrow">TU SELECCIÓN</p>
-      <h1>Tu carrito</h1>
+      <h1 className="cart-page-title">
+        <Icon name="cart" /> Tu carrito
+      </h1>
       <div className="cart-page">
         <CartContents />
       </div>
