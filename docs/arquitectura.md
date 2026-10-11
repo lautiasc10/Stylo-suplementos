@@ -17,6 +17,8 @@ En Fase 2, `catalog_snapshot` entrega lectura pública filtrada y la versión co
 
 La vista previa usa los mismos componentes y validadores con datos locales identificados como ficticios. Está limitada al ambiente y host locales, no sustituye al cliente Supabase ni permite acceso a datos o acciones admin.
 
+En [Fase 3](fase-3.md), el carrito guarda solo SKU/identificadores y cantidades en cookie HttpOnly; precios y disponibilidad se recalculan en servidor. La configuración de promociones usa revisión y RLS/MFA. PostgreSQL vuelve a calcular el precio y conserva una instantánea privada al registrar un retiro manual, con idempotencia y auditoría dentro de la transacción. Las compras online todavía no crean órdenes: lo harán tras el pago verificado en Fase 4. Carrito/checkout son dinámicos; la vista previa mantiene almacenamiento independiente y no persiste datos del comprador invitado.
+
 ## Autenticación
 
 Sesiones solo en servidor mediante cookies HttpOnly. `proxy.ts` renueva la sesión en rutas admin y establece respuestas privadas. La autorización efectiva se repite en el módulo admin mediante `getUser`, pertenencia a `admin_users` y claims verificados `aal2`. El proxy no sustituye la autorización de cada operación.

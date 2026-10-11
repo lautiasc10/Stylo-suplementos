@@ -52,6 +52,7 @@ export function CatalogPreview({
   function store(next: PreviewState) {
     try {
       localStorage.setItem(storageKey, JSON.stringify(next));
+      window.dispatchEvent(new Event("stylo-preview-change"));
       setState(next);
       return {};
     } catch {

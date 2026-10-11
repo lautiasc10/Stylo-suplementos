@@ -1,0 +1,25 @@
+@startuml
+title STYLO — Fase 3 implementada y límite con Fase 4
+actor Comprador
+actor "Administrador con MFA" as Admin
+component "Catálogo / Ficha" as Catalog
+component "Carrito / Checkout\nrevisión de datos" as Checkout
+component "Acciones de servidor\nvalidación de stock y precio" as Actions
+database "Catálogo" as DB
+database "Promociones\nrevisión + auditoría" as Promotions
+database "Pedidos manuales privados\ninstantánea e idempotencia" as Orders
+component "Pago verificado + entrega\nFase 4 pendiente" as Payments
+Comprador --> Catalog
+Catalog --> Checkout
+Checkout --> Actions : identificadores y cantidades
+Actions --> DB : lectura autoritativa
+Actions --> Promotions : mayor ahorro elegible
+Admin --> Actions : gestionar promociones / retiro manual
+Actions --> Orders : transacción privada + auditoría
+Checkout ..> Payments : todavía sin confirmación online
+note right of Orders
+  Pago pendiente / retiro pendiente.
+  Sin reserva ni descuento de stock.
+  Sin acceso público ni edición de instantánea.
+end note
+@enduml

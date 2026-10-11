@@ -78,4 +78,4 @@ Las fotos se suben antes de guardar su asociación. Cancelar una edición o quit
 - Verificar Auth/MFA reales, lecturas públicas, guardados e importaciones desde dos sesiones, políticas RLS y subidas de Storage en ese proyecto. PGlite y la vista previa local no acreditan esta integración.
 - Validar la interfaz con el usuario y cargar fotos, marcas, SKU, precios y existencias reales confirmados por el negocio.
 
-No hay carrito, reservas, pedidos ni cobros en esta entrega. El descuento de stock por pago corresponde a Fase 4. La Fase 3 requiere su validación y resolver las reglas comerciales pendientes; la cinemática del león continúa reservada a la etapa posterior.
+No hay carrito, reservas, pedidos ni cobros en la entrega de Fase 2. El usuario autorizó continuar [Fase 3 de comercio](fase-3.md) el 11 de octubre, en una rama separada. El descuento de stock por pago corresponde a Fase 4; la cinemática del león continúa reservada a la etapa posterior.

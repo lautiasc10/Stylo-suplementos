@@ -12,6 +12,7 @@ Complemento de `especificaciones_STYLO_SUPLEMENTOS.md` v1.0. Diagramas editables
 | 06_estados_pedido.puml | Máquinas separadas de pago y entrega |
 | 07_promociones.puml | Mejor descuento sin acumulación |
 | 08_catalogo_fase_2.puml | Esquema implementado de catálogo, SKU y auditorías de Fase 2 |
+| 09_comercio_fase_3.puml | Carrito, precios y retiros manuales implementados; límite con pagos de Fase 4 |
 
 ## Reglas para Codex
 1. Leer primero las especificaciones y el manual de marca; la decisión del stack corresponde a Codex para aprobación del cliente.

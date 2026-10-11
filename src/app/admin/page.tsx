@@ -23,6 +23,12 @@ export default async function AdminPage() {
         <Link className="button button-gold" href="/admin/catalogo">
           Gestionar catálogo
         </Link>
+        <Link className="button button-outline" href="/admin/promociones">
+          Gestionar promociones
+        </Link>
+        <Link className="button button-outline" href="/admin/pedidos">
+          Pedidos y retiros manuales
+        </Link>
       </div>
     </section>
   );

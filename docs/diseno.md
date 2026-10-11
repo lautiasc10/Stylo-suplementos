@@ -52,6 +52,6 @@ La ficha conserva selección manual de variante, miniaturas y navegación anteri
 
 Las fotos reales se cargan desde gestión. Los dibujos de categorías son alternativas explícitas cuando no hay fotografía; nunca se presentan como producto comercial real. La vista previa local identifica sus datos ficticios en todo momento. La comparación de precios del importador muestra importes anteriores y resultantes antes de guardar.
 
-Fases 1 y 2 siguen pendientes de validación visual del usuario e integración externa. Checkout corresponde a Fase 3. Los textos legales y datos de contacto requieren contenido confirmado antes del lanzamiento. No crear enlaces vacíos para simular su entrega.
+La [Fase 3](fase-3.md), autorizada el 11 de octubre, incorpora acceso al carrito en cabecera, drawer lateral nativo y checkout invitado de revisión. Conserva negro/dorado, tokens y logos, con cantidades de 48 px, mensajes explícitos y resumen de importes por medio de pago. El modal contiene el foco, cierra con Escape, devuelve el foco al abrirlo y respeta movimiento reducido. Carrito y formularios se adaptan entre 320 y 1440 px. La selección de datos/contacto no confirma pedidos ni cobros; entrega y pagos requieren integración posterior. Gestión de promociones y retiros manuales usa formularios agrupados con precios finales configurables. Los textos legales y datos de contacto requieren contenido confirmado antes del lanzamiento.
 
 Scroll World queda reservado para la segunda etapa. Esta revisión no agrega planes pagos, cuentas, dominio ni funcionalidades comerciales.

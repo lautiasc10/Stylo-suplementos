@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { CategoryIllustration } from "@/components/storefront/category-illustration";
 import { ProductGallery } from "./product-gallery";
+import { AddToCart } from "@/components/commerce/add-to-cart";
 import {
   formatPrice,
   variantLabel,
@@ -113,9 +114,11 @@ export function ProductDetail({
             ? "Vista previa: precios y existencias ficticios. No se realizan compras."
             : "La compra online estará disponible próximamente."}
         </p>
-        <button className="button button-gold" disabled>
-          {variant.stock === 0 ? "Sin stock" : "Compra próximamente"}
-        </button>
+        <AddToCart
+          variantId={variant.id}
+          stock={variant.stock}
+          slug={product.slug}
+        />
       </div>
     </div>
   );

@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "@/components/ui/icon";
 import { categories } from "@/modules/catalog/categories";
+import { CartLink } from "@/components/commerce/cart-provider";
 
 const links = [
   { href: "/catalogo", label: "Catálogo" },
@@ -69,6 +70,7 @@ export function Header({
             ))}
           </nav>
           <div className="header-actions">
+            <CartLink />
             <Link href="/catalogo" className="header-catalog-link">
               Explorar tienda
               <Icon name="arrow" />
