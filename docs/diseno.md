@@ -1,6 +1,6 @@
 # Diseño de STYLO
 
-Dirección de Fase 1: tienda deportiva con portada centrada, categorías ilustradas y contraste negro, dorado y blanco. Acción principal actual: explorar categorías. La compra se habilitará cuando exista catálogo comercial real.
+Dirección de Fases 1 y 2: tienda deportiva con portada centrada, categorías ilustradas y contraste negro, dorado y blanco. Acción principal actual: explorar categorías y fichas. La compra se habilitará en sus fases comerciales.
 
 ## Guía aplicada
 
@@ -16,7 +16,7 @@ Se usa [landing-page-design de AI Design Skills](https://github.com/elayadesign/
 | Movimiento | Curva común, aparición de categorías, transformación del menú y revelado de palabras de marca. |
 | Iconografía | Siete SVG Phosphor regular locales; licencia MIT conservada en `docs/licenses`. |
 
-Los tokens viven en `src/app/globals.css`; la composición de tienda, en `src/app/storefront.css`. Usar esos valores al extender componentes. Los tamaños de ilustraciones y breakpoints son medidas de composición, no pasos nuevos de espaciado o tipografía.
+Los tokens viven en `src/app/globals.css`; la composición de tienda, en `src/app/storefront.css`, y los componentes de catálogo, en `src/app/catalog.css`. Usar esos valores al extender componentes. Los tamaños de ilustraciones y breakpoints son medidas de composición, no pasos nuevos de espaciado o tipografía.
 
 ## Adaptaciones de marca y compra
 
@@ -34,6 +34,10 @@ Verificación: navegación en Chromium de escritorio y móvil, teclado, cambio d
 
 ## Pendientes por fase
 
-Fase 1 sigue pendiente de validación visual del usuario e integración externa. Los estados de carga comerciales, imágenes de productos, carruseles y checkout corresponden a las fases autorizadas de catálogo y compra. Los textos legales y datos de contacto requieren contenido confirmado antes del lanzamiento. No crear enlaces vacíos para simular su entrega.
+Fase 2 incorpora tarjetas blancas para separar imagen y precios, filtros GET con etiquetas, ficha con galería y variante seleccionable, estados vacío/error/agotado y esqueleto de carga que respeta movimiento reducido. La gestión usa formularios agrupados y tablas con desplazamiento contenido en móvil; bloquea controles mientras guarda o sube archivos. No agrega nuevas bibliotecas de animación.
+
+Las fotos reales se cargan desde gestión. Los dibujos de categorías son alternativas explícitas cuando no hay fotografía; nunca se presentan como producto comercial real. La vista previa local identifica sus datos ficticios en todo momento. La comparación de precios del importador muestra importes anteriores y resultantes antes de guardar.
+
+Fases 1 y 2 siguen pendientes de validación visual del usuario e integración externa. Checkout corresponde a Fase 3. Los textos legales y datos de contacto requieren contenido confirmado antes del lanzamiento. No crear enlaces vacíos para simular su entrega.
 
 Scroll World queda reservado para la segunda etapa. Esta revisión no agrega planes pagos, cuentas, dominio ni funcionalidades comerciales.

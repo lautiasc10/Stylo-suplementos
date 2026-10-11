@@ -41,8 +41,8 @@ La etiqueta `fase-1-base` identifica esta entrega revisable con sus instruccione
 - Validar credenciales reales de pruebas, enrolamiento TOTP, cierre de sesión y políticas RLS.
 - Validar la dirección visual con el usuario.
 
-La entrega local no acredita despliegue remoto ni autenticación remota probada. No dar por cerrados esos criterios hasta verificarlos. Fase 2 necesita aprobación nueva; no hay carrito, pedidos, pagos, promociones ni stock comercial implementados.
+La entrega local no acredita despliegue remoto ni autenticación remota probada. No dar por cerrados esos criterios hasta verificarlos. El usuario autorizó continuar [Fase 2 de catálogo](fase-2.md) sin Supabase mientras crea la cuenta junto al dueño. No hay carrito, pedidos, pagos ni promociones operativos.
 
 ## Bloqueantes posteriores
 
-Se mantienen PEN-01 a PEN-21 de las especificaciones. Resolver PEN-17 y PEN-19 antes del inventario/carga masiva; PEN-04 a PEN-08 antes de reglas comerciales; PEN-01 a PEN-03 antes de logística; contenidos, legales y cuentas antes de lanzamiento. Dominio deliberadamente aplazado.
+Las decisiones de PEN-17, PEN-19 y la parte de catálogo de PEN-05 están confirmadas en [Fase 2](fase-2.md). Mantener los demás pendientes: PEN-04 a PEN-08 antes de reglas comerciales; PEN-01 a PEN-03 antes de logística; contenidos, legales y cuentas antes de lanzamiento. Dominio deliberadamente aplazado.

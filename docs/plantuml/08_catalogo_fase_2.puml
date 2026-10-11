@@ -1,0 +1,90 @@
+@startuml
+title STYLO — esquema implementado de catálogo (Fase 2)
+hide circle
+skinparam linetype ortho
+entity catalog_state {
+  * id : boolean = true <<PK>>
+  revision : integer
+  low_stock_threshold : integer
+}
+entity catalog_brands {
+  * id : uuid <<PK>>
+  slug : text <<UNIQUE>>
+  name : text
+  logo : text nullable
+  active : boolean
+  sort_order : integer
+}
+entity catalog_categories {
+  * id : uuid <<PK>>
+  slug : text <<UNIQUE>>
+  name : text
+  detail : text
+  active : boolean
+  sort_order : integer
+}
+entity catalog_products {
+  * id : uuid <<PK>>
+  slug : text <<UNIQUE>>
+  brand_id : uuid <<FK>>
+  active : boolean
+  document : jsonb
+}
+entity catalog_variants {
+  * id : uuid <<PK>>
+  product_id : uuid <<FK>>
+  sku : text <<UNIQUE>>
+  list_price : bigint (centavos)
+  cash_price : bigint (centavos)
+  stock : integer >= 0
+  active : boolean
+  document : jsonb
+}
+entity catalog_images {
+  * id : uuid <<PK>>
+  product_id : uuid <<FK>>
+  variant_id : uuid nullable <<FK>>
+  path : text
+  alt : text
+  position : integer
+}
+entity inventory_movements {
+  * id : bigint <<PK>>
+  variant_id : uuid <<FK>>
+  quantity_delta : integer
+  previous_quantity : integer
+  new_quantity : integer
+  admin_id : uuid <<FK>>
+  reason : text
+  created_at : timestamptz
+}
+entity catalog_price_changes {
+  * id : bigint <<PK>>
+  variant_id : uuid <<FK>>
+  previous_list_price : bigint nullable
+  previous_cash_price : bigint nullable
+  new_list_price : bigint
+  new_cash_price : bigint
+  admin_id : uuid <<FK>>
+  created_at : timestamptz
+}
+catalog_brands ||--o{ catalog_products
+catalog_categories }o..o{ catalog_products : document.categoryIds
+catalog_products ||--|{ catalog_variants
+catalog_products ||--o{ catalog_images
+catalog_variants |o--o{ catalog_images : FK compuesta variante/producto
+catalog_variants ||--o{ inventory_movements
+catalog_variants ||--o{ catalog_price_changes
+note bottom of catalog_state
+save_catalog: requiere admin/MFA, bloquea revisión,
+guarda y audita todo dentro de una transacción.
+catalog_snapshot: lectura pública filtrada;
+lectura completa únicamente para admin/MFA.
+Sin escritura directa de clientes a tablas.
+end note
+note right of catalog_products
+document contiene nombre, descripción, categorías,
+etiquetas, destacado, SEO y versión.
+No se destruyen registros al ocultarlos.
+end note
+@enduml

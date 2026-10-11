@@ -1,4 +1,4 @@
-# Revisión de dependencias de Fase 1
+# Revisión de dependencias
 
 Consulta del registro npm el 10 de octubre de 2026, antes de instalar. Versiones fijadas en package.json y resolución transitiva en package-lock.json.
 
@@ -13,3 +13,9 @@ Se incorporaron siete paths SVG de Phosphor Icons regular, después de revisar s
 PGlite 0.5.8 (Apache-2.0) se usa únicamente en tests: PostgreSQL en memoria para verificar restricciones, migración y RLS, con helpers mínimos de Auth/Storage. No es una dependencia del runtime ni sustituye la prueba contra Supabase real.
 
 Ejecutar npm audit al cambiar dependencias y mantener actualizaciones de seguridad. Una auditoría sin alertas conocidas no equivale a una garantía de ausencia de vulnerabilidades.
+
+## Incorporaciones de Fase 2
+
+`read-excel-file` 9.3.12, MIT, Node >=18: lectura de `.xlsx`, después de consultar registro npm, dependencias y [documentación del proyecto](https://github.com/catamphetamine/read-excel-file). Se importa bajo demanda con la entrada `universal` y la API `readSheet`. Los números se reciben como texto para convertir precios a centavos sin operaciones de coma flotante. La aplicación comprueba límites del archivo y del directorio ZIP antes de leerlo; no se ejecutan fórmulas. La lectura funciona en las pruebas Node y en el navegador compilado.
+
+`prettier` 3.9.10, MIT, Node >=14: herramienta de desarrollo para dar formato legible a los componentes y reglas nuevas; no forma parte del runtime. Versiones y licencias consultadas en el registro npm antes de instalar. Ambas incorporaciones se instalaron con scripts deshabilitados. La auditoría posterior de 100 paquetes no reportó vulnerabilidades conocidas.

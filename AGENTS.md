@@ -4,7 +4,7 @@ Para cambios de interfaz, leer `docs/diseno.md` y aplicar la adaptación de AI D
 
 El manual de marca en `docs/Manual_de_Marca_STYLO_SUPLEMENTOS_v1_1.pdf` y las instrucciones del usuario prevalecen sobre las recomendaciones externas. Conservar los logos oficiales y no inventar datos comerciales.
 
-Consultar `docs/fase-1.md` para el alcance y pendientes. Trabajar sin gastos ni dominio contratado. No avanzar a otra fase comercial sin la validación acordada con el usuario.
+Consultar `docs/fase-1.md` y `docs/fase-2.md` para el alcance y pendientes. Fase 2 está autorizada sin Supabase; la vista previa local no habilita administración real. Trabajar sin gastos ni dominio contratado. No avanzar a Fase 3 ni integrar la rama de Fase 2 sin la validación acordada con el usuario.
 
 En PowerShell usar `npm.cmd`. Verificar la compilación y los recorridos de navegador afectados; las preferencias de movimiento reducido y la navegación sin JavaScript deben conservarse.
 

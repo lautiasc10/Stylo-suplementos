@@ -11,6 +11,7 @@ Complemento de `especificaciones_STYLO_SUPLEMENTOS.md` v1.0. Diagramas editables
 | 05_transferencia_efectivo.puml | Pagos manuales, auditoría y reservas |
 | 06_estados_pedido.puml | Máquinas separadas de pago y entrega |
 | 07_promociones.puml | Mejor descuento sin acumulación |
+| 08_catalogo_fase_2.puml | Esquema implementado de catálogo, SKU y auditorías de Fase 2 |
 
 ## Reglas para Codex
 1. Leer primero las especificaciones y el manual de marca; la decisión del stack corresponde a Codex para aprobación del cliente.
@@ -18,6 +19,6 @@ Complemento de `especificaciones_STYLO_SUPLEMENTOS.md` v1.0. Diagramas editables
 3. El esquema ER es conceptual: cambiar nombres, claves y relaciones según arquitectura justificada, preservar transacciones e historial inmutable de precios.
 4. No implementar pagos/stock/logística sin resolver bloqueantes P0 correspondientes.
 5. Producción, staging y desarrollo separados; ningún secreto en frontend ni en diagramas.
-6. La integración de la animación del león es fase 2 y requiere uso aprobado de activos oficiales de marca.
+6. La integración de la animación del león corresponde a la etapa posterior, distinta de Fase 2 de catálogo, y requiere uso aprobado de activos oficiales de marca.
 
 Para renderizar: instalar PlantUML y ejecutar `plantuml *.puml` en esta carpeta, o usar previsualización PlantUML en editor compatible.

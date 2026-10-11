@@ -6,12 +6,16 @@ Fecha: 10 de octubre de 2026. Aprobado: Next.js + TypeScript, Vercel, Supabase, 
 
 - `src/app`: rutas, layouts, endpoints y composición.
 - `src/components`: interfaz reutilizable y marca.
-- `src/modules`: dominio por catálogo, inventario, precios, pedidos, pagos, logística, contenido y comunicaciones según se implementen. Solo catálogo estático y acceso admin en Fase 1.
+- `src/modules`: dominio por catálogo, inventario, precios, pedidos, pagos, logística, contenido y comunicaciones según se implementen. Fase 1 incorpora acceso admin; Fase 2, catálogo e inventario por SKU.
 - `src/lib`: configuración validada, adaptadores y clientes de infraestructura.
 - `supabase/migrations`: SQL versionado; no se aplican cambios remotos automáticamente.
 - `tests`: reglas de configuración y recorridos reales del navegador.
 
 Una tienda, un administrador. No hay multitenancy ni backend independiente. El catálogo y artículos tendrán caché invalidable; checkout y administración serán privados y dinámicos. Las transacciones críticas de inventario/pagos se incorporarán en sus fases, después de aprobar reservas y precios.
+
+En Fase 2, `catalog_snapshot` entrega lectura pública filtrada y la versión completa solo al admin con MFA. `save_catalog` guarda producto/variantes/imágenes y auditorías dentro de una transacción, bloqueando la fila de revisión para rechazar sesiones desactualizadas. Las tablas no permiten escrituras directas a clientes. `getCatalog` comparte la lectura dentro de la petición; las acciones invalidan las rutas después de guardar. Storage conserva archivos con nombres UUID y rutas por producto/marca. Ver [esquema implementado](plantuml/08_catalogo_fase_2.puml).
+
+La vista previa usa los mismos componentes y validadores con datos locales identificados como ficticios. Está limitada al ambiente y host locales, no sustituye al cliente Supabase ni permite acceso a datos o acciones admin.
 
 ## Autenticación
 
