@@ -1,5 +1,54 @@
 import { test, expect } from "@playwright/test";
 import { importColumns } from "../../src/modules/catalog/import";
+import { demoCatalog } from "../../src/modules/catalog/demo";
+import { readFileSync } from "node:fs";
+
+function galleryFixture() {
+  const catalog = demoCatalog();
+  const product = catalog.products[0];
+  const [chocolate, vanilla] = product.variants;
+  const paths = [
+    "00000000-0000-4000-8000-000000000201.webp",
+    "00000000-0000-4000-8000-000000000202.webp",
+    "00000000-0000-4000-8000-000000000203.webp",
+  ].map((name) => `${product.id}/${name}`);
+  product.images = [
+    {
+      id: "00000000-0000-4000-8000-000000000101",
+      path: paths[0],
+      alt: "Chocolate frente",
+      variantId: chocolate.id,
+      position: 0,
+    },
+    {
+      id: "00000000-0000-4000-8000-000000000102",
+      path: paths[1],
+      alt: "Chocolate dorso",
+      variantId: chocolate.id,
+      position: 1,
+    },
+    {
+      id: "00000000-0000-4000-8000-000000000103",
+      path: paths[2],
+      alt: "Vainilla frente",
+      variantId: vanilla.id,
+      position: 2,
+    },
+  ];
+  // Existing local files are test payloads only, never added to the demo catalog.
+  const sources = [
+    "logo-principal.webp",
+    "logo-horizontal.webp",
+    "logo-completo.webp",
+  ];
+  const images = Object.fromEntries(
+    paths.map((path, index) => [
+      path,
+      `data:image/webp;base64,${readFileSync(`public/branding/${sources[index]}`).toString("base64")}`,
+    ]),
+  );
+  return { catalog, images };
+}
 
 const importRow = [
   "proteina-de-prueba",
@@ -29,6 +78,7 @@ test("catálogo filtra por la misma variante y conserva agotados", async ({
   await page.goto("/vista-previa");
   await expect(page.locator(".product-card")).toHaveCount(4);
   await page.getByLabel("Sabor", { exact: true }).selectOption("Vainilla");
+  await page.getByText("Precio y disponibilidad").click();
   await page.getByLabel("Disponibilidad").selectOption("in-stock");
   await page.getByRole("button", { name: "Aplicar filtros" }).click();
   await expect(
@@ -258,4 +308,147 @@ test("filtros públicos conservan navegación sin JavaScript", async ({
   } finally {
     await context.close();
   }
+});
+
+test("la franja combina categoría, marca, sabor y orden y permite quitar un filtro", async ({
+  page,
+}) => {
+  await page.goto("/vista-previa");
+  await page.getByLabel("Categoría", { exact: true }).selectOption("proteinas");
+  await page
+    .getByLabel("Marca", { exact: true })
+    .selectOption("marca-de-prueba-a");
+  await page.getByLabel("Sabor", { exact: true }).selectOption("Chocolate");
+  await page.getByLabel("Ordenar", { exact: true }).selectOption("price-desc");
+  await page.getByRole("button", { name: "Aplicar filtros" }).click();
+  await expect(page.locator(".product-card")).toHaveCount(1);
+  const query = new URL(page.url()).searchParams;
+  expect(Object.fromEntries(query)).toMatchObject({
+    categoria: "proteinas",
+    marca: "marca-de-prueba-a",
+    sabor: "Chocolate",
+    orden: "price-desc",
+  });
+  await page
+    .getByRole("link", { name: "Quitar filtro Chocolate", exact: true })
+    .click();
+  await expect(page.getByLabel("Sabor", { exact: true })).toHaveValue("");
+  await expect(page.getByLabel("Marca", { exact: true })).toHaveValue(
+    "marca-de-prueba-a",
+  );
+  await expect(page.getByLabel("Categoría", { exact: true })).toHaveValue(
+    "proteinas",
+  );
+  await expect(page.getByLabel("Ordenar", { exact: true })).toHaveValue(
+    "price-desc",
+  );
+  const bounds = await page
+    .getByRole("button", { name: "Aplicar filtros" })
+    .boundingBox();
+  expect(bounds!.width).toBeLessThan(160);
+  expect(bounds!.height).toBeGreaterThanOrEqual(48);
+});
+
+test("las imágenes de una variante cambian sin modificar precios ni mezclar sabores", async ({
+  page,
+}) => {
+  await page.addInitScript(
+    (fixture) =>
+      localStorage.setItem("stylo.catalog-preview.v1", JSON.stringify(fixture)),
+    galleryFixture(),
+  );
+  await page.goto("/vista-previa?q=proteina");
+  const card = page.locator(".product-card");
+  await expect(
+    card.getByRole("img", { name: "Chocolate frente", exact: true }),
+  ).toBeVisible();
+  await card
+    .getByRole("button", { name: "Siguiente imagen", exact: true })
+    .click();
+  await expect(
+    card.getByRole("img", { name: "Chocolate dorso", exact: true }),
+  ).toBeVisible();
+  await expect(card).toContainText("45.000,00");
+  await expect(card).toContainText("Chocolate · 1 kg");
+  await expect(
+    card.getByRole("img", { name: "Vainilla frente", exact: true }),
+  ).toHaveCount(0);
+  await card
+    .getByRole("button", { name: "Imagen anterior", exact: true })
+    .click();
+  await expect(
+    card.getByRole("img", { name: "Chocolate frente", exact: true }),
+  ).toBeVisible();
+  await card.getByRole("link", { name: "Ver variantes", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Ver Chocolate dorso", exact: true })
+    .click();
+  await expect(
+    page.getByRole("img", { name: "Chocolate dorso", exact: true }),
+  ).toBeVisible();
+  await page
+    .getByLabel("Presentación", { exact: true })
+    .selectOption({ label: "Vainilla · 1 kg · Envase · Sin stock" });
+  await expect(
+    page.getByRole("img", { name: "Vainilla frente", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("img", { name: "Chocolate dorso", exact: true }),
+  ).toHaveCount(0);
+  await expect(page.locator(".product-sku")).toHaveText("DEMO-1-B");
+});
+
+test("la galería pausa al interactuar y responde al movimiento reducido en vivo", async ({
+  page,
+}) => {
+  await page.clock.install();
+  await page.addInitScript(
+    (fixture) =>
+      localStorage.setItem("stylo.catalog-preview.v1", JSON.stringify(fixture)),
+    galleryFixture(),
+  );
+  await page.goto("/vista-previa?q=proteina");
+  const gallery = page.locator(".product-image-gallery");
+  await gallery.scrollIntoViewIfNeeded();
+  await expect(
+    page.getByRole("img", { name: "Chocolate frente", exact: true }),
+  ).toBeVisible();
+  await page.mouse.move(0, 0);
+  await page.clock.runFor(5800);
+  await expect(
+    page.getByRole("img", { name: "Chocolate dorso", exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", {
+      name: "Pausar cambio automático de imágenes",
+      exact: true,
+    })
+    .click();
+  await page.getByRole("heading", { level: 1 }).click();
+  await page.clock.runFor(11000);
+  await expect(
+    page.getByRole("img", { name: "Chocolate dorso", exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", {
+      name: "Reanudar cambio automático de imágenes",
+      exact: true,
+    })
+    .click();
+  await page.getByRole("heading", { level: 1 }).click();
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(
+    page.getByRole("button", { name: /cambio automático de imágenes/ }),
+  ).toHaveCount(0);
+  await page.clock.runFor(11000);
+  await expect(
+    page.getByRole("img", { name: "Chocolate dorso", exact: true }),
+  ).toBeVisible();
+  await gallery
+    .getByRole("button", { name: "Siguiente imagen", exact: true })
+    .click();
+  await expect(
+    page.getByRole("img", { name: "Chocolate frente", exact: true }),
+  ).toBeVisible();
+  await expect(gallery).not.toHaveAttribute("data-animated", "true");
 });

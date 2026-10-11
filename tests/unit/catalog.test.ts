@@ -6,6 +6,7 @@ import {
   parseMoney,
   publicCatalog,
   validateCatalog,
+  variantImages,
 } from "../../src/modules/catalog/model";
 import {
   importColumns,
@@ -31,6 +32,55 @@ const row = [
   "true",
 ];
 describe("catálogo y precios", () => {
+  it("la galería conserva el orden y no mezcla fotos de otras variantes", () => {
+    const product = demoCatalog().products[0];
+    const [chocolate, vanilla] = product.variants;
+    product.images = [
+      {
+        id: "general",
+        path: "general",
+        alt: "General",
+        variantId: null,
+        position: 0,
+      },
+      {
+        id: "back",
+        path: "back",
+        alt: "Dorso",
+        variantId: chocolate.id,
+        position: 2,
+      },
+      {
+        id: "vanilla",
+        path: "vanilla",
+        alt: "Vainilla",
+        variantId: vanilla.id,
+        position: 3,
+      },
+      {
+        id: "front",
+        path: "front",
+        alt: "Frente",
+        variantId: chocolate.id,
+        position: 1,
+      },
+    ];
+    expect(
+      variantImages(product, chocolate.id).map((image) => image.id),
+    ).toEqual(["front", "back"]);
+    expect(variantImages(product, vanilla.id).map((image) => image.id)).toEqual(
+      ["vanilla"],
+    );
+    expect(
+      variantImages(product, "without-photos").map((image) => image.id),
+    ).toEqual(["general"]);
+    expect(product.images.map((image) => image.id)).toEqual([
+      "general",
+      "back",
+      "vanilla",
+      "front",
+    ]);
+  });
   it("representa los importes exactamente en centavos", () => {
     expect(parseMoney("0.29")).toBe(29);
     expect(parseMoney("45000,10")).toBe(4500010);

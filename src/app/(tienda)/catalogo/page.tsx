@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { categories } from "@/modules/catalog/categories";
 import { getCatalog } from "@/modules/catalog/server";
 import { getEnvironment } from "@/lib/config/server";
@@ -28,20 +27,6 @@ export default async function CatalogPage({
       <p className="page-intro">
         Suplementos y accesorios para encontrar tu próxima elección.
       </p>
-      <nav className="category-chips" aria-label="Categorías">
-        <Link href="/catalogo" aria-current={!selection ? "page" : undefined}>
-          Todas
-        </Link>
-        {navigation.map((item) => (
-          <Link
-            key={item.slug}
-            href={`/catalogo?categoria=${item.slug}`}
-            aria-current={selection?.slug === item.slug ? "page" : undefined}
-          >
-            {item.name}
-          </Link>
-        ))}
-      </nav>
       {error ? (
         <div className="configuration-notice" role="alert">
           No pudimos cargar el catálogo. Intentá nuevamente en unos minutos.
@@ -49,6 +34,11 @@ export default async function CatalogPage({
       ) : (
         <CatalogListing
           catalog={publicCatalog(catalog)}
+          filterCategories={navigation.map((item) => ({
+            id: item.slug,
+            name: item.name,
+            slug: item.slug,
+          }))}
           filters={{
             q: value("q"),
             category: value("categoria"),

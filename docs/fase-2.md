@@ -15,7 +15,8 @@ Autorizada por el usuario el 10 de octubre de 2026, con Supabase todavía pendie
 - Productos, marcas y categorías: alta, edición, visibilidad y orden de grupos. Logo de marca opcional. Ocultar conserva registros; no se destruyen SKU ni historial.
 - Variantes por sabor, tamaño o presentación opcionales; SKU único, ambos precios y stock entero por variante. Los agotados permanecen visibles.
 - Galería de hasta 12 imágenes por producto: portada por orden, texto alternativo y asociación opcional a una variante. JPEG, PNG o WebP de hasta 5 MB; comprobación de firma y MIME.
-- Catálogo y ficha: búsqueda con sugerencias nativas, filtros combinados y orden por lista. Stock, sabor y precio se comprueban sobre la misma variante. La tarjeta enlaza la variante que coincide.
+- Catálogo y ficha: búsqueda con sugerencias nativas, franja de Categoría/Marca/Sabor/Ordenar, acción compacta y filtros activos que se pueden retirar individualmente. Precio y disponibilidad quedan en un desplegable. Stock, sabor y precio se comprueban sobre la misma variante. La tarjeta enlaza la variante que coincide.
+- Galerías: fotografías de una misma variante con transición breve en perspectiva, anterior/siguiente y pausa. Alternancia automática solo en tarjetas visibles, sin interacción ni movimiento reducido. La ficha usa controles y miniaturas. Las fotos de otra variante no se mezclan; cuando no hay fotos específicas se usan las generales del producto. La referencia es el video del usuario, con una composición propia de STYLO.
 - Inventario: ajuste desde el editor y umbral configurable de stock bajo, inicialmente 0. El listado señala variantes activas de productos visibles; también se puede ajustar stock de productos ocultos desde su editor.
 - CSV y Excel `.xlsx`: plantilla, informe con precios/stock anteriores y resultantes, datos del producto y aplicación explícita. Una fila inválida bloquea todo el lote.
 - Migración PostgreSQL con RLS, escritura transaccional, revisión del catálogo para impedir sobrescrituras entre sesiones y auditoría inmutable de cambios de precios y existencias.
@@ -34,6 +35,8 @@ Abrir `http://127.0.0.1:3000/vista-previa` para el catálogo y `http://127.0.0.1
 Estas rutas solo funcionan con `APP_ENV=local`, URL del sitio local y host de la petición local. En otros ambientes devuelven 404. No habilitan el administrador ni llaman operaciones remotas. La vista previa requiere JavaScript; la navegación pública por categorías y filtros usa enlaces/formularios GET y se conserva sin JavaScript. Las fichas reales incluyen una alternativa GET para seleccionar presentación sin JavaScript.
 
 Capturas con datos de prueba: [catálogo escritorio](previews/catalog-desktop.png), [catálogo móvil](previews/catalog-mobile.png), [ficha escritorio](previews/product-desktop.png), [ficha móvil](previews/product-mobile.png), [gestión escritorio](previews/manager-desktop.png) y [gestión móvil](previews/manager-mobile.png).
+
+La revisión de filtros actualiza las capturas de catálogo. La [galería con dos fotos](previews/gallery-product.png) muestra imágenes sintéticas exclusivamente de prueba; no agrega fotografías ni reemplaza los productos guardados en el navegador del usuario. Para activar el giro en sus productos, asociar dos o más fotos a la misma variante en gestión. Si no hay fotos específicas, se recorren las fotos generales del producto.
 
 ## Operación e importación
 
@@ -61,9 +64,9 @@ Las fotos se suben antes de guardar su asociación. Cancelar una edición o quit
 ## Verificación
 
 - TypeScript y compilación de producción correctos.
-- 31 pruebas unitarias/PostgreSQL: centavos exactos, validación, visibilidad, combinación de filtros, CSV/Excel, conservación de datos, RLS, MFA, atomicidad, revisión entre sesiones y auditorías de precio/stock.
-- 32 recorridos Chromium de escritorio/móvil: incluye la base de Fase 1, búsqueda, variantes agotadas, edición persistida, fotos por variante, alta de marca/producto, ocultación, stock bajo, importaciones y límites de acceso.
-- Catálogo, ficha, gestión y editor revisados a 320, 390, 768 y 1440 px sin desbordamiento del documento. Las tablas extensas tienen desplazamiento dentro de su contenedor.
+- 32 pruebas unitarias/PostgreSQL: centavos exactos, validación, visibilidad, combinación de filtros, selección y orden de fotos por variante, CSV/Excel, conservación de datos, RLS, MFA, atomicidad, revisión entre sesiones y auditorías de precio/stock.
+- 38 recorridos Chromium de escritorio/móvil: incluye la base de Fase 1, búsqueda, variantes agotadas, edición persistida, galería y filtros combinados, retirada individual de filtros, pausa y movimiento reducido en vivo, alta de marca/producto, ocultación, stock bajo, importaciones y límites de acceso.
+- La revisión de filtros comprueba 320, 390, 768, 1024 y 1440 px, tanto con los filtros secundarios cerrados como abiertos, sin desbordamiento. Catálogo, ficha, gestión y editor conservan los recorridos de escritorio/móvil; las tablas extensas tienen desplazamiento dentro de su contenedor.
 - Preferencias de movimiento reducido y navegación pública sin JavaScript conservadas. npm audit: sin vulnerabilidades conocidas reportadas al instalar las nuevas dependencias.
 
 ## Pendientes de integración y aceptación

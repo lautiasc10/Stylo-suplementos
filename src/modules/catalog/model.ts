@@ -72,6 +72,22 @@ export const variantLabel = (variant: Variant) =>
   [variant.flavor, variant.size, variant.presentation]
     .filter(Boolean)
     .join(" · ") || "Presentación única";
+
+export function variantImages(
+  product: Product,
+  variantId: string,
+): ProductImage[] {
+  const specific = product.images.filter(
+    (image) => image.variantId === variantId,
+  );
+  return (
+    specific.length
+      ? specific
+      : product.images.filter((image) => image.variantId === null)
+  )
+    .slice()
+    .sort((a, b) => a.position - b.position);
+}
 export const slugify = (value: string) =>
   value
     .normalize("NFD")

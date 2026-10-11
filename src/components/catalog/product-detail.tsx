@@ -1,9 +1,11 @@
 "use client";
 import { useState } from "react";
 import { CategoryIllustration } from "@/components/storefront/category-illustration";
+import { ProductGallery } from "./product-gallery";
 import {
   formatPrice,
   variantLabel,
+  variantImages,
   type Product,
 } from "@/modules/catalog/model";
 export function ProductDetail({
@@ -24,34 +26,29 @@ export function ProductDetail({
   preview?: boolean;
 }) {
   const [variantId, setVariantId] = useState(
-      selectedId ?? product.variants[0].id,
-    ),
-    [photoId, setPhotoId] = useState("");
+    selectedId ?? product.variants[0].id,
+  );
   const variant =
     product.variants.find((item) => item.id === variantId) ??
     product.variants[0];
-  const specific = product.images.filter(
-    (image) => image.variantId === variant.id,
-  );
-  const images = (
-    specific.length
-      ? specific
-      : product.images.filter((image) => image.variantId === null)
-  ).sort((a, b) => a.position - b.position);
-  const photo = images.find((image) => image.id === photoId) ?? images[0];
+  const images = variantImages(product, variant.id)
+    .filter((image) => imageBase || imageUrls[image.path])
+    .map((image) => ({
+      id: image.id,
+      alt: image.alt,
+      src: imageUrls[image.path] || `${imageBase}/${image.path}`,
+    }));
   return (
     <div className="product-detail">
       <div className="product-gallery">
-        <div className="product-detail-media">
-          {photo && (imageBase || imageUrls[photo.path]) ? (
-            <img
-              src={imageUrls[photo.path] || `${imageBase}/${photo.path}`}
-              alt={photo.alt}
-              width={720}
-              height={720}
-              decoding="async"
-            />
-          ) : (
+        {images.length ? (
+          <ProductGallery
+            key={`${variant.id}:${images.map((image) => image.id).join(":")}`}
+            images={images}
+            mode="detail"
+          />
+        ) : (
+          <div className="product-detail-media">
             <>
               <CategoryIllustration kind={category} />
               <p>
@@ -60,26 +57,6 @@ export function ProductDetail({
                   : "Imagen del producto pendiente"}
               </p>
             </>
-          )}
-        </div>
-        {images.length > 1 && (
-          <div className="product-thumbnails" aria-label="Galería del producto">
-            {images.map((image) => (
-              <button
-                key={image.id}
-                type="button"
-                aria-label={`Ver ${image.alt}`}
-                aria-pressed={photo?.id === image.id}
-                onClick={() => setPhotoId(image.id)}
-              >
-                <img
-                  src={imageUrls[image.path] || `${imageBase}/${image.path}`}
-                  alt=""
-                  width={80}
-                  height={80}
-                />
-              </button>
-            ))}
           </div>
         )}
       </div>
@@ -95,7 +72,6 @@ export function ProductDetail({
             value={variant.id}
             onChange={(event) => {
               setVariantId(event.target.value);
-              setPhotoId("");
             }}
             aria-label="Presentación"
           >
