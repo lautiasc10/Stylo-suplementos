@@ -519,3 +519,55 @@ test("una foto por variante alterna sus datos y respeta sabor, precio y disponib
   ).toHaveCount(0);
   await expect(card.locator(".product-prices")).toContainText("47.000,00");
 });
+
+test("el glitch ocurre al cambiar la foto, termina y se cancela al reducir movimiento", async ({
+  page,
+}) => {
+  await page.clock.install();
+  await page.addInitScript(
+    (fixture) =>
+      localStorage.setItem("stylo.catalog-preview.v1", JSON.stringify(fixture)),
+    galleryFixture(),
+  );
+  await page.goto("/vista-previa?q=proteina");
+  const gallery = page.locator(".product-image-gallery");
+  await gallery.scrollIntoViewIfNeeded();
+  await expect(gallery.locator(".product-glitch-fragments")).toHaveCount(0);
+  await expect(
+    page.getByAltText("Chocolate frente", { exact: true }),
+  ).toBeVisible();
+
+  await gallery
+    .getByRole("button", { name: "Imagen anterior", exact: true })
+    .click();
+  await expect(
+    page.getByAltText("Vainilla frente", { exact: true }),
+  ).toBeVisible();
+  await expect(gallery.locator(".product-glitch-fragments")).toHaveCount(1);
+  await expect(gallery.locator(".product-glitch-fragments")).toHaveAttribute(
+    "aria-hidden",
+    "true",
+  );
+  await expect(page.locator(".product-prices")).toContainText("47.000,00");
+  await page.clock.runFor(520);
+  await expect(gallery.locator(".product-glitch-fragments")).toHaveCount(0);
+  await expect(gallery).not.toHaveAttribute("data-animated", "true");
+
+  await gallery
+    .getByRole("button", { name: "Siguiente imagen", exact: true })
+    .click();
+  await expect(gallery.locator(".product-glitch-fragments")).toHaveCount(1);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(gallery.locator(".product-glitch-fragments")).toHaveCount(0);
+  await expect(gallery).not.toHaveAttribute("data-animated", "true");
+  await expect(
+    page.getByAltText("Chocolate frente", { exact: true }),
+  ).toBeVisible();
+  await gallery
+    .getByRole("button", { name: "Siguiente imagen", exact: true })
+    .click();
+  await expect(
+    page.getByAltText("Chocolate dorso", { exact: true }),
+  ).toBeVisible();
+  await expect(gallery.locator(".product-glitch-fragments")).toHaveCount(0);
+});

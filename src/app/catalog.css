@@ -851,7 +851,6 @@ textarea:focus-visible {
   aspect-ratio: 1;
   background: var(--color-stylo-white);
   overflow: hidden;
-  perspective: 900px;
   isolation: isolate;
 }
 .product-frame-link {
@@ -872,7 +871,6 @@ textarea:focus-visible {
   object-fit: contain;
   padding: var(--space-6);
   transform-origin: 50% 50%;
-  backface-visibility: hidden;
 }
 .product-frame-current {
   z-index: 1;
@@ -882,14 +880,33 @@ textarea:focus-visible {
   pointer-events: none;
 }
 .product-image-gallery[data-animated="true"] .product-frame-current {
-  animation: product-image-arrive 650ms var(--motion-ease) both;
+  animation: product-image-arrive 420ms var(--motion-ease) both;
 }
 .product-image-gallery[data-animated="true"] .product-frame-outgoing {
-  animation: product-image-leave 650ms var(--motion-ease) both;
+  animation: product-image-leave 420ms var(--motion-ease) both;
+}
+.product-glitch-fragments,
+.product-glitch-fragment {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.product-glitch-fragments {
+  z-index: 2;
+}
+.product-glitch-fragment {
+  opacity: 0;
+  animation: product-image-fragment 420ms steps(1, end) both;
+}
+.product-glitch-fragment:nth-child(even) {
+  animation-name: product-image-fragment-incoming;
+}
+.product-image-gallery-detail[data-animated="true"] .product-frame {
+  animation-duration: 320ms;
 }
 .product-image-count {
   position: absolute;
-  z-index: 2;
+  z-index: 3;
   top: var(--space-4);
   right: var(--space-4);
   padding: var(--space-1) var(--space-2);
@@ -904,7 +921,7 @@ textarea:focus-visible {
 }
 .product-gallery-controls {
   position: absolute;
-  z-index: 2;
+  z-index: 3;
   bottom: var(--space-2);
   left: var(--space-2);
   right: var(--space-2);
@@ -978,23 +995,84 @@ textarea:focus-visible {
 @keyframes product-image-arrive {
   from {
     opacity: 0;
-    transform: translateX(calc(var(--gallery-direction) * 14%))
-      rotateY(calc(var(--gallery-direction) * -24deg)) scale(0.94);
   }
   to {
     opacity: 1;
-    transform: translateX(0) rotateY(0) scale(1);
   }
 }
 @keyframes product-image-leave {
   from {
     opacity: 1;
-    transform: translateX(0) rotateY(0) scale(1);
   }
   to {
     opacity: 0;
-    transform: translateX(calc(var(--gallery-direction) * -12%))
-      rotateY(calc(var(--gallery-direction) * 20deg)) scale(0.96);
+  }
+}
+@keyframes product-image-fragment {
+  0%,
+  100% {
+    opacity: 0;
+    transform: none;
+  }
+  8% {
+    opacity: 0.9;
+    transform: translate(
+        calc(var(--glitch-shift) * var(--gallery-direction)),
+        var(--glitch-lift)
+      )
+      rotate(var(--glitch-tilt));
+  }
+  24% {
+    opacity: 0.75;
+    transform: translate(
+        calc(var(--glitch-shift) * var(--gallery-direction) * -0.45),
+        0
+      )
+      rotate(calc(var(--glitch-tilt) * -0.5));
+  }
+  43% {
+    opacity: 0.45;
+    transform: translate(
+      calc(var(--glitch-shift) * var(--gallery-direction) * 0.25),
+      0
+    );
+  }
+  65% {
+    opacity: 0;
+    transform: none;
+  }
+}
+@keyframes product-image-fragment-incoming {
+  0%,
+  100% {
+    opacity: 0;
+    transform: none;
+  }
+  12% {
+    opacity: 0.85;
+    transform: translate(
+        calc(var(--glitch-shift) * var(--gallery-direction)),
+        var(--glitch-lift)
+      )
+      rotate(var(--glitch-tilt));
+  }
+  32% {
+    opacity: 0.65;
+    transform: translate(
+      calc(var(--glitch-shift) * var(--gallery-direction) * -0.35),
+      0
+    );
+  }
+  52% {
+    opacity: 0.35;
+    transform: translate(
+      calc(var(--glitch-shift) * var(--gallery-direction) * 0.15),
+      0
+    );
+  }
+  74% {
+    opacity: 0;
+    transform: none;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -1002,7 +1080,8 @@ textarea:focus-visible {
     animation: none;
     transform: none;
   }
-  .product-frame-outgoing {
+  .product-frame-outgoing,
+  .product-glitch-fragments {
     visibility: hidden;
   }
 }

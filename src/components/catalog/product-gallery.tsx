@@ -18,6 +18,46 @@ export type GalleryImage = {
   href?: string;
 };
 
+// Six temporary fragments reuse the two loaded photos; no canvas or extra media.
+const glitchFragments = [
+  {
+    clip: "polygon(0 0,100% 0,100% 19%,0 27%)",
+    shift: "4%",
+    lift: "-1%",
+    tilt: "-1deg",
+  },
+  {
+    clip: "polygon(0 27%,100% 19%,100% 38%,0 34%)",
+    shift: "-5%",
+    lift: "1%",
+    tilt: "1deg",
+  },
+  {
+    clip: "polygon(0 34%,100% 38%,100% 51%,0 57%)",
+    shift: "6%",
+    lift: "-1%",
+    tilt: "-1.5deg",
+  },
+  {
+    clip: "polygon(0 57%,100% 51%,100% 69%,0 64%)",
+    shift: "-4%",
+    lift: "2%",
+    tilt: "1deg",
+  },
+  {
+    clip: "polygon(0 64%,100% 69%,100% 83%,0 87%)",
+    shift: "3%",
+    lift: "-1%",
+    tilt: "-.5deg",
+  },
+  {
+    clip: "polygon(0 87%,100% 83%,100% 100%,0 100%)",
+    shift: "-3%",
+    lift: "1%",
+    tilt: ".5deg",
+  },
+];
+
 export function ProductGallery({
   images,
   href,
@@ -132,7 +172,7 @@ export function ProductGallery({
 
   useEffect(() => {
     if (previous === null) return;
-    const timer = window.setTimeout(() => setPrevious(null), 700);
+    const timer = window.setTimeout(() => setPrevious(null), 480);
     return () => window.clearTimeout(timer);
   }, [previous, active]);
 
@@ -165,6 +205,37 @@ export function ProductGallery({
         loading={mode === "card" ? "lazy" : "eager"}
         decoding="async"
       />
+      {mode === "card" && previous !== null && !reduced && images[previous] && (
+        <span
+          key={`${images[previous].id}:${current.id}`}
+          className="product-glitch-fragments"
+          aria-hidden="true"
+        >
+          {glitchFragments.map((fragment, index) => (
+            <span
+              key={index}
+              className="product-glitch-fragment"
+              style={
+                {
+                  clipPath: fragment.clip,
+                  "--glitch-shift": fragment.shift,
+                  "--glitch-lift": fragment.lift,
+                  "--glitch-tilt": fragment.tilt,
+                } as CSSProperties
+              }
+            >
+              <img
+                className="product-frame"
+                src={index % 2 ? current.src : images[previous].src}
+                alt=""
+                width={720}
+                height={720}
+                decoding="async"
+              />
+            </span>
+          ))}
+        </span>
+      )}
     </>
   );
   return (
