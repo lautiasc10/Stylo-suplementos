@@ -4,11 +4,18 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Icon } from "@/components/ui/icon";
 import {
+  AdminWorkspaceScope,
+  useWorkspaceNavigation,
+  workspacePaths,
+  navigateWorkspace,
+} from "./workspace-navigation";
+import {
   catalogSection,
   navigateCatalogSection,
 } from "@/components/catalog/section-navigation";
 
 export function AdminNavigation({ preview = false }: { preview?: boolean }) {
+  const { ready } = useWorkspaceNavigation();
   const menu = useRef<HTMLDetailsElement>(null);
   useEffect(() => {
     const desktop = window.matchMedia("(min-width: 960px)");
@@ -83,6 +90,13 @@ export function AdminNavigation({ preview = false }: { preview?: boolean }) {
         {!preview && (
           <Link
             href="/admin"
+            prefetch={ready ? false : undefined}
+            onNavigate={(event) => {
+              if (ready) {
+                event.preventDefault();
+                navigateWorkspace("/admin");
+              }
+            }}
             aria-current={pathname === "/admin" ? "page" : undefined}
           >
             <Icon name="shield" />
@@ -101,9 +115,16 @@ export function AdminNavigation({ preview = false }: { preview?: boolean }) {
                     : link.href
                 }
                 prefetch={
-                  link.section && pathname === link.href ? false : undefined
+                  ready || (link.section && pathname === link.href)
+                    ? false
+                    : undefined
                 }
                 onNavigate={(event) => {
+                  if (ready && workspacePaths(preview).includes(link.href)) {
+                    event.preventDefault();
+                    navigateWorkspace(link.href, link.section);
+                    return;
+                  }
                   if (link.section && pathname === link.href) {
                     event.preventDefault();
                     navigateCatalogSection(link.section);
@@ -141,10 +162,12 @@ export function PreviewFrame({ children }: { children: ReactNode }) {
   ].includes(pathname);
   return management ? (
     <div className="admin-shell admin-preview">
-      <div className="admin-workspace">
-        <AdminNavigation preview />
-        <div className="admin-main">{children}</div>
-      </div>
+      <AdminWorkspaceScope>
+        <div className="admin-workspace">
+          <AdminNavigation preview />
+          <div className="admin-main">{children}</div>
+        </div>
+      </AdminWorkspaceScope>
     </div>
   ) : (
     <>{children}</>

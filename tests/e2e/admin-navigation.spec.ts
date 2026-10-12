@@ -1,5 +1,166 @@
 import { test, expect } from "@playwright/test";
 
+test("ventas, productos y promociones cambian inmediatamente sin navegación al servidor", async ({
+  page,
+}) => {
+  await page.goto("/vista-previa/gestion");
+  await expect(
+    page.getByRole("button", { name: "Nuevo producto", exact: true }),
+  ).toBeVisible();
+  await page.waitForLoadState("networkidle");
+  const nav = page.getByRole("navigation", {
+    name: "Administración",
+    exact: true,
+  });
+  if (
+    !(await nav
+      .locator("details")
+      .evaluate((el) => (el as HTMLDetailsElement).open))
+  )
+    await nav.locator("summary").click();
+  const requests: string[] = [];
+  await page.route(
+    /\/vista-previa\/(gestion|pedidos|promociones)(\?|$)/,
+    async (route) => {
+      requests.push(route.request().url());
+      await route.abort();
+    },
+  );
+  for (const [name, create, path] of [
+    ["Promociones", "Crear promoción", "promociones"],
+    ["Ventas y retiros", "Crear venta o retiro", "pedidos"],
+    ["Productos", "Nuevo producto", "gestion"],
+    ["Ventas y retiros", "Crear venta o retiro", "pedidos"],
+    ["Promociones", "Crear promoción", "promociones"],
+    ["Productos", "Nuevo producto", "gestion"],
+  ]) {
+    const link = nav.getByRole("link", { name, exact: true });
+    await link.focus();
+    await page.keyboard.press("Enter");
+    await expect(
+      page.getByRole("button", { name: create, exact: true }),
+    ).toBeVisible();
+    await expect(link).toHaveAttribute("aria-current", "page");
+    await expect(page).toHaveURL(new RegExp(`/vista-previa/${path}`));
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+  }
+  await page.goBack();
+  await expect(
+    page.getByRole("button", { name: "Crear promoción", exact: true }),
+  ).toBeVisible();
+  await page.goBack();
+  await expect(
+    page.getByRole("button", { name: "Crear venta o retiro", exact: true }),
+  ).toBeVisible();
+  await page.goForward();
+  await expect(
+    page.getByRole("button", { name: "Crear promoción", exact: true }),
+  ).toBeVisible();
+  expect(requests).toEqual([]);
+  await page.unrouteAll();
+  await page.reload();
+  await expect(
+    page.getByRole("button", { name: "Crear promoción", exact: true }),
+  ).toBeVisible();
+});
+
+test("volver a otra tarea conserva promociones, ventas y el stock actualizado", async ({
+  page,
+}) => {
+  await page.goto("/vista-previa/promociones");
+  const nav = page.getByRole("navigation", {
+    name: "Administración",
+    exact: true,
+  });
+  if (
+    !(await nav
+      .locator("details")
+      .evaluate((el) => (el as HTMLDetailsElement).open))
+  )
+    await nav.locator("summary").click();
+  await page
+    .getByRole("button", { name: "Crear promoción", exact: true })
+    .click();
+  await page
+    .getByLabel("Nombre de promoción", { exact: true })
+    .fill("Oferta de navegación");
+  await page
+    .getByLabel("Precio final de lista (ARS)", { exact: true })
+    .fill("40000");
+  await page
+    .getByLabel("Precio final efectivo / transferencia (ARS)", { exact: true })
+    .fill("35000");
+  await page
+    .getByRole("button", { name: "Guardar promoción", exact: true })
+    .click();
+  await expect(page.getByRole("status")).toHaveText("Promociones guardadas.");
+  await nav
+    .getByRole("link", { name: "Ventas y retiros", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Crear venta o retiro", exact: true })
+    .click();
+  await page
+    .getByRole("combobox", { name: "Tipo de registro", exact: true })
+    .selectOption("cash-sale");
+  await page
+    .getByLabel("Nombre del cliente", { exact: true })
+    .fill("Venta de navegación");
+  await page
+    .getByRole("button", { name: "Agregar presentación", exact: true })
+    .click();
+  await page
+    .getByRole("checkbox", {
+      name: "Confirmo que cobré el efectivo y entregué los productos.",
+      exact: true,
+    })
+    .check();
+  await page
+    .getByRole("button", { name: "Registrar venta en efectivo", exact: true })
+    .click();
+  const records = page.getByRole("table", {
+    name: "Ventas y retiros registrados",
+  });
+  await expect(records).toContainText("Venta de navegación");
+  await expect(records).toContainText("35.000,00");
+  await nav.getByRole("link", { name: "Productos", exact: true }).click();
+  const stock = await page.evaluate(() => {
+    const source = JSON.parse(
+      localStorage.getItem("stylo.catalog-preview.v1")!,
+    );
+    return source.catalog.products[0].variants[0].stock;
+  });
+  expect(stock).toBe(7);
+  await page
+    .getByRole("button", { name: "Editar Proteína de prueba", exact: true })
+    .click();
+  await expect(page.getByLabel("Stock", { exact: true }).first()).toHaveValue(
+    String(stock),
+  );
+  await nav.getByRole("link", { name: "Promociones", exact: true }).click();
+  await expect(
+    page.getByRole("button", {
+      name: "Editar Oferta de navegación",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await nav
+    .getByRole("link", { name: "Ventas y retiros", exact: true })
+    .click();
+  await expect(records.getByRole("row")).toHaveCount(2);
+  await expect(records).toContainText("Venta de navegación");
+  await page
+    .getByRole("button", { name: "Crear venta o retiro", exact: true })
+    .click();
+  await expect(
+    page.getByLabel("Nombre del cliente", { exact: true }),
+  ).toHaveValue("");
+});
+
 test("lateral y pestañas cambian el catálogo sin solicitudes de página y mantienen el historial", async ({
   page,
 }) => {

@@ -29,10 +29,12 @@ export function PromotionsManager({
   initial = emptyPromotions,
   catalog: initialCatalog,
   preview = false,
+  onSaved,
 }: {
   initial?: PromotionState;
   catalog?: Catalog;
   preview?: boolean;
+  onSaved?: (state: PromotionState) => void;
 }) {
   const [state, setState] = useState(initial),
     [catalog, setCatalog] = useState(initialCatalog);
@@ -46,6 +48,12 @@ export function PromotionsManager({
   const [components, setComponents] = useState<
     { variantId: string; quantity: number }[]
   >([]);
+  useEffect(() => {
+    if (!preview) setCatalog(initialCatalog);
+  }, [initialCatalog, preview]);
+  useEffect(() => {
+    if (!preview) setState(initial);
+  }, [initial, preview]);
   useEffect(() => {
     if (editorOpen)
       editor.current
@@ -98,6 +106,7 @@ export function PromotionsManager({
           JSON.stringify(next),
         );
         setState(next);
+        onSaved?.(next);
         window.dispatchEvent(new Event("stylo-preview-change"));
       } else {
         const result = await savePromotions({ ...state, promotions });
@@ -105,7 +114,10 @@ export function PromotionsManager({
           setNotice(result.error);
           return false;
         }
-        if (result.state) setState(result.state);
+        if (result.state) {
+          setState(result.state);
+          onSaved?.(result.state);
+        }
       }
       setNotice("Promociones guardadas.");
       return true;

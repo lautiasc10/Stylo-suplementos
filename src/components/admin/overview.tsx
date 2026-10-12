@@ -1,13 +1,17 @@
-import { requireAdmin } from "@/modules/admin/access";
+"use client";
 import { signOut } from "@/modules/admin/actions";
 import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
-import { getCatalog } from "@/modules/catalog/server";
+import type { Catalog } from "@/modules/catalog/model";
+import {
+  navigateWorkspace,
+  useWorkspaceNavigation,
+} from "./workspace-navigation";
 
-export default async function AdminPage() {
-  await requireAdmin();
-  const { catalog, error } = await getCatalog();
-  const variants = catalog.products.flatMap((product) =>
+export function AdminOverview({ catalog }: { catalog: Catalog | null }) {
+  const { ready } = useWorkspaceNavigation();
+  const error = !catalog;
+  const variants = (catalog?.products ?? []).flatMap((product) =>
     product.variants.filter((variant) => variant.active),
   );
   return (
@@ -24,7 +28,7 @@ export default async function AdminPage() {
       <p className="page-intro">Productos, existencias y registros de venta.</p>
       {error && (
         <p className="ui-notice" role="alert">
-          {error}
+          No pudimos consultar el catálogo. Reintentá la actualización.
         </p>
       )}
       {!error && (
@@ -32,7 +36,7 @@ export default async function AdminPage() {
           <div className="admin-stat">
             <dt>Productos publicados</dt>
             <dd>
-              {catalog.products.filter((product) => product.active).length}
+              {catalog!.products.filter((product) => product.active).length}
             </dd>
           </div>
           <div className="admin-stat">
@@ -45,7 +49,7 @@ export default async function AdminPage() {
               {
                 variants.filter(
                   (variant) =>
-                    variant.stock <= (catalog.lowStockThreshold ?? 0),
+                    variant.stock <= (catalog!.lowStockThreshold ?? 0),
                 ).length
               }
             </dd>
@@ -53,7 +57,17 @@ export default async function AdminPage() {
         </dl>
       )}
       <div className="admin-sections">
-        <Link className="admin-section-card" href="/admin/catalogo">
+        <Link
+          className="admin-section-card"
+          href="/admin/catalogo"
+          prefetch={ready ? false : undefined}
+          onNavigate={(event) => {
+            if (ready) {
+              event.preventDefault();
+              navigateWorkspace("/admin/catalogo");
+            }
+          }}
+        >
           <Icon name="bag" />
           <h2>Catálogo e inventario</h2>
           <p>Productos, variantes, fotografías y existencias por SKU.</p>
@@ -61,7 +75,17 @@ export default async function AdminPage() {
             Gestionar catálogo <Icon name="arrow" />
           </span>
         </Link>
-        <Link className="admin-section-card" href="/admin/promociones">
+        <Link
+          className="admin-section-card"
+          href="/admin/promociones"
+          prefetch={ready ? false : undefined}
+          onNavigate={(event) => {
+            if (ready) {
+              event.preventDefault();
+              navigateWorkspace("/admin/promociones");
+            }
+          }}
+        >
           <Icon name="bolt" />
           <h2>Precios y promociones</h2>
           <p>Rebajas, ofertas por cantidad y combos con dos precios finales.</p>
@@ -69,7 +93,17 @@ export default async function AdminPage() {
             Gestionar promociones <Icon name="arrow" />
           </span>
         </Link>
-        <Link className="admin-section-card" href="/admin/pedidos">
+        <Link
+          className="admin-section-card"
+          href="/admin/pedidos"
+          prefetch={ready ? false : undefined}
+          onNavigate={(event) => {
+            if (ready) {
+              event.preventDefault();
+              navigateWorkspace("/admin/pedidos");
+            }
+          }}
+        >
           <Icon name="cart" />
           <h2>Ventas y retiros</h2>
           <p>

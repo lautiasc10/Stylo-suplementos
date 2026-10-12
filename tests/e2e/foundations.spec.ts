@@ -54,7 +54,13 @@ test("admin y MFA no habilitan acceso sin configuración", async ({
   page,
   request,
 }) => {
-  for (const path of ["/admin", "/admin/mfa"]) {
+  for (const path of [
+    "/admin",
+    "/admin/mfa",
+    "/admin/catalogo",
+    "/admin/pedidos",
+    "/admin/promociones",
+  ]) {
     await page.goto(path);
     await expect(page).toHaveURL(/\/admin\/login$/);
     await expect(

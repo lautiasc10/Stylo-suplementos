@@ -1,6 +1,24 @@
 import { quoteCart, merchandiseTotal, parseCart, type CartItem } from "./cart";
 import type { Promotion } from "./promotions";
 import type { Catalog } from "@/modules/catalog/model";
+export type OrderRecord = {
+  id: string;
+  customer: { name: string; phone?: string };
+  snapshot: {
+    total: number;
+    lines?: {
+      variantId: string;
+      name: string;
+      quantity: number;
+      label?: string;
+      flavor?: string;
+      size?: string;
+      presentation?: string;
+    }[];
+  };
+  created_at: string;
+  payment_status?: string;
+};
 export type ManualOrderInput = {
   requestId: string;
   items: CartItem[];

@@ -5,7 +5,10 @@ import {
   variantLabel,
   type Catalog,
 } from "@/modules/catalog/model";
-import { previewManualOrder } from "@/modules/commerce/orders";
+import {
+  previewManualOrder,
+  type OrderRecord,
+} from "@/modules/commerce/orders";
 import { createManualOrder } from "@/modules/commerce/actions";
 import { previewCatalog, previewPromotions } from "./cart-provider";
 import type { CartItem } from "@/modules/commerce/cart";
@@ -14,35 +17,21 @@ import type { Promotion } from "@/modules/commerce/promotions";
 import { AdminTable } from "@/components/admin/data-table";
 import { IconAction } from "@/components/admin/icon-action";
 import { Icon } from "@/components/ui/icon";
+const noOrders: OrderRecord[] = [];
+const noPromotions: Promotion[] = [];
 
-type OrderRecord = {
-  id: string;
-  customer: { name: string; phone?: string };
-  snapshot: {
-    total: number;
-    lines?: {
-      variantId: string;
-      name: string;
-      quantity: number;
-      label?: string;
-      flavor?: string;
-      size?: string;
-      presentation?: string;
-    }[];
-  };
-  created_at: string;
-  payment_status?: string;
-};
 export function ManualOrders({
   catalog: initial,
-  orders = [],
+  orders = noOrders,
   preview = false,
-  promotions: initialPromotions = [],
+  promotions: initialPromotions = noPromotions,
+  onRecorded,
 }: {
   catalog?: Catalog;
   orders?: OrderRecord[];
   preview?: boolean;
   promotions?: Promotion[];
+  onRecorded?: (rows: OrderRecord[]) => void;
 }) {
   const [catalog, setCatalog] = useState(initial),
     [items, setItems] = useState<CartItem[]>([]);
@@ -69,6 +58,12 @@ export function ManualOrders({
   useEffect(() => {
     if (!preview) setCatalog(initial);
   }, [initial, preview]);
+  useEffect(() => {
+    setPromotions(initialPromotions);
+  }, [initialPromotions]);
+  useEffect(() => {
+    setRows(orders);
+  }, [orders]);
   useEffect(() => {
     if (preview)
       try {
@@ -115,7 +110,7 @@ export function ManualOrders({
       {preview && (
         <p className="preview-notice">
           Pedidos de prueba · Usá datos ficticios. Se conservan solo mientras
-          esta pantalla está abierta.
+          el panel de prueba está abierto.
         </p>
       )}
       <p>
@@ -302,7 +297,7 @@ export function ManualOrders({
                       setCatalog(updated);
                       window.dispatchEvent(new Event("stylo-preview-change"));
                     }
-                    setRows([
+                    const nextRows = [
                       {
                         id: order.id,
                         customer: order.customer,
@@ -314,7 +309,9 @@ export function ManualOrders({
                         payment_status: order.paymentStatus,
                       },
                       ...rows,
-                    ]);
+                    ];
+                    setRows(nextRows);
+                    onRecorded?.(nextRows);
                   }
                 } else {
                   const result = await createManualOrder(input);
@@ -327,8 +324,8 @@ export function ManualOrders({
                   if (
                     result.order &&
                     !rows.some((row) => row.id === result.order.id)
-                  )
-                    setRows([
+                  ) {
+                    const nextRows = [
                       {
                         id: result.order.id,
                         customer: input.customer,
@@ -338,7 +335,10 @@ export function ManualOrders({
                           kind === "cash-sale" ? "paid" : "pending",
                       },
                       ...rows,
-                    ]);
+                    ];
+                    setRows(nextRows);
+                    onRecorded?.(nextRows);
+                  }
                 }
                 setNotice(
                   kind === "cash-sale"

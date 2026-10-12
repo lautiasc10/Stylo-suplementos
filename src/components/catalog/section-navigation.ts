@@ -9,8 +9,8 @@ export function catalogSection(value: string | null) {
   return catalogSections.find(([key]) => key === value)?.[0] ?? "products";
 }
 
-// These sections share one loaded catalog. Only the URL changes; entering a
-// different page still uses Next navigation and its server access checks.
+// These sections share one loaded catalog. Only the section URL changes;
+// initial access and writes retain their server authorization checks.
 export function navigateCatalogSection(section: string) {
   const next = new URL(window.location.href);
   const selection = catalogSection(section);

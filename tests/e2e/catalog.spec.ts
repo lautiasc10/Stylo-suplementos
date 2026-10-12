@@ -611,6 +611,8 @@ test("la galería pausa con foco y respeta movimiento reducido en vivo", async (
     page.getByAltText("Vainilla frente", { exact: true }),
   ).toBeVisible();
   await page.emulateMedia({ reducedMotion: "reduce" });
+  // Wait for the media-query change before advancing the mocked timers.
+  await expect(gallery).not.toHaveAttribute("data-auto-playing", "true");
   await page.clock.runFor(11000);
   await expect(
     page.getByAltText("Vainilla frente", { exact: true }),
