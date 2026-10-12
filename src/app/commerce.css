@@ -896,27 +896,6 @@
 .catalog-manager {
   margin-top: var(--space-8);
 }
-.catalog-manager .manager-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  padding: 0;
-  border-bottom: 1px solid var(--line);
-  gap: var(--space-4);
-  margin-bottom: var(--space-6);
-}
-.catalog-manager .manager-tabs button {
-  border: 0;
-  border-bottom: 2px solid transparent;
-  border-radius: 0;
-  background: transparent;
-  color: var(--muted);
-  padding-inline: var(--space-2);
-  min-height: 56px;
-}
-.catalog-manager .manager-tabs button[aria-current] {
-  color: var(--foreground);
-  border-bottom-color: var(--gold);
-}
 .catalog-manager .form-message {
   font-size: var(--text-sm);
   border-radius: var(--radius-control);
@@ -933,6 +912,78 @@
 }
 .catalog-manager .manager-toolbar h2 {
   font-size: var(--text-xl);
+}
+.admin-product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));
+  gap: var(--space-6);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.admin-product-grid > li {
+  min-width: 0;
+}
+.admin-product-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-panel);
+  background: var(--surface);
+  color: var(--foreground);
+  text-align: left;
+  overflow: hidden;
+  transition:
+    border-color var(--motion-control),
+    background var(--motion-control);
+}
+.admin-product-card:hover,
+.admin-product-card:focus-visible {
+  border-color: var(--gold);
+  background: var(--surface-raised);
+}
+.admin-product-card .product-thumbnail {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  border-radius: 0;
+  background: var(--foreground);
+  padding: var(--space-6);
+}
+.admin-product-card .product-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.admin-product-card .product-thumbnail-placeholder {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  color: var(--border-strong);
+}
+.admin-product-name {
+  display: block;
+  padding: var(--space-4) var(--space-6);
+  font-size: var(--text-base);
+  font-weight: 600;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 600px) {
+  .admin-product-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4);
+  }
+  .admin-product-card .product-thumbnail,
+  .admin-product-name {
+    padding: var(--space-3);
+  }
+  .admin-product-name {
+    font-size: var(--text-sm);
+  }
 }
 .manager-table-wrap {
   background: var(--background);
@@ -965,18 +1016,6 @@
 }
 .group-order {
   font-variant-numeric: tabular-nums;
-}
-.manager-product-cell {
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
-}
-.manager-product-cell .product-thumbnail {
-  width: 48px;
-  height: 56px;
-}
-.manager-product-cell small {
-  margin-top: var(--space-1);
 }
 .catalog-manager .catalog-editor,
 .catalog-manager .import-panel,
@@ -1461,12 +1500,8 @@
 .admin-prices small:not(:first-child) {
   margin-top: var(--space-3);
 }
-.admin-workspace .admin-data-table.products-table th:not(:first-child),
 .admin-workspace .admin-data-table.groups-table th:not(:first-child) {
   width: 112px;
-}
-.admin-workspace .admin-data-table.products-table th:last-child {
-  width: 144px;
 }
 .admin-workspace .admin-data-table.groups-table th:last-child {
   width: 96px;

@@ -1,11 +1,7 @@
 "use client";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useSearchParams } from "next/navigation";
-import {
-  catalogSection,
-  catalogSections,
-  navigateCatalogSection,
-} from "./section-navigation";
+import { catalogSection } from "./section-navigation";
 import { ProductThumbnail } from "@/components/ui/product-thumbnail";
 import { Icon } from "@/components/ui/icon";
 import { IconAction } from "@/components/admin/icon-action";
@@ -49,6 +45,8 @@ export function CatalogManager({
   const params = useSearchParams();
   const tab = catalogSection(params.get("seccion"));
   const messageRef = useRef<HTMLParagraphElement>(null);
+  const productEditor = useRef<HTMLFormElement>(null);
+  const productTriggerId = useRef("new-product");
   const [draft, setDraft] = useState<Product | null>(null),
     [plan, setPlan] = useState<ImportPlan | null>(null);
   const [busy, setBusy] = useState(false),
@@ -57,6 +55,19 @@ export function CatalogManager({
     [fileName, setFileName] = useState("");
   const groupEditor = useRef<HTMLFormElement>(null);
   const groupTrigger = useRef<HTMLButtonElement>(null);
+  function closeProductEditor(productId?: string) {
+    const triggerId = productId
+      ? `edit-product-${productId}`
+      : productTriggerId.current;
+    setDraft(null);
+    requestAnimationFrame(() => document.getElementById(triggerId)?.focus());
+  }
+  useEffect(() => {
+    if (draft)
+      productEditor.current
+        ?.querySelector<HTMLInputElement>('input[name="name"]')
+        ?.focus();
+  }, [draft?.id]);
   function closeGroupEditor() {
     const triggerId = groupTrigger.current?.id;
     setGroup(null);
@@ -113,6 +124,8 @@ export function CatalogManager({
       setMessage("Cargá una marca y una categoría antes de crear productos.");
       return;
     }
+    productTriggerId.current = "new-product";
+    setMessage("");
     setDraft({
       id: crypto.randomUUID(),
       name: "",
@@ -168,7 +181,7 @@ export function CatalogManager({
             )
           : [...catalog.products, product],
       };
-      if (await save(next)) setDraft(null);
+      if (await save(next)) closeProductEditor(product.id);
     } catch (error) {
       setMessage(
         error instanceof Error ? error.message : "Revisá los precios.",
@@ -252,19 +265,6 @@ export function CatalogManager({
   );
   return (
     <div className="catalog-manager">
-      <nav className="manager-tabs" aria-label="Gestión del catálogo">
-        {catalogSections.map(([key, label]) => (
-          <button
-            key={key}
-            type="button"
-            aria-current={tab === key ? "page" : undefined}
-            onClick={() => navigateCatalogSection(key)}
-            disabled={busy}
-          >
-            {label}
-          </button>
-        ))}
-      </nav>
       <p className="form-message" role="status" ref={messageRef} tabIndex={-1}>
         {busy ? "Procesando…" : message}
       </p>
@@ -276,109 +276,54 @@ export function CatalogManager({
         {tab === "products" && !draft && (
           <>
             <div className="manager-toolbar">
-              <h2>Productos y variantes</h2>
+              <h2>Productos</h2>
               <button
                 type="button"
                 className="button button-gold"
+                id="new-product"
                 onClick={newProduct}
               >
                 <Icon name="plus" /> Nuevo producto
               </button>
             </div>
-            <AdminTable
-              label="Productos y variantes"
-              className="products-table"
+            <ul
+              className="admin-product-grid"
+              aria-label="Productos del catálogo"
             >
-              <thead>
-                <tr role="row">
-                  <th scope="col">Producto</th>
-                  <th scope="col">Estado</th>
-                  <th scope="col">Variantes</th>
-                  <th scope="col">Stock total</th>
-                  <th scope="col">Acciones</th>
-                </tr>
-              </thead>
-              <tbody role="rowgroup">
-                {catalog.products.map((product) => (
-                  <tr key={product.id} role="row">
-                    <td role="cell" data-label="Producto">
-                      <div className="manager-product-cell">
-                        <ProductThumbnail
-                          src={(() => {
-                            const image = variantImages(
-                              product,
-                              product.variants[0]?.id ?? "",
-                            )[0];
-                            return image
-                              ? imageUrls[image.path] ||
-                                  (imageBase
-                                    ? `${imageBase}/${image.path}`
-                                    : undefined)
-                              : undefined;
-                          })()}
-                          alt={`Foto de ${product.name}`}
-                          size={56}
-                        />
-                        <div>
-                          <strong>{product.name}</strong>
-                          <small>
-                            {
-                              catalog.brands.find(
-                                (item) => item.id === product.brandId,
-                              )?.name
-                            }
-                          </small>
-                        </div>
-                      </div>
-                    </td>
-                    <td role="cell" data-label="Estado">
-                      <span
-                        className="status-badge"
-                        data-active={product.active}
-                      >
-                        {product.active ? "Visible" : "Oculto"}
-                      </span>
-                    </td>
-                    <td role="cell" data-label="Variantes">
-                      {product.variants.length}
-                    </td>
-                    <td role="cell" data-label="Stock total">
-                      {product.variants.reduce(
-                        (sum, item) => sum + item.stock,
-                        0,
-                      )}
-                    </td>
-                    <td role="cell" data-label="Acciones">
-                      <div className="admin-row-actions">
-                        <IconAction
-                          icon="edit"
-                          label={`Editar ${product.name}`}
-                          onClick={() => {
-                            setDraft(structuredClone(product));
-                            setMessage("");
-                          }}
-                        />
-                        <IconAction
-                          icon={product.active ? "eyeOff" : "eye"}
-                          label={`${product.active ? "Ocultar" : "Publicar"} ${product.name}`}
-                          disabled={busy}
-                          onClick={() =>
-                            save({
-                              ...catalog,
-                              products: catalog.products.map((item) =>
-                                item.id === product.id
-                                  ? { ...item, active: !item.active }
-                                  : item,
-                              ),
-                            })
-                          }
-                        />
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </AdminTable>
+              {catalog.products.map((product) => {
+                const image =
+                  variantImages(product, product.variants[0]?.id ?? "")[0] ??
+                  [...product.images].sort(
+                    (a, b) => a.position - b.position,
+                  )[0];
+                const src = image
+                  ? imageUrls[image.path] ||
+                    (imageBase ? `${imageBase}/${image.path}` : undefined)
+                  : undefined;
+                return (
+                  <li key={product.id}>
+                    <button
+                      type="button"
+                      className="admin-product-card"
+                      id={`edit-product-${product.id}`}
+                      aria-label={`Editar ${product.name}`}
+                      onClick={() => {
+                        productTriggerId.current = `edit-product-${product.id}`;
+                        setDraft(structuredClone(product));
+                        setMessage("");
+                      }}
+                    >
+                      <ProductThumbnail
+                        src={src}
+                        alt={`Foto de ${product.name}`}
+                        size={320}
+                      />
+                      <span className="admin-product-name">{product.name}</span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
             {!catalog.products.length && (
               <p className="management-empty">
                 Todavía no hay productos. Cargá el primero o importá un archivo.
@@ -441,6 +386,7 @@ export function CatalogManager({
         )}
         {draft && (
           <form
+            ref={productEditor}
             className="catalog-editor admin-editor"
             onSubmit={submitProduct}
             onInvalid={(event) => {
@@ -462,7 +408,7 @@ export function CatalogManager({
                   type="button"
                   className="text-link"
                   disabled={busy}
-                  onClick={() => setDraft(null)}
+                  onClick={() => closeProductEditor()}
                 >
                   Volver al listado
                 </button>
@@ -490,6 +436,7 @@ export function CatalogManager({
                 <input
                   required
                   maxLength={140}
+                  name="name"
                   value={draft.name}
                   onChange={(event) => {
                     const name = event.target.value;
@@ -865,7 +812,7 @@ export function CatalogManager({
                 type="button"
                 className="button button-outline"
                 disabled={busy}
-                onClick={() => setDraft(null)}
+                onClick={() => closeProductEditor()}
               >
                 Cancelar edición
               </button>

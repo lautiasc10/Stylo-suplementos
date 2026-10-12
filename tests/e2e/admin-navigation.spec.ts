@@ -161,7 +161,7 @@ test("volver a otra tarea conserva promociones, ventas y el stock actualizado", 
   ).toHaveValue("");
 });
 
-test("lateral y pestañas cambian el catálogo sin solicitudes de página y mantienen el historial", async ({
+test("el lateral cambia el catálogo sin solicitudes de página y mantiene el historial", async ({
   page,
 }) => {
   await page.goto("/vista-previa/gestion?origen=prueba");
@@ -172,10 +172,9 @@ test("lateral y pestañas cambian el catálogo sin solicitudes de página y mant
     name: "Administración",
     exact: true,
   });
-  const tabs = page.getByRole("navigation", {
-    name: "Gestión del catálogo",
-    exact: true,
-  });
+  await expect(
+    page.getByRole("navigation", { name: "Gestión del catálogo", exact: true }),
+  ).toHaveCount(0);
   if (
     !(await nav
       .locator("details")
@@ -193,15 +192,13 @@ test("lateral y pestañas cambian el catálogo sin solicitudes de página y mant
     requests.push(route.request().url());
     await route.abort();
   });
-  for (const [section, name, control] of [
-    ["brands", "Marcas", "sidebar"],
-    ["categories", "Categorías", "tabs"],
-    ["import", "Carga masiva", "sidebar"],
-    ["products", "Productos", "tabs"],
+  for (const [section, name] of [
+    ["brands", "Marcas"],
+    ["categories", "Categorías"],
+    ["import", "Carga masiva"],
+    ["products", "Productos"],
   ]) {
-    if (control === "sidebar")
-      await nav.getByRole("link", { name, exact: true }).click();
-    else await tabs.getByRole("button", { name, exact: true }).click();
+    await nav.getByRole("link", { name, exact: true }).click();
     await expect(page).toHaveURL(
       new RegExp(`origen=prueba&seccion=${section}`),
     );
@@ -209,13 +206,10 @@ test("lateral y pestañas cambian el catálogo sin solicitudes de página y mant
       "aria-current",
       "page",
     );
-    await expect(
-      tabs.getByRole("button", { name, exact: true }),
-    ).toHaveAttribute("aria-current", "page");
   }
   await page.goBack();
   await expect(
-    tabs.getByRole("button", { name: "Carga masiva", exact: true }),
+    nav.getByRole("link", { name: "Carga masiva", exact: true }),
   ).toHaveAttribute("aria-current", "page");
   await page.goBack();
   await expect(
@@ -223,13 +217,20 @@ test("lateral y pestañas cambian el catálogo sin solicitudes de página y mant
   ).toBeVisible();
   await page.goForward();
   await expect(
-    tabs.getByRole("button", { name: "Carga masiva", exact: true }),
+    nav.getByRole("link", { name: "Carga masiva", exact: true }),
   ).toHaveAttribute("aria-current", "page");
   expect(requests).toEqual([]);
   await page.unrouteAll();
   await page.reload();
+  await expect(page.getByLabel("Archivo de catálogo")).toBeVisible();
+  if (
+    !(await nav
+      .locator("details")
+      .evaluate((el) => (el as HTMLDetailsElement).open))
+  )
+    await nav.locator("summary").click();
   await expect(
-    tabs.getByRole("button", { name: "Carga masiva", exact: true }),
+    nav.getByRole("link", { name: "Carga masiva", exact: true }),
   ).toHaveAttribute("aria-current", "page");
 });
 

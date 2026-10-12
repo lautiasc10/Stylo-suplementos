@@ -2,6 +2,79 @@ import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { demoCatalog } from "../../src/modules/catalog/demo";
 
+test("productos presenta fotos y nombres, abre edición con teclado y restaura el foco", async ({
+  page,
+}) => {
+  const catalog = demoCatalog();
+  const product = catalog.products[0];
+  const path = `${product.id}/00000000-0000-4000-8000-000000000201.webp`;
+  // Local test payload only; no commercial photograph is replaced.
+  const image = `data:image/webp;base64,${readFileSync("public/branding/logo-principal.webp").toString("base64")}`;
+  product.images = [
+    {
+      id: "00000000-0000-4000-8000-000000000101",
+      path,
+      alt: "Foto de prueba",
+      variantId: product.variants[1].id,
+      position: 0,
+    },
+  ];
+  await page.addInitScript(
+    ({ catalog, path, image }) =>
+      localStorage.setItem(
+        "stylo.catalog-preview.v1",
+        JSON.stringify({ catalog, images: { [path]: image } }),
+      ),
+    { catalog, path, image },
+  );
+  await page.goto("/vista-previa/gestion");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const grid = page.getByRole("list", { name: "Productos del catálogo" });
+  await expect(grid.getByRole("button")).toHaveCount(catalog.products.length);
+  await expect(
+    page.getByRole("table", { name: "Productos y variantes" }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("navigation", { name: "Gestión del catálogo" }),
+  ).toHaveCount(0);
+  const card = grid.getByRole("button", {
+    name: `Editar ${product.name}`,
+    exact: true,
+  });
+  await expect(card).toHaveText(product.name);
+  await expect(card.getByRole("img")).toHaveAttribute("src", image);
+  await card.focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByLabel("Nombre", { exact: true })).toBeFocused();
+  await page
+    .getByRole("button", { name: "Cancelar edición", exact: true })
+    .click();
+  await expect(card).toBeFocused();
+  await card.click();
+  await page
+    .getByRole("button", { name: "Guardar producto", exact: true })
+    .click();
+  await expect(card).toBeFocused();
+  await card
+    .getByRole("img")
+    .evaluate((img) => img.dispatchEvent(new Event("error")));
+  await expect(
+    card.getByRole("img", { name: "Sin fotografía disponible" }),
+  ).toBeVisible();
+  await expect(card).toHaveText(product.name);
+  for (const width of [320, 390, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+    const box = await card.boundingBox();
+    expect(box!.width).toBeGreaterThanOrEqual(100);
+    expect(box!.height).toBeGreaterThanOrEqual(48);
+  }
+});
+
 test("crear promociones y registros abre una tarea y cancelar vuelve al listado sin guardar", async ({
   page,
 }) => {

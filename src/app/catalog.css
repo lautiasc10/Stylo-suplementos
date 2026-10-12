@@ -629,15 +629,13 @@
   font-size: var(--text-sm);
   margin-block: var(--space-6);
 }
-.preview-links,
-.manager-tabs {
+.preview-links {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-3);
   margin-bottom: var(--space-8);
 }
-.preview-links a,
-.manager-tabs button {
+.preview-links a {
   display: inline-flex;
   align-items: center;
   min-height: 48px;
@@ -648,9 +646,7 @@
   color: #fff;
   font-size: var(--text-sm);
 }
-.preview-links a:hover,
-.manager-tabs button:hover,
-.manager-tabs button[aria-current] {
+.preview-links a:hover {
   border-color: var(--gold);
   color: var(--gold);
 }
@@ -868,9 +864,6 @@ textarea:focus-visible {
   padding: 0;
   margin: 0;
   min-width: 0;
-}
-.products-table td:first-child {
-  min-width: 200px;
 }
 .inventory-threshold {
   display: flex;

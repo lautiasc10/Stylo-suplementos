@@ -197,7 +197,18 @@ test("edición de precio, stock e imágenes persiste sin tocar la tienda real", 
 
 test("alta de marca y producto, ocultación y stock bajo", async ({ page }) => {
   await page.goto("/vista-previa/gestion");
-  await page.getByRole("button", { name: "Marcas", exact: true }).click();
+  const menu = page
+    .getByRole("navigation", { name: "Administración", exact: true })
+    .locator("details");
+  await expect(
+    page.getByRole("button", { name: "Nuevo producto", exact: true }),
+  ).toBeVisible();
+  if (!(await menu.evaluate((el) => (el as HTMLDetailsElement).open)))
+    await menu.locator("summary").click();
+  await page
+    .getByRole("navigation", { name: "Administración", exact: true })
+    .getByRole("link", { name: "Marcas", exact: true })
+    .click();
   await page.getByRole("button", { name: "Nueva marca", exact: true }).click();
   await page
     .getByLabel("Nombre", { exact: true })
@@ -211,7 +222,10 @@ test("alta de marca y producto, ocultación y stock bajo", async ({ page }) => {
     .getByRole("button", { name: "Guardar marca", exact: true })
     .click();
   await expect(page.getByRole("status")).toContainText("Cambios guardados.");
-  await page.getByRole("button", { name: "Productos", exact: true }).click();
+  await page
+    .getByRole("navigation", { name: "Administración", exact: true })
+    .getByRole("link", { name: "Productos", exact: true })
+    .click();
   await page
     .getByRole("button", { name: "Nuevo producto", exact: true })
     .click();
@@ -239,11 +253,24 @@ test("alta de marca y producto, ocultación y stock bajo", async ({ page }) => {
     .getByRole("button", { name: "Guardar umbral", exact: true })
     .click();
   await expect(page.locator(".low-stock-list")).toContainText("LOCAL-01");
-  const row = page
-    .getByRole("row")
-    .filter({ hasText: "Accesorio local de prueba" });
-  await row.getByRole("button", { name: /^Ocultar / }).click();
-  await expect(row).toContainText("Oculto");
+  await page
+    .getByRole("button", {
+      name: "Editar Accesorio local de prueba",
+      exact: true,
+    })
+    .click();
+  await page.getByLabel("Visible en la tienda").uncheck();
+  await page
+    .getByRole("button", { name: "Guardar producto", exact: true })
+    .click();
+  await expect(page.getByRole("status")).toContainText("Cambios guardados.");
+  // Hidden products stay available to the administrator for later editing.
+  await expect(
+    page.getByRole("button", {
+      name: "Editar Accesorio local de prueba",
+      exact: true,
+    }),
+  ).toBeVisible();
   await page.goto("/vista-previa");
   await expect(page.locator(".product-card")).toHaveCount(4);
 });
@@ -252,7 +279,18 @@ test("CSV previsualiza antes de aplicar y conserva variantes omitidas", async ({
   page,
 }) => {
   await page.goto("/vista-previa/gestion");
-  await page.getByRole("button", { name: "Carga masiva", exact: true }).click();
+  const menu = page
+    .getByRole("navigation", { name: "Administración", exact: true })
+    .locator("details");
+  await expect(
+    page.getByRole("button", { name: "Nuevo producto", exact: true }),
+  ).toBeVisible();
+  if (!(await menu.evaluate((el) => (el as HTMLDetailsElement).open)))
+    await menu.locator("summary").click();
+  await page
+    .getByRole("navigation", { name: "Administración", exact: true })
+    .getByRole("link", { name: "Carga masiva", exact: true })
+    .click();
   await page.getByLabel("Archivo de catálogo").setInputFiles({
     name: "catalog.csv",
     mimeType: "text/csv",
@@ -281,7 +319,18 @@ test("Excel real se lee en el navegador y un lote duplicado queda bloqueado", as
   page,
 }) => {
   await page.goto("/vista-previa/gestion");
-  await page.getByRole("button", { name: "Carga masiva", exact: true }).click();
+  const menu = page
+    .getByRole("navigation", { name: "Administración", exact: true })
+    .locator("details");
+  await expect(
+    page.getByRole("button", { name: "Nuevo producto", exact: true }),
+  ).toBeVisible();
+  if (!(await menu.evaluate((el) => (el as HTMLDetailsElement).open)))
+    await menu.locator("summary").click();
+  await page
+    .getByRole("navigation", { name: "Administración", exact: true })
+    .getByRole("link", { name: "Carga masiva", exact: true })
+    .click();
   await page
     .getByLabel("Archivo de catálogo")
     .setInputFiles("tests/fixtures/catalog.xlsx");
