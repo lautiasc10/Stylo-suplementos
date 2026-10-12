@@ -73,6 +73,9 @@ test("admin configura cantidad con dos precios y checkout revalida sin guardar d
 }) => {
   await page.goto("/vista-previa/promociones");
   await page
+    .getByRole("button", { name: "Crear promoción", exact: true })
+    .click();
+  await page
     .getByLabel("Nombre de promoción", { exact: true })
     .fill("Cantidad de prueba");
   await page
@@ -134,6 +137,9 @@ test("gestión permite editar un combo y registra un retiro una vez sin desconta
 }) => {
   await page.goto("/vista-previa/promociones");
   await page
+    .getByRole("button", { name: "Crear promoción", exact: true })
+    .click();
+  await page
     .getByLabel("Nombre de promoción", { exact: true })
     .fill("Combo de prueba");
   await page
@@ -173,6 +179,9 @@ test("gestión permite editar un combo y registra un retiro una vez sin desconta
   await expect(page.getByRole("status")).toHaveText("Promociones guardadas.");
   await page.goto("/vista-previa/pedidos");
   await page
+    .getByRole("button", { name: "Crear venta o retiro", exact: true })
+    .click();
+  await page
     .getByLabel("Nombre del cliente", { exact: true })
     .fill("Retiro ficticio");
   await page
@@ -187,9 +196,10 @@ test("gestión permite editar un combo y registra un retiro una vez sin desconta
   await page
     .getByRole("button", { name: "Registrar retiro pendiente", exact: true })
     .click();
-  await page
-    .getByRole("button", { name: "Registrar retiro pendiente", exact: true })
-    .click();
+  await expect(page.locator(".manual-orders form")).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Crear venta o retiro", exact: true }),
+  ).toBeFocused();
   await expect(page.locator(".promotion-row")).toHaveCount(1);
   await expect(page.locator(".promotion-row")).toContainText("49.000,00");
   await expect(page.locator(".promotion-row")).toContainText("Pago pendiente");
@@ -239,6 +249,9 @@ test("venta presencial requiere confirmar cobro y entrega, y descuenta stock una
 }) => {
   await page.goto("/vista-previa/pedidos");
   await page
+    .getByRole("button", { name: "Crear venta o retiro", exact: true })
+    .click();
+  await page
     .getByRole("combobox", { name: "Tipo de registro", exact: true })
     .selectOption("cash-sale");
   await page
@@ -263,7 +276,17 @@ test("venta presencial requiere confirmar cobro y entrega, y descuenta stock una
   await expect(page.locator(".promotion-row")).toContainText(
     "Efectivo cobrado · Entregado",
   );
-  await submit.click();
+  await expect(submit).toHaveCount(0);
+  await page
+    .getByRole("button", { name: "Crear venta o retiro", exact: true })
+    .click();
+  await expect(
+    page.getByLabel("Nombre del cliente", { exact: true }),
+  ).toHaveValue("");
+  await expect(
+    page.getByRole("combobox", { name: "Tipo de registro", exact: true }),
+  ).toHaveValue("pickup");
+  await page.getByRole("button", { name: "Cancelar", exact: true }).click();
   await expect(page.locator(".promotion-row")).toHaveCount(1);
   expect(
     await page.evaluate(

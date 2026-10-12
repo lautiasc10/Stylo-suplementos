@@ -2,6 +2,98 @@ import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { demoCatalog } from "../../src/modules/catalog/demo";
 
+test("crear promociones y registros abre una tarea y cancelar vuelve al listado sin guardar", async ({
+  page,
+}) => {
+  for (const [path, create, field] of [
+    ["promociones", "Crear promoción", "Nombre de promoción"],
+    ["pedidos", "Crear venta o retiro", "Nombre del cliente"],
+  ]) {
+    await page.goto(`/vista-previa/${path}`);
+    await expect(page.getByLabel(field, { exact: true })).toHaveCount(0);
+    const button = page.getByRole("button", { name: create, exact: true });
+    await button.click();
+    const input = page.getByLabel(field, { exact: true });
+    await expect(input).toBeVisible();
+    if (path === "promociones") await expect(input).toBeFocused();
+    else
+      await expect(
+        page.getByRole("combobox", { name: "Tipo de registro", exact: true }),
+      ).toBeFocused();
+    await input.fill("Borrador sin guardar");
+    await page.getByRole("button", { name: "Cancelar", exact: true }).click();
+    await expect(button).toBeFocused();
+    await expect(page.locator(".promotion-row")).toHaveCount(0);
+    await button.click();
+    await expect(input).toHaveValue("");
+    await page.getByRole("button", { name: "Cancelar", exact: true }).click();
+  }
+});
+
+test("marcas y categorías muestran columnas claras y se editan sin perder orden ni visibilidad", async ({
+  page,
+}) => {
+  const catalog = demoCatalog();
+  catalog.brands[0].name =
+    "Marca de prueba con un nombre extenso para verificar la distribución de las columnas";
+  catalog.brands[0].slug = "marca-" + "larga".repeat(17);
+  catalog.categories[0].detail =
+    "Descripción de prueba suficientemente extensa para revisar la lectura de la categoría en celular.";
+  await page.addInitScript((catalog) => {
+    localStorage.setItem(
+      "stylo.catalog-preview.v1",
+      JSON.stringify({ catalog, images: {} }),
+    );
+  }, catalog);
+  for (const [section, label, group, save] of [
+    ["brands", "Marcas del catálogo", catalog.brands[0], "Guardar marca"],
+    [
+      "categories",
+      "Categorías del catálogo",
+      catalog.categories[0],
+      "Guardar categoría",
+    ],
+  ] as const) {
+    await page.goto(`/vista-previa/gestion?seccion=${section}`);
+    const table = page.getByRole("table", { name: label });
+    await expect(table.getByRole("columnheader")).toHaveCount(4);
+    const row = table.getByRole("row").filter({ hasText: group.name });
+    await expect(row).toContainText(`URL: ${group.slug}`);
+    await expect(row.getByRole("cell")).toHaveCount(4);
+    const edit = row.getByRole("button", {
+      name: `Editar ${group.name}`,
+      exact: true,
+    });
+    await expect(edit).toHaveText("Editar");
+    await edit.click();
+    await expect(page.getByLabel("Nombre", { exact: true })).toBeFocused();
+    await expect(page.getByLabel("URL", { exact: true })).toHaveValue(
+      group.slug,
+    );
+    await page.getByLabel("Orden", { exact: true }).fill("12");
+    await page
+      .getByRole("checkbox", { name: "Visible", exact: true })
+      .uncheck();
+    await page.getByRole("button", { name: save, exact: true }).click();
+    await expect(page.getByRole("status")).toHaveText("Cambios guardados.");
+    await expect(edit).toBeFocused();
+    await expect(row.locator(".status-badge")).toHaveText("Oculta");
+    await expect(row.locator(".group-order")).toHaveText("12");
+    for (const width of [320, 768, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await expect(edit).toBeVisible();
+      expect(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth,
+        ),
+      ).toBe(true);
+      expect(
+        await table.evaluate((el) => el.scrollWidth <= el.clientWidth),
+      ).toBe(true);
+    }
+  }
+});
+
 test("la foto del carrito corresponde a la variante y un fallo conserva la información", async ({
   page,
 }) => {
@@ -142,6 +234,9 @@ test("quitar una promoción permite cancelar y devuelve el foco al listado", asy
 }) => {
   await page.goto("/vista-previa/promociones");
   await page
+    .getByRole("button", { name: "Crear promoción", exact: true })
+    .click();
+  await page
     .getByLabel("Nombre de promoción", { exact: true })
     .fill("Rebaja de prueba");
   await page
@@ -186,6 +281,14 @@ test("320 px y tablet no desbordan en carrito, edición, promociones y checkout"
       "/vista-previa/gestion",
     ]) {
       await page.goto(path);
+      if (path.endsWith("promociones"))
+        await page
+          .getByRole("button", { name: "Crear promoción", exact: true })
+          .click();
+      if (path.endsWith("pedidos"))
+        await page
+          .getByRole("button", { name: "Crear venta o retiro", exact: true })
+          .click();
       if (path.endsWith("gestion"))
         await page
           .getByRole("button", { name: "Nuevo producto", exact: true })

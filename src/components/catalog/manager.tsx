@@ -50,6 +50,18 @@ export function CatalogManager({
     [message, setMessage] = useState("");
   const [group, setGroup] = useState<CatalogGroup | null>(null),
     [fileName, setFileName] = useState("");
+  const groupEditor = useRef<HTMLFormElement>(null);
+  const groupTrigger = useRef<HTMLButtonElement>(null);
+  function closeGroupEditor() {
+    setGroup(null);
+    requestAnimationFrame(() => groupTrigger.current?.focus());
+  }
+  useEffect(() => {
+    if (group)
+      groupEditor.current
+        ?.querySelector<HTMLInputElement>('input[name="name"]')
+        ?.focus();
+  }, [group?.id]);
   const currentTab = useRef(tab);
   currentTab.current = tab;
   useEffect(() => {
@@ -884,22 +896,25 @@ export function CatalogManager({
               <button
                 type="button"
                 className="button button-gold"
-                onClick={() =>
+                disabled={busy}
+                onClick={(event) => {
+                  groupTrigger.current = event.currentTarget;
                   setGroup({
                     id: crypto.randomUUID(),
                     name: "",
                     slug: "",
                     active: true,
                     sortOrder: groups.length,
-                  })
-                }
+                  });
+                }}
               >
                 {tab === "brands" ? "Nueva marca" : "Nueva categoría"}
               </button>
             </div>
             {group && (
               <form
-                className="editor-fields"
+                className="editor-fields group-editor"
+                ref={groupEditor}
                 key={group.id}
                 onSubmit={async (event) => {
                   event.preventDefault();
@@ -923,9 +938,16 @@ export function CatalogManager({
                         : [...groups, nextGroup],
                     })
                   )
-                    setGroup(null);
+                    closeGroupEditor();
                 }}
               >
+                <h3 className="editor-wide">
+                  {group.name
+                    ? `Editar ${group.name}`
+                    : tab === "brands"
+                      ? "Nueva marca"
+                      : "Nueva categoría"}
+                </h3>
                 <label>
                   Nombre
                   <input
@@ -1015,52 +1037,111 @@ export function CatalogManager({
                   />
                   Visible
                 </label>
-                <button className="button button-gold" disabled={busy}>
-                  Guardar {tab === "brands" ? "marca" : "categoría"}
-                </button>
-                <button
-                  type="button"
-                  className="text-link"
-                  onClick={() => setGroup(null)}
-                >
-                  Cancelar
-                </button>
+                <div className="management-actions editor-wide">
+                  <button className="button button-gold" disabled={busy}>
+                    Guardar {tab === "brands" ? "marca" : "categoría"}
+                  </button>
+                  <button
+                    type="button"
+                    className="button button-outline"
+                    disabled={busy}
+                    onClick={closeGroupEditor}
+                  >
+                    Cancelar
+                  </button>
+                </div>
               </form>
             )}
-            <div className="manager-table-wrap">
-              <table className="manager-table">
-                <thead>
-                  <tr>
-                    <th>Nombre</th>
-                    <th>URL</th>
-                    <th>Estado</th>
-                    <th>Orden</th>
-                    <th>Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[...groups]
-                    .sort((a, b) => a.sortOrder - b.sortOrder)
-                    .map((item) => (
-                      <tr key={item.id}>
-                        <td>{item.name}</td>
-                        <td>{item.slug}</td>
-                        <td>{item.active ? "Visible" : "Oculta"}</td>
-                        <td>{item.sortOrder}</td>
-                        <td>
-                          <button
-                            type="button"
-                            className="text-link"
-                            onClick={() => setGroup(item)}
-                          >
-                            Editar {item.name}
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
+            {!groups.length ? (
+              <p className="management-empty">
+                Todavía no hay {tab === "brands" ? "marcas" : "categorías"}.
+                Creá la primera para organizar el catálogo.
+              </p>
+            ) : (
+              <div className="manager-table-wrap groups-table-wrap">
+                <table
+                  className="manager-table groups-table"
+                  role="table"
+                  aria-label={
+                    tab === "brands"
+                      ? "Marcas del catálogo"
+                      : "Categorías del catálogo"
+                  }
+                >
+                  <thead>
+                    <tr role="row">
+                      <th scope="col">
+                        {tab === "brands" ? "Marca" : "Categoría"}
+                      </th>
+                      <th scope="col">Estado</th>
+                      <th scope="col">Orden</th>
+                      <th scope="col">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[...groups]
+                      .sort((a, b) => a.sortOrder - b.sortOrder)
+                      .map((item) => (
+                        <tr key={item.id} role="row">
+                          <td role="cell">
+                            <div className="group-identity">
+                              {tab === "brands" &&
+                                item.logo &&
+                                (imageBase || imageUrls[item.logo]) && (
+                                  <img
+                                    className="group-logo"
+                                    src={
+                                      imageUrls[item.logo] ||
+                                      imageBase + "/" + item.logo
+                                    }
+                                    alt=""
+                                    width={48}
+                                    height={48}
+                                    loading="lazy"
+                                  />
+                                )}
+                              <div>
+                                <strong>{item.name}</strong>
+                                <small>URL: {item.slug}</small>
+                                {tab === "categories" && item.detail && (
+                                  <small>{item.detail}</small>
+                                )}
+                              </div>
+                            </div>
+                          </td>
+                          <td role="cell" data-label="Estado">
+                            <span
+                              className="status-badge"
+                              data-active={item.active}
+                            >
+                              {item.active ? "Visible" : "Oculta"}
+                            </span>
+                          </td>
+                          <td role="cell" data-label="Orden">
+                            <span className="group-order">
+                              {item.sortOrder}
+                            </span>
+                          </td>
+                          <td role="cell">
+                            <button
+                              type="button"
+                              className="text-link"
+                              aria-label={`Editar ${item.name}`}
+                              disabled={busy}
+                              onClick={(event) => {
+                                groupTrigger.current = event.currentTarget;
+                                setGroup(item);
+                              }}
+                            >
+                              Editar
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </>
         )}
         {tab === "import" && (

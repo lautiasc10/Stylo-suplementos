@@ -26,7 +26,7 @@ Accesibilidad: controles cómodos, foco visible, labels reales, mensajes anuncia
 
 - Compilación de producción y comprobación TypeScript correctas.
 - 52 pruebas unitarias/PostgreSQL correctas: precios, promociones, stock, permisos, MFA e idempotencia; incluye selección de fotografía de variante, alternativa general y rechazo de fotos de otra presentación.
-- 74 recorridos Chromium correctos, en escritorio y emulación móvil. Cubren catálogo, edición/importación, carrito, promociones, checkout de revisión, ventas manuales y protección administrativa. Última ejecución en PowerShell: `$env:PLAYWRIGHT_PORT='3001'; npx.cmd playwright test --workers=4`, con credenciales vacías y sin escrituras en Supabase.
+- 78 recorridos Chromium correctos, en escritorio y emulación móvil. Cubren catálogo, edición/importación, carrito, promociones, checkout de revisión, ventas manuales y protección administrativa. Última ejecución en PowerShell: `$env:PLAYWRIGHT_PORT='3001'; npx.cmd playwright test --workers=4`, con credenciales vacías y sin escrituras en Supabase.
 - Recorridos nuevos: fotografía y fallo de imagen, cambio de visualización de precios, confirmación/cancelación de eliminación, foco al cerrar el lateral y al eliminar, carrito largo y pantalla horizontal, navegación administrativa y cambio de tamaño, edición por secciones, 320/768/1024 px sin desbordamiento.
 - Revisión visual a 390/1440 px con movimiento reducido, sin excepciones de JavaScript en las capturas. Se conserva navegación pública sin JavaScript y acciones de servidor de carrito; los selectores que recalculan la presentación del precio permanecen deshabilitados hasta la hidratación.
 - Contrastes medidos del sistema: texto secundario sobre superficie elevada 8,86:1; dorado sobre superficie elevada 8,30:1; texto negro sobre botón dorado 9,45:1; borde de control sobre superficie elevada 3,71:1. Los estados también se comunican con texto y foco visible.
@@ -39,13 +39,26 @@ El panel se verificó con datos locales de prueba, usando los mismos componentes
 
 ## Capturas
 
+### Revisión de gestión del 12 de octubre
+
+Ventas y retiros y Promociones comienzan con el listado y una acción de crear. El formulario sustituye al listado al crear o editar; guardar correctamente vuelve al listado y cancelar descarta el borrador sin escribir. Reabrir creación presenta campos vacíos. Los errores conservan el formulario para corregirlo. El foco entra al primer campo y vuelve al botón de creación al cerrar.
+
+Marcas y categorías pasan de cinco columnas a cuatro: nombre con URL y descripción cuando corresponde, estado textual, orden y acción «Editar» con nombre accesible específico. Se conservan los logos cargados. Las columnas secundarias tienen anchos definidos y las URLs largas se parten sin desbordar. En celular las filas se presentan en bloques con etiquetas de estado y orden, conservando la semántica de tabla. Los formularios tienen título y acciones agrupadas; al cerrar o guardar, el foco vuelve al botón que abrió la edición.
+
+Se verificaron apertura/cancelación sin guardado, reapertura limpia, edición de combos, guardado de ventas y retiros, estado y orden de marcas/categorías y nombres/URLs extensos a 320/768/1440 px. Compilación y 52 pruebas unitarias/PostgreSQL correctas; suite completa de 78 recorridos Chromium correcta. Se revisaron capturas de escritorio y celular con movimiento reducido, sin excepciones JavaScript. Estas pruebas usan datos ficticios locales y no escriben en el proyecto Supabase del usuario.
+
 Las imágenes de revisión de gestión y compra usan datos ficticios de la vista previa, claramente identificados. Los marcadores de fotografía indican que esos datos de prueba no contienen fotos comerciales; no se sustituyeron fotografías reales por imágenes de marca o generadas.
 
-| Vista                | Escritorio                                          | Celular                                            |
-| -------------------- | --------------------------------------------------- | -------------------------------------------------- |
-| Carrito lateral      | [Captura](previews/rediseno-cart-desktop.png)       | [Captura](previews/rediseno-cart-mobile.png)       |
-| Gestión del catálogo | [Captura](previews/rediseno-admin-desktop.png)      | [Captura](previews/rediseno-admin-mobile.png)      |
-| Editor de producto   | [Captura](previews/rediseno-editor-desktop.png)     | [Captura](previews/rediseno-editor-mobile.png)     |
-| Checkout             | [Captura](previews/rediseno-checkout-desktop.png)   | [Captura](previews/rediseno-checkout-mobile.png)   |
-| Promociones          | [Captura](previews/rediseno-promotions-desktop.png) | [Captura](previews/rediseno-promotions-mobile.png) |
-| Portada              | [Captura](previews/rediseno-home-desktop.png)       | [Captura](previews/rediseno-home-mobile.png)       |
+| Vista                | Escritorio                                                | Celular                                                  |
+| -------------------- | --------------------------------------------------------- | -------------------------------------------------------- |
+| Carrito lateral      | [Captura](previews/rediseno-cart-desktop.png)             | [Captura](previews/rediseno-cart-mobile.png)             |
+| Gestión del catálogo | [Captura](previews/rediseno-admin-desktop.png)            | [Captura](previews/rediseno-admin-mobile.png)            |
+| Editor de producto   | [Captura](previews/rediseno-editor-desktop.png)           | [Captura](previews/rediseno-editor-mobile.png)           |
+| Checkout             | [Captura](previews/rediseno-checkout-desktop.png)         | [Captura](previews/rediseno-checkout-mobile.png)         |
+| Promociones          | [Captura](previews/rediseno-promotions-desktop.png)       | [Captura](previews/rediseno-promotions-mobile.png)       |
+| Crear promoción      | [Captura](previews/rediseno-promotion-editor-desktop.png) | [Captura](previews/rediseno-promotion-editor-mobile.png) |
+| Ventas y retiros     | [Captura](previews/rediseno-orders-desktop.png)           | [Captura](previews/rediseno-orders-mobile.png)           |
+| Crear venta o retiro | [Captura](previews/rediseno-order-editor-desktop.png)     | [Captura](previews/rediseno-order-editor-mobile.png)     |
+| Marcas               | [Captura](previews/rediseno-brands-desktop.png)           | [Captura](previews/rediseno-brands-mobile.png)           |
+| Categorías           | [Captura](previews/rediseno-categories-desktop.png)       | [Captura](previews/rediseno-categories-mobile.png)       |
+| Portada              | [Captura](previews/rediseno-home-desktop.png)             | [Captura](previews/rediseno-home-mobile.png)             |
