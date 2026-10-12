@@ -15,6 +15,9 @@ import {
 import { savePromotions } from "@/modules/commerce/actions";
 import { previewCatalog } from "./cart-provider";
 import { ConfirmAction } from "@/components/ui/confirm-action";
+import { AdminTable } from "@/components/admin/data-table";
+import { IconAction } from "@/components/admin/icon-action";
+import { Icon } from "@/components/ui/icon";
 function localDate(value?: string | null) {
   if (!value) return "";
   const date = new Date(value);
@@ -141,7 +144,7 @@ export function PromotionsManager({
               setEditorOpen(true);
             }}
           >
-            Crear promoción
+            <Icon name="plus" /> Crear promoción
           </button>
         )}
       </div>
@@ -176,86 +179,120 @@ export function PromotionsManager({
                 tienda.
               </p>
             )}
-            {state.promotions.map((p) => (
-              <article key={p.id} className="promotion-row">
-                <div>
-                  <h2>{p.name}</h2>
-                  <p>
-                    {p.kind === "bundle"
-                      ? "Combo"
-                      : p.kind === "quantity"
-                        ? "Por cantidad"
-                        : "Rebaja"}{" "}
-                    ·{" "}
-                    <span className="status-badge" data-active={p.active}>
-                      {p.active ? "Activa" : "Pausada"}
-                    </span>
-                  </p>
-                  <p>
-                    Lista: {formatPrice(p.listPrice)} · Efectivo /
-                    transferencia: {formatPrice(p.cashPrice)}
-                  </p>
-                  <ul>
-                    {p.components.map((c) => (
-                      <li key={c.variantId}>
-                        {variants.find((v) => v.value === c.variantId)?.label ??
-                          "Presentación retirada"}{" "}
-                        × {c.quantity}
-                      </li>
-                    ))}
-                  </ul>
-                  {p.startsAt && (
-                    <p>Desde {new Date(p.startsAt).toLocaleString("es-AR")}</p>
-                  )}
-                  {p.endsAt && (
-                    <p>Hasta {new Date(p.endsAt).toLocaleString("es-AR")}</p>
-                  )}
-                </div>
-                <div className="management-actions">
-                  <button
-                    className="button button-outline"
-                    aria-label={`${p.active ? "Pausar" : "Activar"} ${p.name}`}
-                    disabled={busy}
-                    onClick={() =>
-                      void commit(
-                        state.promotions.map((item) =>
-                          item.id === p.id
-                            ? { ...item, active: !item.active }
-                            : item,
-                        ),
-                      )
-                    }
-                  >
-                    {p.active ? "Pausar" : "Activar"}
-                  </button>
-                  <button
-                    className="text-link"
-                    aria-label={`Editar ${p.name}`}
-                    disabled={busy}
-                    onClick={() => {
-                      setEditing(p);
-                      setKind(p.kind);
-                      setComponents(p.components.map((c) => ({ ...c })));
-                      setNotice("");
-                      setEditorOpen(true);
-                    }}
-                  >
-                    Editar
-                  </button>
-                  <ConfirmAction
-                    focusAfterId="promotions-heading"
-                    label={`Quitar ${p.name}`}
-                    question={`¿Eliminar la promoción ${p.name}?`}
-                    busy={busy}
-                    onConfirm={() =>
-                      commit(
-                        state.promotions.filter((item) => item.id !== p.id),
-                      )
-                    }
-                  />
-                </div>
-              </article>
-            ))}
+            {state.promotions.length > 0 && (
+              <AdminTable
+                label="Promociones guardadas"
+                className="promotions-table"
+              >
+                <thead>
+                  <tr role="row">
+                    <th scope="col">Promoción</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Precios finales</th>
+                    <th scope="col">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody role="rowgroup">
+                  {state.promotions.map((p) => (
+                    <tr key={p.id} role="row">
+                      <td
+                        role="cell"
+                        data-label="Promoción"
+                        className="admin-identity"
+                      >
+                        <strong>{p.name}</strong>
+                        <small>
+                          {p.kind === "bundle"
+                            ? "Combo"
+                            : p.kind === "quantity"
+                              ? "Por cantidad"
+                              : "Rebaja"}
+                        </small>
+                        <ul className="admin-line-items">
+                          {p.components.map((c) => (
+                            <li key={c.variantId}>
+                              {variants.find((v) => v.value === c.variantId)
+                                ?.label ?? "Presentación retirada"}{" "}
+                              × {c.quantity}
+                            </li>
+                          ))}
+                        </ul>
+                        {p.startsAt && (
+                          <small>
+                            Desde {new Date(p.startsAt).toLocaleString("es-AR")}
+                          </small>
+                        )}
+                        {p.endsAt && (
+                          <small>
+                            Hasta {new Date(p.endsAt).toLocaleString("es-AR")}
+                          </small>
+                        )}
+                      </td>
+                      <td role="cell" data-label="Estado">
+                        <span className="status-badge" data-active={p.active}>
+                          {p.active ? "Activa" : "Pausada"}
+                        </span>
+                      </td>
+                      <td
+                        role="cell"
+                        data-label="Precios finales"
+                        className="admin-prices"
+                      >
+                        <small>Lista</small>
+                        <strong>{formatPrice(p.listPrice)}</strong>
+                        <small>Efectivo / transferencia</small>
+                        <strong>{formatPrice(p.cashPrice)}</strong>
+                      </td>
+                      <td role="cell" data-label="Acciones">
+                        <div className="admin-row-actions">
+                          <IconAction
+                            label={`${p.active ? "Pausar" : "Activar"} ${p.name}`}
+                            icon={p.active ? "pause" : "play"}
+                            disabled={busy}
+                            onClick={() =>
+                              void commit(
+                                state.promotions.map((item) =>
+                                  item.id === p.id
+                                    ? { ...item, active: !item.active }
+                                    : item,
+                                ),
+                              )
+                            }
+                          />
+                          <IconAction
+                            label={`Editar ${p.name}`}
+                            icon="edit"
+                            disabled={busy}
+                            onClick={() => {
+                              setEditing(p);
+                              setKind(p.kind);
+                              setComponents(
+                                p.components.map((c) => ({ ...c })),
+                              );
+                              setNotice("");
+                              setEditorOpen(true);
+                            }}
+                          />
+                          <ConfirmAction
+                            focusAfterId="promotions-heading"
+                            label={`Quitar ${p.name}`}
+                            question={`¿Eliminar la promoción ${p.name}?`}
+                            busy={busy}
+                            onConfirm={() =>
+                              commit(
+                                state.promotions.filter(
+                                  (item) => item.id !== p.id,
+                                ),
+                              )
+                            }
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </AdminTable>
+            )}
           </div>
         )}
         {editorOpen && (
@@ -263,7 +300,7 @@ export function PromotionsManager({
             ref={editor}
             method="post"
             key={editing?.id ?? "new"}
-            className="checkout-form promotion-editor"
+            className="checkout-form admin-editor promotion-editor"
             onSubmit={async (event) => {
               event.preventDefault();
               const form = event.currentTarget,
@@ -455,15 +492,14 @@ export function PromotionsManager({
                           }
                         />
                       </label>
-                      <button
+                      <IconAction
                         type="button"
-                        className="text-link"
+                        label={`Quitar componente ${i + 1}`}
+                        icon="trash"
                         onClick={() =>
                           setComponents(components.filter((_, j) => j !== i))
                         }
-                      >
-                        Quitar componente {i + 1}
-                      </button>
+                      />
                     </div>
                   ))}
                   <button
@@ -494,19 +530,20 @@ export function PromotionsManager({
                 Sin fechas, la promoción permanece vigente hasta pausarla. Si el
                 precio no mejora el habitual, no se aplica.
               </p>
-              <div className="management-actions">
-                <button className="button button-gold" disabled={busy}>
-                  Guardar promoción
-                </button>
-                <button
-                  type="button"
-                  className="button button-outline"
-                  onClick={closeEditor}
-                >
-                  Cancelar
-                </button>
-              </div>
             </fieldset>
+            <div className="editor-actions">
+              <button
+                type="button"
+                className="button button-outline"
+                disabled={busy}
+                onClick={closeEditor}
+              >
+                Cancelar
+              </button>
+              <button className="button button-gold" disabled={busy}>
+                Guardar promoción
+              </button>
+            </div>
           </form>
         )}
       </div>

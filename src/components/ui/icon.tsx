@@ -13,11 +13,26 @@ const paths = {
     "M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z",
 } as const;
 
+// Simple outlined actions drawn locally to match the existing 24 px icon system.
+const actionPaths = {
+  edit: "M48 176 176 48 208 80 80 208 48 208Z M152 72 184 104",
+  trash:
+    "M40 64H216 M96 64V32H160V64 M64 64 80 224H176L192 64 M104 104V184 M152 104V184",
+  eye: "M24 128Q128 8 232 128Q128 248 24 128Z M160 128A32 32 0 1 1 96 128A32 32 0 1 1 160 128",
+  eyeOff:
+    "M40 40 216 216 M72 56Q160 24 232 128Q208 160 184 176 M152 200Q80 224 24 128Q40 104 56 88 M104 104 152 152",
+  pause: "M88 48V208 M168 48V208",
+  play: "M80 40 216 128 80 216Z",
+  plus: "M128 48V208 M48 128H208",
+  back: "M112 56 40 128 112 200 M40 128H216",
+} as const;
+export type IconName = keyof typeof paths | keyof typeof actionPaths;
+
 export function Icon({
   name,
   className = "",
 }: {
-  name: keyof typeof paths;
+  name: IconName;
   className?: string;
 }) {
   return (
@@ -28,7 +43,18 @@ export function Icon({
       aria-hidden="true"
       focusable="false"
     >
-      <path d={paths[name]} />
+      {name in actionPaths ? (
+        <path
+          d={actionPaths[name as keyof typeof actionPaths]}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={16}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      ) : (
+        <path d={paths[name as keyof typeof paths]} />
+      )}
     </svg>
   );
 }

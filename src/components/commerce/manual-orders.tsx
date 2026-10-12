@@ -11,6 +11,28 @@ import { previewCatalog, previewPromotions } from "./cart-provider";
 import type { CartItem } from "@/modules/commerce/cart";
 import { quoteCart } from "@/modules/commerce/cart";
 import type { Promotion } from "@/modules/commerce/promotions";
+import { AdminTable } from "@/components/admin/data-table";
+import { IconAction } from "@/components/admin/icon-action";
+import { Icon } from "@/components/ui/icon";
+
+type OrderRecord = {
+  id: string;
+  customer: { name: string; phone?: string };
+  snapshot: {
+    total: number;
+    lines?: {
+      variantId: string;
+      name: string;
+      quantity: number;
+      label?: string;
+      flavor?: string;
+      size?: string;
+      presentation?: string;
+    }[];
+  };
+  created_at: string;
+  payment_status?: string;
+};
 export function ManualOrders({
   catalog: initial,
   orders = [],
@@ -18,13 +40,7 @@ export function ManualOrders({
   promotions: initialPromotions = [],
 }: {
   catalog?: Catalog;
-  orders?: {
-    id: string;
-    customer: { name: string };
-    snapshot: { total: number };
-    created_at: string;
-    payment_status?: string;
-  }[];
+  orders?: OrderRecord[];
   preview?: boolean;
   promotions?: Promotion[];
 }) {
@@ -92,7 +108,7 @@ export function ManualOrders({
               setEditorOpen(true);
             }}
           >
-            Crear venta o retiro
+            <Icon name="plus" /> Crear venta o retiro
           </button>
         )}
       </div>
@@ -122,28 +138,104 @@ export function ManualOrders({
                 el primero.
               </p>
             )}
-            {rows.map((row) => (
-              <article className="promotion-row" key={row.id}>
-                <h2>{row.customer.name}</h2>
-                <p className="order-status">
-                  {row.payment_status === "paid"
-                    ? "Efectivo cobrado · Entregado"
-                    : "Pago pendiente · Pendiente de retiro"}
-                </p>
-                <p>
-                  {formatPrice(row.snapshot.total)} ·{" "}
-                  {new Date(row.created_at).toLocaleString("es-AR")}
-                </p>
-                <p>Referencia: {row.id}</p>
-              </article>
-            ))}
+            {rows.length > 0 && (
+              <AdminTable
+                label="Ventas y retiros registrados"
+                className="orders-table"
+              >
+                <thead>
+                  <tr role="row">
+                    <th scope="col">Cliente</th>
+                    <th scope="col">Productos</th>
+                    <th scope="col">Fecha</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Total</th>
+                  </tr>
+                </thead>
+                <tbody role="rowgroup">
+                  {rows.map((row) => (
+                    <tr role="row" key={row.id}>
+                      <td
+                        role="cell"
+                        data-label="Cliente"
+                        className="admin-identity"
+                      >
+                        <strong>{row.customer.name}</strong>
+                        {row.customer.phone && (
+                          <small>Tel.: {row.customer.phone}</small>
+                        )}
+                        <small>
+                          {row.payment_status === "paid"
+                            ? "Venta presencial"
+                            : "Retiro manual"}
+                        </small>
+                      </td>
+                      <td role="cell" data-label="Productos">
+                        {row.snapshot.lines?.length ? (
+                          <ul className="admin-line-items">
+                            {row.snapshot.lines.map((line, index) => (
+                              <li key={`${line.variantId}-${index}`}>
+                                <strong>
+                                  {line.quantity} × {line.name}
+                                </strong>
+                                <small>
+                                  {line.label ||
+                                    [line.flavor, line.size, line.presentation]
+                                      .filter(Boolean)
+                                      .join(" · ")}
+                                </small>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <small>Detalle no disponible.</small>
+                        )}
+                      </td>
+                      <td role="cell" data-label="Fecha">
+                        <time dateTime={row.created_at}>
+                          {new Date(row.created_at).toLocaleDateString("es-AR")}
+                        </time>
+                        <small>
+                          {new Date(row.created_at).toLocaleTimeString(
+                            "es-AR",
+                            { hour: "2-digit", minute: "2-digit" },
+                          )}
+                        </small>
+                      </td>
+                      <td role="cell" data-label="Estado">
+                        <span
+                          className="status-badge"
+                          data-active={row.payment_status === "paid"}
+                        >
+                          {row.payment_status === "paid"
+                            ? "Efectivo cobrado"
+                            : "Pago pendiente"}
+                        </span>
+                        <small>
+                          {row.payment_status === "paid"
+                            ? "Entregado"
+                            : "Pendiente de retiro"}
+                        </small>
+                      </td>
+                      <td
+                        role="cell"
+                        data-label="Total"
+                        className="admin-prices"
+                      >
+                        <strong>{formatPrice(row.snapshot.total)}</strong>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </AdminTable>
+            )}
           </div>
         )}
         {editorOpen && (
           <form
             ref={editor}
             method="post"
-            className="checkout-form"
+            className="checkout-form admin-editor"
             onChange={() => {
               if (!lock.current) {
                 attempt.current = null;
@@ -214,7 +306,10 @@ export function ManualOrders({
                       {
                         id: order.id,
                         customer: order.customer,
-                        snapshot: { total: order.total },
+                        snapshot: {
+                          total: order.total,
+                          lines: order.snapshot.lines,
+                        },
                         created_at: order.createdAt,
                         payment_status: order.paymentStatus,
                       },
@@ -335,16 +430,15 @@ export function ManualOrders({
                         }}
                       />
                     </label>
-                    <button
-                      className="text-link"
+                    <IconAction
+                      icon="trash"
+                      label={`Quitar presentación ${index + 1}`}
                       type="button"
                       onClick={() => {
                         attempt.current = null;
                         setItems(items.filter((_, j) => j !== index));
                       }}
-                    >
-                      Quitar presentación {index + 1}
-                    </button>
+                    />
                   </div>
                 ))}
                 <button
@@ -401,26 +495,27 @@ export function ManualOrders({
                   Confirmo que cobré el efectivo y entregué los productos.
                 </label>
               )}
-              <div className="management-actions">
-                <button
-                  className="button button-gold"
-                  disabled={
-                    busy || !items.length || (kind === "cash-sale" && !received)
-                  }
-                >
-                  {kind === "cash-sale"
-                    ? "Registrar venta en efectivo"
-                    : "Registrar retiro pendiente"}
-                </button>
-                <button
-                  type="button"
-                  className="button button-outline"
-                  onClick={closeEditor}
-                >
-                  Cancelar
-                </button>
-              </div>
             </fieldset>
+            <div className="editor-actions">
+              <button
+                type="button"
+                className="button button-outline"
+                disabled={busy}
+                onClick={closeEditor}
+              >
+                Cancelar
+              </button>
+              <button
+                className="button button-gold"
+                disabled={
+                  busy || !items.length || (kind === "cash-sale" && !received)
+                }
+              >
+                {kind === "cash-sale"
+                  ? "Registrar venta en efectivo"
+                  : "Registrar retiro pendiente"}
+              </button>
+            </div>
           </form>
         )}
       </div>

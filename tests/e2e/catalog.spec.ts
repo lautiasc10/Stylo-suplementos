@@ -242,7 +242,7 @@ test("alta de marca y producto, ocultación y stock bajo", async ({ page }) => {
   const row = page
     .getByRole("row")
     .filter({ hasText: "Accesorio local de prueba" });
-  await row.getByRole("button", { name: "Ocultar", exact: true }).click();
+  await row.getByRole("button", { name: /^Ocultar / }).click();
   await expect(row).toContainText("Oculto");
   await page.goto("/vista-previa");
   await expect(page.locator(".product-card")).toHaveCount(4);

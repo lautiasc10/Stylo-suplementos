@@ -23,7 +23,9 @@ test("crear promociones y registros abre una tarea y cancelar vuelve al listado 
     await input.fill("Borrador sin guardar");
     await page.getByRole("button", { name: "Cancelar", exact: true }).click();
     await expect(button).toBeFocused();
-    await expect(page.locator(".promotion-row")).toHaveCount(0);
+    await expect(
+      page.locator(".promotions-table tbody tr, .orders-table tbody tr"),
+    ).toHaveCount(0);
     await button.click();
     await expect(input).toHaveValue("");
     await page.getByRole("button", { name: "Cancelar", exact: true }).click();
@@ -64,7 +66,8 @@ test("marcas y categorías muestran columnas claras y se editan sin perder orden
       name: `Editar ${group.name}`,
       exact: true,
     });
-    await expect(edit).toHaveText("Editar");
+    await expect(edit).toHaveAttribute("title", `Editar ${group.name}`);
+    await expect(edit.locator("svg")).toHaveCount(1);
     await edit.click();
     await expect(page.getByLabel("Nombre", { exact: true })).toBeFocused();
     await expect(page.getByLabel("URL", { exact: true })).toHaveValue(
@@ -252,15 +255,76 @@ test("quitar una promoción permite cancelar y devuelve el foco al listado", asy
   await remove.click();
   await page.getByRole("button", { name: "Cancelar", exact: true }).click();
   await expect(remove).toBeFocused();
-  await expect(page.locator(".promotion-row")).toHaveCount(1);
+  await expect(remove.locator("svg")).toHaveCount(1);
+  await expect(
+    page.locator(".promotions-table tbody tr, .orders-table tbody tr"),
+  ).toHaveCount(1);
   await remove.click();
   await page
     .getByRole("button", { name: "Confirmar eliminación", exact: true })
     .click();
-  await expect(page.locator(".promotion-row")).toHaveCount(0);
+  await expect(
+    page.locator(".promotions-table tbody tr, .orders-table tbody tr"),
+  ).toHaveCount(0);
   await expect(
     page.getByRole("heading", { name: "Promociones guardadas", exact: true }),
   ).toBeFocused();
+});
+
+test("las acciones con iconos conservan foco, tamaño y estado al pausar o editar una promoción", async ({
+  page,
+}) => {
+  await page.goto("/vista-previa/promociones");
+  await page
+    .getByRole("button", { name: "Crear promoción", exact: true })
+    .click();
+  await page
+    .getByLabel("Nombre de promoción", { exact: true })
+    .fill("Oferta para revisar acciones");
+  await page
+    .getByLabel("Precio final de lista (ARS)", { exact: true })
+    .fill("40000");
+  await page
+    .getByLabel("Precio final efectivo / transferencia (ARS)", { exact: true })
+    .fill("35000");
+  await page
+    .getByRole("button", { name: "Guardar promoción", exact: true })
+    .click();
+  const table = page.getByRole("table", { name: "Promociones guardadas" });
+  const pause = table.getByRole("button", {
+    name: "Pausar Oferta para revisar acciones",
+    exact: true,
+  });
+  await page.keyboard.press("Tab");
+  await expect(pause).toBeFocused();
+  await expect(pause.locator(".action-tooltip")).toBeVisible();
+  for (const action of await table.locator(".icon-action").all()) {
+    const bounds = await action.boundingBox();
+    expect(bounds!.width).toBeGreaterThanOrEqual(48);
+    expect(bounds!.height).toBeGreaterThanOrEqual(48);
+  }
+  await page.keyboard.press("Enter");
+  await expect(table.locator(".status-badge")).toHaveText("Pausada");
+  await expect(
+    table.getByRole("button", {
+      name: "Activar Oferta para revisar acciones",
+      exact: true,
+    }),
+  ).toBeFocused();
+  await table
+    .getByRole("button", {
+      name: "Editar Oferta para revisar acciones",
+      exact: true,
+    })
+    .click();
+  await expect(
+    page.getByLabel("Nombre de promoción", { exact: true }),
+  ).toBeFocused();
+  await expect(
+    page.getByLabel("Nombre de promoción", { exact: true }),
+  ).toHaveValue("Oferta para revisar acciones");
+  await page.getByRole("button", { name: "Cancelar", exact: true }).click();
+  await expect(table.locator(".status-badge")).toHaveText("Pausada");
 });
 
 test("320 px y tablet no desbordan en carrito, edición, promociones y checkout", async ({

@@ -859,30 +859,6 @@
   border: 1px solid var(--control-border);
   border-radius: var(--radius-control);
 }
-.promotion-row {
-  border: 1px solid var(--line);
-  background: var(--background);
-  padding: var(--space-6);
-  border-radius: var(--radius-panel);
-  margin-bottom: var(--space-4);
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-.promotion-row h2 {
-  font-size: var(--text-lg);
-  margin: 0 0 var(--space-3);
-}
-.promotion-row p,
-.promotion-row ul {
-  font-size: var(--text-sm);
-  line-height: 1.65;
-}
-.promotion-row ul {
-  padding-left: var(--space-4);
-}
-.promotion-row li {
-  padding-block: var(--space-1);
-}
 .bundle-components {
   display: grid;
   gap: var(--space-4);
@@ -962,57 +938,6 @@
   background: var(--background);
   border-radius: var(--radius-panel);
 }
-.catalog-manager .manager-table th {
-  color: var(--muted);
-  background: var(--surface-raised);
-  font-size: var(--text-xs);
-  font-weight: 500;
-  white-space: nowrap;
-  padding: var(--space-4) var(--space-6);
-}
-.catalog-manager .manager-table td {
-  padding: var(--space-4) var(--space-6);
-  vertical-align: middle;
-  font-size: var(--text-sm);
-}
-.catalog-manager .manager-table th:last-child {
-  width: 224px;
-}
-.catalog-manager .products-table td:last-child {
-  white-space: nowrap;
-}
-.catalog-manager .manager-table td:last-child .text-link {
-  display: inline-flex;
-  padding-inline: var(--space-3);
-  border: 1px solid var(--control-border);
-  border-radius: var(--radius-control);
-  margin: var(--space-1);
-}
-.catalog-manager .manager-table tbody tr:hover {
-  background: var(--surface);
-}
-.catalog-manager .groups-table {
-  table-layout: fixed;
-}
-.catalog-manager .groups-table th:nth-child(2) {
-  width: 128px;
-}
-.catalog-manager .groups-table th:nth-child(3) {
-  width: 96px;
-}
-.catalog-manager .groups-table th:last-child {
-  width: 120px;
-}
-.catalog-manager .groups-table th:nth-child(3),
-.catalog-manager .groups-table td:nth-child(3) {
-  text-align: center;
-}
-.catalog-manager .groups-table td:last-child .text-link {
-  margin: 0;
-}
-.catalog-manager .groups-table tr:last-child td {
-  border-bottom: 0;
-}
 .group-identity {
   display: flex;
   align-items: center;
@@ -1040,10 +965,6 @@
 }
 .group-order {
   font-variant-numeric: tabular-nums;
-}
-.catalog-manager .group-editor h3 {
-  margin: 0;
-  font-size: var(--text-lg);
 }
 .manager-product-cell {
   display: flex;
@@ -1349,54 +1270,6 @@
     align-items: stretch;
     flex-direction: column;
   }
-  .catalog-manager .groups-table {
-    display: block;
-  }
-  .catalog-manager .groups-table thead {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-  }
-  .catalog-manager .groups-table tbody {
-    display: grid;
-  }
-  .catalog-manager .groups-table tr {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: var(--space-4);
-    padding: var(--space-6) var(--space-4);
-    border-bottom: 1px solid var(--line);
-  }
-  .catalog-manager .groups-table tr:last-child {
-    border-bottom: 0;
-  }
-  .catalog-manager .groups-table td {
-    min-width: 0;
-    border: 0;
-    padding: 0;
-  }
-  .catalog-manager .groups-table td:first-child {
-    grid-column: 1 / -1;
-  }
-  .catalog-manager .groups-table td:nth-child(3) {
-    text-align: right;
-  }
-  .catalog-manager .groups-table td[data-label]::before {
-    content: attr(data-label);
-    display: block;
-    font-size: var(--text-xs);
-    color: var(--muted);
-    margin-bottom: var(--space-2);
-  }
-  .catalog-manager .groups-table td:last-child {
-    grid-column: 1 / -1;
-  }
-  .catalog-manager .groups-table td:last-child .text-link {
-    width: 100%;
-    justify-content: center;
-  }
   .editor-header-actions > .button,
   .editor-actions > .button {
     flex: 1 1 auto;
@@ -1407,57 +1280,8 @@
   .editor-jump-links a {
     padding-inline: var(--space-3);
   }
-  .catalog-manager .products-table {
-    display: block;
-  }
-  .catalog-manager .products-table thead {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-  }
-  .catalog-manager .products-table tbody {
-    display: grid;
-  }
-  .catalog-manager .products-table tr {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-4);
-    padding: var(--space-4);
-    border-bottom: 1px solid var(--line);
-  }
-  .catalog-manager .products-table td {
-    min-width: 0;
-    padding: 0;
-    border: 0;
-  }
-  .catalog-manager .products-table td:first-child {
-    grid-column: 1 / -1;
-  }
-  .catalog-manager
-    .products-table
-    td:not(:first-child):not(:last-child)::before {
-    content: attr(data-label);
-    display: block;
-    font-size: var(--text-xs);
-    color: var(--muted);
-    margin-bottom: var(--space-1);
-  }
-  .catalog-manager .products-table td:last-child {
-    grid-column: 1 / -1;
-    display: flex;
-    gap: var(--space-3);
-    flex-wrap: wrap;
-  }
-  .catalog-manager .products-table td:last-child .text-link {
-    margin: 0;
-  }
   .management-layout {
     gap: var(--space-6);
-  }
-  .promotion-row {
-    padding: var(--space-4);
   }
 }
 @media (max-height: 650px) {
@@ -1580,6 +1404,240 @@
 .confirm-action > div p {
   flex-basis: 100%;
   margin: 0;
+}
+
+/* Shared administrative tables, editors and compact actions. */
+.admin-workspace .admin-data-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+.admin-workspace .admin-data-table th,
+.admin-workspace .admin-data-table td {
+  padding: var(--space-4);
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--line);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.admin-workspace .admin-data-table th {
+  background: var(--surface-raised);
+  color: var(--muted);
+  font-size: var(--text-xs);
+  font-weight: 500;
+}
+.admin-workspace .admin-data-table tbody tr:hover {
+  background: var(--surface);
+}
+.admin-workspace .admin-data-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+.admin-data-table strong {
+  font-weight: 600;
+}
+.admin-data-table small {
+  display: block;
+  color: var(--muted);
+  font-size: var(--text-xs);
+  margin-top: var(--space-1);
+}
+.admin-identity > strong {
+  font-size: var(--text-base);
+}
+.admin-line-items {
+  list-style: none;
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  font-size: var(--text-sm);
+}
+.admin-line-items li + li {
+  margin-top: var(--space-3);
+}
+.admin-prices {
+  font-variant-numeric: tabular-nums;
+}
+.admin-prices small:not(:first-child) {
+  margin-top: var(--space-3);
+}
+.admin-workspace .admin-data-table.products-table th:not(:first-child),
+.admin-workspace .admin-data-table.groups-table th:not(:first-child) {
+  width: 112px;
+}
+.admin-workspace .admin-data-table.products-table th:last-child {
+  width: 144px;
+}
+.admin-workspace .admin-data-table.groups-table th:last-child {
+  width: 96px;
+}
+.admin-workspace .promotions-table th:nth-child(2) {
+  width: 112px;
+}
+.admin-workspace .promotions-table th:nth-child(3) {
+  width: 184px;
+}
+.admin-workspace .promotions-table th:last-child {
+  width: 208px;
+}
+.orders-table th:first-child {
+  width: 22%;
+}
+.orders-table th:nth-child(2) {
+  width: 30%;
+}
+.orders-table th:nth-child(3) {
+  width: 13%;
+}
+.orders-table th:nth-child(4) {
+  width: 20%;
+}
+.orders-table th:last-child {
+  width: 15%;
+}
+.admin-row-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+.icon-action,
+.confirm-action summary.icon-action {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 48px;
+  width: 48px;
+  min-height: 48px;
+  padding: var(--space-3);
+  margin: 0;
+  color: var(--foreground);
+  background: var(--background);
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-control);
+  cursor: pointer;
+}
+.icon-action:hover,
+.confirm-action summary.icon-action:hover {
+  background: var(--surface-hover);
+  color: var(--gold);
+}
+.action-tooltip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + var(--space-2));
+  right: 0;
+  z-index: 5;
+  width: max-content;
+  max-width: 200px;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-control);
+  color: var(--foreground);
+  background: var(--surface-raised);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  white-space: normal;
+  pointer-events: none;
+}
+.icon-action:hover > .action-tooltip,
+.icon-action:focus-visible > .action-tooltip {
+  display: block;
+}
+.admin-row-actions .confirm-action {
+  min-width: 0;
+}
+.admin-row-actions .confirm-action[open] {
+  width: 100%;
+}
+.admin-row-actions .confirm-action > div {
+  padding: var(--space-3);
+  background: var(--surface-raised);
+  border-radius: var(--radius-control);
+  margin-top: var(--space-2);
+}
+.admin-row-actions .confirm-action > div > button {
+  width: 100%;
+  white-space: normal;
+}
+.catalog-manager .catalog-editor.admin-editor {
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+.admin-workspace .admin-editor {
+  max-width: 960px;
+  width: 100%;
+  margin-top: var(--space-8);
+}
+.admin-workspace .admin-editor fieldset {
+  background: var(--surface);
+  border-radius: var(--radius-panel);
+  padding: var(--space-6);
+  border: 1px solid var(--line);
+  margin-bottom: var(--space-6);
+}
+.admin-workspace .admin-editor legend {
+  padding-inline: var(--space-2);
+  font-size: var(--text-base);
+  font-weight: 600;
+}
+.admin-workspace .admin-editor .editor-actions {
+  justify-content: flex-end;
+  margin-top: var(--space-6);
+  padding-top: var(--space-6);
+  gap: var(--space-4);
+}
+@media (max-width: 1199px) {
+  .admin-workspace .admin-data-table {
+    display: block;
+  }
+  .admin-workspace .admin-data-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .admin-workspace .admin-data-table tbody {
+    display: grid;
+  }
+  .admin-workspace .admin-data-table tbody tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-4);
+    padding: var(--space-6) var(--space-4);
+    border-bottom: 1px solid var(--line);
+  }
+  .admin-workspace .admin-data-table tbody tr:last-child {
+    border-bottom: 0;
+  }
+  .admin-workspace .admin-data-table td {
+    padding: 0;
+    border: 0;
+    min-width: 0;
+    text-align: left;
+    white-space: normal;
+  }
+  .admin-workspace .admin-data-table td:first-child,
+  .admin-workspace .admin-data-table td[data-label="Productos"],
+  .admin-workspace .admin-data-table td:last-child {
+    grid-column: 1 / -1;
+  }
+  .admin-workspace .admin-data-table td:not(:first-child)[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    color: var(--muted);
+    font-size: var(--text-xs);
+    margin-bottom: var(--space-2);
+  }
+  .admin-workspace .admin-data-table td:last-child {
+    display: block;
+  }
+  .admin-workspace .admin-editor fieldset {
+    padding: var(--space-4);
+  }
 }
 .checkout-summary li {
   display: flex;

@@ -3,6 +3,8 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ProductThumbnail } from "@/components/ui/product-thumbnail";
 import { Icon } from "@/components/ui/icon";
+import { IconAction } from "@/components/admin/icon-action";
+import { AdminTable } from "@/components/admin/data-table";
 import {
   importColumns,
   planImport,
@@ -53,8 +55,11 @@ export function CatalogManager({
   const groupEditor = useRef<HTMLFormElement>(null);
   const groupTrigger = useRef<HTMLButtonElement>(null);
   function closeGroupEditor() {
+    const triggerId = groupTrigger.current?.id;
     setGroup(null);
-    requestAnimationFrame(() => groupTrigger.current?.focus());
+    requestAnimationFrame(
+      () => triggerId && document.getElementById(triggerId)?.focus(),
+    );
   }
   useEffect(() => {
     if (group)
@@ -288,89 +293,85 @@ export function CatalogManager({
                 className="button button-gold"
                 onClick={newProduct}
               >
-                <Icon name="bag" /> Nuevo producto
+                <Icon name="plus" /> Nuevo producto
               </button>
             </div>
-            <div className="manager-table-wrap">
-              <table
-                className="manager-table products-table"
-                role="table"
-                aria-label="Productos y variantes"
-              >
-                <thead>
-                  <tr>
-                    <th>Producto</th>
-                    <th>Estado</th>
-                    <th>Variantes</th>
-                    <th>Stock total</th>
-                    <th>Acciones</th>
-                  </tr>
-                </thead>
-                <tbody role="rowgroup">
-                  {catalog.products.map((product) => (
-                    <tr key={product.id} role="row">
-                      <td role="cell" data-label="Producto">
-                        <div className="manager-product-cell">
-                          <ProductThumbnail
-                            src={(() => {
-                              const image = variantImages(
-                                product,
-                                product.variants[0]?.id ?? "",
-                              )[0];
-                              return image
-                                ? imageUrls[image.path] ||
-                                    (imageBase
-                                      ? `${imageBase}/${image.path}`
-                                      : undefined)
-                                : undefined;
-                            })()}
-                            alt={`Foto de ${product.name}`}
-                            size={56}
-                          />
-                          <div>
-                            <strong>{product.name}</strong>
-                            <small>
-                              {
-                                catalog.brands.find(
-                                  (item) => item.id === product.brandId,
-                                )?.name
-                              }
-                            </small>
-                          </div>
+            <AdminTable
+              label="Productos y variantes"
+              className="products-table"
+            >
+              <thead>
+                <tr role="row">
+                  <th scope="col">Producto</th>
+                  <th scope="col">Estado</th>
+                  <th scope="col">Variantes</th>
+                  <th scope="col">Stock total</th>
+                  <th scope="col">Acciones</th>
+                </tr>
+              </thead>
+              <tbody role="rowgroup">
+                {catalog.products.map((product) => (
+                  <tr key={product.id} role="row">
+                    <td role="cell" data-label="Producto">
+                      <div className="manager-product-cell">
+                        <ProductThumbnail
+                          src={(() => {
+                            const image = variantImages(
+                              product,
+                              product.variants[0]?.id ?? "",
+                            )[0];
+                            return image
+                              ? imageUrls[image.path] ||
+                                  (imageBase
+                                    ? `${imageBase}/${image.path}`
+                                    : undefined)
+                              : undefined;
+                          })()}
+                          alt={`Foto de ${product.name}`}
+                          size={56}
+                        />
+                        <div>
+                          <strong>{product.name}</strong>
+                          <small>
+                            {
+                              catalog.brands.find(
+                                (item) => item.id === product.brandId,
+                              )?.name
+                            }
+                          </small>
                         </div>
-                      </td>
-                      <td role="cell" data-label="Estado">
-                        <span
-                          className="status-badge"
-                          data-active={product.active}
-                        >
-                          {product.active ? "Visible" : "Oculto"}
-                        </span>
-                      </td>
-                      <td role="cell" data-label="Variantes">
-                        {product.variants.length}
-                      </td>
-                      <td role="cell" data-label="Stock total">
-                        {product.variants.reduce(
-                          (sum, item) => sum + item.stock,
-                          0,
-                        )}
-                      </td>
-                      <td role="cell" data-label="Acciones">
-                        <button
-                          type="button"
-                          className="text-link"
-                          aria-label={`Editar ${product.name}`}
+                      </div>
+                    </td>
+                    <td role="cell" data-label="Estado">
+                      <span
+                        className="status-badge"
+                        data-active={product.active}
+                      >
+                        {product.active ? "Visible" : "Oculto"}
+                      </span>
+                    </td>
+                    <td role="cell" data-label="Variantes">
+                      {product.variants.length}
+                    </td>
+                    <td role="cell" data-label="Stock total">
+                      {product.variants.reduce(
+                        (sum, item) => sum + item.stock,
+                        0,
+                      )}
+                    </td>
+                    <td role="cell" data-label="Acciones">
+                      <div className="admin-row-actions">
+                        <IconAction
+                          icon="edit"
+                          label={`Editar ${product.name}`}
                           onClick={() => {
                             setDraft(structuredClone(product));
                             setMessage("");
                           }}
-                        >
-                          Editar
-                        </button>
-                        <button
-                          type="button"
-                          className="text-link"
+                        />
+                        <IconAction
+                          icon={product.active ? "eyeOff" : "eye"}
+                          label={`${product.active ? "Ocultar" : "Publicar"} ${product.name}`}
                           disabled={busy}
                           onClick={() =>
                             save({
@@ -382,17 +383,15 @@ export function CatalogManager({
                               ),
                             })
                           }
-                        >
-                          {product.active ? "Ocultar" : "Publicar"}
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </AdminTable>
             {!catalog.products.length && (
-              <p>
+              <p className="management-empty">
                 Todavía no hay productos. Cargá el primero o importá un archivo.
               </p>
             )}
@@ -453,7 +452,7 @@ export function CatalogManager({
         )}
         {draft && (
           <form
-            className="catalog-editor"
+            className="catalog-editor admin-editor"
             onSubmit={submitProduct}
             onInvalid={(event) => {
               const field = event.target as HTMLInputElement;
@@ -839,9 +838,10 @@ export function CatalogManager({
                       ))}
                     </select>
                   </label>
-                  <button
+                  <IconAction
                     type="button"
-                    className="text-link"
+                    icon="back"
+                    label="Usar primero"
                     disabled={index === 0}
                     onClick={() => {
                       const images = [...draft.images];
@@ -854,12 +854,11 @@ export function CatalogManager({
                         images.map((item, position) => ({ ...item, position })),
                       );
                     }}
-                  >
-                    Usar primero
-                  </button>
-                  <button
+                  />
+                  <IconAction
                     type="button"
-                    className="text-link"
+                    icon="trash"
+                    label="Quitar imagen"
                     onClick={() =>
                       updateDraft(
                         "images",
@@ -868,9 +867,7 @@ export function CatalogManager({
                           .map((item, position) => ({ ...item, position })),
                       )
                     }
-                  >
-                    Quitar imagen
-                  </button>
+                  />
                 </div>
               ))}
             </fieldset>
@@ -892,28 +889,39 @@ export function CatalogManager({
         {(tab === "brands" || tab === "categories") && (
           <>
             <div className="manager-toolbar">
-              <h2>{tab === "brands" ? "Marcas" : "Categorías"}</h2>
-              <button
-                type="button"
-                className="button button-gold"
-                disabled={busy}
-                onClick={(event) => {
-                  groupTrigger.current = event.currentTarget;
-                  setGroup({
-                    id: crypto.randomUUID(),
-                    name: "",
-                    slug: "",
-                    active: true,
-                    sortOrder: groups.length,
-                  });
-                }}
-              >
-                {tab === "brands" ? "Nueva marca" : "Nueva categoría"}
-              </button>
+              <h2>
+                {group
+                  ? (group.name ? "Editar" : "Crear") +
+                    (tab === "brands" ? " marca" : " categoría")
+                  : tab === "brands"
+                    ? "Marcas"
+                    : "Categorías"}
+              </h2>
+              {!group && (
+                <button
+                  type="button"
+                  className="button button-gold"
+                  id="group-create"
+                  disabled={busy || Boolean(group)}
+                  onClick={(event) => {
+                    groupTrigger.current = event.currentTarget;
+                    setGroup({
+                      id: crypto.randomUUID(),
+                      name: "",
+                      slug: "",
+                      active: true,
+                      sortOrder: groups.length,
+                    });
+                  }}
+                >
+                  <Icon name="plus" />{" "}
+                  {tab === "brands" ? "Nueva marca" : "Nueva categoría"}
+                </button>
+              )}
             </div>
             {group && (
               <form
-                className="editor-fields group-editor"
+                className="checkout-form admin-editor group-editor"
                 ref={groupEditor}
                 key={group.id}
                 onSubmit={async (event) => {
@@ -941,106 +949,102 @@ export function CatalogManager({
                     closeGroupEditor();
                 }}
               >
-                <h3 className="editor-wide">
-                  {group.name
-                    ? `Editar ${group.name}`
-                    : tab === "brands"
-                      ? "Nueva marca"
-                      : "Nueva categoría"}
-                </h3>
-                <label>
-                  Nombre
-                  <input
-                    name="name"
-                    required
-                    maxLength={100}
-                    defaultValue={group.name}
-                  />
-                </label>
-                <label>
-                  URL
-                  <input
-                    name="slug"
-                    required
-                    maxLength={100}
-                    pattern="[a-z0-9]+(-[a-z0-9]+)*"
-                    defaultValue={group.slug}
-                  />
-                </label>
-                <label>
-                  Orden
-                  <input
-                    name="sortOrder"
-                    type="number"
-                    min={0}
-                    max={10000}
-                    defaultValue={group.sortOrder}
-                    required
-                  />
-                </label>
-                {tab === "categories" && (
+                <fieldset className="editor-fields" disabled={busy}>
+                  <legend>
+                    {tab === "brands"
+                      ? "Información de la marca"
+                      : "Información de la categoría"}
+                  </legend>
                   <label>
-                    Descripción breve
+                    Nombre
                     <input
-                      name="detail"
-                      maxLength={200}
-                      defaultValue={group.detail}
+                      name="name"
+                      required
+                      maxLength={100}
+                      defaultValue={group.name}
                     />
                   </label>
-                )}
-                {tab === "brands" && (
-                  <div className="image-editor editor-wide">
+                  <label>
+                    URL
+                    <input
+                      name="slug"
+                      required
+                      maxLength={100}
+                      pattern="[a-z0-9]+(-[a-z0-9]+)*"
+                      defaultValue={group.slug}
+                    />
+                  </label>
+                  <label>
+                    Orden
+                    <input
+                      name="sortOrder"
+                      type="number"
+                      min={0}
+                      max={10000}
+                      defaultValue={group.sortOrder}
+                      required
+                    />
+                  </label>
+                  {tab === "categories" && (
                     <label>
-                      Logo de la marca (opcional)
+                      Descripción breve
                       <input
-                        type="file"
-                        accept="image/jpeg,image/png,image/webp"
-                        disabled={busy}
-                        onChange={(event) => {
-                          addBrandLogo(event.target.files?.[0]);
-                          event.target.value = "";
-                        }}
+                        name="detail"
+                        maxLength={200}
+                        defaultValue={group.detail}
                       />
                     </label>
-                    {group.logo && (
-                      <>
-                        {(imageBase || imageUrls[group.logo]) && (
-                          <img
-                            src={
-                              imageUrls[group.logo] ||
-                              imageBase + "/" + group.logo
-                            }
-                            alt={"Logo de " + group.name}
-                            width={96}
-                            height={96}
-                          />
-                        )}
-                        <button
-                          type="button"
-                          className="text-link"
+                  )}
+                  {tab === "brands" && (
+                    <div className="image-editor editor-wide">
+                      <label>
+                        Logo de la marca (opcional)
+                        <input
+                          type="file"
+                          accept="image/jpeg,image/png,image/webp"
                           disabled={busy}
-                          onClick={() =>
-                            setGroup({ ...group, logo: undefined })
-                          }
-                        >
-                          Quitar logo
-                        </button>
-                      </>
-                    )}
-                  </div>
-                )}
-                <label className="editor-check">
-                  <input
-                    type="checkbox"
-                    name="active"
-                    defaultChecked={group.active}
-                  />
-                  Visible
-                </label>
-                <div className="management-actions editor-wide">
-                  <button className="button button-gold" disabled={busy}>
-                    Guardar {tab === "brands" ? "marca" : "categoría"}
-                  </button>
+                          onChange={(event) => {
+                            addBrandLogo(event.target.files?.[0]);
+                            event.target.value = "";
+                          }}
+                        />
+                      </label>
+                      {group.logo && (
+                        <>
+                          {(imageBase || imageUrls[group.logo]) && (
+                            <img
+                              src={
+                                imageUrls[group.logo] ||
+                                imageBase + "/" + group.logo
+                              }
+                              alt={"Logo de " + group.name}
+                              width={96}
+                              height={96}
+                            />
+                          )}
+                          <IconAction
+                            type="button"
+                            icon="trash"
+                            label="Quitar logo"
+                            disabled={busy}
+                            onClick={() =>
+                              setGroup({ ...group, logo: undefined })
+                            }
+                          />
+                        </>
+                      )}
+                    </div>
+                  )}
+                  <label className="editor-check">
+                    <input
+                      type="checkbox"
+                      name="active"
+                      defaultChecked={group.active}
+                    />
+                    Visible
+                  </label>
+                </fieldset>
+                <div className="editor-actions">
                   <button
                     type="button"
                     className="button button-outline"
@@ -1049,20 +1053,22 @@ export function CatalogManager({
                   >
                     Cancelar
                   </button>
+                  <button className="button button-gold" disabled={busy}>
+                    Guardar {tab === "brands" ? "marca" : "categoría"}
+                  </button>
                 </div>
               </form>
             )}
-            {!groups.length ? (
-              <p className="management-empty">
-                Todavía no hay {tab === "brands" ? "marcas" : "categorías"}.
-                Creá la primera para organizar el catálogo.
-              </p>
-            ) : (
-              <div className="manager-table-wrap groups-table-wrap">
-                <table
-                  className="manager-table groups-table"
-                  role="table"
-                  aria-label={
+            {!group &&
+              (!groups.length ? (
+                <p className="management-empty">
+                  Todavía no hay {tab === "brands" ? "marcas" : "categorías"}.
+                  Creá la primera para organizar el catálogo.
+                </p>
+              ) : (
+                <AdminTable
+                  className="groups-table"
+                  label={
                     tab === "brands"
                       ? "Marcas del catálogo"
                       : "Categorías del catálogo"
@@ -1123,25 +1129,24 @@ export function CatalogManager({
                             </span>
                           </td>
                           <td role="cell">
-                            <button
-                              type="button"
-                              className="text-link"
-                              aria-label={`Editar ${item.name}`}
-                              disabled={busy}
-                              onClick={(event) => {
-                                groupTrigger.current = event.currentTarget;
-                                setGroup(item);
-                              }}
-                            >
-                              Editar
-                            </button>
+                            <div className="admin-row-actions">
+                              <IconAction
+                                id={`group-edit-${item.id}`}
+                                icon="edit"
+                                label={`Editar ${item.name}`}
+                                disabled={busy}
+                                onClick={(event) => {
+                                  groupTrigger.current = event.currentTarget;
+                                  setGroup(item);
+                                }}
+                              />
+                            </div>
                           </td>
                         </tr>
                       ))}
                   </tbody>
-                </table>
-              </div>
-            )}
+                </AdminTable>
+              ))}
           </>
         )}
         {tab === "import" && (

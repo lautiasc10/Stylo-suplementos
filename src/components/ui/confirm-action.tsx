@@ -1,5 +1,6 @@
 "use client";
 import { useRef } from "react";
+import { Icon } from "./icon";
 
 export function ConfirmAction({
   label,
@@ -21,7 +22,12 @@ export function ConfirmAction({
   }
   return (
     <details ref={details} className="confirm-action">
-      <summary aria-label={label}>Quitar</summary>
+      <summary className="icon-action" aria-label={label} title={label}>
+        <Icon name="trash" />
+        <span className="action-tooltip" aria-hidden="true">
+          {label}
+        </span>
+      </summary>
       <div>
         <p>{question}</p>
         <button

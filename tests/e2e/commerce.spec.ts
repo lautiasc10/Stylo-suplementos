@@ -184,6 +184,7 @@ test("gestión permite editar un combo y registra un retiro una vez sin desconta
   await page
     .getByLabel("Nombre del cliente", { exact: true })
     .fill("Retiro ficticio");
+  await page.getByLabel("Teléfono del cliente (opcional)").fill("000-0000");
   await page
     .getByRole("button", { name: "Agregar presentación", exact: true })
     .click();
@@ -200,9 +201,25 @@ test("gestión permite editar un combo y registra un retiro una vez sin desconta
   await expect(
     page.getByRole("button", { name: "Crear venta o retiro", exact: true }),
   ).toBeFocused();
-  await expect(page.locator(".promotion-row")).toHaveCount(1);
-  await expect(page.locator(".promotion-row")).toContainText("49.000,00");
-  await expect(page.locator(".promotion-row")).toContainText("Pago pendiente");
+  await expect(
+    page.locator(".promotions-table tbody tr, .orders-table tbody tr"),
+  ).toHaveCount(1);
+  await expect(
+    page.locator(".promotions-table tbody tr, .orders-table tbody tr"),
+  ).toContainText("49.000,00");
+  await expect(
+    page.locator(".promotions-table tbody tr, .orders-table tbody tr"),
+  ).toContainText("Pago pendiente");
+  const records = page.getByRole("table", {
+    name: "Ventas y retiros registrados",
+  });
+  await expect(records.getByRole("columnheader")).toHaveCount(5);
+  await expect(records).toContainText("Tel.: 000-0000");
+  await expect(records).toContainText("1 × Proteína de prueba");
+  await expect(records).toContainText("1 × Creatina de prueba");
+  await expect(records).toContainText("Chocolate");
+  await expect(records).not.toContainText("Referencia");
+  await expect(records).not.toContainText("00000000-");
   await page.goto("/vista-previa/producto/proteina-de-prueba");
   await expect(
     page.getByRole("region", { name: "Promociones disponibles" }),
@@ -272,10 +289,12 @@ test("venta presencial requiere confirmar cobro y entrega, y descuenta stock una
     })
     .check();
   await submit.click();
-  await expect(page.locator(".promotion-row")).toHaveCount(1);
-  await expect(page.locator(".promotion-row")).toContainText(
-    "Efectivo cobrado · Entregado",
-  );
+  await expect(
+    page.locator(".promotions-table tbody tr, .orders-table tbody tr"),
+  ).toHaveCount(1);
+  await expect(
+    page.locator(".promotions-table tbody tr, .orders-table tbody tr"),
+  ).toContainText("Efectivo cobrado");
   await expect(submit).toHaveCount(0);
   await page
     .getByRole("button", { name: "Crear venta o retiro", exact: true })
@@ -287,7 +306,9 @@ test("venta presencial requiere confirmar cobro y entrega, y descuenta stock una
     page.getByRole("combobox", { name: "Tipo de registro", exact: true }),
   ).toHaveValue("pickup");
   await page.getByRole("button", { name: "Cancelar", exact: true }).click();
-  await expect(page.locator(".promotion-row")).toHaveCount(1);
+  await expect(
+    page.locator(".promotions-table tbody tr, .orders-table tbody tr"),
+  ).toHaveCount(1);
   expect(
     await page.evaluate(
       () =>
