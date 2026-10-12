@@ -3,6 +3,10 @@ import { useEffect, useRef, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Icon } from "@/components/ui/icon";
+import {
+  catalogSection,
+  navigateCatalogSection,
+} from "@/components/catalog/section-navigation";
 
 export function AdminNavigation({ preview = false }: { preview?: boolean }) {
   const menu = useRef<HTMLDetailsElement>(null);
@@ -23,7 +27,7 @@ export function AdminNavigation({ preview = false }: { preview?: boolean }) {
   )
     return null;
   const catalog = preview ? "/vista-previa/gestion" : "/admin/catalogo";
-  const currentSection = params.get("seccion") || "products";
+  const currentSection = catalogSection(params.get("seccion"));
   const groups = [
     {
       label: "Operación",
@@ -96,6 +100,15 @@ export function AdminNavigation({ preview = false }: { preview?: boolean }) {
                     ? `${link.href}?seccion=${link.section}`
                     : link.href
                 }
+                prefetch={
+                  link.section && pathname === link.href ? false : undefined
+                }
+                onNavigate={(event) => {
+                  if (link.section && pathname === link.href) {
+                    event.preventDefault();
+                    navigateCatalogSection(link.section);
+                  }
+                }}
                 aria-current={
                   pathname === link.href &&
                   (!link.section || currentSection === link.section)

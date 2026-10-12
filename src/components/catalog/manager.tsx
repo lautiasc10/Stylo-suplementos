@@ -1,6 +1,11 @@
 "use client";
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import {
+  catalogSection,
+  catalogSections,
+  navigateCatalogSection,
+} from "./section-navigation";
 import { ProductThumbnail } from "@/components/ui/product-thumbnail";
 import { Icon } from "@/components/ui/icon";
 import { IconAction } from "@/components/admin/icon-action";
@@ -41,12 +46,10 @@ export function CatalogManager({
   imageUrls?: Record<string, string>;
   imageBase?: string;
 }) {
-  const params = useSearchParams(),
-    pathname = usePathname(),
-    router = useRouter();
+  const params = useSearchParams();
+  const tab = catalogSection(params.get("seccion"));
   const messageRef = useRef<HTMLParagraphElement>(null);
-  const [tab, setTab] = useState(params.get("seccion") || "products"),
-    [draft, setDraft] = useState<Product | null>(null),
+  const [draft, setDraft] = useState<Product | null>(null),
     [plan, setPlan] = useState<ImportPlan | null>(null);
   const [busy, setBusy] = useState(false),
     [message, setMessage] = useState("");
@@ -68,18 +71,16 @@ export function CatalogManager({
         ?.focus();
   }, [group?.id]);
   const currentTab = useRef(tab);
-  currentTab.current = tab;
   useEffect(() => {
-    const selection = params.get("seccion") || "products";
-    if (
-      ["products", "brands", "categories", "import"].includes(selection) &&
-      selection !== currentTab.current
-    ) {
-      setTab(selection);
+    if (tab !== currentTab.current) {
+      currentTab.current = tab;
       setDraft(null);
       setGroup(null);
+      setMessage("");
+      setPlan(null);
+      setFileName("");
     }
-  }, [params]);
+  }, [tab]);
   useEffect(() => {
     if (message && message !== "Cambios guardados." && !busy)
       messageRef.current?.focus();
@@ -252,24 +253,12 @@ export function CatalogManager({
   return (
     <div className="catalog-manager">
       <nav className="manager-tabs" aria-label="Gestión del catálogo">
-        {[
-          ["products", "Productos"],
-          ["brands", "Marcas"],
-          ["categories", "Categorías"],
-          ["import", "Carga masiva"],
-        ].map(([key, label]) => (
+        {catalogSections.map(([key, label]) => (
           <button
             key={key}
             type="button"
             aria-current={tab === key ? "page" : undefined}
-            onClick={() => {
-              setTab(key);
-              setDraft(null);
-              setGroup(null);
-              setMessage("");
-              setPlan(null);
-              router.replace(`${pathname}?seccion=${key}`, { scroll: false });
-            }}
+            onClick={() => navigateCatalogSection(key)}
             disabled={busy}
           >
             {label}

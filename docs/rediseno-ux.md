@@ -26,7 +26,7 @@ Accesibilidad: controles cómodos, foco visible, labels reales, mensajes anuncia
 
 - Compilación de producción y comprobación TypeScript correctas.
 - 52 pruebas unitarias/PostgreSQL correctas: precios, promociones, stock, permisos, MFA e idempotencia; incluye selección de fotografía de variante, alternativa general y rechazo de fotos de otra presentación.
-- 80 recorridos Chromium correctos, en escritorio y emulación móvil. Cubren catálogo, edición/importación, carrito, promociones, checkout de revisión, ventas manuales y protección administrativa. Última ejecución en PowerShell: `$env:PLAYWRIGHT_PORT='3001'; npx.cmd playwright test --workers=4`, con credenciales vacías y sin escrituras en Supabase.
+- 86 recorridos Chromium correctos, en escritorio y emulación móvil. Cubren catálogo, edición/importación, carrito, promociones, checkout de revisión, ventas manuales y protección administrativa. Última ejecución en PowerShell: `$env:PLAYWRIGHT_PORT='3001'; npx.cmd playwright test --workers=4`, con credenciales vacías y sin escrituras en Supabase.
 - Recorridos nuevos: fotografía y fallo de imagen, cambio de visualización de precios, confirmación/cancelación de eliminación, foco al cerrar el lateral y al eliminar, carrito largo y pantalla horizontal, navegación administrativa y cambio de tamaño, edición por secciones, 320/768/1024 px sin desbordamiento.
 - Revisión visual a 390/1440 px con movimiento reducido, sin excepciones de JavaScript en las capturas. Se conserva navegación pública sin JavaScript y acciones de servidor de carrito; los selectores que recalculan la presentación del precio permanecen deshabilitados hasta la hidratación.
 - Contrastes medidos del sistema: texto secundario sobre superficie elevada 8,86:1; dorado sobre superficie elevada 8,30:1; texto negro sobre botón dorado 9,45:1; borde de control sobre superficie elevada 3,71:1. Los estados también se comunican con texto y foco visible.
@@ -38,6 +38,14 @@ No se añadieron dependencias ni migraciones, ni se modificaron precios, cobros,
 El panel se verificó con datos locales de prueba, usando los mismos componentes de la gestión privada. No se contó con una sesión autenticada del administrador para repetir escrituras remotas. Chromium móvil no acredita Safari/iOS físico, ni estas comprobaciones certifican integralmente WCAG. Los pagos y la entrega conservan sus pendientes de Fase 3.
 
 ## Capturas
+
+### Navegación del catálogo
+
+La comparación detectó dos recorridos diferentes: las pestañas cambiaban el estado local inmediatamente y luego ejecutaban `router.replace`; el lateral esperaba la navegación de Next antes de mostrar la sección. En la ruta privada esa navegación vuelve a ejecutar la comprobación de acceso y la consulta del catálogo. Una comprobación con respuesta de ruta demorada artificialmente 500 ms en la vista previa confirmó la diferencia: la nueva sección ya era visible después del clic en la pestaña, pero todavía no después del clic en el lateral. Esta demora controlada no representa una medición de latencia de Supabase.
+
+Ambos controles ahora comparten el mismo cambio de sección mediante la [History API integrada en Next](https://nextjs.org/docs/app/getting-started/linking-and-navigating#native-history-api). El catálogo cargado se conserva; la URL es la única fuente de selección y se mantienen sus otros parámetros. No hay solicitudes de página al recorrer productos, marcas, categorías y carga masiva dentro del catálogo. Atrás/Adelante recuperan la sección y la recarga respeta el enlace directo. Cambiar de sección limpia los borradores como antes; pulsar la sección activa conserva la edición.
+
+Entrar al catálogo desde otra ruta conserva la navegación de Next, los controles de acceso y la carga inicial. Los enlaces siguen admitiendo otra pestaña y navegación normal sin JavaScript; las tareas de edición conservan su requisito de JavaScript. Guardados, permisos y comprobaciones de servidor no cambian. Las seis nuevas verificaciones de escritorio y celular bloquean las solicitudes de sección para comprobar que la interacción no depende de la red y recorren historial, recarga, teclado, borradores, apertura en otra pestaña y entrada desde promociones. No se realizaron escrituras remotas ni se midió una sesión privada autenticada.
 
 ### Revisión de gestión del 12 de octubre
 
