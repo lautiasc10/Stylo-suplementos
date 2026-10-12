@@ -1,5 +1,8 @@
 "use client";
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { ProductThumbnail } from "@/components/ui/product-thumbnail";
+import { Icon } from "@/components/ui/icon";
 import {
   importColumns,
   planImport,
@@ -13,6 +16,7 @@ import {
   slugify,
   validateCatalog,
   publicCatalog,
+  variantImages,
   type Catalog,
   type CatalogGroup,
   type Product,
@@ -35,13 +39,34 @@ export function CatalogManager({
   imageUrls?: Record<string, string>;
   imageBase?: string;
 }) {
-  const [tab, setTab] = useState("products"),
+  const params = useSearchParams(),
+    pathname = usePathname(),
+    router = useRouter();
+  const messageRef = useRef<HTMLParagraphElement>(null);
+  const [tab, setTab] = useState(params.get("seccion") || "products"),
     [draft, setDraft] = useState<Product | null>(null),
     [plan, setPlan] = useState<ImportPlan | null>(null);
   const [busy, setBusy] = useState(false),
     [message, setMessage] = useState("");
   const [group, setGroup] = useState<CatalogGroup | null>(null),
     [fileName, setFileName] = useState("");
+  const currentTab = useRef(tab);
+  currentTab.current = tab;
+  useEffect(() => {
+    const selection = params.get("seccion") || "products";
+    if (
+      ["products", "brands", "categories", "import"].includes(selection) &&
+      selection !== currentTab.current
+    ) {
+      setTab(selection);
+      setDraft(null);
+      setGroup(null);
+    }
+  }, [params]);
+  useEffect(() => {
+    if (message && message !== "Cambios guardados." && !busy)
+      messageRef.current?.focus();
+  }, [message, busy]);
   async function save(next: Catalog) {
     const errors = validateCatalog(next);
     if (errors.length) {
@@ -226,6 +251,7 @@ export function CatalogManager({
               setGroup(null);
               setMessage("");
               setPlan(null);
+              router.replace(`${pathname}?seccion=${key}`, { scroll: false });
             }}
             disabled={busy}
           >
@@ -233,7 +259,7 @@ export function CatalogManager({
           </button>
         ))}
       </nav>
-      <p className="form-message" role="status">
+      <p className="form-message" role="status" ref={messageRef} tabIndex={-1}>
         {busy ? "Procesando…" : message}
       </p>
       <fieldset
@@ -250,7 +276,7 @@ export function CatalogManager({
                 className="button button-gold"
                 onClick={newProduct}
               >
-                Nuevo producto
+                <Icon name="bag" /> Nuevo producto
               </button>
             </div>
             <div className="manager-table-wrap">
@@ -272,17 +298,42 @@ export function CatalogManager({
                   {catalog.products.map((product) => (
                     <tr key={product.id} role="row">
                       <td role="cell" data-label="Producto">
-                        {product.name}
-                        <small>
-                          {
-                            catalog.brands.find(
-                              (item) => item.id === product.brandId,
-                            )?.name
-                          }
-                        </small>
+                        <div className="manager-product-cell">
+                          <ProductThumbnail
+                            src={(() => {
+                              const image = variantImages(
+                                product,
+                                product.variants[0]?.id ?? "",
+                              )[0];
+                              return image
+                                ? imageUrls[image.path] ||
+                                    (imageBase
+                                      ? `${imageBase}/${image.path}`
+                                      : undefined)
+                                : undefined;
+                            })()}
+                            alt={`Foto de ${product.name}`}
+                            size={56}
+                          />
+                          <div>
+                            <strong>{product.name}</strong>
+                            <small>
+                              {
+                                catalog.brands.find(
+                                  (item) => item.id === product.brandId,
+                                )?.name
+                              }
+                            </small>
+                          </div>
+                        </div>
                       </td>
                       <td role="cell" data-label="Estado">
-                        {product.active ? "Visible" : "Oculto"}
+                        <span
+                          className="status-badge"
+                          data-active={product.active}
+                        >
+                          {product.active ? "Visible" : "Oculto"}
+                        </span>
                       </td>
                       <td role="cell" data-label="Variantes">
                         {product.variants.length}
@@ -392,6 +443,12 @@ export function CatalogManager({
           <form
             className="catalog-editor"
             onSubmit={submitProduct}
+            onInvalid={(event) => {
+              const field = event.target as HTMLInputElement;
+              setMessage(
+                `Revisá el campo ${field.closest("label")?.textContent?.trim() || "obligatorio"}.`,
+              );
+            }}
             key={draft.id}
           >
             <div className="manager-toolbar">
@@ -400,16 +457,33 @@ export function CatalogManager({
                   ? "Editar producto"
                   : "Nuevo producto"}
               </h2>
-              <button
-                type="button"
-                className="text-link"
-                disabled={busy}
-                onClick={() => setDraft(null)}
-              >
-                Cancelar edición
-              </button>
+              <div className="editor-header-actions">
+                <button
+                  type="button"
+                  className="text-link"
+                  disabled={busy}
+                  onClick={() => setDraft(null)}
+                >
+                  Volver al listado
+                </button>
+                <button className="button button-gold" disabled={busy}>
+                  {busy ? "Guardando…" : "Guardar"}
+                </button>
+              </div>
             </div>
-            <fieldset disabled={busy} className="editor-fields">
+            <nav
+              className="editor-jump-links"
+              aria-label="Secciones del producto"
+            >
+              <a href="#editor-datos">Información</a>
+              <a href="#editor-variantes">Variantes y precios</a>
+              <a href="#editor-fotos">Fotografías</a>
+            </nav>
+            <fieldset
+              disabled={busy}
+              className="editor-fields"
+              id="editor-datos"
+            >
               <legend>Información del producto</legend>
               <label>
                 Nombre
@@ -527,139 +601,158 @@ export function CatalogManager({
                   Destacado
                 </label>
               </div>
-              <label>
-                Título SEO
-                <input
-                  maxLength={140}
-                  value={draft.seoTitle}
-                  onChange={(event) =>
-                    updateDraft("seoTitle", event.target.value)
-                  }
-                />
-              </label>
-              <label>
-                Descripción SEO
-                <textarea
-                  maxLength={320}
-                  value={draft.seoDescription}
-                  onChange={(event) =>
-                    updateDraft("seoDescription", event.target.value)
-                  }
-                />
-              </label>
-            </fieldset>
-            <h3>Variantes</h3>
-            {draft.variants.map((variant, index) => (
-              <fieldset
-                key={variant.id}
-                className="editor-fields variant-editor"
-                disabled={busy}
-              >
-                <legend>Variante {index + 1}</legend>
-                {(
-                  [
-                    ["sku", "SKU"],
-                    ["flavor", "Sabor"],
-                    ["size", "Tamaño"],
-                    ["presentation", "Presentación"],
-                  ] as const
-                ).map(([key, label]) => (
-                  <label key={key}>
-                    {label}
+              <details className="editor-seo">
+                <summary>Opciones para buscadores (SEO)</summary>
+                <div>
+                  <label>
+                    Título SEO
                     <input
-                      required={key === "sku"}
-                      maxLength={key === "sku" ? 64 : 100}
-                      value={variant[key]}
+                      maxLength={140}
+                      value={draft.seoTitle}
+                      onChange={(event) =>
+                        updateDraft("seoTitle", event.target.value)
+                      }
+                    />
+                  </label>
+                  <label>
+                    Descripción SEO
+                    <textarea
+                      maxLength={320}
+                      value={draft.seoDescription}
+                      onChange={(event) =>
+                        updateDraft("seoDescription", event.target.value)
+                      }
+                    />
+                  </label>
+                </div>
+              </details>
+            </fieldset>
+            <section id="editor-variantes">
+              <div className="editor-section-heading">
+                <h3>Variantes y precios</h3>
+                <span className="status-badge">
+                  {draft.variants.length}{" "}
+                  {draft.variants.length === 1
+                    ? "presentación"
+                    : "presentaciones"}
+                </span>
+              </div>
+              {draft.variants.map((variant, index) => (
+                <fieldset
+                  key={variant.id}
+                  className="editor-fields variant-editor"
+                  disabled={busy}
+                >
+                  <legend>Variante {index + 1}</legend>
+                  {(
+                    [
+                      ["sku", "SKU"],
+                      ["flavor", "Sabor"],
+                      ["size", "Tamaño"],
+                      ["presentation", "Presentación"],
+                    ] as const
+                  ).map(([key, label]) => (
+                    <label key={key}>
+                      {label}
+                      <input
+                        required={key === "sku"}
+                        maxLength={key === "sku" ? 64 : 100}
+                        value={variant[key]}
+                        onChange={(event) =>
+                          updateDraft(
+                            "variants",
+                            draft.variants.map((item) =>
+                              item.id === variant.id
+                                ? {
+                                    ...item,
+                                    [key]:
+                                      key === "sku"
+                                        ? event.target.value.toUpperCase()
+                                        : event.target.value,
+                                  }
+                                : item,
+                            ),
+                          )
+                        }
+                      />
+                    </label>
+                  ))}
+                  <label>
+                    Precio de lista (ARS)
+                    <input
+                      name={`list-${variant.id}`}
+                      required
+                      inputMode="decimal"
+                      pattern="[0-9]+([.,][0-9]{1,2})?"
+                      defaultValue={(variant.listPrice / 100).toFixed(2)}
+                    />
+                  </label>
+                  <label>
+                    Precio efectivo/transferencia (ARS)
+                    <input
+                      name={`cash-${variant.id}`}
+                      required
+                      inputMode="decimal"
+                      pattern="[0-9]+([.,][0-9]{1,2})?"
+                      defaultValue={(variant.cashPrice / 100).toFixed(2)}
+                    />
+                  </label>
+                  <label>
+                    Stock
+                    <input
+                      type="number"
+                      min={0}
+                      max={1000000}
+                      step={1}
+                      required
+                      value={variant.stock}
                       onChange={(event) =>
                         updateDraft(
                           "variants",
                           draft.variants.map((item) =>
                             item.id === variant.id
-                              ? {
-                                  ...item,
-                                  [key]:
-                                    key === "sku"
-                                      ? event.target.value.toUpperCase()
-                                      : event.target.value,
-                                }
+                              ? { ...item, stock: Number(event.target.value) }
                               : item,
                           ),
                         )
                       }
                     />
                   </label>
-                ))}
-                <label>
-                  Precio de lista (ARS)
-                  <input
-                    name={`list-${variant.id}`}
-                    required
-                    inputMode="decimal"
-                    pattern="[0-9]+([.,][0-9]{1,2})?"
-                    defaultValue={(variant.listPrice / 100).toFixed(2)}
-                  />
-                </label>
-                <label>
-                  Precio efectivo/transferencia (ARS)
-                  <input
-                    name={`cash-${variant.id}`}
-                    required
-                    inputMode="decimal"
-                    pattern="[0-9]+([.,][0-9]{1,2})?"
-                    defaultValue={(variant.cashPrice / 100).toFixed(2)}
-                  />
-                </label>
-                <label>
-                  Stock
-                  <input
-                    type="number"
-                    min={0}
-                    max={1000000}
-                    step={1}
-                    required
-                    value={variant.stock}
-                    onChange={(event) =>
-                      updateDraft(
-                        "variants",
-                        draft.variants.map((item) =>
-                          item.id === variant.id
-                            ? { ...item, stock: Number(event.target.value) }
-                            : item,
-                        ),
-                      )
-                    }
-                  />
-                </label>
-                <label className="editor-check">
-                  <input
-                    type="checkbox"
-                    checked={variant.active}
-                    onChange={(event) =>
-                      updateDraft(
-                        "variants",
-                        draft.variants.map((item) =>
-                          item.id === variant.id
-                            ? { ...item, active: event.target.checked }
-                            : item,
-                        ),
-                      )
-                    }
-                  />
-                  Variante visible
-                </label>
-              </fieldset>
-            ))}
-            <button
-              type="button"
-              className="button button-outline"
-              disabled={busy || draft.variants.length >= 100}
-              onClick={() =>
-                updateDraft("variants", [...draft.variants, newVariant()])
-              }
+                  <label className="editor-check">
+                    <input
+                      type="checkbox"
+                      checked={variant.active}
+                      onChange={(event) =>
+                        updateDraft(
+                          "variants",
+                          draft.variants.map((item) =>
+                            item.id === variant.id
+                              ? { ...item, active: event.target.checked }
+                              : item,
+                          ),
+                        )
+                      }
+                    />
+                    Variante visible
+                  </label>
+                </fieldset>
+              ))}
+              <button
+                type="button"
+                className="button button-outline"
+                disabled={busy || draft.variants.length >= 100}
+                onClick={() =>
+                  updateDraft("variants", [...draft.variants, newVariant()])
+                }
+              >
+                Agregar variante
+              </button>
+            </section>
+            <fieldset
+              disabled={busy}
+              className="editor-fields"
+              id="editor-fotos"
             >
-              Agregar variante
-            </button>
-            <fieldset disabled={busy} className="editor-fields">
               <legend>Imágenes (hasta 12)</legend>
               <label>
                 Subir imágenes
@@ -769,9 +862,19 @@ export function CatalogManager({
                 </div>
               ))}
             </fieldset>
-            <button className="button button-gold" disabled={busy}>
-              Guardar producto
-            </button>
+            <div className="editor-actions">
+              <button
+                type="button"
+                className="button button-outline"
+                disabled={busy}
+                onClick={() => setDraft(null)}
+              >
+                Cancelar edición
+              </button>
+              <button className="button button-gold" disabled={busy}>
+                {busy ? "Guardando…" : "Guardar producto"}
+              </button>
+            </div>
           </form>
         )}
         {(tab === "brands" || tab === "categories") && (

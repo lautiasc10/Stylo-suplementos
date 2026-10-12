@@ -75,7 +75,11 @@ export function ManualOrders({
         pendientes de retiro. Las compras de la tienda usarán transferencia o
         Mercado Pago.
       </p>
-      {notice && <p role="status">{notice}</p>}
+      {notice && (
+        <p className="ui-notice" role="status">
+          {notice}
+        </p>
+      )}
       <div className="management-layout">
         <div className="promotions-list">
           <h2 className="management-section-title">Últimos registros</h2>

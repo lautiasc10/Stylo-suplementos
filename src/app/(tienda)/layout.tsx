@@ -6,6 +6,7 @@ import { publicCatalog } from "@/modules/catalog/model";
 import { readPromotions } from "@/modules/commerce/promotions-server";
 import { readCart } from "@/modules/commerce/server";
 import "../commerce.css";
+import { getEnvironment } from "@/lib/config/server";
 
 export default async function StoreLayout({
   children,
@@ -13,6 +14,7 @@ export default async function StoreLayout({
   children: React.ReactNode;
 }) {
   const { catalog, configured, error } = await getCatalog();
+  const config = getEnvironment().supabase;
   const cart = await readCart();
   const promotions = await readPromotions();
   const activePromotions = promotions.error
@@ -38,6 +40,7 @@ export default async function StoreLayout({
       initialQuote={cart}
       initialCatalog={offerCatalog}
       initialPromotions={activePromotions}
+      imageBase={config ? `${config.url}/storage/v1/object/public/product-media` : ""}
     >
       <Header catalogCategories={visible} />
       <main id="contenido">{children}</main>

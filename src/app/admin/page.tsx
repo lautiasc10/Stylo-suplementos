@@ -2,24 +2,56 @@ import { requireAdmin } from "@/modules/admin/access";
 import { signOut } from "@/modules/admin/actions";
 import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
+import { getCatalog } from "@/modules/catalog/server";
 
 export default async function AdminPage() {
   await requireAdmin();
+  const { catalog, error } = await getCatalog();
+  const variants = catalog.products.flatMap((product) =>
+    product.variants.filter((variant) => variant.active),
+  );
   return (
     <section className="admin-dashboard">
       <div className="section-heading">
         <div>
-          <p className="eyebrow">PANEL PRIVADO</p>
-          <h1>Administración STYLO</h1>
+          <p className="eyebrow">ADMINISTRACIÓN STYLO</p>
+          <h1>Resumen de la tienda</h1>
         </div>
         <form action={signOut}>
           <button className="button button-outline">Cerrar sesión</button>
         </form>
       </div>
-      <p className="page-intro">
-        Elegí qué querés gestionar. Cada sección reúne sus herramientas y
-        acciones.
-      </p>
+      <p className="page-intro">Productos, existencias y registros de venta.</p>
+      {error && (
+        <p className="ui-notice" role="alert">
+          {error}
+        </p>
+      )}
+      {!error && (
+        <dl className="admin-overview">
+          <div className="admin-stat">
+            <dt>Productos publicados</dt>
+            <dd>
+              {catalog.products.filter((product) => product.active).length}
+            </dd>
+          </div>
+          <div className="admin-stat">
+            <dt>Presentaciones activas</dt>
+            <dd>{variants.length}</dd>
+          </div>
+          <div className="admin-stat">
+            <dt>Presentaciones con stock bajo</dt>
+            <dd>
+              {
+                variants.filter(
+                  (variant) =>
+                    variant.stock <= (catalog.lowStockThreshold ?? 0),
+                ).length
+              }
+            </dd>
+          </div>
+        </dl>
+      )}
       <div className="admin-sections">
         <Link className="admin-section-card" href="/admin/catalogo">
           <Icon name="bag" />

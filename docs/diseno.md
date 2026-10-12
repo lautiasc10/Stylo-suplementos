@@ -28,6 +28,8 @@ Las ilustraciones de envases identifican categorías. No representan inventario 
 
 ## Accesibilidad y rendimiento
 
+El rediseño del 12 de octubre de 2026 amplía este sistema con superficies `--surface`, `--surface-raised`, `--surface-hover`, bordes de control `--control-border`, radio de panel de 16 px y transición de controles de 180 ms. Los botones y campos comparten radio de 8 px; el dorado se reserva para la acción principal y selección. Fotos, avisos, estados y confirmaciones tienen componentes comunes. Se aplica foco visible global y una jerarquía específica para compra y administración. Auditoría, decisiones y verificaciones: [rediseño UX de Fase 3](rediseno-ux.md).
+
 Las apariciones usan `IntersectionObserver`, sin listeners continuos de scroll ni bibliotecas de animación. El HTML inicial muestra todo el contenido. El foco vuelve visibles los grupos y la preferencia de movimiento reducido desactiva las animaciones, incluso si cambia con la página abierta. El revelado de marca mantiene texto real y orden de lectura.
 
 Verificación: navegación en Chromium de escritorio y móvil, teclado, cambio de movimiento reducido y contenido sin JavaScript. Revisión visual a 320, 390, 768, 900, 1024 y 1440 px. Las capturas estáticas usan movimiento reducido para mostrar todos los bloques.

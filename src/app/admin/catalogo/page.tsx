@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { requireAdmin } from "@/modules/admin/access";
 import { getCatalog } from "@/modules/catalog/server";
 import { getEnvironment } from "@/lib/config/server";
@@ -9,11 +8,8 @@ export default async function AdminCatalogPage() {
   const config = getEnvironment().supabase!;
   return (
     <section className="admin-dashboard">
-      <Link className="text-link" href="/admin">
-        ← Panel
-      </Link>
       <p className="eyebrow">CATÁLOGO STYLO</p>
-      <h1>Productos, marcas y categorías</h1>
+      <h1>Catálogo e inventario</h1>
       {error ? (
         <p role="alert">
           No pudimos consultar el catálogo. Verificá la migración de Fase 2

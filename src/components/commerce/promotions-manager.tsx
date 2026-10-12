@@ -14,6 +14,7 @@ import {
 } from "@/modules/commerce/promotions";
 import { savePromotions } from "@/modules/commerce/actions";
 import { previewCatalog } from "./cart-provider";
+import { ConfirmAction } from "@/components/ui/confirm-action";
 function localDate(value?: string | null) {
   if (!value) return "";
   const date = new Date(value);
@@ -119,10 +120,20 @@ export function PromotionsManager({
         de pago. Las rebajas y ofertas por cantidad usan precio final por
         unidad; los combos usan precio final del conjunto.
       </p>
-      {notice && <p role="status">{notice}</p>}
+      {notice && (
+        <p className="ui-notice" role="status">
+          {notice}
+        </p>
+      )}
       <div className="management-layout">
         <div className="promotions-list">
-          <h2 className="management-section-title">Promociones guardadas</h2>
+          <h2
+            className="management-section-title"
+            id="promotions-heading"
+            tabIndex={-1}
+          >
+            Promociones guardadas
+          </h2>
           {!state.promotions.length && (
             <p className="management-empty">
               Todavía no hay promociones. Creá una para mostrarla en la tienda.
@@ -138,7 +149,10 @@ export function PromotionsManager({
                     : p.kind === "quantity"
                       ? "Por cantidad"
                       : "Rebaja"}{" "}
-                  · {p.active ? "Activa" : "Pausada"}
+                  ·{" "}
+                  <span className="status-badge" data-active={p.active}>
+                    {p.active ? "Activa" : "Pausada"}
+                  </span>
                 </p>
                 <p>
                   Lista: {formatPrice(p.listPrice)} · Efectivo / transferencia:{" "}
@@ -185,22 +199,26 @@ export function PromotionsManager({
                     setEditing(p);
                     setKind(p.kind);
                     setComponents(p.components.map((c) => ({ ...c })));
+                    requestAnimationFrame(() =>
+                      (
+                        document.querySelector(
+                          '.promotion-editor input[name="name"]',
+                        ) as HTMLInputElement | null
+                      )?.focus(),
+                    );
                   }}
                 >
                   Editar
                 </button>
-                <button
-                  className="text-link"
-                  aria-label={`Quitar ${p.name}`}
-                  disabled={busy}
-                  onClick={() =>
-                    void commit(
-                      state.promotions.filter((item) => item.id !== p.id),
-                    )
+                <ConfirmAction
+                  focusAfterId="promotions-heading"
+                  label={`Quitar ${p.name}`}
+                  question={`¿Eliminar la promoción ${p.name}?`}
+                  busy={busy}
+                  onConfirm={() =>
+                    commit(state.promotions.filter((item) => item.id !== p.id))
                   }
-                >
-                  Quitar
-                </button>
+                />
               </div>
             </article>
           ))}

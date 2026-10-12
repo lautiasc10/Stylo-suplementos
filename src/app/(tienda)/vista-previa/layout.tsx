@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getEnvironment } from "@/lib/config/server";
+import { PreviewFrame } from "@/components/admin/navigation";
 export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Vista previa local",
@@ -30,7 +31,7 @@ export default async function PreviewLayout({
         <Link href="/vista-previa/pedidos">Pedidos de prueba</Link>
         <Link href="/">Volver a la tienda</Link>
       </nav>
-      {children}
+      <PreviewFrame>{children}</PreviewFrame>
     </section>
   );
 }

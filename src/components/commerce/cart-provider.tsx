@@ -50,6 +50,8 @@ const CartContext = createContext<{
   preview: boolean;
   busy: boolean;
   error: string;
+  imageBase: string;
+  imageUrls: Record<string, string>;
   change: (
     variantId: string,
     operation: string,
@@ -68,11 +70,13 @@ export function CartProvider({
   initialQuote,
   initialCatalog,
   initialPromotions = [],
+  imageBase = "",
   children,
 }: {
   initialQuote: CartQuote;
   initialCatalog: Catalog;
   initialPromotions?: Promotion[];
+  imageBase?: string;
   children: ReactNode;
 }) {
   const pathname = usePathname();
@@ -81,12 +85,15 @@ export function CartProvider({
   const [localQuote, setLocalQuote] = useState(quoteCart(demoCatalog(), []));
   const [localCatalog, setLocalCatalog] = useState(demoCatalog);
   const [localPromotions, setLocalPromotions] = useState<Promotion[]>([]);
+  const [localImages, setLocalImages] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false),
     [error, setError] = useState("");
   const lock = useRef(false);
   const dialog = useRef<HTMLDialogElement>(null);
   const opener = useRef<HTMLElement | null>(null);
   const [opened, setOpened] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const refreshSequence = useRef(0);
   const quote = preview ? localQuote : realQuote;
   useEffect(() => setRealQuote(initialQuote), [initialQuote]);
   useEffect(() => {
@@ -100,6 +107,18 @@ export function CartProvider({
         const catalog = previewCatalog(),
           promotions = previewPromotions();
         setLocalCatalog(catalog);
+        const saved = JSON.parse(
+          localStorage.getItem("stylo.catalog-preview.v1") ?? "{}",
+        );
+        setLocalImages(
+          Object.fromEntries(
+            Object.entries(saved.images ?? {}).filter(
+              ([, value]) =>
+                typeof value === "string" &&
+                /^data:image\/(jpeg|png|webp);base64,/.test(value),
+            ),
+          ) as Record<string, string>,
+        );
         setLocalPromotions(promotions);
         setLocalQuote(quoteCart(catalog, items, promotions));
       } catch {
@@ -123,6 +142,8 @@ export function CartProvider({
     };
   }, [opened]);
   function closeCart() {
+    ++refreshSequence.current;
+    setRefreshing(false);
     dialog.current?.close();
     setOpened(false);
     opener.current?.focus({ preventScroll: true });
@@ -134,14 +155,27 @@ export function CartProvider({
         : null;
     dialog.current?.showModal();
     setOpened(true);
-    if (!preview)
+    if (!preview) {
+      const sequence = ++refreshSequence.current;
+      setRefreshing(true);
       void refreshCart()
-        .then(setRealQuote)
-        .catch(() => setError("No pudimos actualizar el carrito."));
+        .then((next) => {
+          if (sequence === refreshSequence.current) setRealQuote(next);
+        })
+        .catch(() => {
+          if (sequence === refreshSequence.current)
+            setError("No pudimos actualizar el carrito.");
+        })
+        .finally(() => {
+          if (sequence === refreshSequence.current) setRefreshing(false);
+        });
+    }
   }
   async function change(variantId: string, operation: string, quantity = 1) {
     if (lock.current) return;
     lock.current = true;
+    ++refreshSequence.current;
+    setRefreshing(false);
     setBusy(true);
     setError("");
     try {
@@ -190,8 +224,10 @@ export function CartProvider({
         catalog: preview ? localCatalog : initialCatalog,
         promotions: preview ? localPromotions : initialPromotions,
         preview,
-        busy,
+        busy: busy || refreshing,
         error,
+        imageBase: preview ? "" : imageBase,
+        imageUrls: preview ? localImages : {},
         change,
         openCart,
         closeCart,
@@ -212,10 +248,13 @@ export function CartProvider({
         <div className="cart-drawer-inner">
           <div className="cart-heading">
             <div>
-              <p className="eyebrow">TU SELECCIÓN</p>
               <h2 id="cart-title">
                 <Icon name="cart" /> Tu carrito
               </h2>
+              <p>
+                {quote.quantity} {quote.quantity === 1 ? "unidad" : "unidades"}{" "}
+                en tu selección
+              </p>
             </div>
             <button
               type="button"

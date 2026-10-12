@@ -12,7 +12,10 @@ test("carrito lateral conserva SKU y cantidades, restaura foco y persiste sin me
   await expect(dialog).toBeVisible();
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(dialog).toHaveCSS("animation-name", "none");
-  await expect(dialog).toContainText("DEMO-1-A");
+  await expect(dialog.locator(".cart-variant")).toHaveText(
+    "Chocolate · 1 kg · Envase",
+  );
+  await expect(dialog.locator(".cart-unit-price")).toContainText("/ unidad");
   await dialog
     .getByRole("button", { name: "Aumentar cantidad de Proteína de prueba" })
     .click();
@@ -51,8 +54,15 @@ test("una variante agotada no se agrega y las cantidades no superan la existenci
   for (let i = 1; i < 8; i++) await increase.click();
   await expect(increase).toBeDisabled();
   await expect(dialog.getByLabel("Cantidad: 8", { exact: true })).toBeVisible();
+  await dialog.getByLabel("Quitar Proteína de prueba", { exact: true }).click();
+  await expect(dialog.getByLabel("Cantidad: 8", { exact: true })).toBeVisible();
+  await dialog.getByRole("button", { name: "Cancelar", exact: true }).click();
+  await expect(
+    dialog.getByLabel("Quitar Proteína de prueba", { exact: true }),
+  ).toBeFocused();
+  await dialog.getByLabel("Quitar Proteína de prueba", { exact: true }).click();
   await dialog
-    .getByRole("button", { name: "Quitar Proteína de prueba" })
+    .getByRole("button", { name: "Confirmar eliminación", exact: true })
     .click();
   await expect(
     dialog.getByText("Tu próxima elección empieza acá."),

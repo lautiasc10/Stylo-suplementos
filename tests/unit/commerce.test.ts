@@ -28,6 +28,33 @@ const promo = (patch: Partial<Promotion> = {}): Promotion => ({
   ...patch,
 });
 describe("carrito y reglas comerciales de Fase 3", () => {
+  it("muestra la fotografía de la variante y solo usa la general como alternativa", () => {
+    const data = structuredClone(catalog),
+      product = data.products[0];
+    const general = {
+      id: "11111111-1111-4111-8111-111111111112",
+      path: `${product.id}/general.webp`,
+      alt: "Foto general",
+      variantId: null,
+      position: 0,
+    };
+    const specific = {
+      ...general,
+      id: "11111111-1111-4111-8111-111111111113",
+      path: `${product.id}/chocolate.webp`,
+      alt: "Chocolate",
+      variantId: protein.id,
+      position: 1,
+    };
+    product.images = [general, specific];
+    const image = () =>
+      quoteCart(data, [{ variantId: protein.id, quantity: 1 }]).lines[0].image;
+    expect(image()).toEqual({ path: specific.path, alt: specific.alt });
+    product.images = [general];
+    expect(image()).toEqual({ path: general.path, alt: general.alt });
+    product.images = [{ ...specific, variantId: product.variants[1].id }];
+    expect(image()).toBeUndefined();
+  });
   it("persiste solo identificadores y cantidades, rechaza duplicados y límites", () => {
     expect(
       parseCart([{ variantId: protein.id, quantity: 1, listPrice: 1 }]),

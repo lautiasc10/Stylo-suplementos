@@ -36,7 +36,6 @@ export function Header({
   return (
     <>
       <div className="announcement">
-        <span>FUERZA. DISCIPLINA. EVOLUCIÓN.</span>
         <span>STYLO SUPLEMENTOS · ROSARIO</span>
       </div>
       <header className="site-header">
@@ -71,10 +70,6 @@ export function Header({
           </nav>
           <div className="header-actions">
             <CartLink />
-            <Link href="/catalogo" className="header-catalog-link">
-              Explorar tienda
-              <Icon name="arrow" />
-            </Link>
             <button
               className="icon-button menu-toggle"
               ref={toggle}

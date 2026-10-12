@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { requireAdmin } from "@/modules/admin/access";
 import { getCatalog } from "@/modules/catalog/server";
 import { ManualOrders } from "@/components/commerce/manual-orders";
@@ -14,9 +13,6 @@ export default async function Page() {
     .limit(50);
   return (
     <section className="admin-dashboard">
-      <Link className="text-link" href="/admin">
-        ← Panel
-      </Link>
       {error || result.error || promotions.error ? (
         <p role="alert">
           No pudimos cargar los pedidos. Verificá la migración de Fase 3.

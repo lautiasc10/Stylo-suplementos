@@ -21,19 +21,6 @@ export default async function HomePage() {
     <>
       <section className="sport-hero" aria-labelledby="hero-title">
         <div className="container sport-hero-inner">
-          <div className="hero-corner hero-corner-left" aria-hidden="true">
-            <span>FUERZA</span>
-            <span>DISCIPLINA</span>
-            <span>EVOLUCIÓN</span>
-          </div>
-          <div className="hero-corner hero-corner-right" aria-hidden="true">
-            <span>ESTILO PROPIO.</span>
-            <span>OBJETIVOS PROPIOS.</span>
-          </div>
-          <p className="hero-pill">
-            <Icon name="bolt" />
-            TU RUTINA. TU STYLO.
-          </p>
           <h1 id="hero-title">
             <span className="hero-kicker">POTENCIÁ TU</span>{" "}
             <span className="hero-headline">

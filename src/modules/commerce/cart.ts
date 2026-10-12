@@ -1,4 +1,4 @@
-import { publicCatalog, variantLabel, type Catalog } from "../catalog/model";
+import { publicCatalog, variantLabel, variantImages, type Catalog, type ProductImage } from "../catalog/model";
 import { priceLines, type Pricing, type Promotion } from "./promotions";
 
 export type CartItem = { variantId: string; quantity: number };
@@ -11,6 +11,8 @@ export type CartLine = CartItem & {
   listPrice: number;
   cashPrice: number;
   available: boolean;
+  image?: Pick<ProductImage, "path" | "alt">;
+  brand?: string;
 };
 export type CartQuote = {
   lines: CartLine[];
@@ -78,6 +80,7 @@ export function quoteCart(
       continue;
     }
     const available = variant.stock >= item.quantity;
+    const image = variantImages(product, variant.id)[0];
     if (!available)
       issues.push(
         `Revisá la cantidad de ${product.name}: quedan ${variant.stock} unidades.`,
@@ -92,6 +95,8 @@ export function quoteCart(
       listPrice: variant.listPrice,
       cashPrice: variant.cashPrice,
       available,
+      image: image ? { path: image.path, alt: image.alt } : undefined,
+      brand: visible.brands.find((brand) => brand.id === product.brandId)?.name,
     });
   }
   const sum = (field: "listPrice" | "cashPrice") =>

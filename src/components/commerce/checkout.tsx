@@ -14,9 +14,10 @@ import {
   reviewCheckoutAndRedirect,
 } from "@/modules/commerce/actions";
 import { useCart, previewCatalog, previewPromotions } from "./cart-provider";
+import { ProductThumbnail } from "@/components/ui/product-thumbnail";
 
 export function Checkout() {
-  const { quote, preview, updateQuote } = useCart();
+  const { quote, preview, updateQuote, imageBase, imageUrls } = useCart();
   const [payment, setPayment] = useState<PaymentMethod>("mercado-pago");
   const [errors, setErrors] = useState<string[]>([]);
   const [reviewed, setReviewed] = useState<number | null>(null);
@@ -180,7 +181,7 @@ export function Checkout() {
             revisión.
           </p>
           {!!errors.length && (
-            <div role="alert">
+            <div className="ui-notice" role="alert">
               {errors.map((error) => (
                 <p key={error}>{error}</p>
               ))}
@@ -190,7 +191,7 @@ export function Checkout() {
             {busy ? "Revisando…" : "Revisar selección"}
           </button>
           {reviewed !== null && (
-            <p role="status">
+            <p className="ui-notice" role="status">
               Selección revisada: {formatPrice(reviewed)} en productos. No se
               creó un pedido. Falta habilitar pago y entrega.
             </p>
@@ -207,17 +208,31 @@ export function Checkout() {
           <ul>
             {quote.lines.map((line) => (
               <li key={line.variantId}>
-                <strong>{line.name}</strong>
-                <p>
-                  {line.label} × {line.quantity}
-                </p>
-                <span>
-                  {formatPrice(
-                    (payment === "mercado-pago"
-                      ? line.listPrice
-                      : line.cashPrice) * line.quantity,
-                  )}
-                </span>
+                <ProductThumbnail
+                  size={56}
+                  src={
+                    line.image
+                      ? imageUrls[line.image.path] ||
+                        (imageBase
+                          ? `${imageBase}/${line.image.path}`
+                          : undefined)
+                      : undefined
+                  }
+                  alt={line.image?.alt || `${line.name}, ${line.label}`}
+                />
+                <div>
+                  <strong>{line.name}</strong>
+                  <p>
+                    {line.label} × {line.quantity}
+                  </p>
+                  <span>
+                    {formatPrice(
+                      (payment === "mercado-pago"
+                        ? line.listPrice
+                        : line.cashPrice) * line.quantity,
+                    )}
+                  </span>
+                </div>
               </li>
             ))}
           </ul>
