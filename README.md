@@ -1,6 +1,6 @@
 # STYLO SUPLEMENTOS
 
-Ecommerce de una única tienda. Fase 3 de comercio implementada para revisión, sin servicios pagos ni dominio contratado. El usuario ya creó Supabase; su conexión y validación remota están en preparación.
+Ecommerce de una única tienda. Fase 3 de comercio implementada, sin servicios pagos ni dominio contratado. Supabase conectado y recorridos de productos, carrito, promociones y pedidos manuales validados funcionalmente por el usuario; los cobros online siguen pendientes.
 
 Repositorio: [lautiasc10/Stylo-suplementos](https://github.com/lautiasc10/Stylo-suplementos). Las entregas se suben por fases, con commits identificados y controles en [GitHub Actions](https://github.com/lautiasc10/Stylo-suplementos/actions). La base inicial se identifica como `fase-1-base`; no representa aceptación completa de los pendientes externos.
 

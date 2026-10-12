@@ -60,11 +60,13 @@ Las ofertas activas se muestran en catálogo y ficha antes de agregar: precio re
 
 PostgreSQL en memoria no acredita Supabase remoto. Chromium no acredita Safari/iOS ni dispositivos físicos.
 
-El 12 de octubre se conectó el proyecto del usuario mediante `.env.local`, excluido de Git. `catalog_snapshot` y `commerce_promotions` responden correctamente; el registro público está desactivado. El acceso anónimo a administradores, auditoría y pedidos se rechaza con `42501`. Catálogo público y redirección del panel sin sesión verificados en Chromium, con y sin JavaScript y movimiento reducido. El usuario informó haber completado el autenticador. Falta verificar guardado privado de productos/promociones, imágenes, retiros y venta presencial con MFA; no se ejecutaron escrituras remotas desde el agente ni se verificó aún la cuarta migración mediante una venta.
+El 12 de octubre se conectó el proyecto del usuario mediante `.env.local`, excluido de Git. `catalog_snapshot` y `commerce_promotions` responden correctamente; el registro público está desactivado. El acceso anónimo a administradores, auditoría y pedidos se rechaza con `42501`. Catálogo público y redirección del panel sin sesión verificados en Chromium, con y sin JavaScript y movimiento reducido. No se ejecutaron escrituras remotas desde el agente.
+
+En la misma sesión, el usuario confirmó el ingreso con autenticador, el guardado de productos y el recorrido de catálogo/carrito. Después confirmó funcionamiento de las pruebas propuestas de promociones y pedidos manuales: retiro sin descuento de existencias y venta presencial confirmada con descuento único. Se registra como validación funcional informada por el usuario, no como una prueba automatizada remota. El detalle de Storage, cookies y auditoría con sesión autenticada sigue pendiente de comprobación específica.
 
 ## Pendientes antes de habilitar compras
 
-- Completar la verificación de Supabase conectado: sesión con MFA, acciones privadas, imágenes, cookies, auditoría y ventas/retiros. Lectura pública y rechazo anónimo de datos privados ya comprobados.
+- Completar las comprobaciones específicas de imágenes en Storage, cookies y auditoría con sesión autenticada. Lectura pública y rechazo anónimo de datos privados comprobados por el agente; ingreso, productos, carrito, promociones y pedidos manuales validados funcionalmente por el usuario.
 - Integrar pago verificado, intentos de cobro, conciliación y creación única de pedidos online pagados en Fase 4. No existe un endpoint público capaz de crear o marcar un pedido pagado en esta entrega.
 - Resolver concurrencia al cobrar la última unidad y la política de reservas/expiración, incluyendo encargos manuales.
 - Definir entregas y costos, instrucciones bancarias, confirmación de cobro al retirar y avisos transaccionales.
