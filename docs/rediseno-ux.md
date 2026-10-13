@@ -53,14 +53,23 @@ Los tokens de radio de control, tarjeta y panel pasan a 0 px en toda la interfaz
 
 Verificación de esta revisión: compilación de producción, 58 pruebas unitarias/PostgreSQL y 92 recorridos Chromium correctos. Revisión de portada, catálogo, carrito y gestión a 320, 390, 768 y 1440 px, sin desbordamiento horizontal ni excepciones JavaScript; estilos calculados confirman Arial, botones con radio 0, titular 800 y encabezado de categorías 400. Los recorridos incluyen teclado, foco, movimiento reducido, navegación sin JavaScript, creación/edición, variantes, promociones, cantidades y checkout de revisión. Las comprobaciones de gestión usan datos ficticios locales, sin escribir en Supabase.
 
+### Ampliación general y logos oficiales
+
+El límite de 1280 px y los máximos automáticos de Tailwind reducían el espacio útil incluso en monitores amplios. Se retiran ambos límites del contenedor compartido: las páginas, cabecera, navegación de categorías y pie alinean sus extremos a 48 px del viewport en escritorio, 32 px hasta 1000 px y 16 px hasta 800 px. Se retira también el máximo del dashboard. Los textos y formularios conservan sus límites individuales de lectura; el catálogo incorpora cuatro columnas desde 1536 px y mantiene sus distribuciones anteriores en tamaños menores.
+
+El componente compartido `BrandMark` presenta el isotipo y el logo horizontal oficiales en cabecera y pie. El horizontal original incluye márgenes negros en un archivo cuadrado; su ventana CSS oculta ese espacio vacío, sin recortar lettering, estirar el logo ni modificar el archivo. El enlace conserva el nombre accesible de STYLO y los controles del carrito y menú conservan sus áreas de 48 px.
+
+Verificación final: compilación y 92 pruebas de navegador correctas. Comprobaciones adicionales de portada, catálogo, carrito, checkout de revisión, gestión, nosotros y contacto en ocho anchos (320, 390, 768, 801, 1024, 1440, 1536 y 1868 px): sin desbordamientos ni excepciones JavaScript. A 1868 px, cabecera y contenido miden 1772 px, logo y carrito quedan a 48 px de los extremos y las cuatro tarjetas comparten fila. Se revisaron visualmente ambos logos en escritorio y celular. Las pruebas de compra/administración usan la vista previa local, sin escrituras remotas.
+
 Capturas actuales con datos ficticios de prueba:
 
 | Vista | Escritorio | Celular |
 | --- | --- | --- |
-| Portada | [Captura](previews/referencia-home-1440.png) | [Captura](previews/referencia-home-390.png) |
-| Catálogo | [Captura](previews/referencia-catalog-1440.png) | [Captura](previews/referencia-catalog-390.png) |
-| Carrito | [Captura](previews/referencia-cart-1440.png) | [Captura](previews/referencia-cart-390.png) |
-| Productos | [Captura](previews/referencia-admin-1440.png) | [Captura](previews/referencia-admin-390.png) |
+| Portada | [Captura](previews/ancho-home-1868.png) | [Captura](previews/ancho-home-390.png) |
+| Catálogo | [Captura](previews/ancho-catalog-1868.png) | [Captura](previews/ancho-catalog-390.png) |
+| Carrito | [Captura](previews/ancho-cart-1868.png) | [Captura](previews/ancho-cart-390.png) |
+| Productos | [Captura](previews/ancho-admin-1868.png) | [Captura](previews/ancho-admin-390.png) |
+| Cabecera y logos | [Captura](previews/ancho-header-1868.png) | [Captura](previews/ancho-header-390.png) |
 
 ## Capturas anteriores
 

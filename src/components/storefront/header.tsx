@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { BrandMark } from "./brand-mark";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -46,16 +46,7 @@ export function Header({
             className="brand-link"
             onClick={() => setOpen(false)}
           >
-            <Image
-              src="/branding/logo-principal.webp"
-              width={80}
-              height={80}
-              alt=""
-              priority
-            />
-            <span className="brand-name brand-wordmark">
-              STYLO<span>TU RUTINA. TU STYLO.</span>
-            </span>
+            <BrandMark priority />
           </Link>
           <nav className="desktop-nav" aria-label="Navegación principal">
             {links.map((link) => (

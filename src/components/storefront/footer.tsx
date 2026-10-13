@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import { BrandMark } from "./brand-mark";
 
 export function Footer() {
   return (
@@ -11,15 +11,7 @@ export function Footer() {
             className="brand-link"
             aria-label="STYLO Suplementos, inicio"
           >
-            <Image
-              src="/branding/logo-principal.webp"
-              width={76}
-              height={76}
-              alt=""
-            />
-            <span className="brand-name brand-wordmark">
-              STYLO<span>SUPLEMENTOS</span>
-            </span>
+            <BrandMark />
           </Link>
           <p>Potenciá tu mejor versión.</p>
         </div>

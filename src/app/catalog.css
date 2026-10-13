@@ -390,6 +390,11 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--space-6);
 }
+@media (min-width: 1536px) {
+  .product-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
 .product-card {
   overflow: hidden;
   min-width: 0;

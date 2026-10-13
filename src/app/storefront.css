@@ -164,9 +164,9 @@
   justify-content: space-between;
   gap: var(--space-6);
   width: max-content;
-  min-width: min(1280px, calc(100% - 96px));
+  min-width: calc(100% - var(--page-gutter) * 2);
   max-width: none;
-  padding-inline: var(--space-4);
+  padding-inline: 0;
 }
 .category-navigation a {
   white-space: nowrap;
@@ -615,9 +615,8 @@
     min-height: 96px;
     gap: var(--space-3);
   }
-  .site-header .brand-link > img {
-    width: 64px;
-    height: 64px;
+  .header-actions {
+    gap: var(--space-2);
   }
   .site-header .brand-wordmark {
     font-size: var(--text-2xl);

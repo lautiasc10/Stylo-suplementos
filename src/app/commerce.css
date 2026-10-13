@@ -720,7 +720,7 @@
   padding: var(--space-10) var(--space-10) var(--space-16);
 }
 .admin-dashboard {
-  max-width: 1280px;
+  max-width: none;
 }
 .admin-main h1 {
   font-size: var(--text-3xl);

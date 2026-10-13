@@ -40,6 +40,7 @@
   --space-16: 64px;
   --space-20: 80px;
   --space-24: 96px;
+  --page-gutter: 48px;
   --radius-card: 0px;
   --radius-control: 0px;
   --radius-pill: 9999px;
@@ -198,7 +199,8 @@ img {
   height: auto;
 }
 .container {
-  width: min(1280px, calc(100% - 96px));
+  width: calc(100% - var(--page-gutter) * 2);
+  max-width: none;
   margin-inline: auto;
 }
 .icon {
@@ -227,6 +229,23 @@ img {
 }
 .brand-link img {
   flex-shrink: 0;
+}
+.brand-isotype {
+  width: 80px;
+  height: 80px;
+}
+.brand-horizontal {
+  display: block;
+  flex-shrink: 0;
+  width: 200px;
+  height: 64px;
+  overflow: hidden;
+}
+.brand-horizontal img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 .brand-name {
   font-family: var(--font-heading);
@@ -511,13 +530,21 @@ img {
   font-size: var(--text-5xl);
 }
 @media (max-width: 1000px) {
-  .container {
-    width: calc(100% - 64px);
+  :root {
+    --page-gutter: 32px;
   }
 }
 @media (max-width: 800px) {
-  .container {
-    width: calc(100% - 32px);
+  :root {
+    --page-gutter: 16px;
+  }
+  .brand-isotype {
+    width: 48px;
+    height: 48px;
+  }
+  .brand-horizontal {
+    width: clamp(112px, 30vw, 160px);
+    height: 48px;
   }
   .section-heading {
     align-items: flex-start;
