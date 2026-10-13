@@ -1051,9 +1051,24 @@ textarea:focus-visible {
   content: "";
   position: absolute;
   inset: 0;
-  background: url("/branding/logo-principal.webp") center / 135% no-repeat;
-  opacity: 0.14;
-  mix-blend-mode: screen;
+  background: radial-gradient(
+    ellipse 48% 43% at 50% 52%,
+    transparent 57%,
+    color-mix(in srgb, var(--gold) 28%, transparent) 58%,
+    transparent 59.5% 76%,
+    color-mix(in srgb, var(--gold) 20%, transparent) 77%,
+    transparent 78.5% 95%,
+    color-mix(in srgb, var(--gold) 14%, transparent) 96%,
+    transparent 97.5%
+  );
+  mask-image: linear-gradient(
+    to right,
+    #000,
+    #000 10%,
+    transparent 35% 65%,
+    #000 90%,
+    #000
+  );
   pointer-events: none;
 }
 .product-frame-link {
