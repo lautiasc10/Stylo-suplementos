@@ -1001,6 +1001,8 @@ label.editor-check {
 .product-brand {
   display: flex;
   align-items: center;
+  justify-content: center;
+  text-align: center;
   gap: var(--space-2);
 }
 .product-brand-logo {
@@ -1010,7 +1012,7 @@ label.editor-check {
   max-width: 100%;
   padding: var(--space-2);
   flex-shrink: 0;
-  background: var(--image-background);
+  background: transparent;
   border-radius: var(--radius-control);
 }
 .product-brand-logo[data-detail] {
