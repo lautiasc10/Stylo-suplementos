@@ -1037,13 +1037,29 @@ textarea:focus-visible {
 .product-image-stage {
   position: relative;
   aspect-ratio: 1;
-  background: var(--commercial-background);
+  background:
+    radial-gradient(
+      ellipse at 50% 48%,
+      color-mix(in srgb, var(--gold) 12%, transparent),
+      transparent 70%
+    ),
+    var(--commercial-background);
   overflow: hidden;
   isolation: isolate;
+}
+.product-image-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("/branding/logo-principal.webp") center / 135% no-repeat;
+  opacity: 0.14;
+  mix-blend-mode: screen;
+  pointer-events: none;
 }
 .product-frame-link {
   display: block;
   position: relative;
+  z-index: 1;
   width: 100%;
   height: 100%;
 }
@@ -1058,7 +1074,7 @@ textarea:focus-visible {
   height: 100%;
   object-fit: contain;
   object-position: center;
-  background: var(--commercial-background);
+  background: transparent;
   padding: var(--space-6);
   transform-origin: 50% 50%;
 }
