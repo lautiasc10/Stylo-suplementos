@@ -416,7 +416,7 @@
   align-items: center;
   background: var(--image-background);
   position: relative;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 1;
   overflow: hidden;
 }
 .product-card-labels {
@@ -439,6 +439,17 @@
   font-weight: 600;
   background: var(--gold);
   overflow-wrap: anywhere;
+  animation: product-flavor-reveal 320ms var(--motion-ease) both;
+}
+@keyframes product-flavor-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 .product-placeholder {
   position: absolute;
@@ -492,7 +503,7 @@
   margin: 0 0 var(--space-4);
 }
 .product-card .stock-badge[data-stock="empty"] {
-  margin: 0;
+  margin: 0 0 0 auto;
   flex-shrink: 0;
   background: var(--background);
   color: var(--foreground);
@@ -931,7 +942,7 @@ textarea:focus-visible {
   min-width: 0;
 }
 .product-image-gallery-card .product-image-stage {
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 1;
 }
 .product-image-stage {
   position: relative;
@@ -966,7 +977,7 @@ textarea:focus-visible {
 }
 .product-image-gallery-card .product-frame[data-portrait="true"] {
   /* The standard portrait photos include white space above and below the pack. */
-  scale: 1.3;
+  scale: 1.4;
 }
 .product-frame-current {
   z-index: 1;
@@ -1169,6 +1180,9 @@ textarea:focus-visible {
   }
 }
 @media (prefers-reduced-motion: reduce) {
+  .product-card-marker {
+    animation: none;
+  }
   .product-image-gallery[data-animated] .product-frame {
     animation: none;
     transform: none;

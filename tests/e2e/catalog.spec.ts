@@ -534,7 +534,7 @@ test("la galería automática sincroniza variantes y la ficha conserva sus fotos
   await expect(
     card.getByAltText("Vainilla frente", { exact: true }),
   ).toBeVisible();
-  await expect(card.locator(".product-card-marker")).toContainText("Vainilla");
+  await expect(card.locator(".product-card-marker")).toHaveText("Vainilla");
   await expect(card.locator(".product-prices")).toContainText("47.000");
   await expect(card.locator(".stock-badge")).toHaveText("Sin stock");
   await expect(

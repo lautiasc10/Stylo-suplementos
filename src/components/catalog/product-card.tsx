@@ -8,7 +8,6 @@ import { CategoryIllustration } from "@/components/storefront/category-illustrat
 import { ProductGallery, type GalleryImage } from "./product-gallery";
 import {
   variantImages,
-  variantLabel,
   type CatalogGroup,
   type Product,
   type Variant,
@@ -77,7 +76,11 @@ export function ProductCard({
     <article className="product-card">
       <div className="product-card-media">
         <div className="product-card-labels">
-          <span className="product-card-marker">{variantLabel(variant)}</span>
+          {variant.flavor && (
+            <span key={variant.flavor} className="product-card-marker">
+              {variant.flavor}
+            </span>
+          )}
           {variant.stock === 0 && (
             <span className="stock-badge" data-stock="empty">
               Sin stock
