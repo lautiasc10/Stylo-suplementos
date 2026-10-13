@@ -396,25 +396,37 @@
   }
 }
 .product-card {
+  position: relative;
   overflow: hidden;
   min-width: 0;
   border-radius: var(--radius-control);
-  border: 1px solid var(--line);
+  border: 1px solid var(--action-border);
   background: var(--background);
   color: var(--foreground);
   display: flex;
   flex-direction: column;
-  transition: border-color var(--motion-duration) var(--motion-ease);
+  transition:
+    transform var(--motion-control) var(--motion-ease),
+    border-color var(--motion-control) var(--motion-ease),
+    box-shadow var(--motion-control) var(--motion-ease);
 }
-.product-card:hover,
 .product-card:focus-within {
   border-color: var(--gold);
+  box-shadow: 0 0 0 1px var(--gold);
+}
+@media (hover: hover) and (pointer: fine) {
+  .product-card:hover {
+    z-index: 1;
+    transform: scale(1.025);
+    border-color: var(--gold);
+    box-shadow: 0 0 0 1px var(--gold);
+  }
 }
 .product-card-media {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: var(--image-background);
+  background: var(--commercial-background);
   position: relative;
   aspect-ratio: 1;
   overflow: hidden;
@@ -452,6 +464,7 @@
   }
 }
 .product-placeholder {
+  background: var(--image-background);
   position: absolute;
   inset: 0;
   display: flex;
@@ -864,6 +877,11 @@ label.editor-check {
   }
 }
 @media (prefers-reduced-motion: reduce) {
+  .product-card,
+  .product-card:hover {
+    transform: none;
+    transition: none;
+  }
   .product-card-media:hover .category-illustration {
     transform: none;
   }
@@ -964,7 +982,7 @@ textarea:focus-visible {
 .product-image-stage {
   position: relative;
   aspect-ratio: 1;
-  background: var(--image-background);
+  background: var(--commercial-background);
   overflow: hidden;
   isolation: isolate;
 }
@@ -975,7 +993,7 @@ textarea:focus-visible {
   height: 100%;
 }
 .product-frame-link:focus-visible {
-  outline-color: var(--background);
+  outline-color: var(--gold);
   outline-offset: -4px;
 }
 .product-image-stage .product-frame {
@@ -985,7 +1003,7 @@ textarea:focus-visible {
   height: 100%;
   object-fit: contain;
   object-position: center;
-  background: var(--image-background);
+  background: var(--commercial-background);
   padding: var(--space-6);
   transform-origin: 50% 50%;
 }

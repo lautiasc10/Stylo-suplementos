@@ -748,7 +748,10 @@ test("los fragmentos cambian solos, desaparecen y se cancelan con movimiento red
     element.scrollIntoView({ behavior: "instant", block: "center" }),
   );
   await gallery.hover({ force: true });
-  const before = await gallery.boundingBox();
+  const before = await gallery.evaluate((element) => ({
+    width: element.clientWidth,
+    height: element.clientHeight,
+  }));
   await expect(
     page.getByAltText("Chocolate frente", { exact: true }),
   ).toBeVisible();
@@ -766,7 +769,10 @@ test("los fragmentos cambian solos, desaparecen y se cancelan con movimiento red
     "true",
   );
   await expect(gallery.getByRole("button")).toHaveCount(0);
-  const after = await gallery.boundingBox();
+  const after = await gallery.evaluate((element) => ({
+    width: element.clientWidth,
+    height: element.clientHeight,
+  }));
   expect(after?.width).toBe(before?.width);
   expect(after?.height).toBe(before?.height);
   await page.clock.runFor(900);
