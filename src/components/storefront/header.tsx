@@ -53,8 +53,8 @@ export function Header({
               alt=""
               priority
             />
-            <span className="brand-name brand-caption">
-              Suplementos<span>TU RUTINA. TU STYLO.</span>
+            <span className="brand-name brand-wordmark">
+              STYLO<span>TU RUTINA. TU STYLO.</span>
             </span>
           </Link>
           <nav className="desktop-nav" aria-label="Navegación principal">

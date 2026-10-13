@@ -20,7 +20,7 @@ Los tokens viven en `src/app/globals.css`; la composición de tienda, en `src/ap
 
 ## Adaptaciones de marca y compra
 
-El manual oficial prevalece: Montserrat e Inter, #080808, #DAAB4C y #FFFFFF; logos originales intactos. Se conservan dos familias tipográficas y el título blanco/dorado aunque la guía proponga otras fuentes y un gradiente.
+La instrucción visual del usuario del 13 de octubre de 2026 reemplaza la paleta y tipografía de la interfaz: fondo #050505, fondo comercial #080808, dorado #D8B474, texto cálido #ECE9E1 y secundario #92928D. Se reserva #000000 como token cinematográfico; esta entrega no implementa esa sección. Arial, Helvetica y sans-serif del sistema sustituyen a Montserrat e Inter, sin archivos de fuentes ni sus dependencias. Los títulos usan peso 800, interletrado negativo y líneas compactas; STYLO del encabezado y pie usa peso 900 en cursiva, botones 600 y etiquetas pequeñas en mayúsculas con separación. Los logos oficiales y las fotografías conservan sus archivos y colores originales. El blanco puro sigue disponible como fondo técnico de fotografías y QR.
 
 La navegación permite explorar las nueve categorías sin interponer un modal. Se conserva la cabecera integrada en la tienda, en lugar de imponer una barra flotante de vidrio. La estructura corresponde a una home de ecommerce; no incorpora bloques de captación propios de otra oferta.
 

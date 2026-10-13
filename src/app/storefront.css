@@ -5,7 +5,7 @@
   gap: var(--space-6);
   padding: var(--space-2) var(--space-12);
   background: var(--gold);
-  color: #080808;
+  color: var(--background);
   font-size: var(--text-xs);
   font-weight: 600;
   letter-spacing: 0.06em;
@@ -13,7 +13,7 @@
 .site-header {
   position: relative;
   z-index: 20;
-  background: #080808;
+  background: var(--background);
 }
 .header-inner {
   display: flex;
@@ -22,13 +22,13 @@
   gap: var(--space-8);
   min-height: 112px;
 }
-.site-header .brand-caption {
-  font-size: var(--text-lg);
+.site-header .brand-wordmark {
+  font-size: var(--text-2xl);
 }
-.site-header .brand-caption span {
+.site-header .brand-wordmark span {
   font-size: var(--text-xs);
   margin-top: var(--space-1);
-  color: var(--muted);
+  color: var(--gold);
 }
 .desktop-nav {
   display: flex;
@@ -80,7 +80,7 @@
   place-items: center;
   border: 1px solid var(--line);
   border-radius: var(--radius-pill);
-  color: #fff;
+  color: var(--foreground);
   background: transparent;
   transition:
     border-color var(--motion-duration) var(--motion-ease),
@@ -90,7 +90,7 @@
   border-color: var(--gold);
 }
 .icon-button:active {
-  background: #daab4c20;
+  background: #d8b47420;
 }
 .menu-toggle {
   display: none;
@@ -193,7 +193,7 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  border: 1px solid #daab4c55;
+  border: 1px solid #d8b47455;
   border-radius: var(--radius-pill);
   padding: var(--space-2) var(--space-3);
   margin: 0 0 var(--space-6);
@@ -317,8 +317,8 @@
   min-width: 0;
   border-radius: var(--radius-card);
   padding: var(--space-6);
-  background: #fff;
-  color: #080808;
+  background: var(--foreground);
+  color: var(--background);
   overflow: hidden;
 }
 .featured-category:focus-visible {
@@ -357,7 +357,7 @@
   transform: translateY(-8px);
 }
 .featured-category:is(:hover, :focus-visible) .category-arrow {
-  background: #080808;
+  background: var(--commercial-background);
   color: var(--gold);
 }
 .featured-category:active .category-illustration {
@@ -459,6 +459,7 @@
 }
 .footer-inner > div {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--space-4);
 }
@@ -486,8 +487,8 @@
 .interior-page .empty-state {
   border: none;
   border-radius: var(--radius-card);
-  background: #fff;
-  color: #080808;
+  background: var(--foreground);
+  color: var(--background);
 }
 .interior-page .empty-state p {
   color: #555;
@@ -497,14 +498,14 @@
 }
 .interior-page .empty-state .button-outline {
   border-color: #08080840;
-  color: #080808;
+  color: var(--background);
 }
 .interior-page .empty-state .button-outline:hover {
-  background: #080808;
-  color: #fff;
+  background: var(--commercial-background);
+  color: var(--foreground);
 }
 .interior-page .empty-state :focus-visible {
-  outline-color: #080808;
+  outline-color: var(--background);
 }
 /* Reveal only offscreen content after JS initializes. No-JS and reduced motion stay visible. */
 .scroll-reveal[data-reveal="pending"] {
@@ -537,7 +538,7 @@
   color: #ffffff55;
 }
 .tagline-word[data-word-reveal="visible"] {
-  color: #fff;
+  color: var(--foreground);
 }
 @keyframes reveal-in {
   from {
@@ -586,7 +587,7 @@
   }
 }
 @media (max-width: 1000px) {
-  .site-header .brand-caption {
+  .site-header .brand-wordmark {
     font-size: var(--text-base);
   }
   .header-catalog-link {
@@ -615,7 +616,7 @@
     width: 64px;
     height: 64px;
   }
-  .site-header .brand-caption {
+  .site-header .brand-wordmark {
     font-size: var(--text-base);
   }
   .desktop-nav {
@@ -764,7 +765,7 @@
     transform: none;
   }
   .tagline-word[data-word-reveal] {
-    color: #fff;
+    color: var(--foreground);
   }
   .featured-category:is(:hover, :focus-visible, :active) .category-illustration,
   .button:active:not(:disabled),
@@ -781,6 +782,14 @@
   background: var(--surface);
   color: var(--muted);
   border-bottom: 1px solid var(--line);
+}
+.categories-section {
+  background: var(--commercial-background);
+}
+.featured-category-top > span:first-child,
+.club-brand > span {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 .header-inner {
   min-height: 96px;

@@ -25,7 +25,7 @@ export function CategoryIllustration({ kind }: { kind: string }) {
               width="104"
               height="27"
               rx="8"
-              fill="#DAAB4C"
+              fill="var(--gold)"
             />
             <path
               d="M170 40V27h26v15"
@@ -34,7 +34,7 @@ export function CategoryIllustration({ kind }: { kind: string }) {
               strokeWidth="10"
               strokeLinejoin="round"
             />
-            <path d="M126 91h68l-4 74h-60Z" fill="#DAAB4C" />
+            <path d="M126 91h68l-4 74h-60Z" fill="var(--gold)" />
             <path
               d="M152 107h24m-24 18h18m-18 18h24"
               stroke="#080808"
@@ -51,7 +51,7 @@ export function CategoryIllustration({ kind }: { kind: string }) {
               rx="16"
               fill="#080808"
             />
-            <path d="M94 83h132v72H94Z" fill="#DAAB4C" />
+            <path d="M94 83h132v72H94Z" fill="var(--gold)" />
             <path d="M123 108h74m-57 18h40" stroke="#080808" strokeWidth="4" />
             <path d="M114 183h92" stroke="#FFFFFF" strokeOpacity=".3" />
           </>
@@ -82,9 +82,9 @@ export function CategoryIllustration({ kind }: { kind: string }) {
             d="M105 27h110l-6 28 19 148q-68 17-136 0L111 55Z"
             fill="#080808"
           />
-          <path d="M105 27h110v10H105Z" fill="#DAAB4C" />
+          <path d="M105 27h110v10H105Z" fill="var(--gold)" />
           <path d="M112 48h96" stroke="#FFFFFF" strokeOpacity=".3" />
-          <path d="M108 88h104l7 90H101Z" fill="#DAAB4C" />
+          <path d="M108 88h104l7 90H101Z" fill="var(--gold)" />
           <path
             d="M128 119h64m-64 10h64m-52 11h40"
             stroke="#080808"
@@ -96,7 +96,7 @@ export function CategoryIllustration({ kind }: { kind: string }) {
             y="108"
             textAnchor="middle"
             fill="#080808"
-            fontFamily="Inter, sans-serif"
+            fontFamily="Arial, Helvetica, sans-serif"
             fontSize="10"
             fontWeight="600"
           >
@@ -129,14 +129,14 @@ export function CategoryIllustration({ kind }: { kind: string }) {
           />
           <path
             d={compact ? "M100 91h120v55H100Z" : "M102 97h116v75H102Z"}
-            fill="#DAAB4C"
+            fill="var(--gold)"
           />
           <text
             x="160"
             y={compact ? 115 : 123}
             textAnchor="middle"
             fill="#080808"
-            fontFamily="Montserrat, sans-serif"
+            fontFamily="Arial, Helvetica, sans-serif"
             fontSize={compact ? 12 : 13}
             fontWeight="700"
           >

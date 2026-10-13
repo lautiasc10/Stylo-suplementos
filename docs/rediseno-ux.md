@@ -14,7 +14,7 @@ Solicitud del usuario del 12 de octubre de 2026. Rama `fase-3-rediseno-ux`; no i
 
 ## Dirección visual
 
-Conservar negro `#080808`, dorado `#DAAB4C`, blanco, Montserrat e Inter y archivos oficiales. Usar superficies oscuras diferenciadas, bordes legibles, espaciado de la escala existente y radios moderados. El dorado distingue la acción principal y la selección; el estado se comunica también con palabras. No añadir afirmaciones comerciales, métricas ficticias, secciones inexistentes ni fotografías generadas.
+La revisión inicial conserva negro `#080808`, dorado `#DAAB4C`, blanco, Montserrat e Inter y archivos oficiales; la instrucción del 13 de octubre actualiza la interfaz como se detalla a continuación. Usar superficies oscuras diferenciadas, bordes legibles, espaciado de la escala existente y radios moderados. El dorado distingue la acción principal y la selección; el estado se comunica también con palabras. No añadir afirmaciones comerciales, métricas ficticias, secciones inexistentes ni fotografías generadas.
 
 Carrito: fotografía de la variante elegida, identidad y presentación agrupadas, precio unitario y subtotal explícitos, control de cantidad integrado y eliminación confirmada. Un resumen común calcula los mismos importes actuales; el lateral mantiene encabezado y acción visibles con desplazamiento interior de productos.
 
@@ -29,7 +29,7 @@ Accesibilidad: controles cómodos, foco visible, labels reales, mensajes anuncia
 - 92 recorridos Chromium correctos, en escritorio y emulación móvil. Cubren catálogo, edición/importación, carrito, promociones, checkout de revisión, ventas manuales y protección administrativa. Última ejecución en PowerShell: `$env:PLAYWRIGHT_PORT='3001'; npx.cmd playwright test --workers=4`, con credenciales vacías y sin escrituras en Supabase.
 - Recorridos nuevos: fotografía y fallo de imagen, cambio de visualización de precios, confirmación/cancelación de eliminación, foco al cerrar el lateral y al eliminar, carrito largo y pantalla horizontal, navegación administrativa y cambio de tamaño, edición por secciones, 320/768/1024 px sin desbordamiento.
 - Revisión visual a 390/1440 px con movimiento reducido, sin excepciones de JavaScript en las capturas. Se conserva navegación pública sin JavaScript y acciones de servidor de carrito; los selectores que recalculan la presentación del precio permanecen deshabilitados hasta la hidratación.
-- Contrastes medidos del sistema: texto secundario sobre superficie elevada 8,86:1; dorado sobre superficie elevada 8,30:1; texto negro sobre botón dorado 9,45:1; borde de control sobre superficie elevada 3,71:1. Los estados también se comunican con texto y foco visible.
+- Contrastes medidos del sistema: texto secundario sobre superficie elevada 5,62:1; dorado sobre superficie elevada 8,96:1; texto negro sobre botón dorado 10,39:1; borde de control sobre superficie elevada 3,71:1. Los estados también se comunican con texto y foco visible.
 
 Se corrigió durante las pruebas una actualización tardía de URL que podía cerrar una edición recién abierta. El menú administrativo se abre al volver a escritorio aunque hubiera quedado cerrado en celular. Una ejecución con ocho workers registró un timeout aislado de hidratación en una vista previa; ese recorrido pasó individualmente y la suite completa pasó después con cuatro workers.
 
@@ -37,7 +37,24 @@ No se añadieron dependencias ni migraciones, ni se modificaron precios, cobros,
 
 El panel se verificó con datos locales de prueba, usando los mismos componentes de la gestión privada. No se contó con una sesión autenticada del administrador para repetir escrituras remotas. Chromium móvil no acredita Safari/iOS físico, ni estas comprobaciones certifican integralmente WCAG. Los pagos y la entrega conservan sus pendientes de Fase 3.
 
-## Capturas
+## Paleta y tipografía del 13 de octubre
+
+El usuario solicita trasladar la paleta y tipografía de su referencia local `C:/stylo-cinematic-landing/src/app/globals.css` al ecommerce. Se leyó ese archivo y se aplicaron sus colores y criterios tipográficos a los tokens compartidos: #050505 de fondo, #080808 comercial, #D8B474 dorado, #ECE9E1 texto y #92928D secundario. #000000 queda definido para una futura sección cinematográfica. No se copian la composición, los tamaños de letra pequeños ni la funcionalidad de la referencia.
+
+Arial, Helvetica y sans-serif del sistema sustituyen a las fuentes anteriores en textos, formularios e ilustraciones de categorías. Se retiran los imports de fuentes y las dos dependencias Fontsource. Los títulos usan peso 800 y líneas compactas; el texto STYLO de cabecera y pie usa 900 en cursiva, junto al isotipo oficial intacto. Los botones conservan 600 y las etiquetas pequeñas usan mayúsculas e interletrado. Se mantienen tamaños y áreas táctiles del sistema existente.
+
+Revisión visual y de estilos calculados en portada, catálogo, carrito y gestión a 320/390/768/1440 px: sin desbordamientos, excepciones JavaScript ni solicitudes de archivos de fuente. Texto principal sobre fondo: 16,80:1; secundario sobre superficie elevada: 5,62:1 y sobre hover: 5,03:1. Se conservan fotografías y logos originales, con fondos blancos técnicos de fotos y QR. Las expectativas de color de las pruebas de movimiento reducido y sin JavaScript ahora comprueban el blanco cálido solicitado.
+
+Capturas actuales con datos ficticios de prueba:
+
+| Vista | Escritorio | Celular |
+| --- | --- | --- |
+| Portada | [Captura](previews/paleta-home-1440.png) | [Captura](previews/paleta-home-390.png) |
+| Catálogo | [Captura](previews/paleta-catalog-1440.png) | [Captura](previews/paleta-catalog-390.png) |
+| Carrito | [Captura](previews/paleta-cart-1440.png) | [Captura](previews/paleta-cart-390.png) |
+| Productos | [Captura](previews/paleta-admin-1440.png) | [Captura](previews/paleta-admin-390.png) |
+
+## Capturas anteriores
 
 ### Navegación del catálogo
 

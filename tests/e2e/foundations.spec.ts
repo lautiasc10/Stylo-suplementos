@@ -120,7 +120,7 @@ test("las apariciones respetan cambios de movimiento reducido", async ({
   await expect(word).toHaveAttribute("data-word-reveal", "pending");
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(word).not.toHaveAttribute("data-word-reveal", "pending");
-  await expect(word).toHaveCSS("color", "rgb(255, 255, 255)");
+  await expect(word).toHaveCSS("color", "rgb(236, 233, 225)");
   await expect(group).toHaveCSS("transform", "none");
 });
 
@@ -157,7 +157,7 @@ test("sin JavaScript se conserva el contenido y la navegación por categorías",
     );
     await expect(page.locator(".tagline-word").first()).toHaveCSS(
       "color",
-      "rgb(255, 255, 255)",
+      "rgb(236, 233, 225)",
     );
     await page
       .getByRole("navigation", { name: "Explorar por categoría" })

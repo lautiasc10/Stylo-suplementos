@@ -23,8 +23,8 @@
   width: 100%;
   max-width: 100%;
   min-height: 48px;
-  background: #080808;
-  color: #fff;
+  background: var(--commercial-background);
+  color: var(--foreground);
   border: 1px solid var(--control-border);
   border-radius: var(--radius-control);
   padding: var(--space-2) var(--space-3);
@@ -234,7 +234,7 @@
   border: 4px solid var(--gold);
 }
 .catalog-filter-option:has(input:checked) {
-  background: #daab4c12;
+  background: #d8b47412;
   color: var(--gold);
 }
 .catalog-filter-option:hover {
@@ -409,7 +409,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: var(--color-stylo-white);
+  background: var(--image-background);
   position: relative;
   aspect-ratio: 1;
   overflow: hidden;
@@ -454,6 +454,8 @@
 .product-brand {
   color: var(--gold);
   font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
   margin: 0 0 var(--space-2);
 }
 .product-card h2 {
@@ -602,7 +604,7 @@
 .product-detail-copy .stock-badge {
   margin-top: var(--space-6);
   border-color: var(--line);
-  color: #fff;
+  color: var(--foreground);
 }
 .product-detail-copy .product-prices dt {
   color: var(--muted);
@@ -621,10 +623,10 @@
   font-size: var(--text-sm);
 }
 .preview-notice {
-  background: #daab4c15;
+  background: #d8b47415;
   border: 1px solid var(--gold);
   padding: var(--space-4);
-  color: #fff;
+  color: var(--foreground);
   border-radius: var(--radius-control);
   font-size: var(--text-sm);
   margin-block: var(--space-6);
@@ -643,7 +645,7 @@
   border: 1px solid var(--line);
   border-radius: var(--radius-pill);
   background: transparent;
-  color: #fff;
+  color: var(--foreground);
   font-size: var(--text-sm);
 }
 .preview-links a:hover {
@@ -830,7 +832,7 @@ label.editor-check {
 }
 .product-brand img {
   object-fit: contain;
-  background: var(--color-stylo-white);
+  background: var(--image-background);
   border-radius: var(--radius-control);
 }
 .variant-picker label {
@@ -891,7 +893,7 @@ textarea:focus-visible {
 .product-image-stage {
   position: relative;
   aspect-ratio: 1;
-  background: var(--color-stylo-white);
+  background: var(--image-background);
   overflow: hidden;
   isolation: isolate;
 }
@@ -912,7 +914,7 @@ textarea:focus-visible {
   height: 100%;
   object-fit: contain;
   object-position: center;
-  background: var(--color-stylo-white);
+  background: var(--image-background);
   padding: var(--space-6);
   transform-origin: 50% 50%;
 }

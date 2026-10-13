@@ -569,7 +569,7 @@
 }
 .checkout-choice:has(:checked) {
   border-color: var(--gold);
-  background: #daab4c0a;
+  background: #d8b4740a;
 }
 .checkout-form fieldset > .checkout-fields {
   margin-block: var(--space-4);
@@ -627,7 +627,7 @@
 .checkout-discount {
   color: var(--gold);
   padding: var(--space-3);
-  background: #daab4c0a;
+  background: #d8b4740a;
   border-radius: var(--radius-control);
 }
 
@@ -950,7 +950,7 @@
   height: auto;
   aspect-ratio: 1;
   border-radius: 0;
-  background: var(--foreground);
+  background: var(--image-background);
   padding: var(--space-6);
 }
 .admin-product-card .product-thumbnail img {
@@ -1348,7 +1348,7 @@
 }
 .product-offers {
   margin-block: var(--space-4);
-  border: 1px solid #daab4c60;
+  border: 1px solid #d8b47460;
   border-radius: var(--radius-control);
   padding: var(--space-4);
 }

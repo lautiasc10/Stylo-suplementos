@@ -1,16 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import "@fontsource/montserrat/600.css";
-import "@fontsource/montserrat/700.css";
-import "@fontsource/inter/400.css";
-import "@fontsource/inter/500.css";
-import "@fontsource/inter/600.css";
 import "./globals.css";
 import "./storefront.css";
 import "./catalog.css";
 import { getEnvironment } from "@/lib/config/server";
 
 export const viewport: Viewport = {
-  themeColor: "#080808",
+  themeColor: "#050505",
   width: "device-width",
   initialScale: 1,
 };
