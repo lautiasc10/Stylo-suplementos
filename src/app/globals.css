@@ -40,8 +40,8 @@
   --space-16: 64px;
   --space-20: 80px;
   --space-24: 96px;
-  --radius-card: 24px;
-  --radius-control: 8px;
+  --radius-card: 0px;
+  --radius-control: 0px;
   --radius-pill: 9999px;
   --motion-ease: cubic-bezier(0.32, 0.72, 0, 1);
   --motion-duration: 700ms;
@@ -49,8 +49,9 @@
   --surface-raised: #191919;
   --surface-hover: #232323;
   --control-border: #737373;
+  --action-border: #aa8c58;
   --border-strong: #484848;
-  --radius-panel: 16px;
+  --radius-panel: 0px;
   --motion-control: 180ms;
 }
 * {
@@ -184,8 +185,8 @@ h2,
 h3 {
   font-family: var(--font-heading);
   line-height: 1.08;
-  font-weight: 800;
-  letter-spacing: -0.045em;
+  font-weight: 500;
+  letter-spacing: -0.035em;
   text-wrap: balance;
 }
 p {
@@ -261,8 +262,8 @@ img {
   gap: var(--space-3);
   font-size: var(--text-xs);
   line-height: 1.35;
-  font-weight: 600;
-  letter-spacing: 0.1em;
+  font-weight: 500;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--gold);
   margin: 0 0 var(--space-6);
@@ -271,7 +272,7 @@ img {
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  gap: var(--space-4);
+  gap: var(--space-6);
   min-height: 48px;
   padding: var(--space-3) var(--space-6);
   font-size: var(--text-sm);
@@ -294,15 +295,16 @@ img {
   color: var(--background);
 }
 .button-gold:hover:not(:disabled) {
-  background: var(--foreground);
+  background: #e8c88e;
 }
 .button-outline {
-  border-color: var(--control-border);
+  border-color: var(--action-border);
   background: transparent;
-  color: var(--foreground);
+  color: var(--gold);
 }
 .button-outline:hover:not(:disabled) {
   border-color: var(--gold);
+  background: #d8b47409;
   color: var(--gold);
 }
 .button .icon,

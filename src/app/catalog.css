@@ -643,7 +643,7 @@
   min-height: 48px;
   padding: var(--space-2) var(--space-4);
   border: 1px solid var(--line);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-control);
   background: transparent;
   color: var(--foreground);
   font-size: var(--text-sm);

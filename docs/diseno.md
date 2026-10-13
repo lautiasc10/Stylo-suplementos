@@ -1,6 +1,6 @@
 # Diseño de STYLO
 
-Dirección de Fases 1 y 2: tienda deportiva con portada centrada, categorías ilustradas y contraste negro, dorado y blanco. Acción principal actual: explorar categorías y fichas. La compra se habilitará en sus fases comerciales.
+Dirección actual: composición editorial sobre negro, dorado y blanco cálido, portada alineada a la izquierda, titular compacto y categorías abiertas con líneas finas. La referencia visual enviada por el usuario el 13 de octubre reemplaza la portada centrada y las tarjetas ilustradas de las primeras fases. Acción principal de portada: explorar categorías y fichas. La compra se habilitará en sus fases comerciales.
 
 ## Guía aplicada
 
@@ -11,7 +11,7 @@ Se usa [landing-page-design de AI Design Skills](https://github.com/elayadesign/
 | Jerarquía   | Un botón principal dorado en la portada; navegación secundaria discreta.                               |
 | Tipografía  | Escala compartida de 12, 14, 16, 18, 20, 24, 30, 36, 48, 60 y 72 px; titulares con cortes deliberados. |
 | Espaciado   | Variables compartidas de 4, 8, 12, 16, 24, 32, 40, 48, 64, 80 y 96 px.                                 |
-| Formas      | Tarjetas de radio 24 px, campos de 8 px y controles circulares o tipo píldora.                         |
+| Formas      | Botones, campos, tarjetas y paneles rectos, sin radio; líneas finas y contornos dorados en acciones secundarias. |
 | Interacción | Hover, pulsación y foco visible; controles principales de al menos 48 px de altura.                    |
 | Movimiento  | Curva común, aparición de categorías, transformación del menú y revelado de palabras de marca.         |
 | Iconografía | Siete SVG Phosphor regular locales; licencia MIT conservada en `docs/licenses`.                        |
@@ -20,15 +20,15 @@ Los tokens viven en `src/app/globals.css`; la composición de tienda, en `src/ap
 
 ## Adaptaciones de marca y compra
 
-La instrucción visual del usuario del 13 de octubre de 2026 reemplaza la paleta y tipografía de la interfaz: fondo #050505, fondo comercial #080808, dorado #D8B474, texto cálido #ECE9E1 y secundario #92928D. Se reserva #000000 como token cinematográfico; esta entrega no implementa esa sección. Arial, Helvetica y sans-serif del sistema sustituyen a Montserrat e Inter, sin archivos de fuentes ni sus dependencias. Los títulos usan peso 800, interletrado negativo y líneas compactas; STYLO del encabezado y pie usa peso 900 en cursiva, botones 600 y etiquetas pequeñas en mayúsculas con separación. Los logos oficiales y las fotografías conservan sus archivos y colores originales. El blanco puro sigue disponible como fondo técnico de fotografías y QR.
+La instrucción visual del usuario del 13 de octubre de 2026 reemplaza la paleta y tipografía de la interfaz: fondo #050505, fondo comercial #080808, dorado #D8B474, texto cálido #ECE9E1 y secundario #92928D. Se reserva #000000 como token cinematográfico; esta entrega no implementa esa sección. Arial, Helvetica y sans-serif del sistema sustituyen a Montserrat e Inter, sin archivos de fuentes ni sus dependencias. Las capturas posteriores precisan la jerarquía: portada con peso 800, interletrado negativo y tres líneas compactas; títulos generales 500 y encabezado de categorías 400. STYLO del encabezado y pie usa peso 900 en cursiva, botones 600 y etiquetas pequeñas en mayúsculas con separación. Los logos oficiales y las fotografías conservan sus archivos y colores originales. El blanco puro sigue disponible como fondo técnico de fotografías y QR.
 
 La navegación permite explorar las nueve categorías sin interponer un modal. Se conserva la cabecera integrada en la tienda, en lugar de imponer una barra flotante de vidrio. La estructura corresponde a una home de ecommerce; no incorpora bloques de captación propios de otra oferta.
 
-Las ilustraciones de envases identifican categorías. No representan inventario disponible. No añadir testimonios, cifras, garantías, beneficios de salud, precios o condiciones comerciales sin contenido confirmado.
+La portada presenta categorías mediante nombre, descripción disponible y enlace, sin envases ilustrados. Las ilustraciones se conservan como alternativa explícita del catálogo cuando falta fotografía y no representan inventario real. No añadir testimonios, cifras, garantías, beneficios de salud, precios o condiciones comerciales sin contenido confirmado.
 
 ## Accesibilidad y rendimiento
 
-El rediseño del 12 de octubre de 2026 amplía este sistema con superficies `--surface`, `--surface-raised`, `--surface-hover`, bordes de control `--control-border`, radio de panel de 16 px y transición de controles de 180 ms. Los botones y campos comparten radio de 8 px; el dorado se reserva para la acción principal y selección. Fotos, avisos, estados y confirmaciones tienen componentes comunes. Se aplica foco visible global y una jerarquía específica para compra y administración. Auditoría, decisiones y verificaciones: [rediseño UX de Fase 3](rediseno-ux.md).
+El rediseño amplía este sistema con superficies `--surface`, `--surface-raised`, `--surface-hover`, bordes de control `--control-border`, bordes de acción `--action-border` y transición de controles de 180 ms. La referencia del 13 de octubre lleva los radios de panel, tarjeta y control a 0 px; las insignias de estado y los puntos de selección conservan su forma redonda. El dorado distingue acción principal, contornos secundarios y selección. Fotos, avisos, estados y confirmaciones tienen componentes comunes. Se aplica foco visible global y una jerarquía específica para compra y administración. Auditoría, decisiones y verificaciones: [rediseño UX de Fase 3](rediseno-ux.md).
 
 Las apariciones usan `IntersectionObserver`, sin listeners continuos de scroll ni bibliotecas de animación. El HTML inicial muestra todo el contenido. El foco vuelve visibles los grupos y la preferencia de movimiento reducido desactiva las animaciones, incluso si cambia con la página abierta. El revelado de marca mantiene texto real y orden de lectura.
 

@@ -64,7 +64,7 @@ El 12 de octubre se conectó el proyecto del usuario mediante `.env.local`, excl
 
 En la misma sesión, el usuario confirmó el ingreso con autenticador, el guardado de productos y el recorrido de catálogo/carrito. Después confirmó funcionamiento de las pruebas propuestas de promociones y pedidos manuales: retiro sin descuento de existencias y venta presencial confirmada con descuento único. Se registra como validación funcional informada por el usuario, no como una prueba automatizada remota. El detalle de Storage, cookies y auditoría con sesión autenticada sigue pendiente de comprobación específica.
 
-El 13 de octubre se aplica la paleta y tipografía solicitada por el usuario: negro #050505, comercial #080808, dorado #D8B474, blanco cálido #ECE9E1 y gris #92928D. Arial del sistema reemplaza las fuentes cargadas; títulos 800, marca textual STYLO 900 en cursiva y botones 600. Se conservan logos y fotos, con detalle y capturas actuales en la auditoría de rediseño.
+El 13 de octubre se aplica la paleta y tipografía solicitada por el usuario: negro #050505, comercial #080808, dorado #D8B474, blanco cálido #ECE9E1 y gris #92928D. Arial del sistema reemplaza las fuentes cargadas. Las capturas posteriores definen portada alineada a la izquierda con titular 800 en tres líneas, títulos secundarios 400/500, marca textual STYLO 900 en cursiva y botones 600. Botones, campos y paneles usan esquinas rectas, contornos finos y acciones secundarias doradas; las categorías de portada pasan a bloques abiertos con enlaces. Se conservan logos, fotos, lógica comercial y permisos, con detalle y capturas actuales en la auditoría de rediseño.
 
 ## Pendientes antes de habilitar compras
 

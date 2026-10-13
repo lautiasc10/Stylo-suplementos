@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
 import { categories } from "@/modules/catalog/categories";
-import { CategoryIllustration } from "@/components/storefront/category-illustration";
 import {
   BrandTagline,
   ScrollReveal,
@@ -21,10 +20,11 @@ export default async function HomePage() {
     <>
       <section className="sport-hero" aria-labelledby="hero-title">
         <div className="container sport-hero-inner">
+          <p className="eyebrow">BIENVENIDO A STYLO</p>
           <h1 id="hero-title">
-            <span className="hero-kicker">POTENCIÁ TU</span>{" "}
+            <span className="hero-kicker">POTENCIÁ</span>{" "}
             <span className="hero-headline">
-              MEJOR <span>VERSIÓN.</span>
+              TU MEJOR <span>VERSIÓN.</span>
             </span>
           </h1>
           <p className="hero-description">
@@ -54,7 +54,7 @@ export default async function HomePage() {
           <div>
             <p className="eyebrow">ENCONTRÁ TU PRÓXIMA ELECCIÓN</p>
             <h2 id="categories-title">
-              Tu rutina empieza acá<span>.</span>
+              Tu rutina <span>empieza acá.</span>
             </h2>
           </div>
           <Link href="/catalogo" className="text-link">
@@ -63,23 +63,24 @@ export default async function HomePage() {
           </Link>
         </div>
         <ScrollReveal className="featured-category-grid" stagger>
-          {visibleCategories.slice(0, 3).map((category) => (
+          {visibleCategories.slice(0, 3).map((category, index) => (
             <Link
               href={`/catalogo?categoria=${category.slug}`}
               className={`category-card featured-category category-${category.slug}`}
               key={category.slug}
             >
               <div className="featured-category-top">
-                <span>Suplementación</span>
-                <span className="category-arrow">
-                  <Icon name="arrow" />
+                <span aria-hidden="true">
+                  / {String(index + 1).padStart(2, "0")}
                 </span>
               </div>
-              <CategoryIllustration kind={category.slug} />
               <div className="featured-category-copy">
                 <h3>{category.name}</h3>
                 <p>{category.detail}</p>
               </div>
+              <span className="featured-category-action">
+                Explorar categoría <Icon name="arrow" />
+              </span>
             </Link>
           ))}
         </ScrollReveal>

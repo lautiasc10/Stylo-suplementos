@@ -39,20 +39,28 @@ El panel se verificó con datos locales de prueba, usando los mismos componentes
 
 ## Paleta y tipografía del 13 de octubre
 
-El usuario solicita trasladar la paleta y tipografía de su referencia local `C:/stylo-cinematic-landing/src/app/globals.css` al ecommerce. Se leyó ese archivo y se aplicaron sus colores y criterios tipográficos a los tokens compartidos: #050505 de fondo, #080808 comercial, #D8B474 dorado, #ECE9E1 texto y #92928D secundario. #000000 queda definido para una futura sección cinematográfica. No se copian la composición, los tamaños de letra pequeños ni la funcionalidad de la referencia.
+El usuario solicita trasladar la paleta y tipografía de su referencia local `C:/stylo-cinematic-landing/src/app/globals.css` al ecommerce. Se leyó ese archivo y se aplicaron sus colores y criterios tipográficos a los tokens compartidos: #050505 de fondo, #080808 comercial, #D8B474 dorado, #ECE9E1 texto y #92928D secundario. #000000 queda definido para una futura sección cinematográfica. La primera entrega conserva la composición; las capturas posteriores precisan el ajuste descrito a continuación.
 
-Arial, Helvetica y sans-serif del sistema sustituyen a las fuentes anteriores en textos, formularios e ilustraciones de categorías. Se retiran los imports de fuentes y las dos dependencias Fontsource. Los títulos usan peso 800 y líneas compactas; el texto STYLO de cabecera y pie usa 900 en cursiva, junto al isotipo oficial intacto. Los botones conservan 600 y las etiquetas pequeñas usan mayúsculas e interletrado. Se mantienen tamaños y áreas táctiles del sistema existente.
+Arial, Helvetica y sans-serif del sistema sustituyen a las fuentes anteriores en textos, formularios e ilustraciones de categorías. Se retiran los imports de fuentes y las dos dependencias Fontsource. La primera entrega usa títulos 800; la referencia posterior distingue el peso del titular principal del resto. El texto STYLO de cabecera y pie usa 900 en cursiva, junto al isotipo oficial intacto. Los botones conservan 600 y las etiquetas pequeñas usan mayúsculas e interletrado.
 
 Revisión visual y de estilos calculados en portada, catálogo, carrito y gestión a 320/390/768/1440 px: sin desbordamientos, excepciones JavaScript ni solicitudes de archivos de fuente. Texto principal sobre fondo: 16,80:1; secundario sobre superficie elevada: 5,62:1 y sobre hover: 5,03:1. Se conservan fotografías y logos originales, con fondos blancos técnicos de fotos y QR. Las expectativas de color de las pruebas de movimiento reducido y sin JavaScript ahora comprueban el blanco cálido solicitado.
+
+### Ajuste a las capturas: tipografías, bordes y botones
+
+La portada adopta alineación izquierda y el mismo eslogan en tres líneas grandes, con peso 800, interletrado compacto y última línea dorada. Las categorías usan encabezado regular 400 y nombres 500; los títulos del catálogo, carrito y gestión comparten 500 para reducir el peso visual. La escala fluida adapta los titulares al celular sin recortar palabras.
+
+Los tokens de radio de control, tarjeta y panel pasan a 0 px en toda la interfaz. Las acciones principales usan relleno dorado y las secundarias contorno dorado de 1 px; el token de borde es más visible que el contorno tenue de la referencia. Los controles conservan texto de 14 px, altura mínima de 48 px, foco visible y separación entre texto e icono. Se mantienen insignias redondas para estados y selección. Las categorías destacadas de portada reemplazan los bloques blancos ilustrados por filas abiertas numeradas, con nombre, descripción disponible, línea superior dorada, línea inferior neutra y enlace con flecha. Las fotografías de productos y los logos oficiales permanecen intactos.
+
+Verificación de esta revisión: compilación de producción, 58 pruebas unitarias/PostgreSQL y 92 recorridos Chromium correctos. Revisión de portada, catálogo, carrito y gestión a 320, 390, 768 y 1440 px, sin desbordamiento horizontal ni excepciones JavaScript; estilos calculados confirman Arial, botones con radio 0, titular 800 y encabezado de categorías 400. Los recorridos incluyen teclado, foco, movimiento reducido, navegación sin JavaScript, creación/edición, variantes, promociones, cantidades y checkout de revisión. Las comprobaciones de gestión usan datos ficticios locales, sin escribir en Supabase.
 
 Capturas actuales con datos ficticios de prueba:
 
 | Vista | Escritorio | Celular |
 | --- | --- | --- |
-| Portada | [Captura](previews/paleta-home-1440.png) | [Captura](previews/paleta-home-390.png) |
-| Catálogo | [Captura](previews/paleta-catalog-1440.png) | [Captura](previews/paleta-catalog-390.png) |
-| Carrito | [Captura](previews/paleta-cart-1440.png) | [Captura](previews/paleta-cart-390.png) |
-| Productos | [Captura](previews/paleta-admin-1440.png) | [Captura](previews/paleta-admin-390.png) |
+| Portada | [Captura](previews/referencia-home-1440.png) | [Captura](previews/referencia-home-390.png) |
+| Catálogo | [Captura](previews/referencia-catalog-1440.png) | [Captura](previews/referencia-catalog-390.png) |
+| Carrito | [Captura](previews/referencia-cart-1440.png) | [Captura](previews/referencia-cart-390.png) |
+| Productos | [Captura](previews/referencia-admin-1440.png) | [Captura](previews/referencia-admin-390.png) |
 
 ## Capturas anteriores
 
