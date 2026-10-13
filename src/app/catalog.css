@@ -395,7 +395,16 @@
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+@property --product-card-neon-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
 .product-card {
+  --product-card-neon-shadow:
+    0 0 0 1px var(--gold),
+    0 0 8px color-mix(in srgb, var(--gold) 45%, transparent),
+    0 0 24px color-mix(in srgb, var(--gold) 16%, transparent);
   position: relative;
   overflow: hidden;
   min-width: 0;
@@ -410,16 +419,56 @@
     border-color var(--motion-control) var(--motion-ease),
     box-shadow var(--motion-control) var(--motion-ease);
 }
+.product-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  padding: 2px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: conic-gradient(
+    from var(--product-card-neon-angle),
+    transparent 0deg 240deg,
+    var(--gold) 285deg,
+    var(--foreground) 305deg,
+    var(--gold) 325deg,
+    transparent 360deg
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity var(--motion-control) var(--motion-ease);
+}
 .product-card:focus-within {
   border-color: var(--gold);
-  box-shadow: 0 0 0 1px var(--gold);
+  box-shadow: var(--product-card-neon-shadow);
+}
+.product-card:focus-within::before {
+  opacity: 1;
+  animation: product-card-neon-travel 2.8s linear infinite;
 }
 @media (hover: hover) and (pointer: fine) {
   .product-card:hover {
     z-index: 1;
     transform: scale(1.025);
     border-color: var(--gold);
-    box-shadow: 0 0 0 1px var(--gold);
+    box-shadow: var(--product-card-neon-shadow);
+  }
+  .product-card:hover::before {
+    opacity: 1;
+    animation: product-card-neon-travel 2.8s linear infinite;
+  }
+}
+@keyframes product-card-neon-travel {
+  to {
+    --product-card-neon-angle: 360deg;
   }
 }
 .product-card-media {
@@ -880,6 +929,12 @@ label.editor-check {
   .product-card,
   .product-card:hover {
     transform: none;
+    transition: none;
+  }
+  .product-card::before,
+  .product-card:hover::before,
+  .product-card:focus-within::before {
+    animation: none;
     transition: none;
   }
   .product-card-media:hover .category-illustration {

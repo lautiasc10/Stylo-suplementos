@@ -18,6 +18,8 @@ Se usa [landing-page-design de AI Design Skills](https://github.com/elayadesign/
 
 Los tokens viven en `src/app/globals.css`; la composición de tienda, en `src/app/storefront.css`, y los componentes de catálogo, en `src/app/catalog.css`. Usar esos valores al extender componentes. Los tamaños de ilustraciones y breakpoints son medidas de composición, no pasos nuevos de espaciado o tipografía.
 
+El estado activo de las tarjetas incluye un borde neón dorado: halo exterior contenido y destello que recorre únicamente el contorno cada 2,8 segundos durante hover de mouse preciso o foco de teclado. Una máscara CSS conserva visibles la foto y los datos; la capa decorativa no recibe clics. Al salir, el efecto desaparece con la transición común de 180 ms. Con movimiento reducido, el brillo es estático y la tarjeta no escala. Implementación CSS sin dependencias; verificados hover, salida, foco, cambio de preferencia en vivo, dispositivo táctil y compilación.
+
 Los logos de marca de productos comparten `BrandLogo`: superficie blanca de 160 × 64 px en tarjeta y 192 × 80 px en ficha, con margen interior de 8 px. Para archivos con grandes márgenes blancos o transparentes, una lectura local de hasta 256 px detecta el área del arte y ajusta únicamente su presentación, conservando colores, proporciones y el archivo original. Reutiliza la medición por URL y mantiene el nombre alternativo sin repetirlo visualmente. Sin JavaScript o sin acceso de lectura a los píxeles, muestra el logo completo en la superficie ampliada. Verificado con el archivo real a 320, 390 y 1868 px y navegación a la ficha.
 
 ## Adaptaciones de marca y compra
