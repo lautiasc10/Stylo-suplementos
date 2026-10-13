@@ -1,0 +1,11 @@
+# Fondo premium del catálogo — Fase 3
+
+El 13 de octubre de 2026 el usuario aportó «Tarjeta premium de proteína con león dorado.png» como dirección visual. La adaptación usa el fondo [catalog-lion-stone-v1.webp](../public/visuals/catalog-lion-stone-v1.webp), generado mediante la herramienta integrada `imagegen`: león ilustrativo, piedra negra y luz dorada. Los logos oficiales y las fotos comerciales no fueron generados ni modificados.
+
+La referencia orienta materiales, iluminación y ambiente. No se incorporan sus textos de beneficios, su lettering de marca, sus precios ni una tarjeta rasterizada. Los datos reales y la navegación permanecen en los componentes existentes. El león decorativo ocupa el costado del encabezado para que no quede oculto por el envase; las galerías reutilizan únicamente la textura del lado izquierdo del fondo.
+
+Resumen del prompt conservado: fondo panorámico cinematográfico; 65 % izquierdo de piedra negra con vetas doradas contenidas y una base baja de roca; 35 % derecho con cabeza de león en tres cuartos, ojo y hocico visibles, iluminación de borde cálida; espacio oscuro para texto y fotos transparentes. Paleta cercana a #080808 y #D8B474. Solo ambiente y león: sin productos, paquetes, logos, letras, precios, iconos, marcos de interfaz ni afirmaciones comerciales.
+
+La exportación del recurso final utiliza WebP, ancho de 1600 px y calidad 78; pesa 180.550 bytes. El mismo archivo se comparte entre encabezado y galerías, sin nuevas dependencias. CSS reserva la altura del encabezado y conserva un fondo negro si el recurso no carga. La escena es estática y decorativa; no introduce reproducción ni interacción. El original de generación se conserva en el directorio de imágenes generadas de Codex; la exportación usada por la tienda está en el repositorio.
+
+Compilación y 36 recorridos de catálogo aprobados. Revisión visual a 320, 390, 768, 1440 y 1868 px, títulos de categorías largos, ficha y navegación sin JavaScript, sin desbordamientos. Capturas de revisión: [escritorio](previews/premium-catalog-1868.png), [celular](previews/premium-catalog-390.png), [tarjeta escritorio](previews/premium-card-1868.png) y [tarjeta celular](previews/premium-card-390.png).

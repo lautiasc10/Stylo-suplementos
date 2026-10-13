@@ -1,4 +1,5 @@
 import { CatalogPreview } from "@/components/catalog/preview";
+import { CatalogHeading } from "@/components/catalog/catalog-heading";
 export default async function PreviewPage({
   searchParams,
 }: {
@@ -7,8 +8,7 @@ export default async function PreviewPage({
   const params = await searchParams;
   return (
     <>
-      <p className="eyebrow">EXPLORÁ STYLO</p>
-      <h1>Catálogo de prueba</h1>
+      <CatalogHeading title="Catálogo de prueba" preview />
       <CatalogPreview
         mode="catalog"
         filters={{

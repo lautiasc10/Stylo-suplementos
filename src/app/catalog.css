@@ -34,6 +34,62 @@
 .catalog-manager textarea {
   resize: vertical;
 }
+.catalog-campaign {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  min-height: 280px;
+  padding: var(--space-10);
+  border: 1px solid var(--action-border);
+  background: var(--commercial-background);
+  overflow: hidden;
+}
+.catalog-campaign::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 65%;
+  z-index: -1;
+  background: url("/visuals/catalog-lion-stone-v1.webp") right center / cover
+    no-repeat;
+  mask-image: linear-gradient(to right, transparent, #000 30%);
+  pointer-events: none;
+}
+.catalog-campaign-copy {
+  max-width: 60%;
+}
+.catalog-campaign .eyebrow {
+  margin: 0 0 var(--space-4);
+}
+.catalog-campaign h1 {
+  margin: 0 0 var(--space-4);
+  text-wrap: balance;
+}
+.catalog-campaign .page-intro {
+  margin: 0;
+  color: var(--foreground);
+  max-width: 48ch;
+}
+@media (max-width: 800px) {
+  .catalog-campaign {
+    min-height: 240px;
+    padding: var(--space-6);
+  }
+  .catalog-campaign::before {
+    width: 100%;
+    mask-image: linear-gradient(to right, transparent 20%, #000 72%);
+  }
+  .catalog-campaign-copy {
+    max-width: 62%;
+  }
+  .catalog-campaign h1 {
+    font-size: var(--text-2xl);
+  }
+  .catalog-campaign .page-intro {
+    font-size: var(--text-sm);
+  }
+}
 .catalog-layout {
   display: grid;
   grid-template-columns: 256px minmax(0, 1fr);
@@ -1038,38 +1094,11 @@ textarea:focus-visible {
   position: relative;
   aspect-ratio: 1;
   background:
-    radial-gradient(
-      ellipse at 50% 48%,
-      color-mix(in srgb, var(--gold) 12%, transparent),
-      transparent 70%
-    ),
+    linear-gradient(#08080820, #08080820),
+    url("/visuals/catalog-lion-stone-v1.webp") left bottom / 200% auto no-repeat,
     var(--commercial-background);
   overflow: hidden;
   isolation: isolate;
-}
-.product-image-stage::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    ellipse 48% 43% at 50% 52%,
-    transparent 57%,
-    color-mix(in srgb, var(--gold) 28%, transparent) 58%,
-    transparent 59.5% 76%,
-    color-mix(in srgb, var(--gold) 20%, transparent) 77%,
-    transparent 78.5% 95%,
-    color-mix(in srgb, var(--gold) 14%, transparent) 96%,
-    transparent 97.5%
-  );
-  mask-image: linear-gradient(
-    to right,
-    #000,
-    #000 10%,
-    transparent 35% 65%,
-    #000 90%,
-    #000
-  );
-  pointer-events: none;
 }
 .product-frame-link {
   display: block;

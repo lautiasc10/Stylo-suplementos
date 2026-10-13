@@ -4,6 +4,7 @@ import { getCatalog } from "@/modules/catalog/server";
 import { getEnvironment } from "@/lib/config/server";
 import { CatalogListing } from "@/components/catalog/listing";
 import { publicCatalog } from "@/modules/catalog/model";
+import { CatalogHeading } from "@/components/catalog/catalog-heading";
 export const metadata: Metadata = { title: "Catálogo" };
 export default async function CatalogPage({
   searchParams,
@@ -22,11 +23,10 @@ export default async function CatalogPage({
   const config = getEnvironment().supabase;
   return (
     <section className="container interior-page">
-      <p className="eyebrow">LA SELECCIÓN STYLO</p>
-      <h1>{selection?.name ?? "Nuestro catálogo"}</h1>
-      <p className="page-intro">
-        Suplementos y accesorios para encontrar tu próxima elección.
-      </p>
+      <CatalogHeading
+        title={selection?.name ?? "Nuestro catálogo"}
+        description="Suplementos y accesorios para encontrar tu próxima elección."
+      />
       {error ? (
         <div className="configuration-notice" role="alert">
           No pudimos cargar el catálogo. Intentá nuevamente en unos minutos.
