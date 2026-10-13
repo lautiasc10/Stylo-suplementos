@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
   type CSSProperties,
+  type SyntheticEvent,
 } from "react";
 import { Icon } from "@/components/ui/icon";
 
@@ -84,6 +85,16 @@ const fragments = mesh
     } as CSSProperties;
   });
 
+function fitFrame(image: HTMLImageElement) {
+  image.dataset.portrait = String(
+    image.naturalHeight / image.naturalWidth > 1.3,
+  );
+}
+
+function frameLoaded(event: SyntheticEvent<HTMLImageElement>) {
+  fitFrame(event.currentTarget);
+}
+
 export function ProductGallery({
   images,
   href,
@@ -125,6 +136,14 @@ export function ProductGallery({
     !interacting &&
     visible &&
     documentVisible;
+
+  useEffect(() => {
+    root.current
+      ?.querySelectorAll<HTMLImageElement>(".product-frame")
+      .forEach((image) => {
+        if (image.complete && image.naturalWidth) fitFrame(image);
+      });
+  }, [active, previous]);
 
   useEffect(() => {
     setEnhanced(true);
@@ -240,6 +259,7 @@ export function ProductGallery({
           width={720}
           height={720}
           decoding="async"
+          onLoad={frameLoaded}
         />
       )}
       <img
@@ -251,6 +271,7 @@ export function ProductGallery({
         height={720}
         loading={mode === "card" ? "lazy" : "eager"}
         decoding="async"
+        onLoad={frameLoaded}
       />
       {mode === "card" && previous !== null && !reduced && images[previous] && (
         <span
@@ -267,6 +288,7 @@ export function ProductGallery({
                 width={720}
                 height={720}
                 decoding="async"
+                onLoad={frameLoaded}
               />
             </span>
           ))}

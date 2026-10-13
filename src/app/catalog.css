@@ -433,11 +433,11 @@
 }
 .product-card-marker {
   min-width: 0;
-  padding-left: var(--space-2);
-  border-left: 2px solid var(--gold);
+  padding: var(--space-1) var(--space-2);
   color: var(--background);
   font-size: var(--text-xs);
-  background: #ffffffd9;
+  font-weight: 600;
+  background: var(--gold);
   overflow-wrap: anywhere;
 }
 .product-placeholder {
@@ -962,7 +962,11 @@ textarea:focus-visible {
   transform-origin: 50% 50%;
 }
 .product-image-gallery-card .product-frame {
-  padding: var(--space-4);
+  padding: 0;
+}
+.product-image-gallery-card .product-frame[data-portrait="true"] {
+  /* The standard portrait photos include white space above and below the pack. */
+  scale: 1.3;
 }
 .product-frame-current {
   z-index: 1;
