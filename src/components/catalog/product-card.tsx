@@ -6,6 +6,7 @@ import { useCallback, useMemo, useState } from "react";
 import { Icon } from "@/components/ui/icon";
 import { CategoryIllustration } from "@/components/storefront/category-illustration";
 import { ProductGallery, type GalleryImage } from "./product-gallery";
+import { BrandLogo } from "./brand-logo";
 import {
   variantImages,
   type CatalogGroup,
@@ -111,13 +112,7 @@ export function ProductCard({
       <div className="product-card-copy">
         <p className="product-brand">
           {brandLogo ? (
-            <img
-              src={brandLogo}
-              alt={brand.name}
-              width={64}
-              height={32}
-              loading="lazy"
-            />
+            <BrandLogo src={brandLogo} name={brand.name} />
           ) : (
             brand.name
           )}

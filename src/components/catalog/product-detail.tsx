@@ -1,4 +1,5 @@
 "use client";
+import { BrandLogo } from "./brand-logo";
 import { ProductPricing } from "@/components/commerce/product-pricing";
 import { useState } from "react";
 import { CategoryIllustration } from "@/components/storefront/category-illustration";
@@ -69,7 +70,7 @@ export function ProductDetail({
       <div className="product-detail-copy">
         <p className="eyebrow product-brand">
           {logoSrc ? (
-            <img src={logoSrc} alt={brandName} width={80} height={32} />
+            <BrandLogo src={logoSrc} name={brandName} detail />
           ) : (
             brandName
           )}
