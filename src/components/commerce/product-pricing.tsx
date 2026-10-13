@@ -10,13 +10,7 @@ import { productOffers } from "@/modules/commerce/product-offers";
 import { priceLines } from "@/modules/commerce/promotions";
 import { useCart } from "./cart-provider";
 
-export function ProductPricing({
-  variant,
-  showSku = false,
-}: {
-  variant: Variant;
-  showSku?: boolean;
-}) {
+export function ProductPricing({ variant }: { variant: Variant }) {
   const { catalog, promotions, preview } = useCart();
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
@@ -51,25 +45,23 @@ export function ProductPricing({
     <>
       <dl className="product-prices">
         <div>
-          <dt>Mercado Pago</dt>
+          <dt>Precio de lista</dt>
           <dd>
-            {list.discount > 0 && <del>{formatPrice(variant.listPrice)}</del>}{" "}
-            {formatPrice(list.total)}
+            {list.discount > 0 && (
+              <del>{formatPrice(variant.listPrice, 0)}</del>
+            )}{" "}
+            {formatPrice(list.total, 0)}
           </dd>
         </div>
         <div>
           <dt>Transferencia</dt>
           <dd>
-            {cash.discount > 0 && <del>{formatPrice(variant.cashPrice)}</del>}{" "}
-            {formatPrice(cash.total)}
+            {cash.discount > 0 && (
+              <del>{formatPrice(variant.cashPrice, 0)}</del>
+            )}{" "}
+            {formatPrice(cash.total, 0)}
           </dd>
         </div>
-        {showSku && (
-          <div>
-            <dt>SKU</dt>
-            <dd className="product-sku">{variant.sku}</dd>
-          </div>
-        )}
       </dl>
       {offers.length > 0 && (
         <section
@@ -103,12 +95,12 @@ export function ProductPricing({
               {offer.kind !== "sale" && (
                 <dl>
                   <div>
-                    <dt>Mercado Pago</dt>
-                    <dd>{formatPrice(offer.listPrice)}</dd>
+                    <dt>Precio de lista</dt>
+                    <dd>{formatPrice(offer.listPrice, 0)}</dd>
                   </div>
                   <div>
                     <dt>Transferencia</dt>
-                    <dd>{formatPrice(offer.cashPrice)}</dd>
+                    <dd>{formatPrice(offer.cashPrice, 0)}</dd>
                   </div>
                 </dl>
               )}

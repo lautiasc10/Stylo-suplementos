@@ -53,6 +53,9 @@ export default async function ProductPage({
         brandName={
           data.brands.find((item) => item.id === product.brandId)!.name
         }
+        brandLogo={
+          data.brands.find((item) => item.id === product.brandId)!.logo
+        }
         category={category?.slug ?? ""}
         selectedId={variante}
         imageBase={

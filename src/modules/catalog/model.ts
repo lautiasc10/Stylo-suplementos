@@ -64,10 +64,13 @@ export const emptyCatalog: Catalog = {
   categories: [],
   products: [],
 };
-export const formatPrice = (cents: number) =>
-  new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS" }).format(
-    cents / 100,
-  );
+export const formatPrice = (cents: number, fractionDigits: 0 | 2 = 2) =>
+  new Intl.NumberFormat("es-AR", {
+    style: "currency",
+    currency: "ARS",
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits,
+  }).format(cents / 100);
 export const variantLabel = (variant: Variant) =>
   [variant.flavor, variant.size, variant.presentation]
     .filter(Boolean)

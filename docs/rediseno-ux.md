@@ -61,12 +61,23 @@ El componente compartido `BrandMark` presenta el isotipo y el logo horizontal of
 
 Verificación final: compilación y 92 pruebas de navegador correctas. Comprobaciones adicionales de portada, catálogo, carrito, checkout de revisión, gestión, nosotros y contacto en ocho anchos (320, 390, 768, 801, 1024, 1440, 1536 y 1868 px): sin desbordamientos ni excepciones JavaScript. A 1868 px, cabecera y contenido miden 1772 px, logo y carrito quedan a 48 px de los extremos y las cuatro tarjetas comparten fila. Se revisaron visualmente ambos logos en escritorio y celular. Las pruebas de compra/administración usan la vista previa local, sin escrituras remotas.
 
-Capturas actuales con datos ficticios de prueba:
+### Tarjetas compactas y ficha de producto
+
+La revisión posterior reduce el logo horizontal de 200 a 168 px en escritorio, con un tamaño móvil fluido de 104–136 px. La ventana conserva todo el lettering. Las tarjetas pasan de foto cuadrada a 4:3, reducen el padding de contenido a 16 px y muestran los dos precios en una fila. Sabor, peso y presentación permanecen en una única etiqueta sobre la imagen; «Sin stock» aparece a la derecha solo cuando corresponde. Se retira la línea repetida de variante y el indicador «Disponible» debajo de la foto. El logo de marca reemplaza al nombre escrito cuando hay un recurso disponible y conserva ese nombre como texto alternativo; sin logo se muestra el nombre. La ficha aplica la misma regla de marca.
+
+Los precios de producto y promociones usan «Precio de lista» y «Transferencia», sin decimales. `formatPrice` admite una precisión de presentación opcional; el valor predeterminado de dos decimales mantiene carrito, checkout, administración e importación. La presentación sin decimales redondea al peso más cercano, sin modificar precios guardados ni cálculos. Una comprobación del editor confirma que ARS 51.000,29 sigue guardado como 5.100.029 centavos aunque la ficha muestre ARS 51.000.
+
+La ficha retira la información SKU del público, conserva el identificador internamente y mantiene su edición en administración. La galería se centra con ancho máximo de 640 px dentro de la columna izquierda; la columna de datos se desplaza a la derecha. En celular ambas vuelven a apilarse y se alinean. Se mantienen fotografías originales, promociones antes de agregar, navegación manual de fotos, alternancia de variantes, teclado y movimiento reducido.
+
+Verificación: compilación y 58 pruebas unitarias/PostgreSQL correctas; los 92 recorridos de navegador se verificaron con expectativas actualizadas de precio, etiqueta y selección. Diez comprobaciones visuales adicionales de catálogo/ficha a 320, 390, 768, 1440 y 1868 px, sin desbordamientos ni excepciones JavaScript. A 1868 px las tarjetas de prueba miden aproximadamente 468 px de alto. Se verificaron además logo de marca sin nombre duplicado en tarjeta/ficha y su texto alternativo; sin recurso se conserva el nombre escrito. Los fixtures y escrituras de prueba son locales.
+
+Capturas de revisión con datos ficticios: catálogo y ficha corresponden al ajuste compacto; las demás documentan la ampliación general anterior.
 
 | Vista | Escritorio | Celular |
 | --- | --- | --- |
 | Portada | [Captura](previews/ancho-home-1868.png) | [Captura](previews/ancho-home-390.png) |
-| Catálogo | [Captura](previews/ancho-catalog-1868.png) | [Captura](previews/ancho-catalog-390.png) |
+| Catálogo | [Captura](previews/compacto-catalog-1868.png) | [Captura](previews/compacto-catalog-390.png) |
+| Ficha de producto | [Captura](previews/compacto-detail-1868.png) | [Captura](previews/compacto-detail-390.png) |
 | Carrito | [Captura](previews/ancho-cart-1868.png) | [Captura](previews/ancho-cart-390.png) |
 | Productos | [Captura](previews/ancho-admin-1868.png) | [Captura](previews/ancho-admin-390.png) |
 | Cabecera y logos | [Captura](previews/ancho-header-1868.png) | [Captura](previews/ancho-header-390.png) |

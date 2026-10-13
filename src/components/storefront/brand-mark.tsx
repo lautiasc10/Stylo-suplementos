@@ -16,7 +16,7 @@ export function BrandMark({ priority = false }: { priority?: boolean }) {
           src="/branding/logo-horizontal.webp"
           width={640}
           height={640}
-          sizes="(max-width: 800px) 160px, 200px"
+          sizes="(max-width: 800px) 136px, 168px"
           alt=""
           priority={priority}
         />

@@ -39,6 +39,9 @@ export function ProductCard({
 }) {
   const [variantId, setVariantId] = useState(initialVariantId);
   const variant = variants.find((item) => item.id === variantId) ?? variants[0];
+  const brandLogo =
+    brand.logo &&
+    (imageUrls[brand.logo] || (imageBase ? `${imageBase}/${brand.logo}` : ""));
   const href = `${productPrefix}/${product.slug}?variante=${variant.id}`;
   const photos = useMemo(() => {
     const ordered = [...variants].sort(
@@ -73,9 +76,14 @@ export function ProductCard({
   return (
     <article className="product-card">
       <div className="product-card-media">
-        <span className="product-card-marker" aria-hidden="true">
-          {variant.flavor || variant.size || String(index + 1).padStart(2, "0")}
-        </span>
+        <div className="product-card-labels">
+          <span className="product-card-marker">{variantLabel(variant)}</span>
+          {variant.stock === 0 && (
+            <span className="stock-badge" data-stock="empty">
+              Sin stock
+            </span>
+          )}
+        </div>
         {photos.length ? (
           <ProductGallery
             images={photos}
@@ -99,27 +107,21 @@ export function ProductCard({
       </div>
       <div className="product-card-copy">
         <p className="product-brand">
-          {brand.logo && (imageBase || imageUrls[brand.logo]) && (
+          {brandLogo ? (
             <img
-              src={imageUrls[brand.logo] || `${imageBase}/${brand.logo}`}
-              alt=""
+              src={brandLogo}
+              alt={brand.name}
               width={64}
               height={32}
               loading="lazy"
             />
+          ) : (
+            brand.name
           )}
-          {brand.name}
         </p>
         <h2>
           <Link href={href}>{product.name}</Link>
         </h2>
-        <p className="product-card-variant">{variantLabel(variant)}</p>
-        <p
-          className="stock-badge"
-          data-stock={variant.stock > 0 ? "available" : "empty"}
-        >
-          {variant.stock > 0 ? "Disponible" : "Sin stock"}
-        </p>
         <ProductPricing variant={variant} />
         <Link href={href} className="product-card-action">
           Ver variantes <Icon name="arrow" />

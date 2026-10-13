@@ -89,6 +89,9 @@ export function CatalogPreview({
             brandName={
               data.brands.find((item) => item.id === product.brandId)!.name
             }
+            brandLogo={
+              data.brands.find((item) => item.id === product.brandId)!.logo
+            }
             category={
               data.categories.find((item) =>
                 product.categoryIds.includes(item.id),

@@ -237,8 +237,8 @@ img {
 .brand-horizontal {
   display: block;
   flex-shrink: 0;
-  width: 200px;
-  height: 64px;
+  width: 168px;
+  height: 56px;
   overflow: hidden;
 }
 .brand-horizontal img {
@@ -543,8 +543,8 @@ img {
     height: 48px;
   }
   .brand-horizontal {
-    width: clamp(112px, 30vw, 160px);
-    height: 48px;
+    width: clamp(104px, 27vw, 136px);
+    height: 40px;
   }
   .section-heading {
     align-items: flex-start;

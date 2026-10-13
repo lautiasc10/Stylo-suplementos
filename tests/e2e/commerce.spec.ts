@@ -229,7 +229,7 @@ test("gestión permite editar un combo y registra un retiro una vez sin desconta
   ).toContainText("Creatina de prueba");
   await expect(
     page.getByRole("region", { name: "Promociones disponibles" }),
-  ).toContainText("49.000,00");
+  ).toContainText("49.000");
   await page
     .getByRole("button", { name: "Agregar al carrito", exact: true })
     .click();

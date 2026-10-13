@@ -12,6 +12,7 @@ import {
 export function ProductDetail({
   product,
   brandName,
+  brandLogo,
   category,
   selectedId,
   imageBase = "",
@@ -20,6 +21,7 @@ export function ProductDetail({
 }: {
   product: Product;
   brandName: string;
+  brandLogo?: string | null;
   category: string;
   selectedId?: string;
   imageBase?: string;
@@ -39,6 +41,9 @@ export function ProductDetail({
       alt: image.alt,
       src: imageUrls[image.path] || `${imageBase}/${image.path}`,
     }));
+  const logoSrc =
+    brandLogo &&
+    (imageUrls[brandLogo] || (imageBase ? `${imageBase}/${brandLogo}` : ""));
   return (
     <div className="product-detail">
       <div className="product-gallery">
@@ -62,7 +67,13 @@ export function ProductDetail({
         )}
       </div>
       <div className="product-detail-copy">
-        <p className="eyebrow">{brandName}</p>
+        <p className="eyebrow product-brand">
+          {logoSrc ? (
+            <img src={logoSrc} alt={brandName} width={80} height={32} />
+          ) : (
+            brandName
+          )}
+        </p>
         <h1>{product.name}</h1>
         <p className="product-description">{product.description}</p>
         <form method="get" className="variant-picker">
@@ -94,7 +105,7 @@ export function ProductDetail({
           >
             {variant.stock > 0 ? "Disponible" : "Sin stock"}
           </p>
-          <ProductPricing variant={variant} showSku />
+          <ProductPricing variant={variant} />
         </div>
         <p className="purchase-note">
           {preview
