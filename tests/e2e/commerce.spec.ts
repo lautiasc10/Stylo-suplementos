@@ -100,6 +100,12 @@ test("admin configura cantidad con dos precios y checkout revalida sin guardar d
   await expect(page.locator(".product-promotion-tag")).toContainText(
     "Desde 2 unidades",
   );
+  await expect(
+    page.locator(".product-card-labels .product-promotion-tag"),
+  ).toBeVisible();
+  await expect(
+    page.locator(".product-card-copy .product-promotion-tag"),
+  ).toHaveCount(0);
   await expect(page.locator(".product-card .product-offers")).toHaveCount(0);
   expect(
     await page

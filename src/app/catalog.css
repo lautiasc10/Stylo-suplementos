@@ -529,6 +529,7 @@
   }
 }
 .product-card-media {
+  container-type: inline-size;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -543,13 +544,15 @@
   left: var(--space-4);
   right: var(--space-4);
   z-index: 3;
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--space-2);
   pointer-events: none;
 }
 .product-card-marker {
+  justify-self: start;
   min-width: 0;
   padding: var(--space-1) var(--space-2);
   color: var(--background);
@@ -601,22 +604,30 @@
   flex-direction: column;
   flex: 1;
 }
-.product-promotion-slot {
-  min-height: 32px;
-  margin-top: var(--space-2);
-}
 .product-promotion-tag {
+  grid-column: 1 / -1;
+  justify-self: start;
   display: inline-flex;
   align-items: center;
   min-height: 28px;
   max-width: 100%;
+  gap: var(--space-1);
   padding: var(--space-1) var(--space-2);
-  border: 1px solid var(--action-border);
-  background: color-mix(in srgb, var(--gold) 12%, transparent);
-  color: var(--gold);
+  border: 1px solid var(--gold);
+  background: var(--gold);
+  color: var(--background);
+  box-shadow: 0 3px 14px #0008;
   font-size: var(--text-xs);
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.4;
+}
+.product-promotion-tag .icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+.product-card-labels .stock-badge {
+  grid-column: 2;
 }
 .product-brand {
   color: var(--gold);
@@ -910,6 +921,14 @@ label.editor-check {
   border-top: 1px solid var(--line);
   padding-top: var(--space-4);
 }
+.variant-draft-action {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
 .image-editor img {
   width: 96px;
   height: 96px;
@@ -919,6 +938,11 @@ label.editor-check {
 }
 .image-editor label {
   flex: 1 1 180px;
+}
+.image-editor-actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: var(--space-2);
 }
 .import-panel > label {
   margin-block: var(--space-6);
@@ -1119,6 +1143,11 @@ textarea:focus-visible {
     var(--commercial-background);
   overflow: hidden;
   isolation: isolate;
+}
+.product-image-gallery-card
+  .product-image-stage:has(.product-frame-current[data-portrait="true"]) {
+  /* Lower only the rock behind tall packs. Bottle framing stays unchanged. */
+  background-position: left calc(100% + 16cqw);
 }
 .product-frame-link {
   display: block;

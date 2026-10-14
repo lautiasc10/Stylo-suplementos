@@ -1,5 +1,8 @@
 "use client";
-import { ProductPricing } from "@/components/commerce/product-pricing";
+import {
+  ProductPricing,
+  ProductPromotionBadge,
+} from "@/components/commerce/product-pricing";
 
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
@@ -77,6 +80,7 @@ export function ProductCard({
     <article className="product-card">
       <div className="product-card-media">
         <div className="product-card-labels">
+          <ProductPromotionBadge variant={variant} />
           {variant.flavor && (
             <span key={variant.flavor} className="product-card-marker">
               {variant.flavor}

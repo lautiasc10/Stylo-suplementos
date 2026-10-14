@@ -238,6 +238,56 @@ export function CatalogManager({
       setBusy(false);
     }
   }
+  async function replaceImage(imageId: string, file?: File) {
+    if (!file || !draft || busy) return;
+    const productId = draft.id;
+    setBusy(true);
+    setMessage("");
+    try {
+      const result = await upload(file, productId);
+      if (result.error || !result.path)
+        throw new Error(result.error || "No pudimos reemplazar la imagen.");
+      setDraft((previous) =>
+        previous?.id === productId
+          ? {
+              ...previous,
+              images: previous.images.map((image) =>
+                image.id === imageId ? { ...image, path: result.path! } : image,
+              ),
+            }
+          : previous,
+      );
+    } catch (error) {
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "No pudimos reemplazar la imagen. La foto anterior se conserva.",
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+  function removeDraftVariant(variantId: string) {
+    if (!draft || busy || draft.variants.length <= 1) return;
+    // Persisted SKUs may belong to orders and promotions. Only discard variants
+    // created in this editing session; existing ones retain their visibility control.
+    if (
+      catalog.products.some((product) =>
+        product.variants.some((variant) => variant.id === variantId),
+      )
+    )
+      return;
+    setDraft({
+      ...draft,
+      variants: draft.variants.filter((variant) => variant.id !== variantId),
+      images: draft.images.map((image) =>
+        image.variantId === variantId ? { ...image, variantId: null } : image,
+      ),
+    });
+    requestAnimationFrame(() =>
+      document.getElementById("add-variant")?.focus(),
+    );
+  }
   async function prepare(file?: File) {
     setPlan(null);
     setMessage("");
@@ -591,6 +641,19 @@ export function CatalogManager({
                   disabled={busy}
                 >
                   <legend>Variante {index + 1}</legend>
+                  {draft.variants.length > 1 &&
+                    !catalog.products.some((product) =>
+                      product.variants.some((item) => item.id === variant.id),
+                    ) && (
+                      <div className="variant-draft-action editor-wide">
+                        <span>Nueva variante · sin guardar</span>
+                        <IconAction
+                          icon="trash"
+                          label={`Descartar variante ${index + 1}`}
+                          onClick={() => removeDraftVariant(variant.id)}
+                        />
+                      </div>
+                    )}
                   {(
                     [
                       ["sku", "SKU"],
@@ -685,6 +748,7 @@ export function CatalogManager({
                 </fieldset>
               ))}
               <button
+                id="add-variant"
                 type="button"
                 className="button button-outline"
                 disabled={busy || draft.variants.length >= 100}
@@ -774,36 +838,61 @@ export function CatalogManager({
                       ))}
                     </select>
                   </label>
-                  <IconAction
-                    type="button"
-                    icon="back"
-                    label="Usar primero"
-                    disabled={index === 0}
-                    onClick={() => {
-                      const images = [...draft.images];
-                      [images[index - 1], images[index]] = [
-                        images[index],
-                        images[index - 1],
-                      ];
-                      updateDraft(
-                        "images",
-                        images.map((item, position) => ({ ...item, position })),
-                      );
-                    }}
-                  />
-                  <IconAction
-                    type="button"
-                    icon="trash"
-                    label="Quitar imagen"
-                    onClick={() =>
-                      updateDraft(
-                        "images",
-                        draft.images
-                          .filter((item) => item.id !== image.id)
-                          .map((item, position) => ({ ...item, position })),
-                      )
-                    }
-                  />
+                  <div className="image-editor-actions">
+                    <IconAction
+                      icon="edit"
+                      label={`Cambiar imagen ${index + 1}`}
+                      onClick={() =>
+                        document
+                          .getElementById(`replace-image-${image.id}`)
+                          ?.click()
+                      }
+                    />
+                    <input
+                      id={`replace-image-${image.id}`}
+                      type="file"
+                      hidden
+                      aria-label={`Archivo de reemplazo de imagen ${index + 1}`}
+                      accept="image/jpeg,image/png,image/webp"
+                      onChange={(event) => {
+                        replaceImage(image.id, event.target.files?.[0]);
+                        event.target.value = "";
+                      }}
+                    />
+                    <IconAction
+                      type="button"
+                      icon="back"
+                      label="Usar primero"
+                      disabled={index === 0}
+                      onClick={() => {
+                        const images = [...draft.images];
+                        [images[index - 1], images[index]] = [
+                          images[index],
+                          images[index - 1],
+                        ];
+                        updateDraft(
+                          "images",
+                          images.map((item, position) => ({
+                            ...item,
+                            position,
+                          })),
+                        );
+                      }}
+                    />
+                    <IconAction
+                      type="button"
+                      icon="trash"
+                      label="Quitar imagen"
+                      onClick={() =>
+                        updateDraft(
+                          "images",
+                          draft.images
+                            .filter((item) => item.id !== image.id)
+                            .map((item, position) => ({ ...item, position })),
+                        )
+                      }
+                    />
+                  </div>
                 </div>
               ))}
             </fieldset>

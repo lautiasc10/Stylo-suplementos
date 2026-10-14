@@ -206,6 +206,98 @@ test("edición de precio, stock e imágenes persiste sin tocar la tienda real", 
   await expect(page.locator(".product-card")).toHaveCount(0);
 });
 
+test("una variante nueva vacía se descarta y permite guardar sin completarla", async ({
+  page,
+}) => {
+  await page.goto("/vista-previa/gestion");
+  await page
+    .getByRole("button", { name: "Editar Proteína de prueba", exact: true })
+    .click();
+  const count = await page.locator(".variant-editor").count();
+  await page
+    .getByRole("button", { name: "Agregar variante", exact: true })
+    .click();
+  await expect(page.locator(".variant-editor")).toHaveCount(count + 1);
+  await page
+    .getByRole("button", {
+      name: `Descartar variante ${count + 1}`,
+      exact: true,
+    })
+    .click();
+  await expect(page.locator(".variant-editor")).toHaveCount(count);
+  await expect(
+    page.getByRole("button", { name: "Agregar variante", exact: true }),
+  ).toBeFocused();
+  await expect(
+    page.getByRole("button", { name: /Descartar variante/ }),
+  ).toHaveCount(0);
+  await page
+    .getByRole("button", { name: "Guardar producto", exact: true })
+    .click();
+  await expect(page.getByRole("status")).toContainText("Cambios guardados.");
+  await page.reload();
+  await page
+    .getByRole("button", { name: "Editar Proteína de prueba", exact: true })
+    .click();
+  await expect(page.locator(".variant-editor")).toHaveCount(count);
+});
+
+test("reemplazar una foto conserva su orden, descripción y variante; un archivo inválido conserva la anterior", async ({
+  page,
+}) => {
+  const fixture = galleryFixture();
+  await page.addInitScript((data) => {
+    if (!localStorage.getItem("stylo.catalog-preview.v1"))
+      localStorage.setItem("stylo.catalog-preview.v1", JSON.stringify(data));
+  }, fixture);
+  await page.goto("/vista-previa/gestion");
+  await page
+    .getByRole("button", { name: "Editar Proteína de prueba", exact: true })
+    .click();
+  const editor = page.locator(".image-editor").first();
+  const initialSrc = await editor.locator("img").getAttribute("src");
+  const file = page.getByLabel("Archivo de reemplazo de imagen 1", {
+    exact: true,
+  });
+  await file.setInputFiles({
+    name: "invalid.png",
+    mimeType: "image/png",
+    buffer: Buffer.from("not a valid image"),
+  });
+  await expect(page.getByRole("alert")).toBeVisible();
+  await expect(editor.locator("img")).toHaveAttribute("src", initialSrc!);
+  await file.setInputFiles("public/branding/logo-horizontal.webp");
+  await expect(editor.locator("img")).not.toHaveAttribute("src", initialSrc!);
+  await expect(page.locator(".image-editor")).toHaveCount(3);
+  await page
+    .getByRole("button", { name: "Guardar producto", exact: true })
+    .click();
+  await expect(page.getByRole("status")).toContainText("Cambios guardados.");
+  const images = await page.evaluate(
+    () =>
+      JSON.parse(localStorage.getItem("stylo.catalog-preview.v1")!).catalog
+        .products[0].images,
+  );
+  expect(images).toHaveLength(3);
+  const original = fixture.catalog.products[0].images[0];
+  expect(images[0]).toEqual({ ...original, path: expect.any(String) });
+  expect(images[0].path).not.toBe(original.path);
+  expect(images.slice(1)).toEqual(fixture.catalog.products[0].images.slice(1));
+  await page.reload();
+  await page
+    .getByRole("button", { name: "Editar Proteína de prueba", exact: true })
+    .click();
+  await expect(
+    page.getByLabel("Descripción de imagen 1", { exact: true }),
+  ).toHaveValue(original.alt);
+  await expect(
+    page.getByLabel("Imagen de", { exact: true }).first(),
+  ).toHaveValue(original.variantId!);
+  await expect(
+    page.locator(".image-editor").first().locator("img"),
+  ).not.toHaveAttribute("src", initialSrc!);
+});
+
 test("alta de marca y producto, ocultación y stock bajo", async ({ page }) => {
   await page.goto("/vista-previa/gestion");
   const menu = page

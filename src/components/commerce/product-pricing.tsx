@@ -9,14 +9,9 @@ import {
 import { productOffers } from "@/modules/commerce/product-offers";
 import { priceLines } from "@/modules/commerce/promotions";
 import { useCart } from "./cart-provider";
+import { Icon } from "@/components/ui/icon";
 
-export function ProductPricing({
-  variant,
-  compact = false,
-}: {
-  variant: Variant;
-  compact?: boolean;
-}) {
+function useOffers(variant: Variant) {
   const { catalog, promotions, preview } = useCart();
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
@@ -35,6 +30,37 @@ export function ProductPricing({
     return () => clearTimeout(timer);
   }, [promotions, now]);
   const offers = productOffers(catalog, promotions, variant.id, now);
+  return { offers, now, preview };
+}
+
+export function ProductPromotionBadge({ variant }: { variant: Variant }) {
+  const { offers } = useOffers(variant);
+  if (!offers.length) return null;
+  return (
+    <span
+      className="product-promotion-tag"
+      title={offers.map((offer) => offer.name).join(" · ")}
+    >
+      <Icon name="bolt" />
+      {offers.length > 1
+        ? `${offers.length} promociones`
+        : offers[0].kind === "quantity"
+          ? `Promoción · Desde ${offers[0].components[0].quantity} unidades`
+          : offers[0].kind === "bundle"
+            ? "Promoción · Combo"
+            : "Precio rebajado"}
+    </span>
+  );
+}
+
+export function ProductPricing({
+  variant,
+  compact = false,
+}: {
+  variant: Variant;
+  compact?: boolean;
+}) {
+  const { offers, now, preview } = useOffers(variant);
   const lines = [
     {
       variantId: variant.id,
@@ -49,24 +75,6 @@ export function ProductPricing({
     cash = priceLines(lines, sales, "transferencia", now);
   return (
     <>
-      {compact && (
-        <div className="product-promotion-slot">
-          {offers.length > 0 && (
-            <span
-              className="product-promotion-tag"
-              title={offers.map((offer) => offer.name).join(" · ")}
-            >
-              {offers.length > 1
-                ? `${offers.length} promociones`
-                : offers[0].kind === "quantity"
-                  ? `Promoción · Desde ${offers[0].components[0].quantity} unidades`
-                  : offers[0].kind === "bundle"
-                    ? "Promoción · Combo"
-                    : "Precio rebajado"}
-            </span>
-          )}
-        </div>
-      )}
       <dl className="product-prices">
         <div>
           <dt>Precio de lista</dt>
