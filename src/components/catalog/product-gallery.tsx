@@ -10,6 +10,7 @@ import {
   type SyntheticEvent,
 } from "react";
 import { Icon } from "@/components/ui/icon";
+import { positionProductPhoto } from "./product-photo-position";
 
 export type GalleryImage = {
   id: string;
@@ -89,6 +90,7 @@ function fitFrame(image: HTMLImageElement) {
   image.dataset.portrait = String(
     image.naturalHeight / image.naturalWidth > 1.3,
   );
+  positionProductPhoto(image);
 }
 
 function frameLoaded(event: SyntheticEvent<HTMLImageElement>) {
@@ -190,6 +192,7 @@ export function ProductGallery({
     if (!automatic || reduced || !visible || !documentVisible) return;
     // Warm only the next photo while visible, rather than downloading a whole gallery.
     const next = new window.Image();
+    next.crossOrigin = "anonymous";
     next.decoding = "async";
     next.src = images[(active + 1) % images.length].src;
   }, [automatic, reduced, visible, documentVisible, active, images]);
@@ -199,6 +202,7 @@ export function ProductGallery({
       const sequence = ++request.current;
       if (index === active) return;
       const image = new window.Image();
+      image.crossOrigin = "anonymous";
       image.onload = async () => {
         // Wait for decoding as well as download before revealing fragments.
         try {
@@ -257,6 +261,7 @@ export function ProductGallery({
         {previous !== null && images[previous] && (
           <img
             className="product-frame product-frame-outgoing"
+            crossOrigin="anonymous"
             src={images[previous].src}
             alt=""
             aria-hidden="true"
@@ -269,6 +274,7 @@ export function ProductGallery({
         <img
           key={current.id}
           className="product-frame product-frame-current"
+          crossOrigin="anonymous"
           src={current.src}
           alt={current.alt}
           width={720}
@@ -296,6 +302,7 @@ export function ProductGallery({
               >
                 <img
                   className="product-frame"
+                  crossOrigin="anonymous"
                   src={index % 2 ? current.src : images[previous].src}
                   alt=""
                   width={720}

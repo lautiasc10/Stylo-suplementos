@@ -535,7 +535,7 @@
   align-items: center;
   background: var(--commercial-background);
   position: relative;
-  aspect-ratio: 1;
+  aspect-ratio: 4 / 5;
   overflow: hidden;
 }
 .product-card-labels {
@@ -944,6 +944,29 @@ label.editor-check {
   flex: 0 0 auto;
   gap: var(--space-2);
 }
+.variant-photos {
+  min-width: 0;
+  border-top: 1px solid var(--line);
+  padding-top: var(--space-4);
+}
+.variant-photos-heading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+.variant-photos-heading h4 {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+.variant-photos-empty {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
 .import-panel > label {
   margin-block: var(--space-6);
 }
@@ -1136,7 +1159,7 @@ textarea:focus-visible {
   min-width: 0;
 }
 .product-image-gallery-card .product-image-stage {
-  aspect-ratio: 1;
+  aspect-ratio: 4 / 5;
 }
 .product-image-stage {
   position: relative;
@@ -1147,11 +1170,6 @@ textarea:focus-visible {
     var(--commercial-background);
   overflow: hidden;
   isolation: isolate;
-}
-.product-image-gallery-card
-  .product-image-stage:has(.product-frame-current[data-portrait="true"]) {
-  /* Lower only the rock behind tall packs. Bottle framing stays unchanged. */
-  background-position: left calc(100% + 16cqw);
 }
 .product-frame-link {
   display: block;
@@ -1181,6 +1199,8 @@ textarea:focus-visible {
 }
 .product-image-gallery-card .product-frame {
   padding: 0;
+  height: 100cqw;
+  top: var(--product-photo-y, calc(100% - 100cqw));
 }
 .product-image-gallery-card .product-frame[data-portrait="true"] {
   /* Keep the portrait photograph framing used before the ingredient trial. */
@@ -1216,11 +1236,12 @@ textarea:focus-visible {
 }
 .product-image-gallery-card[data-transition="turn"] .product-frame-link {
   perspective: 1000px;
-  perspective-origin: 50% 85%;
+  perspective-origin: 50% calc(100% - 21cqw);
 }
 .product-image-gallery-card[data-transition="turn"][data-animated="true"]
   .product-frame-pair {
   transform-style: preserve-3d;
+  transform-origin: 50% calc(100% - 21cqw);
   will-change: transform;
   animation: product-photo-turn 900ms cubic-bezier(0.45, 0, 0.25, 1) both;
 }

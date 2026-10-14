@@ -6,6 +6,7 @@ import { ProductThumbnail } from "@/components/ui/product-thumbnail";
 import { Icon } from "@/components/ui/icon";
 import { IconAction } from "@/components/admin/icon-action";
 import { AdminTable } from "@/components/admin/data-table";
+import { ProductImagesEditor } from "./product-images-editor";
 import {
   importColumns,
   planImport,
@@ -188,8 +189,11 @@ export function CatalogManager({
       );
     }
   }
-  async function addImages(files: FileList | null) {
-    if (!files || !draft) return;
+  async function addImages(
+    files: FileList | null,
+    variantId: string | null = null,
+  ) {
+    if (!files?.length || !draft || busy) return;
     if (draft.images.length + files.length > 12) {
       setMessage("Se permiten hasta 12 imágenes por producto.");
       return;
@@ -206,7 +210,7 @@ export function CatalogManager({
           id: crypto.randomUUID(),
           path: result.path,
           alt: draft.name || "Imagen del producto",
-          variantId: null,
+          variantId,
           position: draft.images.length + images.length,
         });
       }
@@ -745,6 +749,19 @@ export function CatalogManager({
                     />
                     Variante visible
                   </label>
+                  <ProductImagesEditor
+                    images={draft.images}
+                    variants={draft.variants}
+                    variantId={variant.id}
+                    title={`Fotos · ${variant.flavor || variant.sku || `Variante ${index + 1}`}`}
+                    uploadLabel={`Subir fotos de variante ${index + 1}`}
+                    busy={busy}
+                    imageBase={imageBase}
+                    imageUrls={imageUrls}
+                    onUpload={addImages}
+                    onReplace={replaceImage}
+                    onChange={(images) => updateDraft("images", images)}
+                  />
                 </fieldset>
               ))}
               <button
@@ -764,138 +781,24 @@ export function CatalogManager({
               className="editor-fields"
               id="editor-fotos"
             >
-              <legend>Imágenes (hasta 12)</legend>
-              <label>
-                Subir imágenes
-                <input
-                  type="file"
-                  multiple
-                  accept="image/jpeg,image/png,image/webp"
-                  onChange={(event) => {
-                    addImages(event.target.files);
-                    event.target.value = "";
-                  }}
-                />
-              </label>
-              <p>
-                JPEG, PNG o WebP. Definí el texto descriptivo y la variante; la
-                primera imagen será la portada. Para el giro automático, ordená
-                frente y dorso dentro de la misma variante.
+              <legend>Fotos compartidas (opcionales)</legend>
+              <p className="editor-wide">
+                Se usan en las variantes que no tienen fotos propias. JPEG, PNG
+                o WebP; hasta 12 imágenes en total por producto.
               </p>
-              {draft.images.map((image, index) => (
-                <div className="image-editor editor-wide" key={image.id}>
-                  {(imageBase || imageUrls[image.path]) && (
-                    <img
-                      src={
-                        imageUrls[image.path] || `${imageBase}/${image.path}`
-                      }
-                      alt=""
-                      width={96}
-                      height={96}
-                    />
-                  )}
-                  <label>
-                    Descripción de imagen {index + 1}
-                    <input
-                      required
-                      maxLength={200}
-                      value={image.alt}
-                      onChange={(event) =>
-                        updateDraft(
-                          "images",
-                          draft.images.map((item) =>
-                            item.id === image.id
-                              ? { ...item, alt: event.target.value }
-                              : item,
-                          ),
-                        )
-                      }
-                    />
-                  </label>
-                  <label>
-                    Imagen de
-                    <select
-                      aria-label="Imagen de"
-                      value={image.variantId ?? ""}
-                      onChange={(event) =>
-                        updateDraft(
-                          "images",
-                          draft.images.map((item) =>
-                            item.id === image.id
-                              ? {
-                                  ...item,
-                                  variantId: event.target.value || null,
-                                }
-                              : item,
-                          ),
-                        )
-                      }
-                    >
-                      <option value="">Todo el producto</option>
-                      {draft.variants.map((item) => (
-                        <option key={item.id} value={item.id}>
-                          {item.sku || "Nueva variante"}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  <div className="image-editor-actions">
-                    <IconAction
-                      icon="edit"
-                      label={`Cambiar imagen ${index + 1}`}
-                      onClick={() =>
-                        document
-                          .getElementById(`replace-image-${image.id}`)
-                          ?.click()
-                      }
-                    />
-                    <input
-                      id={`replace-image-${image.id}`}
-                      type="file"
-                      hidden
-                      aria-label={`Archivo de reemplazo de imagen ${index + 1}`}
-                      accept="image/jpeg,image/png,image/webp"
-                      onChange={(event) => {
-                        replaceImage(image.id, event.target.files?.[0]);
-                        event.target.value = "";
-                      }}
-                    />
-                    <IconAction
-                      type="button"
-                      icon="back"
-                      label="Usar primero"
-                      disabled={index === 0}
-                      onClick={() => {
-                        const images = [...draft.images];
-                        [images[index - 1], images[index]] = [
-                          images[index],
-                          images[index - 1],
-                        ];
-                        updateDraft(
-                          "images",
-                          images.map((item, position) => ({
-                            ...item,
-                            position,
-                          })),
-                        );
-                      }}
-                    />
-                    <IconAction
-                      type="button"
-                      icon="trash"
-                      label="Quitar imagen"
-                      onClick={() =>
-                        updateDraft(
-                          "images",
-                          draft.images
-                            .filter((item) => item.id !== image.id)
-                            .map((item, position) => ({ ...item, position })),
-                        )
-                      }
-                    />
-                  </div>
-                </div>
-              ))}
+              <ProductImagesEditor
+                images={draft.images}
+                variants={draft.variants}
+                variantId={null}
+                title="Fotos para todas las variantes"
+                uploadLabel="Subir imágenes"
+                busy={busy}
+                imageBase={imageBase}
+                imageUrls={imageUrls}
+                onUpload={addImages}
+                onReplace={replaceImage}
+                onChange={(images) => updateDraft("images", images)}
+              />
             </fieldset>
             <div className="editor-actions">
               <button

@@ -219,12 +219,24 @@ test("una variante nueva vacía se descarta y permite guardar sin completarla", 
     .click();
   await expect(page.locator(".variant-editor")).toHaveCount(count + 1);
   await page
+    .locator(".variant-editor")
+    .last()
+    .getByLabel(`Subir fotos de variante ${count + 1}`, { exact: true })
+    .setInputFiles("public/branding/logo-principal.webp");
+  await expect(
+    page.locator(".variant-editor").last().locator(".image-editor"),
+  ).toHaveCount(1);
+  await page
     .getByRole("button", {
       name: `Descartar variante ${count + 1}`,
       exact: true,
     })
     .click();
   await expect(page.locator(".variant-editor")).toHaveCount(count);
+  await expect(page.locator("#editor-fotos .image-editor")).toHaveCount(1);
+  await expect(
+    page.locator("#editor-fotos").getByLabel("Imagen de", { exact: true }),
+  ).toHaveValue("");
   await expect(
     page.getByRole("button", { name: "Agregar variante", exact: true }),
   ).toBeFocused();
@@ -296,6 +308,70 @@ test("reemplazar una foto conserva su orden, descripción y variante; un archivo
   await expect(
     page.locator(".image-editor").first().locator("img"),
   ).not.toHaveAttribute("src", initialSrc!);
+});
+
+test("las fotos se cargan y reemplazan dentro de cada variante y conservan su asociación al guardar", async ({
+  page,
+}) => {
+  await page.goto("/vista-previa/gestion");
+  await page
+    .getByRole("button", { name: "Editar Proteína de prueba", exact: true })
+    .click();
+  const chocolate = page.locator(".variant-editor").first();
+  const vanilla = page.locator(".variant-editor").nth(1);
+  await chocolate
+    .getByLabel("Subir fotos de variante 1", { exact: true })
+    .setInputFiles("public/branding/logo-principal.webp");
+  await chocolate
+    .getByLabel("Descripción de imagen 1")
+    .fill("Chocolate frontal");
+  await vanilla
+    .getByLabel("Subir fotos de variante 2", { exact: true })
+    .setInputFiles("public/branding/logo-horizontal.webp");
+  await vanilla.getByLabel("Descripción de imagen 2").fill("Vainilla frontal");
+  await expect(chocolate.locator(".image-editor")).toHaveCount(1);
+  await expect(vanilla.locator(".image-editor")).toHaveCount(1);
+  await expect(page.locator("#editor-fotos .image-editor")).toHaveCount(0);
+  const oldSrc = await chocolate
+    .locator(".image-editor img")
+    .getAttribute("src");
+  const chooser = page.waitForEvent("filechooser");
+  await chocolate
+    .getByRole("button", { name: "Cambiar imagen 1", exact: true })
+    .click();
+  await (await chooser).setFiles("public/branding/logo-completo.webp");
+  await expect(chocolate.locator(".image-editor img")).not.toHaveAttribute(
+    "src",
+    oldSrc!,
+  );
+  await page
+    .getByRole("button", { name: "Guardar producto", exact: true })
+    .click();
+  await expect(page.getByRole("status")).toContainText("Cambios guardados.");
+  await page.reload();
+  await page
+    .getByRole("button", { name: "Editar Proteína de prueba", exact: true })
+    .click();
+  await expect(chocolate.getByLabel("Descripción de imagen 1")).toHaveValue(
+    "Chocolate frontal",
+  );
+  await expect(vanilla.getByLabel("Descripción de imagen 2")).toHaveValue(
+    "Vainilla frontal",
+  );
+  const ids = demoCatalog().products[0].variants.map((v) => v.id);
+  await expect(chocolate.getByLabel("Imagen de", { exact: true })).toHaveValue(
+    ids[0],
+  );
+  await expect(vanilla.getByLabel("Imagen de", { exact: true })).toHaveValue(
+    ids[1],
+  );
+  await page.goto(
+    "/vista-previa/producto/proteina-de-prueba?variante=" + ids[1],
+  );
+  await expect(page.locator(".product-frame-current")).toHaveAttribute(
+    "alt",
+    "Vainilla frontal",
+  );
 });
 
 test("alta de marca y producto, ocultación y stock bajo", async ({ page }) => {
