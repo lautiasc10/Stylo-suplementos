@@ -1269,7 +1269,9 @@ textarea:focus-visible {
 .product-image-gallery[data-transition="turn"][data-animated="true"]
   .product-frame-current {
   transform: rotateY(180deg);
-  animation: product-photo-raster-fade 900ms linear both;
+  /* Keep an opaque photo behind the settling plane. Fading both copies at
+     once makes even an opaque label translucent during the handoff. */
+  opacity: 1;
 }
 .product-image-gallery[data-transition="turn"][data-animated="true"]
   .product-frame-settled {
@@ -1284,18 +1286,8 @@ textarea:focus-visible {
     transform: rotateY(-180deg);
   }
 }
-/* Resolve the flat photograph gradually during the last fifth of the turn.
-   Browsers can rasterize a rotated texture more softly than a resting image;
-   these matching planes remove that abrupt change without replacing the photo. */
-@keyframes product-photo-raster-fade {
-  0%,
-  80% {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
-}
+/* Resolve the flat photograph over the opaque rotating copy during the last
+   fifth of the turn, without washing the label out against the background. */
 @keyframes product-photo-settle {
   0%,
   80% {
