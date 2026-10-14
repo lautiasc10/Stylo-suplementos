@@ -4,6 +4,7 @@ import Link from "next/link";
 import {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
   type CSSProperties,
@@ -124,6 +125,7 @@ export function ProductGallery({
   onPrepareImage?: (image: GalleryImage) => void;
 }) {
   const root = useRef<HTMLDivElement>(null);
+  const framePair = useRef<HTMLSpanElement>(null);
   const request = useRef(0);
   const firstAutomaticChange = useRef(true);
   const photoCache = useRef<ReturnType<typeof createGalleryPhotoCache> | null>(
@@ -161,13 +163,24 @@ export function ProductGallery({
     visible &&
     documentVisible;
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     root.current
       ?.querySelectorAll<HTMLImageElement>(".product-frame")
       .forEach((image) => {
         if (image.complete && image.naturalWidth) fitFrame(image);
       });
   }, [active, previous]);
+
+  useLayoutEffect(() => {
+    if (!turning || previous === null || reduced) return;
+    // A second choice during a turn starts a complete cycle for the new photo,
+    // without replacing its DOM frame or inheriting the earlier turn's clock.
+    for (const animation of framePair.current?.getAnimations?.() ?? []) {
+      if ((animation as CSSAnimation).animationName === "product-photo-turn") {
+        animation.currentTime = 0;
+      }
+    }
+  }, [active, previous, reduced, turning]);
 
   useEffect(() => {
     setEnhanced(true);
@@ -309,7 +322,13 @@ export function ProductGallery({
     if (previous === null) return;
     const timer = window.setTimeout(
       () => setPrevious(null),
-      turning ? (flavorNavigation ? 660 : 900) : mode === "card" ? 860 : 360,
+      // animationend owns the normal turn cleanup. This is only a fallback
+      // for browsers that cancel an animation without dispatching that event.
+      turning
+        ? (flavorNavigation ? 660 : 900) + 250
+        : mode === "card"
+          ? 860
+          : 360,
     );
     return () => window.clearTimeout(timer);
   }, [previous, active, mode, turning, flavorNavigation]);
@@ -337,7 +356,18 @@ export function ProductGallery({
   }
   const frames = (
     <>
-      <span className="product-frame-pair">
+      <span
+        ref={framePair}
+        className="product-frame-pair"
+        onAnimationEnd={(event) => {
+          if (
+            event.target === event.currentTarget &&
+            event.animationName === "product-photo-turn"
+          ) {
+            setPrevious(null);
+          }
+        }}
+      >
         {previous !== null && images[previous]?.src && (
           <img
             className="product-frame product-frame-outgoing"
@@ -378,6 +408,20 @@ export function ProductGallery({
           </span>
         )}
       </span>
+      {turning && current.src && (
+        <img
+          key={`settled:${current.id}`}
+          className="product-frame product-frame-settled"
+          crossOrigin="anonymous"
+          src={current.src}
+          alt=""
+          aria-hidden="true"
+          width={720}
+          height={720}
+          decoding="async"
+          onLoad={frameLoaded}
+        />
+      )}
       {mode === "card" &&
         !turning &&
         previous !== null &&

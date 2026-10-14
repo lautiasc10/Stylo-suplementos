@@ -63,6 +63,9 @@ test("las flechas sincronizan fondo, foto, stock, precio y carrito sin navegar",
   await page.goto("/vista-previa/producto/whey-protein");
   const scene = page.locator(".flavor-product-detail");
   await expect(scene).toHaveAttribute("data-flavor", "banana");
+  const bounds = await scene.boundingBox();
+  expect(bounds!.width).toBe(page.viewportSize()!.width);
+  expect(bounds!.height).toBeGreaterThanOrEqual(page.viewportSize()!.height);
   await expect(page.getByLabel("Presentación", { exact: true })).toHaveCount(0);
   const baseline = navigations;
   await page
@@ -128,6 +131,7 @@ test("fotos adicionales conservan el sabor y las flechas recorren variantes sin 
   await expect(page.locator(".product-no-photo")).toContainText(
     "Imagen del producto pendiente",
   );
+  await expect(page.locator(".product-no-photo")).toBeVisible();
   await expect(page.locator(".flavor-product-detail")).toHaveAttribute(
     "data-flavor",
     "neutral",

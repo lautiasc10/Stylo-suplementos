@@ -38,15 +38,21 @@ export default async function ProductPage({
   const data = publicCatalog(catalog),
     product = data.products.find((item) => item.slug === slug);
   if (!product) notFound();
+  const flavorExperience =
+    product.slug === "whey-protein" && product.variants.length > 1;
   const category = data.categories.find((item) =>
       product.categoryIds.includes(item.id),
     ),
     config = getEnvironment().supabase;
   return (
-    <section className="container interior-page">
-      <Link href="/catalogo" className="text-link">
-        ← Volver al catálogo
-      </Link>
+    <section
+      className={`container interior-page${flavorExperience ? " flavor-product-page" : ""}`}
+    >
+      {!flavorExperience && (
+        <Link href="/catalogo" className="text-link">
+          ← Volver al catálogo
+        </Link>
+      )}
       <ProductDetail
         key={product.id}
         product={product}

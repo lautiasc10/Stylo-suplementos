@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { BrandLogo } from "./brand-logo";
 import { ProductPricing } from "@/components/commerce/product-pricing";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -124,6 +125,11 @@ export function ProductDetail({
       data-flavor={flavorExperiment ? (flavor ?? "neutral") : undefined}
       data-enhanced={enhanced ? "true" : undefined}
     >
+      {flavorExperiment && !preview && (
+        <Link href="/catalogo" className="text-link flavor-back-link">
+          ← Volver al catálogo
+        </Link>
+      )}
       {flavorExperiment && (
         <FlavorSceneDecorations flavor={flavor} paused={backgroundPaused} />
       )}

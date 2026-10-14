@@ -1238,6 +1238,22 @@ textarea:focus-visible {
   perspective: 1000px;
   perspective-origin: 50% calc(100% - 21cqw);
 }
+.product-image-gallery[data-transition="turn"] .product-frame {
+  backface-visibility: hidden;
+}
+.product-image-gallery[data-transition="turn"] .product-frame-current {
+  opacity: 0;
+}
+.product-image-gallery[data-transition="turn"] .product-frame-settled {
+  z-index: 2;
+  transform: translateZ(0);
+  opacity: 1;
+  pointer-events: none;
+}
+.product-image-gallery[data-transition="turn"] .product-no-photo {
+  opacity: 1 !important;
+  animation: none !important;
+}
 .product-image-gallery[data-transition="turn"][data-animated="true"]
   .product-frame-pair {
   transform-style: preserve-3d;
@@ -1253,13 +1269,40 @@ textarea:focus-visible {
 .product-image-gallery[data-transition="turn"][data-animated="true"]
   .product-frame-current {
   transform: rotateY(180deg);
+  animation: product-photo-raster-fade 900ms linear both;
+}
+.product-image-gallery[data-transition="turn"][data-animated="true"]
+  .product-frame-settled {
+  animation: product-photo-settle 900ms linear both;
 }
 @keyframes product-photo-turn {
   from {
     transform: rotateY(0deg);
   }
+  80%,
   to {
     transform: rotateY(-180deg);
+  }
+}
+/* Resolve the flat photograph gradually during the last fifth of the turn.
+   Browsers can rasterize a rotated texture more softly than a resting image;
+   these matching planes remove that abrupt change without replacing the photo. */
+@keyframes product-photo-raster-fade {
+  0%,
+  80% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes product-photo-settle {
+  0%,
+  80% {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 .product-image-fragments,
@@ -1467,7 +1510,8 @@ textarea:focus-visible {
   width: calc(100% + var(--page-gutter) * 2);
   margin-inline: calc(var(--page-gutter) * -1);
   padding: var(--space-12) var(--page-gutter);
-  min-height: calc(100svh - 180px);
+  min-height: 100svh;
+  min-height: 100dvh;
   grid-template-columns: minmax(0, 1.2fr) minmax(340px, 0.9fr);
   align-items: center;
   overflow: clip;
@@ -1480,6 +1524,20 @@ textarea:focus-visible {
   color: var(--flavor-ink);
   color-scheme: light;
   transition: background-color 380ms ease;
+}
+.flavor-product-page {
+  padding-block: 0;
+}
+.flavor-product-page .flavor-product-detail {
+  margin-top: 0;
+  padding-top: var(--space-20);
+}
+.flavor-back-link {
+  position: absolute;
+  top: var(--space-4);
+  left: var(--page-gutter);
+  z-index: 3;
+  color: var(--flavor-ink);
 }
 .flavor-product-detail[data-flavor="frutilla"] {
   --flavor-background: #f3a5b2;
@@ -1894,7 +1952,13 @@ textarea:focus-visible {
 }
 .flavor-product-detail
   .product-image-gallery[data-transition="turn"][data-animated="true"]
-  .product-frame-pair {
+  .product-frame-pair,
+.flavor-product-detail
+  .product-image-gallery[data-transition="turn"][data-animated="true"]
+  .product-frame-settled,
+.flavor-product-detail
+  .product-image-gallery[data-transition="turn"][data-animated="true"]
+  .product-frame-current {
   animation-duration: 660ms;
 }
 @keyframes flavor-scene-enter {
@@ -1970,6 +2034,14 @@ textarea:focus-visible {
   }
 }
 @media (prefers-reduced-motion: reduce) {
+  .product-image-gallery[data-transition="turn"] .product-frame {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+  .product-image-gallery[data-transition="turn"] .product-frame-settled {
+    display: none;
+  }
   .flavor-product-detail {
     transition: none;
   }
