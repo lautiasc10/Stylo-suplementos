@@ -1,7 +1,25 @@
 import type { NextConfig } from "next";
 
+const mediaUrl = process.env.SUPABASE_URL?.trim();
+const mediaHost = mediaUrl ? new URL(mediaUrl) : null;
+
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  images: {
+    qualities: [75, 85],
+    remotePatterns:
+      mediaHost?.protocol === "https:"
+        ? [
+            {
+              protocol: "https",
+              hostname: mediaHost.hostname,
+              port: mediaHost.port,
+              pathname: "/storage/v1/object/public/product-media/**",
+              search: "",
+            },
+          ]
+        : [],
+  },
   experimental: { serverActions: { bodySizeLimit: "6mb" } },
   async headers() {
     return [

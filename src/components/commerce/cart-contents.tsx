@@ -3,6 +3,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
 import { ProductThumbnail } from "@/components/ui/product-thumbnail";
+import { catalogMediaSource } from "@/modules/catalog/media-source";
 import { formatPrice } from "@/modules/catalog/model";
 import { updateCartAndRedirect } from "@/modules/commerce/actions";
 import { useCart } from "./cart-provider";
@@ -102,7 +103,13 @@ export function CartContents() {
                 const image = line.image;
                 const src = image
                   ? imageUrls[image.path] ||
-                    (imageBase ? `${imageBase}/${image.path}` : undefined)
+                    (imageBase
+                      ? catalogMediaSource(
+                          `${imageBase}/${image.path}`,
+                          imageBase,
+                          "thumbnail",
+                        )
+                      : undefined)
                   : undefined;
                 const href = `${prefix}/producto/${line.slug}?variante=${line.variantId}`;
                 return (

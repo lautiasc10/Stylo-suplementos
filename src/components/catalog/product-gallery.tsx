@@ -13,6 +13,7 @@ import {
 import { Icon } from "@/components/ui/icon";
 import { positionProductPhoto } from "./product-photo-position";
 import { createGalleryPhotoCache } from "./gallery-photo-cache";
+import { productPhotoShadow } from "./product-photo-shadow";
 
 export type GalleryImage = {
   id: string;
@@ -88,11 +89,16 @@ const fragments = mesh
     } as CSSProperties;
   });
 
+const fittedFrames = new WeakMap<HTMLImageElement, string>();
 function fitFrame(image: HTMLImageElement) {
+  // Load events and layout synchronization can visit the same frame twice.
+  // Fit once per source to avoid repeating DOM writes and style invalidation.
+  if (!image.naturalWidth || fittedFrames.get(image) === image.src) return;
   image.dataset.portrait = String(
     image.naturalHeight / image.naturalWidth > 1.3,
   );
   positionProductPhoto(image);
+  fittedFrames.set(image, image.src);
 }
 
 function frameLoaded(event: SyntheticEvent<HTMLImageElement>) {
@@ -148,6 +154,11 @@ export function ProductGallery({
   const [interacting, setInteracting] = useState(false);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [readyImage, setReadyImage] = useState<string | null>(null);
+  const [shadow, setShadow] = useState<{
+    source: string;
+    src: string | null;
+  } | null>(null);
   const pending = useRef<number | null>(null);
   const multiple = images.length > 1;
   const turning = transition === "turn";
@@ -160,6 +171,7 @@ export function ProductGallery({
     !reduced &&
     !paused &&
     !interacting &&
+    readyImage === images[active]?.src &&
     visible &&
     documentVisible;
 
@@ -167,9 +179,21 @@ export function ProductGallery({
     root.current
       ?.querySelectorAll<HTMLImageElement>(".product-frame")
       .forEach((image) => {
-        if (image.complete && image.naturalWidth) fitFrame(image);
+        if (image.complete && image.naturalWidth) {
+          fitFrame(image);
+          if (image.classList.contains("product-frame-current")) {
+            setReadyImage(images[active].src);
+            photoCache.current?.remember(images[active].src, image);
+            if (flavorNavigation && shadow?.source !== images[active].src) {
+              setShadow({
+                source: images[active].src,
+                src: productPhotoShadow(image),
+              });
+            }
+          }
+        }
       });
-  }, [active, previous]);
+  }, [active, previous, images, flavorNavigation, shadow?.source]);
 
   useLayoutEffect(() => {
     if (!turning || previous === null || reduced) return;
@@ -224,20 +248,45 @@ export function ProductGallery({
       pending.current = null;
       setLoading(false);
       setPrevious(null);
+      photoCache.current?.cancelPending();
     }
   }, [visible, documentVisible]);
 
   useEffect(() => {
-    if (!automatic || reduced || !visible || !documentVisible) return;
+    if (
+      !automatic ||
+      reduced ||
+      !visible ||
+      !documentVisible ||
+      readyImage !== images[active].src
+    )
+      return;
     // Warm only the next photo while visible, rather than downloading a whole gallery.
-    const next = new window.Image();
-    next.crossOrigin = "anonymous";
-    next.decoding = "async";
-    next.src = images[(active + 1) % images.length].src;
-  }, [automatic, reduced, visible, documentVisible, active, images]);
+    const connection = (
+      navigator as Navigator & { connection?: { saveData?: boolean } }
+    ).connection;
+    if (connection?.saveData) return;
+    void photoCache.current
+      ?.load(images[(active + 1) % images.length].src, "low")
+      .catch(() => {});
+  }, [
+    automatic,
+    reduced,
+    visible,
+    documentVisible,
+    active,
+    images,
+    readyImage,
+  ]);
 
   useEffect(() => {
-    if (!flavorNavigation || !visible || !documentVisible) return;
+    if (
+      !flavorNavigation ||
+      !visible ||
+      !documentVisible ||
+      (images[active].src && readyImage !== images[active].src)
+    )
+      return;
     const connection = (
       navigator as Navigator & { connection?: { saveData?: boolean } }
     ).connection;
@@ -250,7 +299,11 @@ export function ProductGallery({
       for (const direction of [-1, 1]) {
         const id = ids[(index + direction + ids.length) % ids.length];
         const next = images.find((image) => image.variantId === id);
-        if (next?.src) void photoCache.current?.load(next.src).catch(() => {});
+        if (next?.src)
+          void photoCache.current
+            ?.load(next.src, "low")
+            .then((image) => productPhotoShadow(image))
+            .catch(() => {});
         if (next) onPrepareImage?.(next);
       }
     }, 200);
@@ -262,6 +315,7 @@ export function ProductGallery({
     active,
     images,
     onPrepareImage,
+    readyImage,
   ]);
 
   const showImage = useCallback(
@@ -339,6 +393,7 @@ export function ProductGallery({
   }
   if (!images.length) return null;
   const current = images[active] ?? images[0];
+  const shadowSrc = shadow?.source === current.src ? shadow.src : null;
   const variantIds = [...new Set(images.map((image) => image.variantId))];
   const visiblePhotos = images
     .map((image, index) => ({ image, index }))
@@ -356,6 +411,17 @@ export function ProductGallery({
   }
   const frames = (
     <>
+      {flavorNavigation && shadowSrc && (
+        <img
+          className="product-frame product-photo-shadow"
+          src={shadowSrc}
+          alt=""
+          aria-hidden="true"
+          width={240}
+          height={240}
+          decoding="async"
+        />
+      )}
       <span
         ref={framePair}
         className="product-frame-pair"
@@ -391,10 +457,17 @@ export function ProductGallery({
             width={720}
             height={720}
             loading={mode === "card" ? "lazy" : "eager"}
+            fetchPriority={mode === "detail" ? "high" : "auto"}
             decoding="async"
             onLoad={(event) => {
               frameLoaded(event);
               photoCache.current?.remember(current.src, event.currentTarget);
+              setReadyImage(current.src);
+              if (flavorNavigation)
+                setShadow({
+                  source: current.src,
+                  src: productPhotoShadow(event.currentTarget),
+                });
             }}
           />
         ) : (
@@ -418,7 +491,9 @@ export function ProductGallery({
           aria-hidden="true"
           width={720}
           height={720}
+          loading={mode === "card" ? "lazy" : "eager"}
           decoding="async"
+          fetchPriority={mode === "detail" ? "high" : "auto"}
           onLoad={frameLoaded}
         />
       )}
@@ -462,6 +537,7 @@ export function ProductGallery({
       data-transition={turning ? "turn" : undefined}
       data-flavor-navigation={flavorNavigation ? "true" : undefined}
       data-loading={loading ? "true" : undefined}
+      data-shadow-ready={shadowSrc ? "true" : undefined}
       data-animated={previous !== null && !reduced ? "true" : undefined}
       onFocusCapture={() => setInteracting(true)}
       onBlurCapture={(event) => {

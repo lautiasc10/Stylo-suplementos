@@ -12,6 +12,7 @@ import {
   sceneIngredient,
 } from "./flavor-scene";
 import { AddToCart } from "@/components/commerce/add-to-cart";
+import { catalogMediaSource } from "@/modules/catalog/media-source";
 import {
   variantLabel,
   variantImages,
@@ -59,6 +60,7 @@ export function ProductDetail({
       const flavor = item && sceneFlavor(item.flavor);
       if (!flavor || preparedIngredients.current.has(flavor)) return;
       const ingredient = new Image();
+      ingredient.fetchPriority = "low";
       ingredient.decoding = "async";
       ingredient.src = sceneIngredient(flavor);
       preparedIngredients.current.set(flavor, ingredient);
@@ -84,7 +86,11 @@ export function ProductDetail({
               id: `${item.id}:${image.id}`,
               variantId: item.id,
               href,
-              src: imageUrls[image.path] || `${imageBase}/${image.path}`,
+              src: catalogMediaSource(
+                imageUrls[image.path] || `${imageBase}/${image.path}`,
+                imageBase,
+                "detail",
+              ),
               alt: image.alt,
             }))
           : [
@@ -114,11 +120,19 @@ export function ProductDetail({
     .map((image) => ({
       id: image.id,
       alt: image.alt,
-      src: imageUrls[image.path] || `${imageBase}/${image.path}`,
+      src: catalogMediaSource(
+        imageUrls[image.path] || `${imageBase}/${image.path}`,
+        imageBase,
+        "detail",
+      ),
     }));
   const logoSrc =
     brandLogo &&
-    (imageUrls[brandLogo] || (imageBase ? `${imageBase}/${brandLogo}` : ""));
+    catalogMediaSource(
+      imageUrls[brandLogo] || (imageBase ? `${imageBase}/${brandLogo}` : ""),
+      imageBase,
+      "brand",
+    );
   return (
     <div
       className={`product-detail${flavorExperiment ? " flavor-product-detail" : ""}`}

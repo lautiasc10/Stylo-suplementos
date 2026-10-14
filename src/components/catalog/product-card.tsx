@@ -10,6 +10,7 @@ import { Icon } from "@/components/ui/icon";
 import { CategoryIllustration } from "@/components/storefront/category-illustration";
 import { ProductGallery, type GalleryImage } from "./product-gallery";
 import { BrandLogo } from "./brand-logo";
+import { catalogMediaSource } from "@/modules/catalog/media-source";
 import {
   variantImages,
   type CatalogGroup,
@@ -51,7 +52,11 @@ export function ProductCard({
     ).size > 1;
   const brandLogo =
     brand.logo &&
-    (imageUrls[brand.logo] || (imageBase ? `${imageBase}/${brand.logo}` : ""));
+    catalogMediaSource(
+      imageUrls[brand.logo] || (imageBase ? `${imageBase}/${brand.logo}` : ""),
+      imageBase,
+      "brand",
+    );
   const href = `${productPrefix}/${product.slug}?variante=${variant.id}`;
   const photos = useMemo(() => {
     const ordered = [...variants].sort(
@@ -65,7 +70,10 @@ export function ProductCard({
           id: `${item.id}:${image.id}`,
           variantId: item.id,
           alt: image.alt,
-          src: imageUrls[image.path] || `${imageBase}/${image.path}`,
+          src: catalogMediaSource(
+            imageUrls[image.path] || `${imageBase}/${image.path}`,
+            imageBase,
+          ),
           href: `${productPrefix}/${product.slug}?variante=${item.id}`,
         })),
     );

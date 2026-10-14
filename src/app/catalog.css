@@ -1523,7 +1523,7 @@ textarea:focus-visible {
   );
   color: var(--flavor-ink);
   color-scheme: light;
-  transition: background-color 380ms ease;
+  /* Color transitions live on composited surfaces, not on the full page paint. */
 }
 .flavor-product-page {
   padding-block: 0;
@@ -1579,6 +1579,28 @@ textarea:focus-visible {
   padding: 0;
   scale: 1.18;
   filter: drop-shadow(0 18px 14px #24110840);
+}
+.flavor-product-detail .product-frame-pair .product-frame {
+  /* Keep the shadow on the resting plane, without filtering rotating copies. */
+  filter: none;
+}
+.flavor-product-detail
+  .product-image-gallery[data-shadow-ready="true"]
+  .product-frame {
+  filter: none;
+}
+.flavor-product-detail .product-image-stage .product-photo-shadow {
+  inset: -12.5%;
+  width: 125%;
+  height: 125%;
+  pointer-events: none;
+  transform: translateZ(0);
+  filter: none;
+}
+.flavor-product-detail
+  .product-image-gallery[data-animated="true"]
+  .product-photo-shadow {
+  animation: product-photo-settle 660ms linear both;
 }
 .flavor-product-detail .product-detail-copy {
   position: relative;
@@ -1838,16 +1860,55 @@ textarea:focus-visible {
   inset: 0;
   pointer-events: none;
   z-index: 0;
+  contain: layout style paint;
+}
+.flavor-scene-surface {
+  position: absolute;
+  inset: 0;
+  background-color: #f2d34e;
+}
+.flavor-scene-decorations::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    ellipse at 70% 15%,
+    #ffffff35,
+    transparent 65%
+  );
+}
+.flavor-scene-surface[data-flavor="frutilla"] {
+  background-color: #f3a5b2;
+}
+.flavor-scene-surface[data-flavor="vainilla"] {
+  background-color: #f0e0c2;
+}
+.flavor-scene-surface[data-flavor="neutral"] {
+  background-color: #ded5c5;
+}
+.flavor-scene-decorations[data-motion="true"]
+  .flavor-scene-surface:not([data-outgoing]) {
+  animation: flavor-surface-enter 380ms ease both;
+}
+@keyframes flavor-surface-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 .flavor-scene-layer {
   position: absolute;
   inset: 0;
   opacity: 0;
+  z-index: 1;
 }
 .flavor-scene-layer[data-ready="true"] {
   opacity: 1;
 }
 .flavor-scene-piece {
+  --piece-opacity: 1;
   position: absolute;
   width: 40%;
   height: auto;
@@ -1864,6 +1925,7 @@ textarea:focus-visible {
   width: 62%;
 }
 .flavor-scene-piece[data-place="left"] {
+  --piece-opacity: 0.7;
   left: -24%;
   top: -18%;
   width: 42%;
@@ -1871,6 +1933,7 @@ textarea:focus-visible {
   opacity: 0.7;
 }
 .flavor-scene-piece[data-place="right"] {
+  --piece-opacity: 0.65;
   right: -20%;
   top: -14%;
   width: 48%;
@@ -1878,6 +1941,7 @@ textarea:focus-visible {
   opacity: 0.65;
 }
 .flavor-scene-piece[data-place="bottom"] {
+  --piece-opacity: 0.75;
   left: 26%;
   bottom: -24%;
   width: 60%;
@@ -1885,12 +1949,14 @@ textarea:focus-visible {
   opacity: 0.75;
 }
 .flavor-scene-decorations[data-motion="true"]
-  .flavor-scene-layer[data-ready="true"] {
-  animation: flavor-scene-enter 800ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  .flavor-scene-layer[data-ready="true"]
+  .flavor-scene-piece {
+  animation: flavor-piece-enter 600ms ease both;
 }
 .flavor-scene-decorations[data-motion="true"]
-  .flavor-scene-layer[data-ready="true"][data-outgoing="true"] {
-  animation: flavor-scene-exit 550ms ease both;
+  .flavor-scene-layer[data-ready="true"][data-outgoing="true"]
+  .flavor-scene-piece {
+  animation: flavor-piece-exit 380ms ease both;
 }
 .flavor-scene-decorations[data-motion="true"] .flavor-scene-piece img {
   animation: flavor-cream-drift 9s ease-in-out infinite alternate;
@@ -1961,20 +2027,17 @@ textarea:focus-visible {
   .product-frame-current {
   animation-duration: 660ms;
 }
-@keyframes flavor-scene-enter {
+@keyframes flavor-piece-enter {
   from {
     opacity: 0;
-    transform: translate3d(0, 28px, 0) scale(0.92) rotate(-3deg);
   }
   to {
-    opacity: 1;
-    transform: none;
+    opacity: var(--piece-opacity);
   }
 }
-@keyframes flavor-scene-exit {
+@keyframes flavor-piece-exit {
   to {
     opacity: 0;
-    transform: translate3d(0, -18px, 0) scale(1.04) rotate(3deg);
   }
 }
 @media (max-width: 1000px) {
@@ -2046,9 +2109,19 @@ textarea:focus-visible {
     transition: none;
   }
   .flavor-scene-decorations .flavor-scene-layer,
+  .flavor-scene-decorations .flavor-scene-surface,
   .flavor-scene-decorations .flavor-scene-piece img {
     animation: none !important;
     transform: none;
+  }
+  .flavor-scene-decorations .flavor-scene-piece {
+    animation: none !important;
+  }
+  .flavor-product-detail
+    .product-image-gallery:not([data-shadow-ready="true"])
+    .product-frame-pair
+    .product-frame-current {
+    filter: drop-shadow(0 18px 14px #24110840);
   }
   .flavor-scene-layer[data-outgoing="true"] {
     display: none;

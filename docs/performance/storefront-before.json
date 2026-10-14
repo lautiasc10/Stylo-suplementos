@@ -1,0 +1,221 @@
+[
+  {
+    "view": "desktop-detail",
+    "cpuSlowdown": 4,
+    "networkBytesPerSecond": 200000,
+    "latencyMs": 80,
+    "lcpMs": 18184,
+    "cls": 0.014287810415538086,
+    "longTasks": 1,
+    "totalBlockingMs": 85,
+    "imageDimensions": [
+      [
+        1113,
+        1669
+      ]
+    ],
+    "samples": 73,
+    "p95FrameMs": 66.7,
+    "framesOver34ms": 46,
+    "clickToVariantMs": [
+      170,
+      109,
+      110
+    ],
+    "wallTimeMs": 24249,
+    "imageTransfers": [
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/_next/image",
+        "bytes": 3158
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/_next/image",
+        "bytes": 2143
+      },
+      {
+        "type": "Image",
+        "url": "https://rwtstkwmtcrliwkoscjr.supabase.co/storage/v1/object/public/product-media/9993c069-a710-427d-8642-5ca0ad0511d9/aedf45ee-5889-4dc5-aec2-82a089a617a6.png",
+        "bytes": 141507
+      },
+      {
+        "type": "Image",
+        "url": "https://rwtstkwmtcrliwkoscjr.supabase.co/storage/v1/object/public/product-media/638bb6eb-29d1-4fcf-87bb-8e256ed1b6b8/e85e51a0-3f4e-4b7d-b9c8-42066d1ee1be.png",
+        "bytes": 1025015
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/sabores/banana-decor-v1.webp",
+        "bytes": 115647
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/sabores/vainilla-decor-v1.webp",
+        "bytes": 127289
+      },
+      {
+        "type": "Image",
+        "url": "https://rwtstkwmtcrliwkoscjr.supabase.co/storage/v1/object/public/product-media/638bb6eb-29d1-4fcf-87bb-8e256ed1b6b8/ebe343de-8f3b-4c65-8918-f74e3ab49684.png",
+        "bytes": 993296
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/sabores/frutilla-decor-v1.webp",
+        "bytes": 144973
+      },
+      {
+        "type": "Image",
+        "url": "https://rwtstkwmtcrliwkoscjr.supabase.co/storage/v1/object/public/product-media/638bb6eb-29d1-4fcf-87bb-8e256ed1b6b8/b31ee5de-4613-4657-b615-1ccf138872dd.png",
+        "bytes": 1000849
+      }
+    ]
+  },
+  {
+    "view": "mobile-detail",
+    "cpuSlowdown": 4,
+    "networkBytesPerSecond": 200000,
+    "latencyMs": 80,
+    "lcpMs": 17720,
+    "cls": 0.04080105671826433,
+    "longTasks": 1,
+    "totalBlockingMs": 85,
+    "imageDimensions": [
+      [
+        1113,
+        1669
+      ]
+    ],
+    "samples": 201,
+    "p95FrameMs": 16.8,
+    "framesOver34ms": 0,
+    "clickToVariantMs": [
+      160,
+      90,
+      91
+    ],
+    "wallTimeMs": 23754,
+    "imageTransfers": [
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/_next/image",
+        "bytes": 3158
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/_next/image",
+        "bytes": 2143
+      },
+      {
+        "type": "Image",
+        "url": "https://rwtstkwmtcrliwkoscjr.supabase.co/storage/v1/object/public/product-media/9993c069-a710-427d-8642-5ca0ad0511d9/aedf45ee-5889-4dc5-aec2-82a089a617a6.png",
+        "bytes": 141510
+      },
+      {
+        "type": "Image",
+        "url": "https://rwtstkwmtcrliwkoscjr.supabase.co/storage/v1/object/public/product-media/638bb6eb-29d1-4fcf-87bb-8e256ed1b6b8/e85e51a0-3f4e-4b7d-b9c8-42066d1ee1be.png",
+        "bytes": 1025017
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/sabores/banana-decor-v1.webp",
+        "bytes": 115647
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/sabores/vainilla-decor-v1.webp",
+        "bytes": 127289
+      },
+      {
+        "type": "Image",
+        "url": "https://rwtstkwmtcrliwkoscjr.supabase.co/storage/v1/object/public/product-media/638bb6eb-29d1-4fcf-87bb-8e256ed1b6b8/ebe343de-8f3b-4c65-8918-f74e3ab49684.png",
+        "bytes": 993304
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/sabores/frutilla-decor-v1.webp",
+        "bytes": 144973
+      },
+      {
+        "type": "Image",
+        "url": "https://rwtstkwmtcrliwkoscjr.supabase.co/storage/v1/object/public/product-media/638bb6eb-29d1-4fcf-87bb-8e256ed1b6b8/b31ee5de-4613-4657-b615-1ccf138872dd.png",
+        "bytes": 1000848
+      }
+    ]
+  },
+  {
+    "view": "desktop-catalog",
+    "cpuSlowdown": 4,
+    "networkBytesPerSecond": 200000,
+    "latencyMs": 80,
+    "lcpMs": 9028,
+    "cls": 0.00034237793564619425,
+    "longTasks": 3,
+    "totalBlockingMs": 183,
+    "imageDimensions": [
+      [
+        1098,
+        878
+      ],
+      [
+        1113,
+        1669
+      ],
+      [
+        1113,
+        1669
+      ],
+      [
+        810,
+        878
+      ]
+    ],
+    "samples": 244,
+    "p95FrameMs": 16.7,
+    "framesOver34ms": 0,
+    "clickToVariantMs": [],
+    "wallTimeMs": 22962,
+    "imageTransfers": [
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/_next/image",
+        "bytes": 2143
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/_next/image",
+        "bytes": 3158
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/visuals/catalog-lion-stone-v1.webp",
+        "bytes": 181107
+      },
+      {
+        "type": "Image",
+        "url": "https://rwtstkwmtcrliwkoscjr.supabase.co/storage/v1/object/public/product-media/9993c069-a710-427d-8642-5ca0ad0511d9/aedf45ee-5889-4dc5-aec2-82a089a617a6.png",
+        "bytes": 141272
+      },
+      {
+        "type": "Image",
+        "url": "https://rwtstkwmtcrliwkoscjr.supabase.co/storage/v1/object/public/product-media/a4ae77d2-9d63-4fab-a526-26c5e3c9edc7/5aa414a2-08d2-4e0c-88dd-36f3a556642c.png",
+        "bytes": 99733
+      },
+      {
+        "type": "Image",
+        "url": "https://rwtstkwmtcrliwkoscjr.supabase.co/storage/v1/object/public/product-media/2697775b-cb83-43de-a262-4bc43918a34f/59c15945-d325-41cf-955b-0bddeee32911.png",
+        "bytes": 431901
+      },
+      {
+        "type": "Image",
+        "url": "https://rwtstkwmtcrliwkoscjr.supabase.co/storage/v1/object/public/product-media/6fb85c35-fb77-4e9a-89cf-00d2ea6b27b5/d39b3419-4e94-4b15-aaa1-0e627b7b8991.png",
+        "bytes": 41314
+      },
+      {
+        "type": "Image",
+        "url": "https://rwtstkwmtcrliwkoscjr.supabase.co/storage/v1/object/public/product-media/08bc4715-391c-4007-a1e0-01929d91fbb1/2c9a7b5f-20da-420e-851b-ffa917c7ec07.png",
+        "bytes": 327638
+      }
+    ]
+  }
+]

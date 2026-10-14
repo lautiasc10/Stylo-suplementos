@@ -15,6 +15,7 @@ import {
 } from "@/modules/commerce/actions";
 import { useCart, previewCatalog, previewPromotions } from "./cart-provider";
 import { ProductThumbnail } from "@/components/ui/product-thumbnail";
+import { catalogMediaSource } from "@/modules/catalog/media-source";
 
 export function Checkout() {
   const { quote, preview, updateQuote, imageBase, imageUrls } = useCart();
@@ -214,7 +215,11 @@ export function Checkout() {
                     line.image
                       ? imageUrls[line.image.path] ||
                         (imageBase
-                          ? `${imageBase}/${line.image.path}`
+                          ? catalogMediaSource(
+                              `${imageBase}/${line.image.path}`,
+                              imageBase,
+                              "thumbnail",
+                            )
                           : undefined)
                       : undefined
                   }

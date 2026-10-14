@@ -42,6 +42,7 @@ function IngredientLayer({
             width={768}
             height={512}
             decoding="async"
+            fetchPriority="low"
             onLoad={() => setReady(true)}
             onError={(event) => {
               event.currentTarget.style.visibility = "hidden";
@@ -110,7 +111,7 @@ export function FlavorSceneDecorations({
     if (!layers.previous) return;
     const timer = setTimeout(
       () => setLayers((old) => ({ ...old, previous: null })),
-      900,
+      650,
     );
     return () => clearTimeout(timer);
   }, [layers]);
@@ -125,6 +126,16 @@ export function FlavorSceneDecorations({
         !reduced && !paused && visible && documentVisible ? "true" : undefined
       }
     >
+      {[layers.previous, layers.current]
+        .filter((value): value is SceneFlavor => value !== null)
+        .map((value) => (
+          <div
+            key={`surface:${value}`}
+            className="flavor-scene-surface"
+            data-flavor={value}
+            data-outgoing={value === layers.previous ? "true" : undefined}
+          />
+        ))}
       {[layers.previous, layers.current]
         .filter((value): value is SceneFlavor => value !== null)
         .map((value) => (

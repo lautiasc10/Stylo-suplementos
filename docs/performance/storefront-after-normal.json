@@ -1,0 +1,256 @@
+[
+  {
+    "view": "desktop-detail",
+    "cpuSlowdown": 1,
+    "networkBytesPerSecond": null,
+    "latencyMs": null,
+    "lcpMs": 380,
+    "cls": 0.05436651694315656,
+    "longTasks": 0,
+    "totalBlockingMs": 0,
+    "imageDimensions": [
+      [
+        1113,
+        1669
+      ]
+    ],
+    "samples": 148,
+    "p95FrameMs": 33.4,
+    "framesOver34ms": 2,
+    "clickToVariantMs": [
+      53,
+      93,
+      45
+    ],
+    "wallTimeMs": 6342,
+    "imageTransfers": [
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/_next/image",
+        "bytes": 84228
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/_next/image",
+        "bytes": 3158
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/_next/image",
+        "bytes": 2143
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/_next/image",
+        "bytes": 16716
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/sabores/banana-decor-v1.webp",
+        "bytes": 115647
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/sabores/vainilla-decor-v1.webp",
+        "bytes": 127289
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/sabores/frutilla-decor-v1.webp",
+        "bytes": 144973
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/_next/image",
+        "bytes": 77824
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/_next/image",
+        "bytes": 79686
+      }
+    ]
+  },
+  {
+    "view": "mobile-detail",
+    "cpuSlowdown": 1,
+    "networkBytesPerSecond": null,
+    "latencyMs": null,
+    "lcpMs": 360,
+    "cls": 0.0321196738617731,
+    "longTasks": 0,
+    "totalBlockingMs": 0,
+    "imageDimensions": [
+      [
+        1113,
+        1669
+      ]
+    ],
+    "samples": 190,
+    "p95FrameMs": 16.8,
+    "framesOver34ms": 0,
+    "clickToVariantMs": [
+      54,
+      43,
+      44
+    ],
+    "wallTimeMs": 6322,
+    "imageTransfers": [
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/_next/image",
+        "bytes": 84228
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/_next/image",
+        "bytes": 3158
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/_next/image",
+        "bytes": 16716
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/_next/image",
+        "bytes": 2143
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/sabores/banana-decor-v1.webp",
+        "bytes": 115647
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/sabores/vainilla-decor-v1.webp",
+        "bytes": 127289
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/sabores/frutilla-decor-v1.webp",
+        "bytes": 144973
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/_next/image",
+        "bytes": 77824
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/_next/image",
+        "bytes": 79686
+      }
+    ]
+  },
+  {
+    "view": "desktop-catalog",
+    "cpuSlowdown": 1,
+    "networkBytesPerSecond": null,
+    "latencyMs": null,
+    "lcpMs": 356,
+    "cls": 0.00034237793564619425,
+    "longTasks": 1,
+    "totalBlockingMs": 51,
+    "imageDimensions": [
+      [
+        1098,
+        878
+      ],
+      [
+        1113,
+        1669
+      ],
+      [
+        1113,
+        1669
+      ],
+      [
+        810,
+        878
+      ]
+    ],
+    "samples": 243,
+    "p95FrameMs": 16.7,
+    "framesOver34ms": 0,
+    "clickToVariantMs": [],
+    "wallTimeMs": 7224,
+    "imageTransfers": [
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/_next/image",
+        "bytes": 3158
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/_next/image",
+        "bytes": 2143
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/visuals/catalog-lion-stone-v1.webp",
+        "bytes": 181107
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/_next/image",
+        "bytes": 26174
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/_next/image",
+        "bytes": 98806
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/_next/image",
+        "bytes": 42210
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/_next/image",
+        "bytes": 16716
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/_next/image",
+        "bytes": 33858
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/_next/image",
+        "bytes": 84228
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/_next/image",
+        "bytes": 28768
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/_next/image",
+        "bytes": 99368
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/_next/image",
+        "bytes": 77824
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/_next/image",
+        "bytes": 98820
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/_next/image",
+        "bytes": 79686
+      },
+      {
+        "type": "Image",
+        "url": "http://127.0.0.1:3002/_next/image",
+        "bytes": 98434
+      }
+    ]
+  }
+]
