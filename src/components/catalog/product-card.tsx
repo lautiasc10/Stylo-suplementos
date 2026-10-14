@@ -42,6 +42,13 @@ export function ProductCard({
 }) {
   const [variantId, setVariantId] = useState(initialVariantId);
   const variant = variants.find((item) => item.id === variantId) ?? variants[0];
+  const differentFlavors =
+    new Set(
+      product.variants
+        .filter((item) => item.active)
+        .map((item) => item.flavor.trim().toLocaleLowerCase())
+        .filter(Boolean),
+    ).size > 1;
   const brandLogo =
     brand.logo &&
     (imageUrls[brand.logo] || (imageBase ? `${imageBase}/${brand.logo}` : ""));
@@ -99,6 +106,7 @@ export function ProductCard({
             linkLabel={`Ver ${product.name}`}
             startDelay={(index % 5) * 180}
             onImageChange={selectPhoto}
+            transition={differentFlavors ? "turn" : "fragments"}
           />
         ) : (
           <Link

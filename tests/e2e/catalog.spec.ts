@@ -829,10 +829,14 @@ test("los fragmentos cambian solos, desaparecen y se cancelan con movimiento red
 }) => {
   await page.clock.install();
   await page.clock.pauseAt(new Date());
+  const sameFlavor = galleryFixture();
+  sameFlavor.catalog.products[0].variants.forEach((variant) => {
+    variant.flavor = "Chocolate";
+  });
   await page.addInitScript(
     (fixture) =>
       localStorage.setItem("stylo.catalog-preview.v1", JSON.stringify(fixture)),
-    galleryFixture(),
+    sameFlavor,
   );
   await page.goto("/vista-previa?q=proteina");
   const gallery = page.locator(".product-image-gallery");

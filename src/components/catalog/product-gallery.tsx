@@ -103,6 +103,7 @@ export function ProductGallery({
   delay = 3000,
   startDelay = 0,
   onImageChange,
+  transition = "fragments",
 }: {
   images: GalleryImage[];
   href?: string;
@@ -111,6 +112,7 @@ export function ProductGallery({
   delay?: number;
   startDelay?: number;
   onImageChange?: (image: GalleryImage) => void;
+  transition?: "fragments" | "turn";
 }) {
   const root = useRef<HTMLDivElement>(null);
   const request = useRef(0);
@@ -125,6 +127,7 @@ export function ProductGallery({
   const [interacting, setInteracting] = useState(false);
   const [message, setMessage] = useState("");
   const multiple = images.length > 1;
+  const turning = mode === "card" && transition === "turn";
   const automatic =
     mode === "card" &&
     multiple &&
@@ -237,10 +240,10 @@ export function ProductGallery({
     if (previous === null) return;
     const timer = window.setTimeout(
       () => setPrevious(null),
-      mode === "card" ? 860 : 360,
+      turning ? 900 : mode === "card" ? 860 : 360,
     );
     return () => window.clearTimeout(timer);
-  }, [previous, active, mode]);
+  }, [previous, active, mode, turning]);
 
   function choose(index: number) {
     setPaused(true);
@@ -250,50 +253,60 @@ export function ProductGallery({
   const current = images[active] ?? images[0];
   const frames = (
     <>
-      {previous !== null && images[previous] && (
+      <span className="product-frame-pair">
+        {previous !== null && images[previous] && (
+          <img
+            className="product-frame product-frame-outgoing"
+            src={images[previous].src}
+            alt=""
+            aria-hidden="true"
+            width={720}
+            height={720}
+            decoding="async"
+            onLoad={frameLoaded}
+          />
+        )}
         <img
-          className="product-frame product-frame-outgoing"
-          src={images[previous].src}
-          alt=""
-          aria-hidden="true"
+          key={current.id}
+          className="product-frame product-frame-current"
+          src={current.src}
+          alt={current.alt}
           width={720}
           height={720}
+          loading={mode === "card" ? "lazy" : "eager"}
           decoding="async"
           onLoad={frameLoaded}
         />
-      )}
-      <img
-        key={current.id}
-        className="product-frame product-frame-current"
-        src={current.src}
-        alt={current.alt}
-        width={720}
-        height={720}
-        loading={mode === "card" ? "lazy" : "eager"}
-        decoding="async"
-        onLoad={frameLoaded}
-      />
-      {mode === "card" && previous !== null && !reduced && images[previous] && (
-        <span
-          key={`${images[previous].id}:${current.id}`}
-          className="product-image-fragments"
-          aria-hidden="true"
-        >
-          {fragments.map((style, index) => (
-            <span key={index} className="product-image-fragment" style={style}>
-              <img
-                className="product-frame"
-                src={index % 2 ? current.src : images[previous].src}
-                alt=""
-                width={720}
-                height={720}
-                decoding="async"
-                onLoad={frameLoaded}
-              />
-            </span>
-          ))}
-        </span>
-      )}
+      </span>
+      {mode === "card" &&
+        !turning &&
+        previous !== null &&
+        !reduced &&
+        images[previous] && (
+          <span
+            key={`${images[previous].id}:${current.id}`}
+            className="product-image-fragments"
+            aria-hidden="true"
+          >
+            {fragments.map((style, index) => (
+              <span
+                key={index}
+                className="product-image-fragment"
+                style={style}
+              >
+                <img
+                  className="product-frame"
+                  src={index % 2 ? current.src : images[previous].src}
+                  alt=""
+                  width={720}
+                  height={720}
+                  decoding="async"
+                  onLoad={frameLoaded}
+                />
+              </span>
+            ))}
+          </span>
+        )}
     </>
   );
   return (
@@ -301,6 +314,7 @@ export function ProductGallery({
       ref={root}
       className={`product-image-gallery product-image-gallery-${mode}`}
       data-auto-playing={playing ? "true" : undefined}
+      data-transition={turning ? "turn" : undefined}
       data-animated={previous !== null && !reduced ? "true" : undefined}
       onFocusCapture={() => setInteracting(true)}
       onBlurCapture={(event) => {

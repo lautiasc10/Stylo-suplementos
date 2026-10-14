@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { demoCatalog } from "../../src/modules/catalog/demo";
 
@@ -44,17 +44,18 @@ function fixture() {
   };
 }
 
-test.beforeEach(async ({ page }) => {
+async function seed(page: Page, data = fixture()) {
   await page.addInitScript(
     (data) =>
       localStorage.setItem("stylo.catalog-preview.v1", JSON.stringify(data)),
-    fixture(),
+    data,
   );
-});
+}
 
 test("cambiar de sabor conserva el envase animado sin cargar ingredientes", async ({
   page,
 }) => {
+  await seed(page);
   const requests: string[] = [];
   page.on("request", (request) => requests.push(request.url()));
   await page.clock.install();
@@ -76,7 +77,15 @@ test("cambiar de sabor conserva el envase animado sin cargar ingredientes", asyn
   );
   await page.clock.runFor(3100);
   await expect(card.locator(".product-card-marker")).toHaveText("Frutilla");
-  await expect(card.locator(".product-image-fragments")).toHaveCount(1);
+  await expect(card.locator(".product-image-gallery")).toHaveAttribute(
+    "data-transition",
+    "turn",
+  );
+  await expect(card.locator(".product-frame-pair")).toHaveCSS(
+    "animation-name",
+    "product-photo-turn",
+  );
+  await expect(card.locator(".product-image-fragments")).toHaveCount(0);
   expect(await card.boundingBox()).toEqual(before);
   await expect(page.locator(".flavor-ingredients")).toHaveCount(0);
   expect(requests.some((url) => url.includes("/sabores/"))).toBe(false);
@@ -91,4 +100,105 @@ test("cambiar de sabor conserva el envase animado sin cargar ingredientes", asyn
   );
   await expect(page.locator(".flavor-ingredients")).toHaveCount(0);
   expect(requests.some((url) => url.includes("/sabores/"))).toBe(false);
+});
+
+test("el giro automático recorre frente y dorso, termina y deja una pausa entre fotos", async ({
+  page,
+}) => {
+  await seed(page);
+  await page.clock.install();
+  await page.clock.pauseAt(new Date());
+  await page.goto("/vista-previa?q=proteina");
+  const card = page.locator(".product-card");
+  const gallery = card.locator(".product-image-gallery");
+  await gallery.evaluate((e) =>
+    e.scrollIntoView({ block: "center", behavior: "instant" }),
+  );
+  const dimensions = () =>
+    gallery.evaluate((e) => ({ width: e.clientWidth, height: e.clientHeight }));
+  const before = await dimensions();
+  await page.clock.runFor(2900);
+  await expect(card.locator(".product-frame-current")).toHaveAttribute(
+    "alt",
+    "Foto de prueba Banana 0",
+  );
+  await expect(gallery).not.toHaveAttribute("data-animated", "true");
+  await page.clock.runFor(200);
+  await expect(card.locator(".product-frame-current")).toHaveAttribute(
+    "alt",
+    "Foto de prueba Banana 1",
+  );
+  await expect(card.locator(".product-frame-pair")).toHaveCSS(
+    "animation-name",
+    "product-photo-turn",
+  );
+  await expect(card.locator(".product-frame-outgoing")).toHaveAttribute(
+    "aria-hidden",
+    "true",
+  );
+  await expect(card.locator(".product-card-marker")).toHaveText("Banana");
+  expect(await dimensions()).toEqual(before);
+  await page.clock.runFor(1000);
+  await expect(card.locator(".product-frame-outgoing")).toHaveCount(0);
+  await expect(card.locator(".product-frame-pair")).toHaveCSS(
+    "animation-name",
+    "none",
+  );
+  await page.clock.runFor(1000);
+  await expect(card.locator(".product-frame-current")).toHaveAttribute(
+    "alt",
+    "Foto de prueba Banana 1",
+  );
+  await page.clock.runFor(1100);
+  await expect(card.locator(".product-card-marker")).toHaveText("Frutilla");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(gallery).not.toHaveAttribute("data-animated", "true");
+  await expect(card.locator(".product-frame-pair")).toHaveCSS(
+    "transform",
+    "none",
+  );
+  await page.clock.runFor(12000);
+  await expect(card.locator(".product-card-marker")).toHaveText("Frutilla");
+});
+
+test("si la siguiente foto falla, el giro conserva imagen, sabor y enlace actuales", async ({
+  page,
+}) => {
+  const data = fixture();
+  const product = data.catalog.products[0];
+  data.images[product.images[1].path] = "data:image/webp;base64,broken";
+  await seed(page, data);
+  await page.clock.install();
+  await page.clock.pauseAt(new Date());
+  await page.goto("/vista-previa?q=proteina");
+  const card = page.locator(".product-card");
+  await card.evaluate((e) =>
+    e.scrollIntoView({ block: "center", behavior: "instant" }),
+  );
+  await expect(card.locator(".product-image-gallery")).toHaveAttribute(
+    "data-auto-playing",
+    "true",
+  );
+  await page.clock.runFor(3100);
+  await expect(card.locator(".gallery-message")).toContainText(
+    "No pudimos cargar esta imagen",
+  );
+  await expect(card.locator(".product-frame-current")).toHaveAttribute(
+    "alt",
+    "Foto de prueba Banana 0",
+  );
+  await expect(card.locator(".product-card-marker")).toHaveText("Banana");
+  await expect(card.locator(".product-card-action")).toHaveAttribute(
+    "href",
+    new RegExp(`variante=${product.variants[0].id}$`),
+  );
+  await expect(card.locator(".product-image-gallery")).not.toHaveAttribute(
+    "data-animated",
+    "true",
+  );
+  await page.clock.runFor(12000);
+  await expect(card.locator(".product-frame-current")).toHaveAttribute(
+    "alt",
+    "Foto de prueba Banana 0",
+  );
 });

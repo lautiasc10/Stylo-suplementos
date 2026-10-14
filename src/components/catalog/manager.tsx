@@ -779,7 +779,8 @@ export function CatalogManager({
               </label>
               <p>
                 JPEG, PNG o WebP. Definí el texto descriptivo y la variante; la
-                primera imagen será la portada.
+                primera imagen será la portada. Para el giro automático, ordená
+                frente y dorso dentro de la misma variante.
               </p>
               {draft.images.map((image, index) => (
                 <div className="image-editor editor-wide" key={image.id}>
