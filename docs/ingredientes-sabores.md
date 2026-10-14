@@ -1,5 +1,7 @@
 # Primera versión de ingredientes por sabor — Fase 3
 
+**Estado actual:** efecto retirado por pedido del usuario el 13 de octubre de 2026. Las capas y la precarga ya no forman parte del catálogo ni de las fichas; se conserva la animación del envase y el fondo de piedra. Lo siguiente documenta la prueba anterior.
+
 El usuario agregó `public/sabores/banana.png`, `frutilla.png` y `vainilla.png` y autorizó preparar copias transparentes después de la revisión. Banana ya tenía canal alfa con píxeles transparentes. Frutilla y Vainilla eran RGB opacos: su cuadrícula estaba dibujada dentro del archivo. Sus recortes se prepararon con la herramienta integrada `imagegen`, solicitando conservar ingredientes, disposición, iluminación y centro abierto, y eliminar la cuadrícula con transparencia real. Los tres PNG originales permanecen intactos.
 
 Las exportaciones usadas por la tienda son WebP de 768 × 512 px, calidad 82 y calidad alfa 100. Se verificó en los tres archivos canal alfa y valores de 0 a 255, además de revisar la composición sobre el fondo real.
