@@ -106,6 +106,8 @@ export function ProductGallery({
   startDelay = 0,
   onImageChange,
   transition = "fragments",
+  flavorNavigation = false,
+  initialVariantId,
 }: {
   images: GalleryImage[];
   href?: string;
@@ -115,11 +117,18 @@ export function ProductGallery({
   startDelay?: number;
   onImageChange?: (image: GalleryImage) => void;
   transition?: "fragments" | "turn";
+  flavorNavigation?: boolean;
+  initialVariantId?: string;
 }) {
   const root = useRef<HTMLDivElement>(null);
   const request = useRef(0);
   const firstAutomaticChange = useRef(true);
-  const [active, setActive] = useState(0);
+  const [active, setActive] = useState(() =>
+    Math.max(
+      0,
+      images.findIndex((image) => image.variantId === initialVariantId),
+    ),
+  );
   const [previous, setPrevious] = useState<number | null>(null);
   const [enhanced, setEnhanced] = useState(false);
   const [reduced, setReduced] = useState(true);
@@ -128,8 +137,10 @@ export function ProductGallery({
   const [paused, setPaused] = useState(false);
   const [interacting, setInteracting] = useState(false);
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const pending = useRef<number | null>(null);
   const multiple = images.length > 1;
-  const turning = mode === "card" && transition === "turn";
+  const turning = transition === "turn";
   const automatic =
     mode === "card" &&
     multiple &&
@@ -157,6 +168,8 @@ export function ProductGallery({
       setReduced(preference.matches);
       if (preference.matches) {
         request.current++;
+        pending.current = null;
+        setLoading(false);
         setPrevious(null);
       }
     };
@@ -184,6 +197,8 @@ export function ProductGallery({
   useEffect(() => {
     if (!visible || !documentVisible) {
       request.current++;
+      pending.current = null;
+      setLoading(false);
       setPrevious(null);
     }
   }, [visible, documentVisible]);
@@ -200,7 +215,26 @@ export function ProductGallery({
   const showImage = useCallback(
     (index: number) => {
       const sequence = ++request.current;
-      if (index === active) return;
+      if (index === active) {
+        pending.current = null;
+        setLoading(false);
+        return;
+      }
+      pending.current = index;
+      setLoading(true);
+      const commitImage = () => {
+        if (request.current !== sequence) return;
+        setPrevious(reduced ? null : active);
+        setActive(index);
+        pending.current = null;
+        setLoading(false);
+        onImageChange?.(images[index]);
+        setMessage("");
+      };
+      if (!images[index].src) {
+        commitImage();
+        return;
+      }
       const image = new window.Image();
       image.crossOrigin = "anonymous";
       image.onload = async () => {
@@ -211,14 +245,12 @@ export function ProductGallery({
           image.onerror?.(new Event("error"));
           return;
         }
-        if (request.current !== sequence) return;
-        setPrevious(reduced ? null : active);
-        setActive(index);
-        onImageChange?.(images[index]);
-        setMessage("");
+        commitImage();
       };
       image.onerror = () => {
         if (request.current !== sequence) return;
+        pending.current = null;
+        setLoading(false);
         setPaused(true);
         setMessage("No pudimos cargar esta imagen. Podés intentar otra vez.");
       };
@@ -255,10 +287,25 @@ export function ProductGallery({
   }
   if (!images.length) return null;
   const current = images[active] ?? images[0];
+  const variantIds = [...new Set(images.map((image) => image.variantId))];
+  const visiblePhotos = images
+    .map((image, index) => ({ image, index }))
+    .filter(
+      ({ image }) => !flavorNavigation || image.variantId === current.variantId,
+    );
+  function chooseFlavor(direction: number) {
+    const from = images[pending.current ?? active].variantId;
+    const nextVariant =
+      variantIds[
+        (variantIds.indexOf(from) + direction + variantIds.length) %
+          variantIds.length
+      ];
+    choose(images.findIndex((image) => image.variantId === nextVariant));
+  }
   const frames = (
     <>
       <span className="product-frame-pair">
-        {previous !== null && images[previous] && (
+        {previous !== null && images[previous]?.src && (
           <img
             className="product-frame product-frame-outgoing"
             crossOrigin="anonymous"
@@ -271,18 +318,29 @@ export function ProductGallery({
             onLoad={frameLoaded}
           />
         )}
-        <img
-          key={current.id}
-          className="product-frame product-frame-current"
-          crossOrigin="anonymous"
-          src={current.src}
-          alt={current.alt}
-          width={720}
-          height={720}
-          loading={mode === "card" ? "lazy" : "eager"}
-          decoding="async"
-          onLoad={frameLoaded}
-        />
+        {current.src ? (
+          <img
+            key={current.id}
+            className="product-frame product-frame-current"
+            crossOrigin="anonymous"
+            src={current.src}
+            alt={current.alt}
+            width={720}
+            height={720}
+            loading={mode === "card" ? "lazy" : "eager"}
+            decoding="async"
+            onLoad={frameLoaded}
+          />
+        ) : (
+          <span
+            className="product-frame product-frame-current product-no-photo"
+            role="img"
+            aria-label={current.alt}
+          >
+            <Icon name="bag" />
+            <span>Imagen del producto pendiente</span>
+          </span>
+        )}
       </span>
       {mode === "card" &&
         !turning &&
@@ -322,6 +380,8 @@ export function ProductGallery({
       className={`product-image-gallery product-image-gallery-${mode}`}
       data-auto-playing={playing ? "true" : undefined}
       data-transition={turning ? "turn" : undefined}
+      data-flavor-navigation={flavorNavigation ? "true" : undefined}
+      data-loading={loading ? "true" : undefined}
       data-animated={previous !== null && !reduced ? "true" : undefined}
       onFocusCapture={() => setInteracting(true)}
       onBlurCapture={(event) => {
@@ -341,13 +401,36 @@ export function ProductGallery({
         ) : (
           <div className="product-frame-link">{frames}</div>
         )}
-        {mode === "detail" && multiple && (
+        {mode === "detail" && !flavorNavigation && multiple && (
           <span className="product-image-count" aria-hidden="true">
             {String(active + 1).padStart(2, "0")}{" "}
             <span>/ {String(images.length).padStart(2, "0")}</span>
           </span>
         )}
-        {mode === "detail" && enhanced && multiple && (
+        {flavorNavigation && enhanced && variantIds.length > 1 && (
+          <div
+            className="flavor-navigation"
+            role="group"
+            aria-label="Elegir sabor"
+            aria-busy={loading}
+          >
+            <button
+              type="button"
+              aria-label="Sabor anterior"
+              onClick={() => chooseFlavor(-1)}
+            >
+              <Icon name="arrow" className="gallery-back" />
+            </button>
+            <button
+              type="button"
+              aria-label="Sabor siguiente"
+              onClick={() => chooseFlavor(1)}
+            >
+              <Icon name="arrow" />
+            </button>
+          </div>
+        )}
+        {mode === "detail" && !flavorNavigation && enhanced && multiple && (
           <div
             className="product-gallery-controls"
             role="group"
@@ -380,9 +463,14 @@ export function ProductGallery({
           </div>
         )}
       </div>
-      {mode === "detail" && enhanced && multiple && (
+      {flavorNavigation && enhanced && (
+        <p className="flavor-loading" role="status">
+          {loading && <span>Cargando sabor…</span>}
+        </p>
+      )}
+      {mode === "detail" && enhanced && visiblePhotos.length > 1 && (
         <div className="product-thumbnails" aria-label="Galería del producto">
-          {images.map((image, index) => (
+          {visiblePhotos.map(({ image, index }) => (
             <button
               type="button"
               key={image.id}

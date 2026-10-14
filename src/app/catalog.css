@@ -1234,23 +1234,23 @@ textarea:focus-visible {
   --gallery-swap-duration: calc(var(--motion-duration) + 120ms);
   --gallery-swap-ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
-.product-image-gallery-card[data-transition="turn"] .product-frame-link {
+.product-image-gallery[data-transition="turn"] .product-frame-link {
   perspective: 1000px;
   perspective-origin: 50% calc(100% - 21cqw);
 }
-.product-image-gallery-card[data-transition="turn"][data-animated="true"]
+.product-image-gallery[data-transition="turn"][data-animated="true"]
   .product-frame-pair {
   transform-style: preserve-3d;
   transform-origin: 50% calc(100% - 21cqw);
   will-change: transform;
   animation: product-photo-turn 900ms cubic-bezier(0.45, 0, 0.25, 1) both;
 }
-.product-image-gallery-card[data-transition="turn"][data-animated="true"]
+.product-image-gallery[data-transition="turn"][data-animated="true"]
   .product-frame {
   animation: none;
   backface-visibility: hidden;
 }
-.product-image-gallery-card[data-transition="turn"][data-animated="true"]
+.product-image-gallery[data-transition="turn"][data-animated="true"]
   .product-frame-current {
   transform: rotateY(180deg);
 }
@@ -1449,4 +1449,301 @@ textarea:focus-visible {
 }
 .catalog-results .product-card {
   border-radius: var(--radius-panel);
+}
+
+/* Whey Protein flavor trial: a full-width scene with a protected purchase panel. */
+.flavor-product-detail {
+  --flavor-background: #e4ba40;
+  position: relative;
+  isolation: isolate;
+  width: calc(100% + var(--page-gutter) * 2);
+  margin-inline: calc(var(--page-gutter) * -1);
+  padding: var(--space-12) var(--page-gutter);
+  min-height: calc(100svh - 180px);
+  grid-template-columns: minmax(0, 1.3fr) minmax(340px, 0.85fr);
+  align-items: center;
+  overflow: clip;
+  background-color: var(--flavor-background);
+  transition: background-color 650ms ease;
+}
+.flavor-product-detail[data-flavor="frutilla"] {
+  --flavor-background: #c92c48;
+}
+.flavor-product-detail[data-flavor="vainilla"] {
+  --flavor-background: #e3d0ad;
+}
+.flavor-product-detail[data-flavor="neutral"] {
+  --flavor-background: #393028;
+}
+.flavor-product-detail > .product-gallery {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  container-type: inline-size;
+}
+.flavor-scene-heading {
+  color: #1c120d;
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  text-align: center;
+}
+.flavor-product-detail[data-flavor="frutilla"] .flavor-scene-heading,
+.flavor-product-detail[data-flavor="neutral"] .flavor-scene-heading {
+  color: var(--foreground);
+}
+.flavor-product-detail .product-image-stage {
+  background: transparent;
+  overflow: visible;
+}
+.flavor-product-detail .product-frame {
+  padding: 0;
+  scale: 1.18;
+  filter: drop-shadow(0 18px 14px #24110840);
+}
+.flavor-product-detail .product-detail-copy {
+  position: relative;
+  z-index: 2;
+  padding: var(--space-8);
+  background: #080808ed;
+  border: 1px solid #ffffff30;
+  box-shadow: 0 24px 64px #35131628;
+  max-width: 560px;
+}
+.flavor-product-detail .product-detail-copy h1 {
+  margin-top: 0;
+}
+.flavor-product-detail .product-description {
+  margin-bottom: var(--space-6);
+}
+.flavor-selected {
+  min-height: 104px;
+}
+.flavor-selected > span {
+  display: block;
+  color: #b9b4aa;
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.flavor-selected strong {
+  display: block;
+  font-size: var(--text-3xl);
+  line-height: 1.2;
+  margin-top: var(--space-2);
+}
+.flavor-selected p {
+  margin: var(--space-2) 0 0;
+  color: #b9b4aa;
+  font-size: var(--text-sm);
+}
+.flavor-product-detail .variant-picker {
+  min-height: 104px;
+}
+.flavor-navigation {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+}
+.flavor-navigation button {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  color: var(--foreground);
+  background: #080808;
+  border: 1px solid #080808;
+  border-radius: 50%;
+  pointer-events: auto;
+  transition:
+    background-color var(--motion-control),
+    color var(--motion-control);
+}
+.flavor-navigation button:hover {
+  background: var(--gold);
+  color: #080808;
+}
+.flavor-navigation button:focus-visible {
+  outline: 3px solid #080808;
+  outline-offset: 4px;
+}
+.flavor-loading {
+  height: 32px;
+  margin: var(--space-2) 0 0;
+  text-align: center;
+  color: var(--foreground);
+  font-size: var(--text-sm);
+}
+.flavor-loading span {
+  display: inline-block;
+  padding: var(--space-1) var(--space-3);
+  background: #080808;
+}
+.flavor-product-detail .gallery-message {
+  color: #080808;
+  background: #ece9e1;
+  padding: var(--space-3);
+}
+.flavor-product-detail .product-thumbnails {
+  justify-content: center;
+}
+.product-no-photo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-4);
+}
+.product-no-photo .icon {
+  width: 64px;
+  height: 64px;
+}
+.flavor-product-detail .product-no-photo {
+  color: var(--foreground);
+  background: #080808ed;
+  scale: 1;
+}
+.flavor-product-detail .product-static-images a {
+  color: #080808;
+  background: var(--foreground);
+  padding: var(--space-2) var(--space-3);
+}
+.flavor-scene-decorations {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.flavor-scene-layer {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+.flavor-scene-layer[data-ready="true"] {
+  opacity: 1;
+}
+.flavor-scene-piece {
+  position: absolute;
+  width: 40%;
+  height: auto;
+  max-width: none;
+  object-fit: contain;
+}
+.flavor-scene-piece[data-place="hero"] {
+  left: 0%;
+  top: 14%;
+  width: 62%;
+}
+.flavor-scene-piece[data-place="left"] {
+  left: -24%;
+  top: -18%;
+  width: 42%;
+  transform: rotate(-18deg);
+  opacity: 0.7;
+}
+.flavor-scene-piece[data-place="right"] {
+  right: -20%;
+  top: -14%;
+  width: 48%;
+  transform: rotate(20deg);
+  opacity: 0.65;
+}
+.flavor-scene-piece[data-place="bottom"] {
+  left: 26%;
+  bottom: -24%;
+  width: 60%;
+  transform: rotate(10deg);
+  opacity: 0.75;
+}
+.flavor-scene-decorations[data-motion="true"]
+  .flavor-scene-layer[data-ready="true"] {
+  animation: flavor-scene-enter 800ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.flavor-scene-decorations[data-motion="true"]
+  .flavor-scene-layer[data-ready="true"][data-outgoing="true"] {
+  animation: flavor-scene-exit 550ms ease both;
+}
+@keyframes flavor-scene-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 28px, 0) scale(0.92) rotate(-3deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes flavor-scene-exit {
+  to {
+    opacity: 0;
+    transform: translate3d(0, -18px, 0) scale(1.04) rotate(3deg);
+  }
+}
+@media (max-width: 1000px) {
+  .flavor-product-detail {
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 0.9fr);
+    gap: var(--space-8);
+  }
+  .flavor-product-detail .product-detail-copy {
+    padding: var(--space-6);
+  }
+}
+@media (max-width: 800px) {
+  .flavor-product-detail {
+    grid-template-columns: minmax(0, 1fr);
+    padding-block: var(--space-8);
+    gap: var(--space-6);
+  }
+  .flavor-product-detail > .product-gallery {
+    max-width: 480px;
+  }
+  .flavor-product-detail .product-detail-copy {
+    justify-self: center;
+    max-width: 560px;
+  }
+  .flavor-navigation button {
+    width: 48px;
+    height: 48px;
+  }
+  .flavor-scene-heading {
+    margin-top: 0;
+  }
+  .flavor-scene-piece[data-place="hero"] {
+    width: 140%;
+    left: -20%;
+    top: 4%;
+  }
+  .flavor-scene-piece[data-place="left"] {
+    width: 90%;
+    left: -60%;
+    top: -3%;
+  }
+  .flavor-scene-piece[data-place="right"] {
+    width: 100%;
+    right: -62%;
+    top: 22%;
+  }
+  .flavor-scene-piece[data-place="bottom"] {
+    width: 150%;
+    left: -25%;
+    bottom: -10%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .flavor-product-detail {
+    transition: none;
+  }
+  .flavor-scene-decorations .flavor-scene-layer {
+    animation: none !important;
+    transform: none;
+  }
+  .flavor-scene-layer[data-outgoing="true"] {
+    display: none;
+  }
 }
