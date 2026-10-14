@@ -54,7 +54,6 @@ export function ProductCard({
         .map((image) => ({
           id: `${item.id}:${image.id}`,
           variantId: item.id,
-          flavor: item.flavor,
           alt: image.alt,
           src: imageUrls[image.path] || `${imageBase}/${image.path}`,
           href: `${productPrefix}/${product.slug}?variante=${item.id}`,

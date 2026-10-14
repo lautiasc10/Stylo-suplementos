@@ -534,7 +534,7 @@
   align-items: center;
   background: var(--commercial-background);
   position: relative;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 1;
   overflow: hidden;
 }
 .product-card-labels {
@@ -1108,7 +1108,7 @@ textarea:focus-visible {
   min-width: 0;
 }
 .product-image-gallery-card .product-image-stage {
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 1;
 }
 .product-image-stage {
   position: relative;
@@ -1135,7 +1135,6 @@ textarea:focus-visible {
   position: absolute;
   inset: 0;
   width: 100%;
-  max-width: none;
   height: 100%;
   object-fit: contain;
   object-position: center;
@@ -1146,8 +1145,9 @@ textarea:focus-visible {
 .product-image-gallery-card .product-frame {
   padding: 0;
 }
-.product-image-stage .product-frame[data-on-stone="true"] {
-  padding: 0;
+.product-image-gallery-card .product-frame[data-portrait="true"] {
+  /* Keep the portrait photograph framing used before the ingredient trial. */
+  scale: 1.4;
 }
 .product-frame-current {
   z-index: 1;
