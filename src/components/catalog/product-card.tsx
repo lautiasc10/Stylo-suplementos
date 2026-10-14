@@ -5,7 +5,7 @@ import {
 } from "@/components/commerce/product-pricing";
 
 import Link from "next/link";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Icon } from "@/components/ui/icon";
 import { CategoryIllustration } from "@/components/storefront/category-illustration";
 import { ProductGallery, type GalleryImage } from "./product-gallery";
@@ -17,6 +17,52 @@ import {
   type Product,
   type Variant,
 } from "@/modules/catalog/model";
+
+function FlavorBadge({ flavor }: { flavor: string }) {
+  const [visual, setVisual] = useState({
+    current: flavor,
+    previous: "",
+    sequence: 0,
+  });
+
+  useEffect(() => {
+    setVisual((state) =>
+      state.current === flavor
+        ? state
+        : {
+            current: flavor,
+            previous: state.current,
+            sequence: state.sequence + 1,
+          },
+    );
+  }, [flavor]);
+
+  useEffect(() => {
+    if (!visual.previous) return;
+    const timer = window.setTimeout(() => {
+      setVisual((state) =>
+        state.sequence === visual.sequence ? { ...state, previous: "" } : state,
+      );
+    }, 480);
+    return () => window.clearTimeout(timer);
+  }, [visual.previous, visual.sequence]);
+
+  if (!visual.current) return null;
+  return (
+    <span
+      className="product-card-marker"
+      data-previous={visual.previous || undefined}
+    >
+      <span
+        key={visual.sequence}
+        className="product-card-marker-current"
+        data-changing={visual.sequence > 0 ? "true" : undefined}
+      >
+        {visual.current}
+      </span>
+    </span>
+  );
+}
 
 export function ProductCard({
   product,
@@ -95,14 +141,10 @@ export function ProductCard({
     <article className="product-card">
       <div className="product-card-media">
         <div className="product-card-labels">
-          <ProductPromotionBadge variant={variant} />
-          {variant.flavor && (
-            <span key={variant.flavor} className="product-card-marker">
-              {variant.flavor}
-            </span>
-          )}
+          <ProductPromotionBadge key={variant.id} variant={variant} />
+          {variant.flavor && <FlavorBadge flavor={variant.flavor} />}
           {variant.stock === 0 && (
-            <span className="stock-badge" data-stock="empty">
+            <span key={variant.id} className="stock-badge" data-stock="empty">
               Sin stock
             </span>
           )}

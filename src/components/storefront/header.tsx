@@ -21,7 +21,67 @@ export function Header({
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [lastCategory, setLastCategory] = useState(
+    catalogCategories[0]?.slug ?? "",
+  );
   const toggle = useRef<HTMLButtonElement>(null);
+  const categoryTrigger = useRef<HTMLAnchorElement>(null);
+  const categoryPanel = useRef<HTMLElement>(null);
+  const suppressFocusOpen = useRef(false);
+  const focusPanelOnOpen = useRef(false);
+  const categoryCloseTimer = useRef<number | null>(null);
+  const featuredCategory =
+    catalogCategories.find((item) => item.slug === lastCategory) ??
+    catalogCategories[0];
+  const otherCategories = catalogCategories.filter(
+    (item) => item.slug !== featuredCategory?.slug,
+  );
+
+  function showCategory(slug: string, trigger: HTMLAnchorElement) {
+    if (categoryCloseTimer.current !== null) {
+      window.clearTimeout(categoryCloseTimer.current);
+      categoryCloseTimer.current = null;
+    }
+    categoryTrigger.current = trigger;
+    setLastCategory(slug);
+    setActiveCategory(slug);
+  }
+
+  useEffect(
+    () => () => {
+      if (categoryCloseTimer.current !== null)
+        window.clearTimeout(categoryCloseTimer.current);
+    },
+    [],
+  );
+  useEffect(() => setActiveCategory(null), [pathname]);
+  useEffect(() => {
+    if (!activeCategory || !focusPanelOnOpen.current) return;
+    const frame = window.requestAnimationFrame(() => {
+      if (categoryPanel.current?.dataset.open !== "true") return;
+      focusPanelOnOpen.current = false;
+      categoryPanel.current
+        .querySelector<HTMLAnchorElement>(".category-mega-feature a")
+        ?.focus({ preventScroll: true });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [activeCategory]);
+  useEffect(() => {
+    if (!activeCategory) return;
+    function closeWithEscape(event: KeyboardEvent) {
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      focusPanelOnOpen.current = false;
+      setActiveCategory(null);
+      if (document.activeElement !== categoryTrigger.current) {
+        suppressFocusOpen.current = true;
+        categoryTrigger.current?.focus();
+      }
+    }
+    document.addEventListener("keydown", closeWithEscape);
+    return () => document.removeEventListener("keydown", closeWithEscape);
+  }, [activeCategory]);
   useEffect(() => {
     if (!open) return;
     function closeWithEscape(event: KeyboardEvent) {
@@ -97,19 +157,123 @@ export function Header({
           ))}
         </nav>
       </header>
-      <nav className="category-navigation" aria-label="Explorar por categoría">
-        <div className="container">
-          {catalogCategories.map((category) => (
-            <Link
-              key={category.slug}
-              href={`/catalogo?categoria=${category.slug}`}
-              onClick={() => setOpen(false)}
-            >
-              {category.name}
-            </Link>
-          ))}
-        </div>
-      </nav>
+      <div
+        className="category-navigation-shell"
+        onMouseEnter={() => {
+          if (categoryCloseTimer.current !== null) {
+            window.clearTimeout(categoryCloseTimer.current);
+            categoryCloseTimer.current = null;
+          }
+        }}
+        onMouseLeave={() => {
+          categoryCloseTimer.current = window.setTimeout(() => {
+            setActiveCategory(null);
+            categoryCloseTimer.current = null;
+          }, 150);
+        }}
+        onBlur={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget))
+            setActiveCategory(null);
+        }}
+      >
+        <nav
+          className="category-navigation"
+          aria-label="Explorar por categoría"
+        >
+          <div className="container">
+            {catalogCategories.map((category) => (
+              <Link
+                key={category.slug}
+                href={`/catalogo?categoria=${category.slug}`}
+                data-active={
+                  activeCategory === category.slug ? "true" : undefined
+                }
+                onMouseEnter={(event) => {
+                  if (
+                    window.matchMedia("(min-width: 801px) and (hover: hover)")
+                      .matches
+                  )
+                    showCategory(category.slug, event.currentTarget);
+                }}
+                onFocus={(event) => {
+                  if (
+                    !window.matchMedia("(min-width: 801px) and (hover: hover)")
+                      .matches
+                  )
+                    return;
+                  if (suppressFocusOpen.current) {
+                    suppressFocusOpen.current = false;
+                    return;
+                  }
+                  showCategory(category.slug, event.currentTarget);
+                }}
+                onKeyDown={(event) => {
+                  if (
+                    event.key !== "ArrowDown" ||
+                    !window.matchMedia("(min-width: 801px) and (hover: hover)")
+                      .matches
+                  )
+                    return;
+                  event.preventDefault();
+                  if (activeCategory === category.slug) {
+                    categoryPanel.current
+                      ?.querySelector<HTMLAnchorElement>(
+                        ".category-mega-feature a",
+                      )
+                      ?.focus();
+                    return;
+                  }
+                  focusPanelOnOpen.current = true;
+                  showCategory(category.slug, event.currentTarget);
+                }}
+                onClick={() => {
+                  setActiveCategory(null);
+                  setOpen(false);
+                }}
+              >
+                {category.name}
+              </Link>
+            ))}
+          </div>
+        </nav>
+        {featuredCategory && (
+          <section
+            ref={categoryPanel}
+            className="category-mega-menu"
+            data-open={activeCategory ? "true" : "false"}
+            aria-label={`Explorar ${featuredCategory.name}`}
+            aria-hidden={!activeCategory}
+            inert={!activeCategory}
+          >
+            <div className="container category-mega-inner">
+              <div className="category-mega-feature">
+                <span className="eyebrow">EXPLORÁ STYLO</span>
+                <h2>{featuredCategory.name}</h2>
+                <Link
+                  href={`/catalogo?categoria=${featuredCategory.slug}`}
+                  onClick={() => setActiveCategory(null)}
+                >
+                  Ver categoría <Icon name="arrow" />
+                </Link>
+              </div>
+              <div className="category-mega-other">
+                <h3>Otras categorías</h3>
+                <div>
+                  {otherCategories.map((category) => (
+                    <Link
+                      key={category.slug}
+                      href={`/catalogo?categoria=${category.slug}`}
+                      onClick={() => setActiveCategory(null)}
+                    >
+                      {category.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+      </div>
     </>
   );
 }
