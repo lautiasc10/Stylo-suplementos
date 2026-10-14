@@ -84,6 +84,7 @@ test("la piedra es común y las bases se alinean sin aumentar el tamaño de fras
   expect(bottle.stageHeight).toBeCloseTo(1.25, 2);
   await page.clock.runFor(3100);
   await expect(image).toHaveAttribute("alt", "Bolsa de prueba");
+  await expect(image).toHaveAttribute("data-portrait", "true");
   await page.clock.runFor(1000);
   await expect(gallery).not.toHaveAttribute("data-animated", "true");
   const bag = await measure(660 / 800);

@@ -68,6 +68,14 @@ for (const mode of ["card", "detail"] as const) {
       "alt",
       "Envase Frutilla",
     );
+    await expect(gallery.locator(".product-frame-current")).toHaveAttribute(
+      "data-portrait",
+      "true",
+    );
+    await expect(gallery.locator(".product-frame-settled")).toHaveAttribute(
+      "data-portrait",
+      "true",
+    );
 
     for (const fraction of [0.8, 0.9, 0.99]) {
       await gallery.evaluate(

@@ -292,7 +292,11 @@ test("la navegación administrativa abre la tarea elegida y la edición conserva
     page.getByRole("group", { name: "Información del producto" }),
   ).toBeVisible();
   await page.getByRole("link", { name: "Fotografías", exact: true }).click();
-  await expect(page.getByLabel("Subir imágenes")).toBeInViewport();
+  await expect(
+    page.getByRole("button", {
+      name: "Agregar fotos · Fotos para todas las variantes",
+    }),
+  ).toBeInViewport();
   await page
     .getByRole("button", { name: "Guardar producto", exact: true })
     .click();

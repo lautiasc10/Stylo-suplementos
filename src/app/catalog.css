@@ -1203,8 +1203,12 @@ textarea:focus-visible {
   top: var(--product-photo-y, calc(100% - 100cqw));
 }
 .product-image-gallery-card .product-frame[data-portrait="true"] {
-  /* Keep the portrait photograph framing used before the ingredient trial. */
-  scale: 1.4;
+  /* Render at the final size instead of enlarging a smaller rotating texture. */
+  max-width: none;
+  width: 140%;
+  height: 140cqw;
+  left: -20%;
+  top: calc(var(--product-photo-y, calc(100% - 100cqw)) - 20cqw);
 }
 .product-frame-current {
   z-index: 1;
@@ -1502,8 +1506,8 @@ textarea:focus-visible {
   width: calc(100% + var(--page-gutter) * 2);
   margin-inline: calc(var(--page-gutter) * -1);
   padding: var(--space-12) var(--page-gutter);
-  min-height: 100svh;
-  min-height: 100dvh;
+  min-height: calc(100svh - 50px);
+  min-height: calc(100dvh - 50px);
   grid-template-columns: minmax(0, 1.2fr) minmax(340px, 0.9fr);
   align-items: center;
   overflow: clip;
@@ -1569,30 +1573,11 @@ textarea:focus-visible {
 }
 .flavor-product-detail .product-frame {
   padding: 0;
-  scale: 1.18;
-  filter: drop-shadow(0 18px 14px #24110840);
-}
-.flavor-product-detail .product-frame-pair .product-frame {
-  /* Keep the shadow on the resting plane, without filtering rotating copies. */
-  filter: none;
-}
-.flavor-product-detail
-  .product-image-gallery[data-shadow-ready="true"]
-  .product-frame {
-  filter: none;
-}
-.flavor-product-detail .product-image-stage .product-photo-shadow {
-  inset: -12.5%;
-  width: 125%;
-  height: 125%;
-  pointer-events: none;
-  transform: translateZ(0);
-  filter: none;
-}
-.flavor-product-detail
-  .product-image-gallery[data-animated="true"]
-  .product-photo-shadow {
-  animation: product-photo-settle 660ms linear both;
+  max-width: none;
+  width: 118%;
+  height: 118cqw;
+  left: -9%;
+  top: -9cqw;
 }
 .flavor-product-detail .product-detail-copy {
   position: relative;
@@ -1840,7 +1825,9 @@ textarea:focus-visible {
 .flavor-product-detail .product-no-photo {
   color: var(--flavor-ink);
   background: #ffffff60;
-  scale: 1;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 .flavor-product-detail .product-static-images a {
   color: #080808;
@@ -1951,7 +1938,7 @@ textarea:focus-visible {
   animation: flavor-piece-exit 380ms ease both;
 }
 .flavor-scene-decorations[data-motion="true"] .flavor-scene-piece img {
-  animation: flavor-cream-drift 9s ease-in-out infinite alternate;
+  animation: flavor-cream-drift 4s ease-out both;
 }
 .flavor-scene-decorations[data-motion="true"]
   .flavor-scene-piece[data-place="left"]
@@ -1959,38 +1946,19 @@ textarea:focus-visible {
 .flavor-scene-decorations[data-motion="true"]
   .flavor-scene-piece[data-place="right"]
   img {
-  animation: flavor-slice-drift 7s ease-in-out infinite alternate;
+  animation: flavor-slice-drift 4.5s ease-out both;
 }
 .flavor-scene-piece[data-place="right"] img {
-  animation-delay: -3s !important;
+  animation-direction: reverse;
 }
 .flavor-scene-piece[data-place="bottom"] img {
-  animation-delay: -4s !important;
+  animation-direction: reverse;
 }
 .flavor-scene-decorations .flavor-scene-piece img {
   animation-play-state: paused !important;
 }
 .flavor-scene-decorations[data-playing="true"] .flavor-scene-piece img {
   animation-play-state: running !important;
-}
-.flavor-motion-toggle {
-  position: relative;
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  min-height: 48px;
-  padding: var(--space-2) var(--space-3);
-  margin: 0 auto;
-  border: 1px solid #4b351b40;
-  border-radius: var(--radius-pill);
-  background: #fff5d8b3;
-  color: var(--flavor-ink);
-  font-size: var(--text-xs);
-}
-.flavor-motion-toggle .icon {
-  width: 16px;
-  height: 16px;
 }
 @keyframes flavor-cream-drift {
   from {
@@ -2109,16 +2077,7 @@ textarea:focus-visible {
   .flavor-scene-decorations .flavor-scene-piece {
     animation: none !important;
   }
-  .flavor-product-detail
-    .product-image-gallery:not([data-shadow-ready="true"])
-    .product-frame-pair
-    .product-frame-current {
-    filter: drop-shadow(0 18px 14px #24110840);
-  }
   .flavor-scene-layer[data-outgoing="true"] {
-    display: none;
-  }
-  .flavor-motion-toggle {
     display: none;
   }
 }

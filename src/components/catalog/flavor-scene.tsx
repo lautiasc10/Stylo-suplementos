@@ -56,10 +56,8 @@ function IngredientLayer({
 
 export function FlavorSceneDecorations({
   flavor,
-  paused = false,
 }: {
   flavor: SceneFlavor | null;
-  paused?: boolean;
 }) {
   const [enhanced, setEnhanced] = useState(false);
   const [reduced, setReduced] = useState(true);
@@ -122,9 +120,7 @@ export function FlavorSceneDecorations({
       className="flavor-scene-decorations"
       aria-hidden="true"
       data-motion={!reduced ? "true" : undefined}
-      data-playing={
-        !reduced && !paused && visible && documentVisible ? "true" : undefined
-      }
+      data-playing={!reduced && visible && documentVisible ? "true" : undefined}
     >
       {[layers.previous, layers.current]
         .filter((value): value is SceneFlavor => value !== null)

@@ -96,23 +96,20 @@ export function Header({
             </Link>
           ))}
         </nav>
-        <nav
-          className="category-navigation"
-          aria-label="Explorar por categoría"
-        >
-          <div className="container">
-            {catalogCategories.map((category) => (
-              <Link
-                key={category.slug}
-                href={`/catalogo?categoria=${category.slug}`}
-                onClick={() => setOpen(false)}
-              >
-                {category.name}
-              </Link>
-            ))}
-          </div>
-        </nav>
       </header>
+      <nav className="category-navigation" aria-label="Explorar por categoría">
+        <div className="container">
+          {catalogCategories.map((category) => (
+            <Link
+              key={category.slug}
+              href={`/catalogo?categoria=${category.slug}`}
+              onClick={() => setOpen(false)}
+            >
+              {category.name}
+            </Link>
+          ))}
+        </div>
+      </nav>
     </>
   );
 }

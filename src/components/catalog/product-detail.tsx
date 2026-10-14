@@ -47,9 +47,23 @@ export function ProductDetail({
   const flavorExperiment =
     product.slug === "whey-protein" && product.variants.length > 1;
   const [enhanced, setEnhanced] = useState(false);
-  const [backgroundPaused, setBackgroundPaused] = useState(false);
   const preparedIngredients = useRef(new Map<string, HTMLImageElement>());
   useEffect(() => setEnhanced(true), []);
+  useEffect(() => {
+    if (
+      !flavorExperiment ||
+      preview ||
+      window.scrollY > 1 ||
+      window.location.hash
+    )
+      return;
+    const categories = document.querySelector(".category-navigation");
+    if (categories)
+      window.scrollTo({
+        top: categories.getBoundingClientRect().top + window.scrollY,
+        behavior: "instant",
+      });
+  }, [flavorExperiment, preview]);
   const flavor = sceneFlavor(variant.flavor);
   const [titleLead, ...titleRest] = product.name.split(" ");
   const prepareFlavorImage = useCallback(
@@ -144,9 +158,7 @@ export function ProductDetail({
           ← Volver al catálogo
         </Link>
       )}
-      {flavorExperiment && (
-        <FlavorSceneDecorations flavor={flavor} paused={backgroundPaused} />
-      )}
+      {flavorExperiment && <FlavorSceneDecorations flavor={flavor} />}
       <div className="product-gallery">
         {flavorExperiment ? (
           <>
@@ -160,23 +172,6 @@ export function ProductDetail({
               onImageChange={selectFlavorImage}
               onPrepareImage={prepareFlavorImage}
             />
-            {enhanced && (
-              <button
-                type="button"
-                className="flavor-motion-toggle"
-                aria-label={
-                  backgroundPaused
-                    ? "Reanudar animación del fondo"
-                    : "Pausar animación del fondo"
-                }
-                onClick={() => setBackgroundPaused((value) => !value)}
-              >
-                <Icon name={backgroundPaused ? "play" : "pause"} />
-                <span>
-                  {backgroundPaused ? "Reanudar fondo" : "Pausar fondo"}
-                </span>
-              </button>
-            )}
           </>
         ) : images.length ? (
           <ProductGallery

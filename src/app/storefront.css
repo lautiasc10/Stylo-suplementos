@@ -181,6 +181,38 @@
 .category-navigation a:active {
   color: var(--gold);
 }
+/* The flavor detail starts at this navigation row; keep it visible while the
+   full-screen scene scrolls and match the selected flavor. */
+:root:has(.flavor-product-detail) .category-navigation {
+  position: sticky;
+  top: 0;
+  z-index: 19;
+  background: var(--flavor-nav-background, #f2d34e);
+  border-color: #4b351b30;
+  scrollbar-color: #594722 transparent;
+  transition: background-color 380ms ease;
+}
+:root:has(.flavor-product-detail) .category-navigation a {
+  color: #36291c;
+}
+:root:has(.flavor-product-detail) .category-navigation a:hover,
+:root:has(.flavor-product-detail) .category-navigation a:focus-visible {
+  color: #17130b;
+}
+:root:has(.flavor-product-detail[data-flavor="frutilla"]) {
+  --flavor-nav-background: #f3a5b2;
+}
+:root:has(.flavor-product-detail[data-flavor="vainilla"]) {
+  --flavor-nav-background: #f0e0c2;
+}
+:root:has(.flavor-product-detail[data-flavor="neutral"]) {
+  --flavor-nav-background: #ded5c5;
+}
+@media (prefers-reduced-motion: reduce) {
+  :root:has(.flavor-product-detail) .category-navigation {
+    transition: none;
+  }
+}
 .sport-hero {
   overflow: hidden;
 }

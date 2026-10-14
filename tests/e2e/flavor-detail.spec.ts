@@ -240,45 +240,28 @@ test("la decoración fallida no bloquea el sabor y otros productos conservan el 
   ).toHaveCount(0);
 });
 
-test("el fondo se puede pausar sin bloquear el cambio de sabor y respeta movimiento reducido", async ({
+test("el fondo se detiene solo, permite cambiar de sabor y respeta movimiento reducido", async ({
   page,
 }) => {
   await seed(page);
   await page.goto("/vista-previa/producto/whey-protein");
   const decor = page.locator(".flavor-scene-decorations");
   await expect(decor).toHaveAttribute("data-playing", "true");
-  await page
-    .getByRole("button", { name: "Pausar animación del fondo", exact: true })
-    .click();
-  await expect(decor).not.toHaveAttribute("data-playing", "true");
+  await expect(page.getByRole("button", { name: /Pausar fondo/i })).toHaveCount(0);
   await expect(decor.locator("img").first()).toHaveCSS(
-    "animation-play-state",
-    "paused",
+    "animation-iteration-count",
+    "1",
   );
   await page
     .getByRole("button", { name: "Sabor siguiente", exact: true })
     .click();
   const layer = decor.locator('.flavor-scene-layer[data-flavor="frutilla"]');
   await expect(layer).toHaveCSS("opacity", "1");
-  await expect(layer.locator("img").first()).toHaveCSS(
-    "animation-play-state",
-    "paused",
-  );
-  await page
-    .getByRole("button", { name: "Reanudar animación del fondo", exact: true })
-    .click();
-  await expect(decor).toHaveAttribute("data-playing", "true");
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(layer.locator("img").first()).toHaveCSS(
     "animation-name",
     "none",
   );
-  await expect(
-    page.getByRole("button", {
-      name: "Pausar animación del fondo",
-      exact: true,
-    }),
-  ).toBeHidden();
   await expect(page.locator(".product-detail-copy")).toHaveCSS(
     "background-color",
     "rgba(0, 0, 0, 0)",

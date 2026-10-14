@@ -13,7 +13,6 @@ import {
 import { Icon } from "@/components/ui/icon";
 import { positionProductPhoto } from "./product-photo-position";
 import { createGalleryPhotoCache } from "./gallery-photo-cache";
-import { productPhotoShadow } from "./product-photo-shadow";
 
 export type GalleryImage = {
   id: string;
@@ -155,10 +154,6 @@ export function ProductGallery({
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [readyImage, setReadyImage] = useState<string | null>(null);
-  const [shadow, setShadow] = useState<{
-    source: string;
-    src: string | null;
-  } | null>(null);
   const pending = useRef<number | null>(null);
   const multiple = images.length > 1;
   const turning = transition === "turn";
@@ -184,16 +179,10 @@ export function ProductGallery({
           if (image.classList.contains("product-frame-current")) {
             setReadyImage(images[active].src);
             photoCache.current?.remember(images[active].src, image);
-            if (flavorNavigation && shadow?.source !== images[active].src) {
-              setShadow({
-                source: images[active].src,
-                src: productPhotoShadow(image),
-              });
-            }
           }
         }
       });
-  }, [active, previous, images, flavorNavigation, shadow?.source]);
+  }, [active, previous, images]);
 
   useLayoutEffect(() => {
     if (!turning || previous === null || reduced) return;
@@ -300,10 +289,7 @@ export function ProductGallery({
         const id = ids[(index + direction + ids.length) % ids.length];
         const next = images.find((image) => image.variantId === id);
         if (next?.src)
-          void photoCache.current
-            ?.load(next.src, "low")
-            .then((image) => productPhotoShadow(image))
-            .catch(() => {});
+          void photoCache.current?.load(next.src, "low").catch(() => {});
         if (next) onPrepareImage?.(next);
       }
     }, 200);
@@ -393,7 +379,6 @@ export function ProductGallery({
   }
   if (!images.length) return null;
   const current = images[active] ?? images[0];
-  const shadowSrc = shadow?.source === current.src ? shadow.src : null;
   const variantIds = [...new Set(images.map((image) => image.variantId))];
   const visiblePhotos = images
     .map((image, index) => ({ image, index }))
@@ -411,17 +396,6 @@ export function ProductGallery({
   }
   const frames = (
     <>
-      {flavorNavigation && shadowSrc && (
-        <img
-          className="product-frame product-photo-shadow"
-          src={shadowSrc}
-          alt=""
-          aria-hidden="true"
-          width={240}
-          height={240}
-          decoding="async"
-        />
-      )}
       <span
         ref={framePair}
         className="product-frame-pair"
@@ -463,11 +437,6 @@ export function ProductGallery({
               frameLoaded(event);
               photoCache.current?.remember(current.src, event.currentTarget);
               setReadyImage(current.src);
-              if (flavorNavigation)
-                setShadow({
-                  source: current.src,
-                  src: productPhotoShadow(event.currentTarget),
-                });
             }}
           />
         ) : (
@@ -537,7 +506,6 @@ export function ProductGallery({
       data-transition={turning ? "turn" : undefined}
       data-flavor-navigation={flavorNavigation ? "true" : undefined}
       data-loading={loading ? "true" : undefined}
-      data-shadow-ready={shadowSrc ? "true" : undefined}
       data-animated={previous !== null && !reduced ? "true" : undefined}
       onFocusCapture={() => setInteracting(true)}
       onBlurCapture={(event) => {
