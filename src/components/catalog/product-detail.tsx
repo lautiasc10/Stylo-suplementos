@@ -1,16 +1,22 @@
 "use client";
 import { BrandLogo } from "./brand-logo";
 import { ProductPricing } from "@/components/commerce/product-pricing";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Icon } from "@/components/ui/icon";
 import { CategoryIllustration } from "@/components/storefront/category-illustration";
 import { ProductGallery, type GalleryImage } from "./product-gallery";
-import { FlavorSceneDecorations, sceneFlavor } from "./flavor-scene";
+import {
+  FlavorSceneDecorations,
+  sceneFlavor,
+  sceneIngredient,
+} from "./flavor-scene";
 import { AddToCart } from "@/components/commerce/add-to-cart";
 import {
   variantLabel,
   variantImages,
   type Product,
 } from "@/modules/catalog/model";
+const emptyImageUrls: Record<string, string> = {};
 export function ProductDetail({
   product,
   brandName,
@@ -18,7 +24,7 @@ export function ProductDetail({
   category,
   selectedId,
   imageBase = "",
-  imageUrls = {},
+  imageUrls = emptyImageUrls,
   preview = false,
 }: {
   product: Product;
@@ -39,8 +45,25 @@ export function ProductDetail({
   const flavorExperiment =
     product.slug === "whey-protein" && product.variants.length > 1;
   const [enhanced, setEnhanced] = useState(false);
+  const [backgroundPaused, setBackgroundPaused] = useState(false);
+  const preparedIngredients = useRef(new Map<string, HTMLImageElement>());
   useEffect(() => setEnhanced(true), []);
   const flavor = sceneFlavor(variant.flavor);
+  const [titleLead, ...titleRest] = product.name.split(" ");
+  const prepareFlavorImage = useCallback(
+    (image: GalleryImage) => {
+      const item = product.variants.find(
+        (variant) => variant.id === image.variantId,
+      );
+      const flavor = item && sceneFlavor(item.flavor);
+      if (!flavor || preparedIngredients.current.has(flavor)) return;
+      const ingredient = new Image();
+      ingredient.decoding = "async";
+      ingredient.src = sceneIngredient(flavor);
+      preparedIngredients.current.set(flavor, ingredient);
+    },
+    [product],
+  );
   const flavorImages = useMemo(() => {
     if (!flavorExperiment) return [];
     const order = { banana: 0, frutilla: 1, vainilla: 2 };
@@ -101,7 +124,9 @@ export function ProductDetail({
       data-flavor={flavorExperiment ? (flavor ?? "neutral") : undefined}
       data-enhanced={enhanced ? "true" : undefined}
     >
-      {flavorExperiment && <FlavorSceneDecorations flavor={flavor} />}
+      {flavorExperiment && (
+        <FlavorSceneDecorations flavor={flavor} paused={backgroundPaused} />
+      )}
       <div className="product-gallery">
         {flavorExperiment ? (
           <>
@@ -113,7 +138,25 @@ export function ProductDetail({
               flavorNavigation
               initialVariantId={variant.id}
               onImageChange={selectFlavorImage}
+              onPrepareImage={prepareFlavorImage}
             />
+            {enhanced && (
+              <button
+                type="button"
+                className="flavor-motion-toggle"
+                aria-label={
+                  backgroundPaused
+                    ? "Reanudar animación del fondo"
+                    : "Pausar animación del fondo"
+                }
+                onClick={() => setBackgroundPaused((value) => !value)}
+              >
+                <Icon name={backgroundPaused ? "play" : "pause"} />
+                <span>
+                  {backgroundPaused ? "Reanudar fondo" : "Pausar fondo"}
+                </span>
+              </button>
+            )}
           </>
         ) : images.length ? (
           <ProductGallery
@@ -142,15 +185,36 @@ export function ProductDetail({
             brandName
           )}
         </p>
-        <h1>{product.name}</h1>
+        <h1>
+          {flavorExperiment ? (
+            <>
+              <strong>{titleLead}</strong>
+              {titleRest.length > 0 && ` ${titleRest.join(" ")}`}
+            </>
+          ) : (
+            product.name
+          )}
+        </h1>
         <p className="product-description">{product.description}</p>
         {flavorExperiment && enhanced ? (
           <div className="flavor-selected" role="status" aria-live="polite">
             <span>Sabor elegido</span>
-            <strong>{variant.flavor || "Presentación"}</strong>
-            <p>
-              {[variant.size, variant.presentation].filter(Boolean).join(" · ")}
-            </p>
+            <div className="flavor-selected-row">
+              <div>
+                <strong>{variant.flavor || "Presentación"}</strong>
+                <p>
+                  {[variant.size, variant.presentation]
+                    .filter(Boolean)
+                    .join(" · ")}
+                </p>
+              </div>
+              <span
+                className="stock-badge"
+                data-stock={variant.stock > 0 ? "available" : "empty"}
+              >
+                {variant.stock > 0 ? "Disponible" : "Sin stock"}
+              </span>
+            </div>
           </div>
         ) : (
           <form method="get" className="variant-picker">
@@ -179,12 +243,14 @@ export function ProductDetail({
           </form>
         )}
         <div aria-live="polite" aria-atomic="true">
-          <p
-            className="stock-badge"
-            data-stock={variant.stock > 0 ? "available" : "empty"}
-          >
-            {variant.stock > 0 ? "Disponible" : "Sin stock"}
-          </p>
+          {!(flavorExperiment && enhanced) && (
+            <p
+              className="stock-badge"
+              data-stock={variant.stock > 0 ? "available" : "empty"}
+            >
+              {variant.stock > 0 ? "Disponible" : "Sin stock"}
+            </p>
+          )}
           <ProductPricing variant={variant} />
         </div>
         {(preview || !flavorExperiment) && (
@@ -198,6 +264,7 @@ export function ProductDetail({
           variantId={variant.id}
           stock={variant.stock}
           slug={product.slug}
+          illustrated={flavorExperiment}
         />
       </div>
     </div>

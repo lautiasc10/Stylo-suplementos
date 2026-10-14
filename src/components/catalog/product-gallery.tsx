@@ -11,6 +11,7 @@ import {
 } from "react";
 import { Icon } from "@/components/ui/icon";
 import { positionProductPhoto } from "./product-photo-position";
+import { createGalleryPhotoCache } from "./gallery-photo-cache";
 
 export type GalleryImage = {
   id: string;
@@ -108,6 +109,7 @@ export function ProductGallery({
   transition = "fragments",
   flavorNavigation = false,
   initialVariantId,
+  onPrepareImage,
 }: {
   images: GalleryImage[];
   href?: string;
@@ -119,10 +121,15 @@ export function ProductGallery({
   transition?: "fragments" | "turn";
   flavorNavigation?: boolean;
   initialVariantId?: string;
+  onPrepareImage?: (image: GalleryImage) => void;
 }) {
   const root = useRef<HTMLDivElement>(null);
   const request = useRef(0);
   const firstAutomaticChange = useRef(true);
+  const photoCache = useRef<ReturnType<typeof createGalleryPhotoCache> | null>(
+    null,
+  );
+  if (!photoCache.current) photoCache.current = createGalleryPhotoCache();
   const [active, setActive] = useState(() =>
     Math.max(
       0,
@@ -130,6 +137,7 @@ export function ProductGallery({
     ),
   );
   const [previous, setPrevious] = useState<number | null>(null);
+  const activeIndex = useRef(active);
   const [enhanced, setEnhanced] = useState(false);
   const [reduced, setReduced] = useState(true);
   const [visible, setVisible] = useState(false);
@@ -163,6 +171,7 @@ export function ProductGallery({
 
   useEffect(() => {
     setEnhanced(true);
+    if (!photoCache.current) photoCache.current = createGalleryPhotoCache();
     const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
     const updateMotion = () => {
       setReduced(preference.matches);
@@ -191,6 +200,8 @@ export function ProductGallery({
       observer?.disconnect();
       preference.removeEventListener("change", updateMotion);
       document.removeEventListener("visibilitychange", updateVisibility);
+      photoCache.current?.dispose();
+      photoCache.current = null;
     };
   }, []);
 
@@ -212,10 +223,38 @@ export function ProductGallery({
     next.src = images[(active + 1) % images.length].src;
   }, [automatic, reduced, visible, documentVisible, active, images]);
 
+  useEffect(() => {
+    if (!flavorNavigation || !visible || !documentVisible) return;
+    const connection = (
+      navigator as Navigator & { connection?: { saveData?: boolean } }
+    ).connection;
+    if (connection?.saveData) return;
+    // Prepare just the front photograph of each adjacent variant after the
+    // initial content. No eager traversal of all variants or gallery photos.
+    const timer = window.setTimeout(() => {
+      const ids = [...new Set(images.map((image) => image.variantId))];
+      const index = ids.indexOf(images[active].variantId);
+      for (const direction of [-1, 1]) {
+        const id = ids[(index + direction + ids.length) % ids.length];
+        const next = images.find((image) => image.variantId === id);
+        if (next?.src) void photoCache.current?.load(next.src).catch(() => {});
+        if (next) onPrepareImage?.(next);
+      }
+    }, 200);
+    return () => window.clearTimeout(timer);
+  }, [
+    flavorNavigation,
+    visible,
+    documentVisible,
+    active,
+    images,
+    onPrepareImage,
+  ]);
+
   const showImage = useCallback(
     (index: number) => {
       const sequence = ++request.current;
-      if (index === active) {
+      if (index === activeIndex.current) {
         pending.current = null;
         setLoading(false);
         return;
@@ -224,7 +263,8 @@ export function ProductGallery({
       setLoading(true);
       const commitImage = () => {
         if (request.current !== sequence) return;
-        setPrevious(reduced ? null : active);
+        setPrevious(reduced ? null : activeIndex.current);
+        activeIndex.current = index;
         setActive(index);
         pending.current = null;
         setLoading(false);
@@ -235,27 +275,20 @@ export function ProductGallery({
         commitImage();
         return;
       }
-      const image = new window.Image();
-      image.crossOrigin = "anonymous";
-      image.onload = async () => {
-        // Wait for decoding as well as download before revealing fragments.
-        try {
-          await image.decode();
-        } catch {
-          image.onerror?.(new Event("error"));
-          return;
-        }
+      if (photoCache.current?.has(images[index].src)) {
         commitImage();
-      };
-      image.onerror = () => {
-        if (request.current !== sequence) return;
-        pending.current = null;
-        setLoading(false);
-        setPaused(true);
-        setMessage("No pudimos cargar esta imagen. Podés intentar otra vez.");
-      };
-      // Load only the requested photograph; keep the current one until it is ready.
-      image.src = images[index].src;
+        return;
+      }
+      void photoCache.current
+        ?.load(images[index].src)
+        .then(commitImage)
+        .catch(() => {
+          if (request.current !== sequence) return;
+          pending.current = null;
+          setLoading(false);
+          setPaused(true);
+          setMessage("No pudimos cargar esta imagen. Podés intentar otra vez.");
+        });
     },
     [active, images, reduced, onImageChange],
   );
@@ -276,10 +309,10 @@ export function ProductGallery({
     if (previous === null) return;
     const timer = window.setTimeout(
       () => setPrevious(null),
-      turning ? 900 : mode === "card" ? 860 : 360,
+      turning ? (flavorNavigation ? 660 : 900) : mode === "card" ? 860 : 360,
     );
     return () => window.clearTimeout(timer);
-  }, [previous, active, mode, turning]);
+  }, [previous, active, mode, turning, flavorNavigation]);
 
   function choose(index: number) {
     setPaused(true);
@@ -294,7 +327,7 @@ export function ProductGallery({
       ({ image }) => !flavorNavigation || image.variantId === current.variantId,
     );
   function chooseFlavor(direction: number) {
-    const from = images[pending.current ?? active].variantId;
+    const from = images[pending.current ?? activeIndex.current].variantId;
     const nextVariant =
       variantIds[
         (variantIds.indexOf(from) + direction + variantIds.length) %
@@ -329,7 +362,10 @@ export function ProductGallery({
             height={720}
             loading={mode === "card" ? "lazy" : "eager"}
             decoding="async"
-            onLoad={frameLoaded}
+            onLoad={(event) => {
+              frameLoaded(event);
+              photoCache.current?.remember(current.src, event.currentTarget);
+            }}
           />
         ) : (
           <span

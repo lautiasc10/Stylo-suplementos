@@ -235,3 +235,104 @@ test("la decoración fallida no bloquea el sabor y otros productos conservan el 
     page.getByRole("button", { name: "Sabor siguiente", exact: true }),
   ).toHaveCount(0);
 });
+
+test("el fondo se puede pausar sin bloquear el cambio de sabor y respeta movimiento reducido", async ({
+  page,
+}) => {
+  await seed(page);
+  await page.goto("/vista-previa/producto/whey-protein");
+  const decor = page.locator(".flavor-scene-decorations");
+  await expect(decor).toHaveAttribute("data-playing", "true");
+  await page
+    .getByRole("button", { name: "Pausar animación del fondo", exact: true })
+    .click();
+  await expect(decor).not.toHaveAttribute("data-playing", "true");
+  await expect(decor.locator("img").first()).toHaveCSS(
+    "animation-play-state",
+    "paused",
+  );
+  await page
+    .getByRole("button", { name: "Sabor siguiente", exact: true })
+    .click();
+  const layer = decor.locator('.flavor-scene-layer[data-flavor="frutilla"]');
+  await expect(layer).toHaveCSS("opacity", "1");
+  await expect(layer.locator("img").first()).toHaveCSS(
+    "animation-play-state",
+    "paused",
+  );
+  await page
+    .getByRole("button", { name: "Reanudar animación del fondo", exact: true })
+    .click();
+  await expect(decor).toHaveAttribute("data-playing", "true");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(layer.locator("img").first()).toHaveCSS(
+    "animation-name",
+    "none",
+  );
+  await expect(
+    page.getByRole("button", {
+      name: "Pausar animación del fondo",
+      exact: true,
+    }),
+  ).toBeHidden();
+  await expect(page.locator(".product-detail-copy")).toHaveCSS(
+    "background-color",
+    "rgba(0, 0, 0, 0)",
+  );
+});
+
+test("las fotos vecinas se preparan antes del clic y se reutilizan al recorrer sabores", async ({
+  page,
+}) => {
+  const data = fixture();
+  const paths = data.catalog.products[0].images;
+  // Distinct, valid files make the cache check meaningful across real decodes.
+  data.images[paths[2].path] =
+    `data:image/webp;base64,${readFileSync("public/branding/logo-horizontal.webp").toString("base64")}`;
+  data.images[paths[3].path] =
+    `data:image/webp;base64,${readFileSync("public/branding/logo-completo.webp").toString("base64")}`;
+  await page.addInitScript(() => {
+    const decode = HTMLImageElement.prototype.decode;
+    (window as unknown as { decodes: string[] }).decodes = [];
+    HTMLImageElement.prototype.decode = function () {
+      (window as unknown as { decodes: string[] }).decodes.push(this.src);
+      return decode.call(this);
+    };
+  });
+  await seed(page, data);
+  await page.goto("/vista-previa/producto/whey-protein");
+  const strawberry = data.images[paths[2].path];
+  await page.locator(".product-image-gallery-detail").scrollIntoViewIfNeeded();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        (src) =>
+          (window as unknown as { decodes: string[] }).decodes.filter(
+            (value) => value === src,
+          ).length,
+        strawberry,
+      ),
+    )
+    .toBe(1);
+  await page
+    .getByRole("button", { name: "Sabor siguiente", exact: true })
+    .click();
+  await expect(page.locator(".flavor-selected strong")).toHaveText("Frutilla");
+  await page
+    .getByRole("button", { name: "Sabor siguiente", exact: true })
+    .click();
+  await expect(page.locator(".flavor-selected strong")).toHaveText("Vainilla");
+  await page
+    .getByRole("button", { name: "Sabor anterior", exact: true })
+    .click();
+  await expect(page.locator(".flavor-selected strong")).toHaveText("Frutilla");
+  expect(
+    await page.evaluate(
+      (src) =>
+        (window as unknown as { decodes: string[] }).decodes.filter(
+          (value) => value === src,
+        ).length,
+      strawberry,
+    ),
+  ).toBe(1);
+});

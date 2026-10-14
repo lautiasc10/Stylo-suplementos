@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export type SceneFlavor = "banana" | "frutilla" | "vainilla";
 export function sceneFlavor(flavor: string): SceneFlavor | null {
@@ -35,20 +35,19 @@ function IngredientLayer({
       data-ready={ready ? "true" : undefined}
     >
       {["hero", "left", "right", "bottom"].map((place) => (
-        <img
-          key={place}
-          className="flavor-scene-piece"
-          data-place={place}
-          src={sceneIngredient(flavor)}
-          alt=""
-          width={768}
-          height={512}
-          decoding="async"
-          onLoad={() => setReady(true)}
-          onError={(event) => {
-            event.currentTarget.style.visibility = "hidden";
-          }}
-        />
+        <div key={place} className="flavor-scene-piece" data-place={place}>
+          <img
+            src={sceneIngredient(flavor)}
+            alt=""
+            width={768}
+            height={512}
+            decoding="async"
+            onLoad={() => setReady(true)}
+            onError={(event) => {
+              event.currentTarget.style.visibility = "hidden";
+            }}
+          />
+        </div>
       ))}
     </div>
   );
@@ -56,11 +55,16 @@ function IngredientLayer({
 
 export function FlavorSceneDecorations({
   flavor,
+  paused = false,
 }: {
   flavor: SceneFlavor | null;
+  paused?: boolean;
 }) {
   const [enhanced, setEnhanced] = useState(false);
   const [reduced, setReduced] = useState(true);
+  const root = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  const [documentVisible, setDocumentVisible] = useState(true);
   const [layers, setLayers] = useState<{
     current: SceneFlavor | null;
     previous: SceneFlavor | null;
@@ -73,6 +77,21 @@ export function FlavorSceneDecorations({
     media.addEventListener("change", update);
     return () => media.removeEventListener("change", update);
   }, []);
+  useEffect(() => {
+    if (!enhanced) return;
+    const update = () => setDocumentVisible(!document.hidden);
+    update();
+    document.addEventListener("visibilitychange", update);
+    const observer = window.IntersectionObserver
+      ? new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting))
+      : null;
+    if (observer && root.current) observer.observe(root.current);
+    else setVisible(true);
+    return () => {
+      observer?.disconnect();
+      document.removeEventListener("visibilitychange", update);
+    };
+  }, [enhanced]);
   useEffect(() => {
     setLayers((old) =>
       old.current === flavor && !reduced
@@ -98,9 +117,13 @@ export function FlavorSceneDecorations({
   if (!enhanced) return null;
   return (
     <div
+      ref={root}
       className="flavor-scene-decorations"
       aria-hidden="true"
       data-motion={!reduced ? "true" : undefined}
+      data-playing={
+        !reduced && !paused && visible && documentVisible ? "true" : undefined
+      }
     >
       {[layers.previous, layers.current]
         .filter((value): value is SceneFlavor => value !== null)
