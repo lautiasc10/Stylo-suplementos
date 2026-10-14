@@ -40,7 +40,7 @@ function IngredientLayer({
       data-ready={(ready && !failed) || undefined}
       data-sequence={sequence}
     >
-      {(["left", "right"] as const).map((side) => (
+      {(["left", "right", "ground"] as const).map((side) => (
         <span key={side} className="flavor-ingredient-piece" data-side={side}>
           <img
             src={ingredientSource(ingredient)}

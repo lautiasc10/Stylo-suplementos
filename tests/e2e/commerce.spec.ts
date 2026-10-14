@@ -71,6 +71,11 @@ test("una variante agotada no se agrega y las cantidades no superan la existenci
 test("admin configura cantidad con dos precios y checkout revalida sin guardar datos personales", async ({
   page,
 }) => {
+  await page.goto("/vista-previa");
+  await expect(page.locator(".product-card").first()).toBeVisible();
+  const baselineHeights = await page
+    .locator(".product-card")
+    .evaluateAll((cards) => cards.map((card) => card.clientHeight));
   await page.goto("/vista-previa/promociones");
   await page
     .getByRole("button", { name: "Crear promoción", exact: true })
@@ -91,6 +96,16 @@ test("admin configura cantidad con dos precios y checkout revalida sin guardar d
     .getByRole("button", { name: "Guardar promoción", exact: true })
     .click();
   await expect(page.getByRole("status")).toHaveText("Promociones guardadas.");
+  await page.goto("/vista-previa");
+  await expect(page.locator(".product-promotion-tag")).toContainText(
+    "Desde 2 unidades",
+  );
+  await expect(page.locator(".product-card .product-offers")).toHaveCount(0);
+  expect(
+    await page
+      .locator(".product-card")
+      .evaluateAll((cards) => cards.map((card) => card.clientHeight)),
+  ).toEqual(baselineHeights);
   await page.goto("/vista-previa/producto/proteina-de-prueba");
   await expect(
     page.getByRole("region", { name: "Promociones disponibles" }),

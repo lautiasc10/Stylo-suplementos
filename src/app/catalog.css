@@ -443,6 +443,7 @@
 }
 .product-grid {
   display: grid;
+  align-items: start;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--space-6);
 }
@@ -458,9 +459,9 @@
 }
 .product-card {
   --product-card-neon-shadow:
-    0 0 0 1px var(--gold),
-    0 0 8px color-mix(in srgb, var(--gold) 45%, transparent),
-    0 0 24px color-mix(in srgb, var(--gold) 16%, transparent);
+    0 20px 36px -10px #000d, 0 0 0 1px var(--gold),
+    0 0 12px color-mix(in srgb, var(--gold) 45%, transparent),
+    0 0 32px color-mix(in srgb, var(--gold) 22%, transparent);
   position: relative;
   overflow: hidden;
   min-width: 0;
@@ -533,7 +534,7 @@
   align-items: center;
   background: var(--commercial-background);
   position: relative;
-  aspect-ratio: 1;
+  aspect-ratio: 4 / 5;
   overflow: hidden;
 }
 .product-card-labels {
@@ -599,6 +600,23 @@
   display: flex;
   flex-direction: column;
   flex: 1;
+}
+.product-promotion-slot {
+  min-height: 32px;
+  margin-top: var(--space-2);
+}
+.product-promotion-tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  max-width: 100%;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--action-border);
+  background: color-mix(in srgb, var(--gold) 12%, transparent);
+  color: var(--gold);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  line-height: 1.4;
 }
 .product-brand {
   color: var(--gold);
@@ -1090,7 +1108,7 @@ textarea:focus-visible {
   min-width: 0;
 }
 .product-image-gallery-card .product-image-stage {
-  aspect-ratio: 1;
+  aspect-ratio: 4 / 5;
 }
 .product-image-stage {
   position: relative;
@@ -1111,7 +1129,8 @@ textarea:focus-visible {
 }
 .flavor-ingredients {
   position: absolute;
-  inset: 8% 0 4%;
+  inset: auto 0 18%;
+  height: 72%;
   pointer-events: none;
   perspective: 700px;
 }
@@ -1125,8 +1144,8 @@ textarea:focus-visible {
   position: absolute;
   top: 0;
   bottom: 0;
-  left: -8%;
-  width: 50%;
+  left: -18%;
+  width: 58%;
   overflow: hidden;
   opacity: 0;
   transform-origin: 25% 60%;
@@ -1134,7 +1153,7 @@ textarea:focus-visible {
 .flavor-ingredient-piece[data-side="right"] {
   --ingredient-direction: 1;
   left: auto;
-  right: -8%;
+  right: -18%;
   transform-origin: 75% 60%;
 }
 .flavor-ingredient-piece img {
@@ -1145,11 +1164,27 @@ textarea:focus-visible {
   height: 100%;
   max-width: none;
   object-fit: contain;
-  object-position: center top;
+  object-position: center bottom;
 }
 .flavor-ingredient-piece[data-side="right"] img {
   left: auto;
   right: 0;
+}
+.flavor-ingredient-piece[data-side="ground"] {
+  --ingredient-direction: 0;
+  top: auto;
+  bottom: -5%;
+  left: 0;
+  width: 100%;
+  height: 32%;
+  transform-origin: 50% 100%;
+  mask-image: linear-gradient(to bottom, transparent, #000 40%);
+}
+.flavor-ingredient-piece[data-side="ground"] img {
+  top: auto;
+  bottom: 0;
+  width: 100%;
+  height: auto;
 }
 .flavor-ingredient-layer[data-ready="true"] .flavor-ingredient-piece {
   opacity: 1;
@@ -1205,6 +1240,7 @@ textarea:focus-visible {
   position: absolute;
   inset: 0;
   width: 100%;
+  max-width: none;
   height: 100%;
   object-fit: contain;
   object-position: center;
@@ -1215,9 +1251,8 @@ textarea:focus-visible {
 .product-image-gallery-card .product-frame {
   padding: 0;
 }
-.product-image-gallery-card .product-frame[data-portrait="true"] {
-  /* The standard portrait photos include white space above and below the pack. */
-  scale: 1.4;
+.product-image-stage .product-frame[data-on-stone="true"] {
+  padding: 0;
 }
 .product-frame-current {
   z-index: 1;

@@ -10,7 +10,13 @@ import { productOffers } from "@/modules/commerce/product-offers";
 import { priceLines } from "@/modules/commerce/promotions";
 import { useCart } from "./cart-provider";
 
-export function ProductPricing({ variant }: { variant: Variant }) {
+export function ProductPricing({
+  variant,
+  compact = false,
+}: {
+  variant: Variant;
+  compact?: boolean;
+}) {
   const { catalog, promotions, preview } = useCart();
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
@@ -43,6 +49,24 @@ export function ProductPricing({ variant }: { variant: Variant }) {
     cash = priceLines(lines, sales, "transferencia", now);
   return (
     <>
+      {compact && (
+        <div className="product-promotion-slot">
+          {offers.length > 0 && (
+            <span
+              className="product-promotion-tag"
+              title={offers.map((offer) => offer.name).join(" · ")}
+            >
+              {offers.length > 1
+                ? `${offers.length} promociones`
+                : offers[0].kind === "quantity"
+                  ? `Promoción · Desde ${offers[0].components[0].quantity} unidades`
+                  : offers[0].kind === "bundle"
+                    ? "Promoción · Combo"
+                    : "Precio rebajado"}
+            </span>
+          )}
+        </div>
+      )}
       <dl className="product-prices">
         <div>
           <dt>Precio de lista</dt>
@@ -63,7 +87,7 @@ export function ProductPricing({ variant }: { variant: Variant }) {
           </dd>
         </div>
       </dl>
-      {offers.length > 0 && (
+      {!compact && offers.length > 0 && (
         <section
           className="product-offers"
           aria-label="Promociones disponibles"
