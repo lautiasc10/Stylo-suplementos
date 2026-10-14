@@ -8,14 +8,17 @@ import {
   useState,
   type CSSProperties,
   type SyntheticEvent,
+  type ReactNode,
 } from "react";
 import { Icon } from "@/components/ui/icon";
+import { flavorIngredient, ingredientSource } from "./flavor-ingredients";
 
 export type GalleryImage = {
   id: string;
   src: string;
   alt: string;
   variantId?: string;
+  flavor?: string;
   href?: string;
 };
 
@@ -103,6 +106,7 @@ export function ProductGallery({
   delay = 3000,
   startDelay = 0,
   onImageChange,
+  ingredients,
 }: {
   images: GalleryImage[];
   href?: string;
@@ -111,6 +115,7 @@ export function ProductGallery({
   delay?: number;
   startDelay?: number;
   onImageChange?: (image: GalleryImage) => void;
+  ingredients?: ReactNode;
 }) {
   const root = useRef<HTMLDivElement>(null);
   const request = useRef(0);
@@ -189,6 +194,13 @@ export function ProductGallery({
     const next = new window.Image();
     next.decoding = "async";
     next.src = images[(active + 1) % images.length].src;
+    const ingredient = flavorIngredient(
+      images[(active + 1) % images.length].flavor,
+    );
+    if (ingredient) {
+      const decoration = new window.Image();
+      decoration.src = ingredientSource(ingredient);
+    }
   }, [automatic, reduced, visible, documentVisible, active, images]);
 
   const showImage = useCallback(
@@ -309,6 +321,7 @@ export function ProductGallery({
       }}
     >
       <div className="product-image-stage">
+        {ingredients}
         {href ? (
           <Link
             href={current.href ?? href}

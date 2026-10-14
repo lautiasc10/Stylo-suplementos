@@ -7,6 +7,7 @@ import { Icon } from "@/components/ui/icon";
 import { CategoryIllustration } from "@/components/storefront/category-illustration";
 import { ProductGallery, type GalleryImage } from "./product-gallery";
 import { BrandLogo } from "./brand-logo";
+import { useFlavorIngredients } from "./flavor-ingredients";
 import {
   variantImages,
   type CatalogGroup,
@@ -54,6 +55,7 @@ export function ProductCard({
         .map((image) => ({
           id: `${item.id}:${image.id}`,
           variantId: item.id,
+          flavor: item.flavor,
           alt: image.alt,
           src: imageUrls[image.path] || `${imageBase}/${image.path}`,
           href: `${productPrefix}/${product.slug}?variante=${item.id}`,
@@ -72,6 +74,9 @@ export function ProductCard({
   const selectPhoto = useCallback((image: GalleryImage) => {
     if (image.variantId) setVariantId(image.variantId);
   }, []);
+  const ingredients = useFlavorIngredients(
+    photos.length ? variant.flavor : undefined,
+  );
 
   return (
     <article className="product-card">
@@ -95,6 +100,7 @@ export function ProductCard({
             linkLabel={`Ver ${product.name}`}
             startDelay={(index % 5) * 180}
             onImageChange={selectPhoto}
+            ingredients={ingredients}
           />
         ) : (
           <Link

@@ -4,6 +4,7 @@ import { ProductPricing } from "@/components/commerce/product-pricing";
 import { useState } from "react";
 import { CategoryIllustration } from "@/components/storefront/category-illustration";
 import { ProductGallery } from "./product-gallery";
+import { useFlavorIngredients } from "./flavor-ingredients";
 import { AddToCart } from "@/components/commerce/add-to-cart";
 import {
   variantLabel,
@@ -45,6 +46,9 @@ export function ProductDetail({
   const logoSrc =
     brandLogo &&
     (imageUrls[brandLogo] || (imageBase ? `${imageBase}/${brandLogo}` : ""));
+  const ingredients = useFlavorIngredients(
+    images.length ? variant.flavor : undefined,
+  );
   return (
     <div className="product-detail">
       <div className="product-gallery">
@@ -53,6 +57,7 @@ export function ProductDetail({
             key={`${variant.id}:${images.map((image) => image.id).join(":")}`}
             images={images}
             mode="detail"
+            ingredients={ingredients}
           />
         ) : (
           <div className="product-detail-media">
