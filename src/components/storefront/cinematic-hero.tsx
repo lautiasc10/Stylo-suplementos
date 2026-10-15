@@ -2,7 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 import { HeroAtmosphere } from "./hero-atmosphere";
 import { HeroDust } from "./hero-dust";
 import { useHomeIntro } from "./home-intro";
@@ -12,7 +19,32 @@ const VIDEO_URL = "/visuals/stylo-lion-motion-v3.mp4";
 const POSTER_URL = "/visuals/stylo-lion-poster-v1.webp";
 const MESSAGE = "Potenciá tu mejor versión.";
 
+function HeroWords({
+  text,
+  accentFrom,
+}: {
+  text: string;
+  accentFrom?: number;
+}) {
+  return text.split(" ").map((word, index) => (
+    <Fragment key={`${index}-${word}`}>
+      {index > 0 && " "}
+      <span
+        className="hero-word"
+        data-accent={
+          accentFrom !== undefined && index >= accentFrom ? "true" : undefined
+        }
+        style={{ "--word-delay": `${index * 55}ms` } as CSSProperties}
+      >
+        {word}
+      </span>
+    </Fragment>
+  ));
+}
+
 export function CinematicHero() {
+  const { setWaiting, introSeen, claimIntro } = useHomeIntro();
+  const introChoice = useRef<boolean | null>(introSeen ? false : null);
   const heroRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const targetTime = useRef(0);
@@ -25,14 +57,15 @@ export function CinematicHero() {
   const [videoEnabled, setVideoEnabled] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
   const [dustReady, setDustReady] = useState(false);
-  const [navigationReady, setNavigationReady] = useState(false);
-  const [contentStage, setContentStage] = useState(0);
-  const [contentInstant, setContentInstant] = useState(false);
+  const [navigationReady, setNavigationReady] = useState(introSeen);
+  const [contentStage, setContentStage] = useState(introSeen ? 6 : 0);
+  const [contentInstant, setContentInstant] = useState(introSeen);
+  const [playIntro, setPlayIntro] = useState(!introSeen);
+  const [lionVisible, setLionVisible] = useState(introSeen);
   const advanceContent = useCallback((stage: number) => {
     setContentStage((previous) => Math.max(previous, stage));
   }, []);
   const introFinished = useRef(false);
-  const { setWaiting } = useHomeIntro();
   const revealNavigation = useCallback(() => {
     introFinished.current = true;
     setNavigationReady(true);
@@ -41,6 +74,14 @@ export function CinematicHero() {
   }, [setWaiting, advanceContent]);
   const revealAll = useCallback(() => {
     setContentInstant(true);
+    setPlayIntro(false);
+    setLionVisible(true);
+    setDustReady(true);
+    revealNavigation();
+  }, [revealNavigation]);
+  const completePresentation = useCallback(() => {
+    setLionVisible(true);
+    setPlayIntro(false);
     revealNavigation();
   }, [revealNavigation]);
   const handleAtmosphereSettled = useCallback(() => setDustReady(true), []);
@@ -50,6 +91,7 @@ export function CinematicHero() {
       "(min-width: 801px) and (hover: hover) and (pointer: fine)",
     );
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (introChoice.current === null) introChoice.current = claimIntro();
     function updateEligibility() {
       const saveData = (
         navigator as Navigator & { connection?: { saveData?: boolean } }
@@ -58,11 +100,14 @@ export function CinematicHero() {
       setVideoEnabled(eligible);
       if (
         !eligible ||
+        !introChoice.current ||
+        introFinished.current ||
         window.scrollY > 8 ||
         (window.location.hash && window.location.hash !== "#inicio")
-      )
+      ) {
         revealAll();
-      else if (!introFinished.current) setWaiting(true);
+        if (eligible) setDustReady(true);
+      } else if (!introFinished.current) setWaiting(true);
       if (!eligible) {
         setVideoReady(false);
         setDustReady(false);
@@ -88,7 +133,7 @@ export function CinematicHero() {
       desktop.removeEventListener("change", updateEligibility);
       reduced.removeEventListener("change", updateEligibility);
     };
-  }, [revealAll, setWaiting]);
+  }, [revealAll, setWaiting, claimIntro]);
 
   useEffect(() => {
     if (!videoEnabled) return;
@@ -242,18 +287,22 @@ export function CinematicHero() {
       ref={heroRef}
       aria-labelledby="hero-title"
       data-navigation={navigationReady ? "ready" : "waiting"}
+      data-presentation={contentInstant ? "static" : "animated"}
+      data-lion-visible={lionVisible}
     >
       <noscript>
-        <style>{`.site-header,.category-navigation-shell,.hero-reveal{opacity:1!important;visibility:visible!important;transform:none!important;pointer-events:auto!important}`}</style>
+        <style>{`.site-header,.category-navigation-shell,.hero-reveal,.hero-word,.sport-hero-visual{opacity:1!important;visibility:visible!important;transform:none!important;pointer-events:auto!important}.sport-hero-visual{transition:none!important}`}</style>
       </noscript>
       {videoEnabled && videoReady && (
         <>
-          <HeroAtmosphere
-            containerRef={heroRef}
-            onSettled={handleAtmosphereSettled}
-            onComplete={revealNavigation}
-            onCue={advanceContent}
-          />
+          {playIntro && (
+            <HeroAtmosphere
+              containerRef={heroRef}
+              onSettled={handleAtmosphereSettled}
+              onComplete={completePresentation}
+              onCue={advanceContent}
+            />
+          )}
           <HeroDust containerRef={heroRef} enabled={dustReady} />
         </>
       )}
@@ -287,30 +336,30 @@ export function CinematicHero() {
         >
           <h1
             id="hero-title"
-            className="hero-intro hero-reveal"
+            className="hero-intro hero-reveal hero-text"
             data-revealed={contentStage >= 1}
           >
-            Bienvenido a <span>STYLO SUPLEMENTOS</span>
+            <HeroWords text="Bienvenido a STYLO SUPLEMENTOS" accentFrom={2} />
           </h1>
           <p
-            className="hero-description hero-reveal"
+            className="hero-description hero-reveal hero-text"
             data-revealed={contentStage >= 2}
           >
-            Una nueva experiencia está por comenzar.
+            <HeroWords text="Una nueva experiencia está por comenzar." />
           </p>
           <div className="hero-typewriter-slot">
             <p
-              className="hero-typewriter hero-reveal"
+              className="hero-typewriter hero-reveal hero-text"
               data-revealed={contentStage >= 3}
             >
-              {MESSAGE}
+              <HeroWords text={MESSAGE} />
             </p>
           </div>
           <div className="hero-actions">
             <Link
               href="/catalogo"
               className="hero-pill hero-pill-primary hero-reveal"
-              data-revealed={contentStage >= 4}
+              data-revealed={contentStage >= 6}
             >
               Explorar tienda
             </Link>
@@ -324,7 +373,7 @@ export function CinematicHero() {
             <Link
               href="/nosotros"
               className="hero-pill hero-pill-outline hero-reveal"
-              data-revealed={contentStage >= 6}
+              data-revealed={contentStage >= 4}
             >
               Conocé STYLO
             </Link>

@@ -66,6 +66,16 @@ test("la mirada sigue la posición del cursor y vuelve al mismo fotograma", asyn
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(video).toHaveCount(0);
   await expect(page.locator(".hero-dust canvas")).toHaveCount(0);
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await expect(page.locator(".sport-hero-visual > video")).toHaveClass(
+    /is-ready/,
+  );
+  await expect(page.locator(".hero-dust canvas")).toBeVisible();
+  await expect(page.locator(".hero-atmosphere")).toHaveCount(0);
+  await expect(page.locator(".sport-hero")).toHaveAttribute(
+    "data-presentation",
+    "static",
+  );
 });
 
 test("movimiento reducido y navegación sin JavaScript conservan el hero", async ({
@@ -121,7 +131,7 @@ test("los renglones y botones siguen las etapas del scoop en orden", async ({
 }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop");
   await page.addInitScript(() => {
-    const samples: { stage: number; time: number }[] = [];
+    const samples: { stage: number; time: number; buttons: string[] }[] = [];
     (
       window as typeof window & { contentSamples: typeof samples }
     ).contentSamples = samples;
@@ -132,7 +142,15 @@ test("los renglones y botones siguen las etapas del scoop en orden", async ({
         ".hero-atmosphere video",
       );
       if (stage > 0 && video && samples.at(-1)?.stage !== stage)
-        samples.push({ stage, time: video.currentTime });
+        samples.push({
+          stage,
+          time: video.currentTime,
+          buttons: Array.from(
+            content!.querySelectorAll<HTMLAnchorElement>(
+              '.hero-actions a[data-revealed="true"]',
+            ),
+          ).map((link) => link.getAttribute("href")!),
+        });
     });
     observer.observe(document, {
       attributes: true,
@@ -149,11 +167,14 @@ test("los renglones y botones siguen las etapas del scoop en orden", async ({
     () =>
       (
         window as typeof window & {
-          contentSamples: { stage: number; time: number }[];
+          contentSamples: { stage: number; time: number; buttons: string[] }[];
         }
       ).contentSamples,
   );
   expect(samples.map((sample) => sample.stage)).toEqual([1, 2, 3, 4, 5, 6]);
+  expect(samples[3].buttons).toEqual(["/nosotros"]);
+  expect(samples[4].buttons).toEqual(["#categorias", "/nosotros"]);
+  expect(samples[5].buttons).toEqual(["/catalogo", "#categorias", "/nosotros"]);
   // The cue spacing comes from media time, including waiting for a buffered
   // clip. Six independent page-load timers would fail these relationships.
   const thresholds = [0, 0.8, 2, 2.8, 3.2, 3.6];
@@ -161,9 +182,114 @@ test("los renglones y botones siguen las etapas del scoop en orden", async ({
     expect(sample.time).toBeGreaterThanOrEqual(thresholds[index] - 0.05);
     if (index > 0) expect(sample.time).toBeGreaterThan(samples[index - 1].time);
   }
-  for (const link of await content.locator(".hero-actions a").all())
+  for (const link of await content.locator(".hero-actions a").all()) {
     await expect(link).toHaveCSS("opacity", "1");
+    await expect(link).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+  }
   await expect(content.locator(".hero-cursor")).toHaveCount(0);
+});
+
+test("la presentación se muestra una vez por visita y el logo no la reinicia", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop");
+  const requests: string[] = [];
+  page.on("request", (request) => {
+    if (request.url().includes("stylo-scoop-intro"))
+      requests.push(request.url());
+  });
+  await page.goto("/");
+  await expect(
+    page.locator('.sport-hero[data-lion-visible="true"]'),
+  ).toBeVisible({ timeout: 10000 });
+  await expect(page.locator(".hero-atmosphere")).toHaveCount(0);
+  await page.locator('.hero-actions a[href="/catalogo"]').click();
+  await expect(page).toHaveURL(/\/catalogo$/);
+  await page.locator(".site-header .brand-link").click();
+  await expect(page).toHaveURL(/\/#inicio$/);
+  await expect(page.locator(".sport-hero")).toHaveAttribute(
+    "data-presentation",
+    "static",
+  );
+  await expect(page.locator(".sport-hero")).toHaveAttribute(
+    "data-navigation",
+    "ready",
+  );
+  await expect(page.locator(".hero-content")).toHaveAttribute(
+    "data-content-stage",
+    "6",
+  );
+  await expect(page.locator(".hero-atmosphere")).toHaveCount(0);
+  await expect(page.locator(".site-header")).toHaveCSS("opacity", "1");
+  await expect(page.locator(".site-header")).toHaveCSS(
+    "transition-duration",
+    "0s",
+  );
+  await expect(page.locator(".sport-hero-visual")).toHaveCSS("opacity", "1");
+  await expect(page.locator(".hero-dust canvas")).toBeVisible();
+  expect(requests).toHaveLength(1);
+  // The tab remembers this visit even after a reload, without storing an
+  // indefinite preference across future sessions.
+  await page.reload();
+  await expect(page.locator(".sport-hero")).toHaveAttribute(
+    "data-presentation",
+    "static",
+  );
+  await expect(page.locator(".hero-atmosphere")).toHaveCount(0);
+  await expect(page.locator(".hero-dust canvas")).toBeVisible();
+  expect(requests).toHaveLength(1);
+});
+
+test("el logo cancela una salida al catálogo que todavía está cargando", async ({
+  page,
+}) => {
+  let release: () => void = () => {};
+  const gate = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  let requested: () => void = () => {};
+  const requestStarted = new Promise<void>((resolve) => {
+    requested = resolve;
+  });
+  await page.route("**/catalogo*", async (route) => {
+    requested();
+    await gate;
+    await route.continue();
+  });
+  await page.goto("/");
+  await page.keyboard.press("Tab");
+  await page.locator('.hero-actions a[href="/catalogo"]').click();
+  await requestStarted;
+  await page.locator(".site-header .brand-link").click();
+  release();
+  await expect(page).toHaveURL(/\/#inicio$/);
+  await page.waitForTimeout(500);
+  await expect(page).toHaveURL(/\/#inicio$/);
+  await expect(page.locator(".hero-content")).toBeVisible();
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThan(2);
+});
+
+test("entrar directamente al catálogo no agrega una presentación al volver con el logo", async ({
+  page,
+}) => {
+  const requests: string[] = [];
+  page.on("request", (request) => {
+    if (request.url().includes("stylo-scoop-intro"))
+      requests.push(request.url());
+  });
+  await page.goto("/catalogo");
+  await page.locator(".site-header .brand-link").click();
+  await expect(page.locator(".sport-hero")).toHaveAttribute(
+    "data-presentation",
+    "static",
+  );
+  await expect(page.locator(".site-header")).not.toHaveAttribute("inert");
+  await expect(page.locator(".hero-content")).toHaveAttribute(
+    "data-content-stage",
+    "6",
+  );
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThan(2);
+  expect(requests).toEqual([]);
 });
 
 test("los logos vuelven al principio del hero desde otras páginas y desde el pie", async ({
@@ -202,6 +328,8 @@ test("la cabecera entra después del scoop sobre las partículas y sin mover el 
   await expect(intro).toHaveAttribute("data-phase", "playing", {
     timeout: 10000,
   });
+  await expect(hero).toHaveAttribute("data-lion-visible", "false");
+  await expect(hero.locator(".sport-hero-visual")).toHaveCSS("opacity", "0");
   await expect(page.locator(".site-header")).toBeHidden();
   await expect(page.locator(".category-navigation-shell")).toHaveAttribute(
     "inert",
@@ -213,6 +341,12 @@ test("la cabecera entra después del scoop sobre las partículas y sin mover el 
   // actual completion rather than using this earlier dust transition.
   await expect(page.locator(".site-header")).toBeHidden();
   await expect(intro).toHaveCount(0, { timeout: 6000 });
+  await expect(hero).toHaveAttribute("data-lion-visible", "true");
+  await expect(hero.locator(".sport-hero-visual")).toHaveCSS(
+    "transition-duration",
+    "1.8s",
+  );
+  await expect(hero.locator(".sport-hero-visual")).toHaveCSS("opacity", "1");
   await expect(hero).toHaveAttribute("data-navigation", "ready");
   await expect(page.locator(".site-header")).toHaveCSS("opacity", "1");
   await expect(page.locator(".category-navigation-shell")).toHaveCSS(
