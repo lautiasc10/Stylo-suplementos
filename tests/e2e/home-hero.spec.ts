@@ -65,6 +65,7 @@ test("la mirada sigue la posición del cursor y vuelve al mismo fotograma", asyn
   await expect(video).toHaveJSProperty("paused", true);
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(video).toHaveCount(0);
+  await expect(page.locator(".hero-dust canvas")).toHaveCount(0);
 });
 
 test("movimiento reducido y navegación sin JavaScript conservan el hero", async ({
@@ -104,7 +105,7 @@ test("movimiento reducido y navegación sin JavaScript conservan el hero", async
   }
 });
 
-test("la entrada de polvo termina una sola vez y permite seguir la mirada", async ({
+test("el scoop termina una vez y el polvo permanece con pausa accesible", async ({
   page,
 }, testInfo) => {
   test.skip(
@@ -132,6 +133,34 @@ test("la entrada de polvo termina una sola vez y permite seguir la mirada", asyn
     )
     .toBeGreaterThan(2.8);
   await expect(intro).toHaveCount(0, { timeout: 6500 });
+  const dust = page.locator(".hero-dust canvas");
+  await expect(dust).toBeVisible();
+  const image = await dust.evaluate((element) =>
+    (element as HTMLCanvasElement).toDataURL(),
+  );
+  await expect
+    .poll(() =>
+      dust.evaluate((element) => (element as HTMLCanvasElement).toDataURL()),
+    )
+    .not.toBe(image);
+  await page.getByRole("button", { name: "Pausar polvo del fondo" }).click();
+  const pausedImage = await dust.evaluate((element) =>
+    (element as HTMLCanvasElement).toDataURL(),
+  );
+  await page.waitForTimeout(250);
+  expect(
+    await dust.evaluate((element) =>
+      (element as HTMLCanvasElement).toDataURL(),
+    ),
+  ).toBe(pausedImage);
+  await page
+    .getByRole("button", { name: "Reanudar polvo del fondo" })
+    .press("Space");
+  await expect
+    .poll(() =>
+      dust.evaluate((element) => (element as HTMLCanvasElement).toDataURL()),
+    )
+    .not.toBe(pausedImage);
   await page.mouse.move(page.viewportSize()!.width * 0.95, 300);
   await expect
     .poll(() =>
@@ -139,6 +168,49 @@ test("la entrada de polvo termina una sola vez y permite seguir la mirada", asyn
     )
     .toBeLessThan(1.2);
   expect(requests).toHaveLength(1);
+});
+
+test("el cruce frontal sigue presentando fotogramas sin cambios de sentido", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name === "mobile", "El seguimiento utiliza mouse");
+  await page.goto("/");
+  const video = page.locator(".sport-hero-visual > video");
+  await expect(video).toHaveClass(/is-ready/);
+  const width = page.viewportSize()!.width;
+  await page.mouse.move(width * 0.6, 300);
+  await expect
+    .poll(() =>
+      video.evaluate((element) => (element as HTMLVideoElement).currentTime),
+    )
+    .toBeCloseTo(2.23, 1);
+  await video.evaluate((element) => {
+    const media = element as HTMLVideoElement & { presented: number[] };
+    media.presented = [];
+    media.addEventListener("seeked", () =>
+      media.presented.push(media.currentTime),
+    );
+  });
+  for (let step = 1; step <= 40; step++) {
+    await page.mouse.move(width * (0.6 + step * 0.005), 300);
+    await page.waitForTimeout(35);
+  }
+  await expect
+    .poll(() =>
+      video.evaluate((element) => (element as HTMLVideoElement).currentTime),
+    )
+    .toBeLessThan(1.65);
+  const frames = await video.evaluate(
+    (element) =>
+      (element as HTMLVideoElement & { presented: number[] }).presented,
+  );
+  // Parallel browser load may coalesce destinations; the frontal pose must
+  // still be presented between the two sides, rather than skipped.
+  expect(frames.some((time) => Math.abs(time - 2.02) < 0.07)).toBe(true);
+  for (let i = 1; i < frames.length; i++) {
+    expect(frames[i]).toBeLessThanOrEqual(frames[i - 1] + 0.001);
+    expect(frames[i - 1] - frames[i]).toBeLessThan(0.2);
+  }
 });
 
 test("un fallo del fondo conserva el león y los accesos de compra", async ({

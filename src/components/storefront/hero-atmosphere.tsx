@@ -8,8 +8,10 @@ const MAX_BYTES = 3_500_000;
 /** A finite decorative entrance, loaded after the interactive lion is ready. */
 export function HeroAtmosphere({
   containerRef,
+  onSettled,
 }: {
   containerRef: RefObject<HTMLElement | null>;
+  onSettled: () => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [phase, setPhase] = useState<
@@ -35,6 +37,7 @@ export function HeroAtmosphere({
       !CSS.supports("mask-image", "linear-gradient(black, transparent)")
     ) {
       setPhase("done");
+      onSettled();
       return;
     }
 
@@ -44,6 +47,7 @@ export function HeroAtmosphere({
     let scheduled = false;
     let playing = false;
     let fading = false;
+    let settled = false;
     let blobUrl: string | null = null;
     let idle: number | null = null;
     let delay: number | undefined;
@@ -69,7 +73,14 @@ export function HeroAtmosphere({
       if (finished || disposed) return;
       finished = true;
       release();
+      settle();
       setPhase("done");
+    }
+
+    function settle() {
+      if (settled || disposed) return;
+      settled = true;
+      onSettled();
     }
 
     async function load() {
@@ -134,6 +145,7 @@ export function HeroAtmosphere({
       if (video.currentTime >= video.duration - 0.75) {
         fading = true;
         setPhase("leaving");
+        settle();
       }
     }
 
@@ -167,7 +179,7 @@ export function HeroAtmosphere({
       document.removeEventListener("visibilitychange", handleVisibility);
       release();
     };
-  }, [containerRef, completed]);
+  }, [containerRef, completed, onSettled]);
 
   if (phase === "done") return null;
   return (

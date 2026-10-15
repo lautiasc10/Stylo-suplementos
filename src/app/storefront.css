@@ -380,6 +380,49 @@
   z-index: 1;
   mix-blend-mode: screen;
 }
+.hero-dust {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  contain: strict;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1200ms ease;
+}
+.hero-dust[data-visible="true"] {
+  opacity: 1;
+}
+.hero-dust canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.hero-dust-control {
+  position: absolute;
+  z-index: 3;
+  left: var(--page-gutter);
+  bottom: var(--space-4);
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--action-border);
+  border-radius: var(--radius-pill);
+  background: #000000b3;
+  color: var(--foreground);
+  transition:
+    color var(--motion-control) ease,
+    border-color var(--motion-control) ease;
+}
+.hero-dust-control:is(:hover, :focus-visible) {
+  color: var(--gold);
+  border-color: var(--gold);
+}
+.hero-dust-control .icon {
+  width: 16px;
+  height: 16px;
+}
 .sport-hero-poster {
   position: absolute;
   inset: 0;
@@ -1028,7 +1071,9 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .hero-atmosphere {
+  .hero-atmosphere,
+  .hero-dust,
+  .hero-dust-control {
     display: none;
     transition: none;
   }

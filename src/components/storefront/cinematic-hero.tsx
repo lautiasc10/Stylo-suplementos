@@ -2,13 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { HeroAtmosphere } from "./hero-atmosphere";
+import { HeroDust } from "./hero-dust";
+import { gazeFrameTime, gazeTime, HERO_VIDEO_FPS } from "./hero-gaze";
 
 const VIDEO_URL = "/visuals/stylo-lion-motion-v2.mp4";
 const POSTER_URL = "/visuals/stylo-lion-poster-v1.webp";
-const VIDEO_FPS = 24;
-const GAZE_ORIGIN = 0.7;
 const MESSAGE = "Potenciá tu mejor versión.";
 
 function useTypewriter({
@@ -71,12 +71,15 @@ export function CinematicHero() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const targetTime = useRef(0);
   const submittedTime = useRef(0);
+  const smoothedTime = useRef(0);
   const seeking = useRef(false);
   const active = useRef(false);
   const mediaReady = useRef(false);
   const animationFrame = useRef<number | null>(null);
   const [videoEnabled, setVideoEnabled] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
+  const [dustReady, setDustReady] = useState(false);
+  const handleAtmosphereSettled = useCallback(() => setDustReady(true), []);
   const { displayed, done } = useTypewriter({ text: MESSAGE });
 
   useEffect(() => {
@@ -92,6 +95,7 @@ export function CinematicHero() {
       setVideoEnabled(eligible);
       if (!eligible) {
         setVideoReady(false);
+        setDustReady(false);
       }
     }
     updateEligibility();
@@ -114,23 +118,6 @@ export function CinematicHero() {
     let disposed = false;
     mediaReady.current = false;
     seeking.current = false;
-
-    function timeForPointer(progress: number) {
-      // Exclude the held poses at the ends. The neutral gaze is aligned with
-      // the lion on the right, rather than the middle of the whole screen.
-      const firstFrame = video.duration * 0.15;
-      const lastFrame = video.duration - firstFrame;
-      const centerFrame =
-        Math.round((video.duration / 2) * VIDEO_FPS) / VIDEO_FPS;
-      const time =
-        progress <= GAZE_ORIGIN
-          ? centerFrame +
-            (lastFrame - centerFrame) * (1 - progress / GAZE_ORIGIN)
-          : centerFrame -
-            (centerFrame - firstFrame) *
-              ((progress - GAZE_ORIGIN) / (1 - GAZE_ORIGIN));
-      return Math.round(time * VIDEO_FPS) / VIDEO_FPS;
-    }
 
     function cancelFrame() {
       if (animationFrame.current !== null) {
@@ -157,27 +144,24 @@ export function CinematicHero() {
       animationFrame.current = null;
       if (disposed || !active.current || document.hidden || seeking.current)
         return;
-      const difference = targetTime.current - submittedTime.current;
-      if (Math.abs(difference) < 1 / (VIDEO_FPS * 2)) {
-        lastFrameTime = 0;
-        return;
-      }
-      // A short, time-based ease follows the latest pointer position. At most
-      // one seek is in flight; stale mouse positions never form a queue.
+      const difference = targetTime.current - smoothedTime.current;
       const elapsed = lastFrameTime
         ? Math.min(now - lastFrameTime, 80)
         : 1000 / 60;
-      const eased =
-        Math.abs(difference) < 0.12
-          ? targetTime.current
-          : submittedTime.current + difference * (1 - Math.exp(-elapsed / 55));
-      const nextTime = Math.round(eased * VIDEO_FPS) / VIDEO_FPS;
-      if (nextTime === submittedTime.current) {
-        submittedTime.current = targetTime.current;
-      } else {
-        submittedTime.current = nextTime;
-      }
+      const settled = Math.abs(difference) < 1 / (HERO_VIDEO_FPS * 8);
+      // Keep the filter's fractional position even when no new source frame
+      // is due. Rounding this accumulator caused a stall and snap near front.
+      smoothedTime.current = settled
+        ? targetTime.current
+        : smoothedTime.current + difference * (1 - Math.exp(-elapsed / 55));
+      const nextTime = gazeFrameTime(smoothedTime.current);
       lastFrameTime = now;
+      if (Math.abs(nextTime - submittedTime.current) < 0.001) {
+        if (settled) lastFrameTime = 0;
+        else scheduleFrame();
+        return;
+      }
+      submittedTime.current = nextTime;
       seeking.current = true;
       try {
         video.currentTime = submittedTime.current;
@@ -189,12 +173,12 @@ export function CinematicHero() {
     function handleMetadata() {
       if (!Number.isFinite(video.duration) || video.duration <= 0) return;
       video.pause();
-      submittedTime.current =
-        Math.round((video.duration / 2) * VIDEO_FPS) / VIDEO_FPS;
+      smoothedTime.current = gazeTime(0.7, video.duration);
+      submittedTime.current = gazeFrameTime(smoothedTime.current);
       targetTime.current =
         pointerProgress === null
-          ? submittedTime.current
-          : timeForPointer(pointerProgress);
+          ? smoothedTime.current
+          : gazeTime(pointerProgress, video.duration);
       seeking.current = true;
       video.currentTime = submittedTime.current;
     }
@@ -214,6 +198,7 @@ export function CinematicHero() {
       cancelFrame();
       setVideoReady(false);
       setVideoEnabled(false);
+      setDustReady(false);
     }
 
     const observer = new IntersectionObserver(
@@ -233,7 +218,7 @@ export function CinematicHero() {
         Math.min(1, event.clientX / window.innerWidth),
       );
       if (!Number.isFinite(video.duration)) return;
-      targetTime.current = timeForPointer(pointerProgress);
+      targetTime.current = gazeTime(pointerProgress, video.duration);
       scheduleFrame();
     }
 
@@ -269,7 +254,15 @@ export function CinematicHero() {
 
   return (
     <section className="sport-hero" ref={heroRef} aria-labelledby="hero-title">
-      {videoEnabled && videoReady && <HeroAtmosphere containerRef={heroRef} />}
+      {videoEnabled && videoReady && (
+        <>
+          <HeroAtmosphere
+            containerRef={heroRef}
+            onSettled={handleAtmosphereSettled}
+          />
+          <HeroDust containerRef={heroRef} enabled={dustReady} />
+        </>
+      )}
       <div className="sport-hero-visual" aria-hidden="true">
         <div className="sport-hero-poster">
           <Image
