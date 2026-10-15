@@ -47,6 +47,7 @@ test("la mirada sigue la posición del cursor y vuelve al mismo fotograma", asyn
   await page.goto("/");
   const video = page.locator(".sport-hero-visual > video");
   await expect(video).toHaveClass(/is-ready/, { timeout: 15000 });
+  await page.keyboard.press("Tab");
   const width = page.viewportSize()!.width;
   const currentTime = () =>
     video.evaluate((element) => (element as HTMLVideoElement).currentTime);
@@ -365,7 +366,7 @@ test("los logos vuelven al principio del hero desde otras páginas y desde el pi
   await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThan(2);
 });
 
-test("polvo, silueta, león, contenido y navegación se encadenan sin mover el hero", async ({
+test("scoop completo sube y ojos, silueta y león aparecen gradualmente", async ({
   page,
 }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop");
@@ -389,32 +390,31 @@ test("polvo, silueta, león, contenido y navegación se encadenan sin mover el h
     "src",
     "/branding/logo-horizontal.webp",
   );
+  const brandReadableAt = await page.evaluate(() => performance.now());
   const brandBox = await introBrand.locator("span").boundingBox();
+  await expect(intro.locator("canvas")).toHaveCount(0);
   await expect(page.locator('.hero-dust[data-visible="true"]')).toBeVisible();
-  // The filmed powder, ambient dust and dim lion overlap. Copy and navigation
-  // remain hidden throughout the scoop's lateral exit and the lion reveal.
+  // The unsegmented clip rises as a whole. It retains its horizontal position
+  // and scale while fading into the ambient powder.
   await expect(page.locator(".site-header")).toBeHidden();
   await expect(intro).toHaveAttribute("data-phase", "leaving");
   const scoopPosition = () =>
-    intro.locator(".hero-scoop-layer").evaluate((element) => {
+    intro.locator("video").evaluate((element) => {
       const transform = new DOMMatrixReadOnly(
         getComputedStyle(element).transform,
       );
-      return { x: transform.m41, scale: transform.a };
+      return { x: transform.m41, y: transform.m42, scale: transform.a };
     });
   const exitStart = await scoopPosition();
-  const powderTransform = await intro
-    .locator(".hero-powder-layer")
-    .evaluate((element) => getComputedStyle(element).transform);
   await expect
-    .poll(async () => (await scoopPosition()).x)
-    .toBeLessThan(exitStart.x - 30);
+    .poll(async () => (await scoopPosition()).y)
+    .toBeLessThan(exitStart.y - 30);
   expect((await scoopPosition()).scale).toBeCloseTo(exitStart.scale, 3);
-  await expect(intro.locator(".hero-powder-layer")).toHaveCSS(
-    "transform",
-    powderTransform,
-  );
+  expect((await scoopPosition()).x).toBeCloseTo(exitStart.x, 1);
   await expect(hero).toHaveAttribute("data-lion-visible", "true");
+  expect(
+    (await page.evaluate(() => performance.now())) - brandReadableAt,
+  ).toBeGreaterThan(2000);
   await expect(hero.locator(".hero-content")).toHaveAttribute(
     "data-content-stage",
     "0",
@@ -423,21 +423,21 @@ test("polvo, silueta, león, contenido y navegación se encadenan sin mover el h
     "animation-name",
     "hero-lion-emerge",
   );
-  // There is an actual dark relief layer; the golden face remains hidden
-  // during its opening hold instead of just fading the golden image early.
-  const shadow = hero.locator(".hero-lion-shadow");
+  // The eyes come from the real neutral poster. No opaque shadow cutout is
+  // used; the body remains hidden through the first part of the eye reveal.
+  const eyes = hero.locator(".hero-lion-eyes");
+  await expect(hero.locator(".hero-lion-shadow")).toHaveCount(0);
+  await expect(eyes.locator("mask ellipse")).toHaveCount(2);
   await expect
     .poll(() =>
-      shadow.evaluate((element) => Number(getComputedStyle(element).opacity)),
+      eyes.evaluate((element) => Number(getComputedStyle(element).opacity)),
     )
-    .toBeGreaterThan(0.8);
+    .toBeGreaterThan(0.25);
   await expect(hero.locator(".sport-hero-visual")).toHaveCSS("opacity", "0");
-  const shadowImage = await shadow.locator("img").boundingBox();
+  const eyesBox = await eyes.boundingBox();
   expect(
     Math.abs(
-      brandBox!.x +
-        brandBox!.width / 2 -
-        (shadowImage!.x + shadowImage!.width / 2),
+      brandBox!.x + brandBox!.width / 2 - (eyesBox!.x + eyesBox!.width / 2),
     ),
   ).toBeLessThan(2);
   await expect(page.locator(".hero-intro-brand")).toHaveAttribute(
@@ -448,7 +448,7 @@ test("polvo, silueta, león, contenido y navegación se encadenan sin mover el h
   await expect(page.locator(".site-header")).toBeHidden();
   await expect(hero.locator(".sport-hero-visual")).toHaveCSS(
     "animation-duration",
-    "1.4s",
+    "3.2s",
   );
   await expect(hero.locator(".sport-hero-visual")).toHaveCSS("opacity", "1");
   await expect(hero).toHaveAttribute("data-navigation", "waiting");
@@ -494,6 +494,10 @@ test("el scoop termina una vez y el polvo permanece con pausa accesible", async 
   await expect(intro.locator("video")).toHaveJSProperty("muted", true);
   await expect(intro.locator("video")).toHaveJSProperty("loop", false);
   await expect(intro.locator("video")).toHaveJSProperty("paused", false);
+  await expect(intro).toHaveCount(0, { timeout: 8000 });
+  await expect(page.locator(".sport-hero-visual")).toHaveCSS("opacity", "1", {
+    timeout: 6000,
+  });
   const lion = page.locator(".sport-hero-visual > video");
   await page.mouse.move(page.viewportSize()!.width * 0.1, 300);
   await expect
@@ -567,6 +571,7 @@ test("el cruce frontal sigue presentando fotogramas sin cambios de sentido", asy
   await page.goto("/");
   const video = page.locator(".sport-hero-visual > video");
   await expect(video).toHaveClass(/is-ready/);
+  await page.keyboard.press("Tab");
   const width = page.viewportSize()!.width;
   await page.mouse.move(width * 0.6, 300);
   await expect
@@ -610,6 +615,7 @@ test("la mirada lenta atraviesa el frente con poses intermedias", async ({
   await page.goto("/");
   const video = page.locator(".sport-hero-visual > video");
   await expect(video).toHaveClass(/is-ready/);
+  await page.keyboard.press("Tab");
   const width = page.viewportSize()!.width;
   await page.mouse.move(width * 0.67, 300);
   await expect
@@ -660,8 +666,8 @@ test("un fallo del fondo conserva el león y los accesos de compra", async ({
     testInfo.project.name === "mobile",
     "El celular no descarga el video decorativo",
   );
-  await page.route("**/stylo-scoop-layers-v2.mp4", (route) => route.abort());
-  const attempted = page.waitForRequest("**/stylo-scoop-layers-v2.mp4");
+  await page.route("**/stylo-scoop-intro-v1.mp4", (route) => route.abort());
+  const attempted = page.waitForRequest("**/stylo-scoop-intro-v1.mp4");
   await page.goto("/");
   await attempted;
   await expect(page.locator(".hero-atmosphere")).toHaveCount(0);

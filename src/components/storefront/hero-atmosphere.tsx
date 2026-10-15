@@ -2,10 +2,8 @@
 
 import { useEffect, useRef, useState, type RefObject } from "react";
 
-const INTRO_URL = "/visuals/stylo-scoop-layers-v2.mp4";
-const MAX_BYTES = 2_100_000;
-const LAYER_WIDTH = 1280;
-const LAYER_HEIGHT = 720;
+const INTRO_URL = "/visuals/stylo-scoop-intro-v1.mp4";
+const MAX_BYTES = 3_500_000;
 
 /** A finite decorative entrance, loaded after the interactive lion is ready. */
 export function HeroAtmosphere({
@@ -24,11 +22,9 @@ export function HeroAtmosphere({
   onUnavailable: () => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const scoopRef = useRef<HTMLCanvasElement>(null);
-  const powderRef = useRef<HTMLCanvasElement>(null);
   const completeExit = useRef<() => void>(() => {});
   const [phase, setPhase] = useState<
-    "loading" | "playing" | "leaving" | "dispersing" | "done"
+    "loading" | "playing" | "leaving" | "done"
   >("loading");
   const completed = phase === "done";
 
@@ -38,12 +34,6 @@ export function HeroAtmosphere({
     const element = videoRef.current;
     if (!container || !element) return;
     const video: HTMLVideoElement = element;
-    const scoop = scoopRef.current?.getContext("2d", { alpha: false });
-    const powder = powderRef.current?.getContext("2d", { alpha: false });
-    if (!scoop || !powder) {
-      onUnavailable();
-      return;
-    }
     const connection = (
       navigator as Navigator & {
         connection?: { saveData?: boolean; effectiveType?: string };
@@ -52,8 +42,7 @@ export function HeroAtmosphere({
     if (
       connection?.saveData ||
       ["slow-2g", "2g", "3g"].includes(connection?.effectiveType ?? "") ||
-      !CSS.supports("mix-blend-mode", "screen") ||
-      !CSS.supports("mix-blend-mode", "plus-lighter")
+      !CSS.supports("mix-blend-mode", "screen")
     ) {
       setPhase("done");
       onSettled();
@@ -71,8 +60,6 @@ export function HeroAtmosphere({
     let lionRevealed = false;
     let brandRevealed = false;
     let videoFrame: number | null = null;
-    let fallbackFrame: number | null = null;
-    let drawnTime = -1;
     let blobUrl: string | null = null;
     let idle: number | null = null;
     let delay: number | undefined;
@@ -86,7 +73,6 @@ export function HeroAtmosphere({
       window.clearTimeout(deadline);
       window.clearTimeout(presentation);
       if (videoFrame !== null) video.cancelVideoFrameCallback(videoFrame);
-      if (fallbackFrame !== null) window.cancelAnimationFrame(fallbackFrame);
       videoFrame = null;
       video.pause();
       video.removeAttribute("src");
@@ -128,9 +114,8 @@ export function HeroAtmosphere({
     function handleEnded() {
       leave();
       revealLion();
-      // Only now does the stationary powder disperse. The scoop has already
-      // left independently; the last powder frame blends with ambient motes.
-      setPhase("dispersing");
+      // Keep the complete final frame until its upward fade finishes. There
+      // are no contour masks, separate panels or frozen fragments of the bowl.
     }
 
     completeExit.current = finish;
@@ -196,47 +181,18 @@ export function HeroAtmosphere({
       handleTime();
       if (typeof video.requestVideoFrameCallback === "function")
         videoFrame = video.requestVideoFrameCallback(handleVideoFrame);
-      else fallbackFrame = window.requestAnimationFrame(handleFallbackFrame);
       // A stalled video must never keep the storefront waiting indefinitely.
-      presentation = window.setTimeout(skip, 4200);
+      presentation = window.setTimeout(skip, 6500);
     }
 
     function handleTime() {
       if (finished || !playing || !Number.isFinite(video.duration)) return;
-      if (drawnTime !== video.currentTime && video.readyState >= 2) {
-        // Two tiles, one decoder. Each canvas has a stable 1280 x 720 surface;
-        // CSS moves only the scoop without moving or resampling the powder.
-        scoop!.drawImage(
-          video,
-          0,
-          0,
-          LAYER_WIDTH,
-          LAYER_HEIGHT,
-          0,
-          0,
-          LAYER_WIDTH,
-          LAYER_HEIGHT,
-        );
-        powder!.drawImage(
-          video,
-          LAYER_WIDTH,
-          0,
-          LAYER_WIDTH,
-          LAYER_HEIGHT,
-          0,
-          0,
-          LAYER_WIDTH,
-          LAYER_HEIGHT,
-        );
-        drawnTime = video.currentTime;
-      }
-      if (!brandRevealed && video.currentTime >= video.duration * 0.36) {
+      if (!brandRevealed && video.currentTime >= video.duration * 0.1) {
         brandRevealed = true;
         onBrand();
       }
       if (video.currentTime >= video.duration * 0.5) settle();
-      if (video.currentTime >= video.duration - 1.1) leave();
-      if (video.currentTime >= video.duration - 0.6) revealLion();
+      if (video.currentTime >= video.duration - 0.8) leave();
     }
 
     function handleVideoFrame() {
@@ -245,13 +201,6 @@ export function HeroAtmosphere({
       handleTime();
       if (!disposed && !finished)
         videoFrame = video.requestVideoFrameCallback(handleVideoFrame);
-    }
-
-    function handleFallbackFrame() {
-      fallbackFrame = null;
-      if (disposed || finished || video.ended) return;
-      handleTime();
-      fallbackFrame = window.requestAnimationFrame(handleFallbackFrame);
     }
 
     function handleVisibility() {
@@ -302,30 +251,11 @@ export function HeroAtmosphere({
       data-phase={phase}
       aria-hidden="true"
       onAnimationEnd={(event) => {
-        if (event.target === event.currentTarget && phase === "dispersing")
+        if (event.target === event.currentTarget && phase === "leaving")
           completeExit.current();
       }}
     >
-      <video
-        ref={videoRef}
-        muted
-        playsInline
-        preload="none"
-        tabIndex={-1}
-        hidden
-      />
-      <canvas
-        className="hero-powder-layer"
-        ref={powderRef}
-        width={LAYER_WIDTH}
-        height={LAYER_HEIGHT}
-      />
-      <canvas
-        className="hero-scoop-layer"
-        ref={scoopRef}
-        width={LAYER_WIDTH}
-        height={LAYER_HEIGHT}
-      />
+      <video ref={videoRef} muted playsInline preload="none" tabIndex={-1} />
     </div>
   );
 }

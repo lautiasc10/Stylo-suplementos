@@ -6,6 +6,7 @@ import {
   Fragment,
   useCallback,
   useEffect,
+  useId,
   useRef,
   useState,
   type CSSProperties,
@@ -44,6 +45,7 @@ function HeroWords({
 }
 
 export function CinematicHero() {
+  const eyesId = useId();
   const { setWaiting, introSeen, claimIntro } = useHomeIntro();
   const introChoice = useRef<boolean | null>(introSeen ? false : null);
   const gazeUnlocked = useRef(introSeen);
@@ -109,7 +111,7 @@ export function CinematicHero() {
     if (contentInstant || navigationReady) return;
     // Bound both media preparation and the reveal in case media/CSS events
     // are unavailable. This is a fallback, never the normal animation clock.
-    const fallback = window.setTimeout(revealAll, lionVisible ? 5000 : 7000);
+    const fallback = window.setTimeout(revealAll, lionVisible ? 7000 : 8500);
     return () => window.clearTimeout(fallback);
   }, [contentInstant, navigationReady, lionVisible, revealAll]);
 
@@ -352,15 +354,42 @@ export function CinematicHero() {
       )}
       {videoEnabled && !contentInstant && !contentStarted && (
         <>
-          <div className="hero-lion-shadow" aria-hidden="true">
-            <Image
-              src="/visuals/stylo-lion-shadow-v1.webp"
-              alt=""
-              fill
-              unoptimized
-              sizes="100vw"
+          <svg
+            className="hero-lion-eyes"
+            viewBox="0 0 1440 812"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <defs>
+              <radialGradient id={`${eyesId}-feather`}>
+                <stop offset="0" stopColor="white" />
+                <stop offset="0.55" stopColor="white" stopOpacity="0.85" />
+                <stop offset="1" stopColor="white" stopOpacity="0" />
+              </radialGradient>
+              <mask id={`${eyesId}-mask`}>
+                <ellipse
+                  cx="689"
+                  cy="256"
+                  rx="43"
+                  ry="17"
+                  fill={`url(#${eyesId}-feather)`}
+                />
+                <ellipse
+                  cx="841"
+                  cy="257"
+                  rx="35"
+                  ry="16"
+                  fill={`url(#${eyesId}-feather)`}
+                />
+              </mask>
+            </defs>
+            <image
+              href={POSTER_URL}
+              width="1440"
+              height="812"
+              mask={`url(#${eyesId}-mask)`}
             />
-          </div>
+          </svg>
           <div
             className="hero-intro-brand"
             data-state={
