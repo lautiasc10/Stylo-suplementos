@@ -7,6 +7,7 @@ import {
   ScrollReveal,
 } from "@/components/storefront/scroll-reveal";
 import { getCatalog } from "@/modules/catalog/server";
+import { CinematicHero } from "@/components/storefront/cinematic-hero";
 
 export default async function HomePage() {
   const { catalog, configured, error } = await getCatalog();
@@ -18,42 +19,7 @@ export default async function HomePage() {
       : categories;
   return (
     <>
-      <section className="sport-hero" aria-labelledby="hero-title">
-        <div className="sport-hero-visual" aria-hidden="true">
-          <Image
-            src="/visuals/catalog-lion-stone-v1.webp"
-            alt=""
-            fill
-            priority
-            sizes="100vw"
-          />
-        </div>
-        <div className="container sport-hero-inner">
-          <div className="hero-content">
-            <p className="eyebrow">BIENVENIDO A STYLO</p>
-            <h1 id="hero-title">
-              <span className="hero-kicker">POTENCIÁ</span>{" "}
-              <span className="hero-headline">
-                TU MEJOR <span>VERSIÓN.</span>
-              </span>
-            </h1>
-            <p className="hero-description">
-              La constancia es tuya. Nosotros acompañamos el camino.
-              <br /> Suplementos y accesorios para encontrar tu STYLO.
-            </p>
-            <div className="hero-actions">
-              <Link href="/catalogo" className="button button-gold">
-                Ver productos
-                <Icon name="arrow" />
-              </Link>
-              <a href="#categorias" className="hero-secondary-link">
-                Explorar categorías
-                <Icon name="arrow" />
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
+      <CinematicHero />
       <section
         id="categorias"
         className="container categories-section"

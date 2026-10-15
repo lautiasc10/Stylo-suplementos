@@ -7,7 +7,7 @@ test("inicio, navegación y categorías sin desbordamiento", async ({
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    /POTENCIÁ.*TU MEJOR.*VERSIÓN/,
+    "Bienvenido a STYLO SUPLEMENTOS",
   );
   await expect(page.locator(".category-card")).toHaveCount(9);
   expect(
