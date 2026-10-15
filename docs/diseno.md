@@ -1,6 +1,8 @@
 # Diseño de STYLO
 
-Dirección actual: composición editorial sobre negro, dorado y blanco cálido, portada alineada a la izquierda, titular compacto y categorías abiertas con líneas finas. La referencia visual enviada por el usuario el 13 de octubre reemplaza la portada centrada y las tarjetas ilustradas de las primeras fases. Acción principal de portada: explorar categorías y fichas. La compra se habilitará en sus fases comerciales.
+Dirección actual: composición editorial sobre negro, dorado y blanco cálido, portada alineada a la izquierda, titular compacto y categorías abiertas con líneas finas. La referencia visual enviada por el usuario el 13 de octubre reemplaza la portada centrada y las tarjetas ilustradas de las primeras fases. La portada ofrece acceso directo a productos y categorías.
+
+La portada incorpora una composición editorial con arte a sangre inspirada en la jerarquía y la entrada visual de [EMBER.dsgn en MotionSites](https://motionsites.ai/?prompt=ember-dsgn-hero). La adaptación usa únicamente la ilustración del león y la piedra ya presente en el catálogo; no reutiliza recursos ni código de la referencia. El titular oficial queda sobre un degradado oscuro, con acceso principal a productos y un enlace directo a categorías. En celular el león ocupa la parte superior y el texto aparece sobre negro; la entrada CSS termina sola y se elimina con movimiento reducido. La imagen decorativa lleva texto alternativo vacío, se precarga para la primera pantalla y no condiciona el acceso a los enlaces sin JavaScript. Vistas de revisión: [escritorio](previews/hero-editorial-1440.jpg) y [celular](previews/hero-editorial-390.jpg).
 
 ## Guía aplicada
 
