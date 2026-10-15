@@ -7,7 +7,7 @@ import { HeroAtmosphere } from "./hero-atmosphere";
 import { HeroDust } from "./hero-dust";
 import { gazeFrameTime, gazeTime, HERO_VIDEO_FPS } from "./hero-gaze";
 
-const VIDEO_URL = "/visuals/stylo-lion-motion-v2.mp4";
+const VIDEO_URL = "/visuals/stylo-lion-motion-v3.mp4";
 const POSTER_URL = "/visuals/stylo-lion-poster-v1.webp";
 const MESSAGE = "Potenciá tu mejor versión.";
 

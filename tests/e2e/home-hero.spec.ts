@@ -135,6 +135,27 @@ test("el scoop termina una vez y el polvo permanece con pausa accesible", async 
   await expect(intro).toHaveCount(0, { timeout: 6500 });
   const dust = page.locator(".hero-dust canvas");
   await expect(dust).toBeVisible();
+  // A changing canvas can still look empty against black. Check the actual
+  // composited luminance once the filmed powder has gone, not just the node.
+  const visibleDust = await dust.evaluate((element) => {
+    const canvas = element as HTMLCanvasElement;
+    const pixels = canvas
+      .getContext("2d")!
+      .getImageData(0, 0, canvas.width, canvas.height).data;
+    let bright = 0;
+    let haze = 0;
+    for (let i = 0; i < pixels.length; i += 4) {
+      const onBlack = (pixels[i] * pixels[i + 3]) / 255;
+      if (onBlack > 18) bright++;
+      if (onBlack > 3) haze++;
+    }
+    return {
+      bright: bright / (pixels.length / 4),
+      haze: haze / (pixels.length / 4),
+    };
+  });
+  expect(visibleDust.bright).toBeGreaterThan(0.01);
+  expect(visibleDust.haze).toBeGreaterThan(0.15);
   const image = await dust.evaluate((element) =>
     (element as HTMLCanvasElement).toDataURL(),
   );
@@ -211,6 +232,56 @@ test("el cruce frontal sigue presentando fotogramas sin cambios de sentido", asy
     expect(frames[i]).toBeLessThanOrEqual(frames[i - 1] + 0.001);
     expect(frames[i - 1] - frames[i]).toBeLessThan(0.2);
   }
+});
+
+test("la mirada lenta atraviesa el frente con poses intermedias", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name === "mobile", "El seguimiento utiliza mouse");
+  await page.goto("/");
+  const video = page.locator(".sport-hero-visual > video");
+  await expect(video).toHaveClass(/is-ready/);
+  const width = page.viewportSize()!.width;
+  await page.mouse.move(width * 0.67, 300);
+  await expect
+    .poll(() =>
+      video.evaluate((element) => (element as HTMLVideoElement).currentTime),
+    )
+    .toBeGreaterThan(2.05);
+  await page.waitForTimeout(400);
+  await video.evaluate((element) => {
+    const media = element as HTMLVideoElement & { slowFrames: number[] };
+    media.slowFrames = [];
+    media.addEventListener("seeked", () =>
+      media.slowFrames.push(media.currentTime),
+    );
+  });
+  // Just six percent of the viewport over almost six seconds: the previous
+  // 24 fps clip held only five poses during this same slow central sweep.
+  for (let step = 1; step <= 160; step++) {
+    await page.mouse.move(width * (0.67 + step * 0.000375), 300);
+    await page.waitForTimeout(35);
+  }
+  await expect
+    .poll(() =>
+      video.evaluate((element) => (element as HTMLVideoElement).currentTime),
+    )
+    .toBeLessThan(1.91);
+  const frames = await video.evaluate(
+    (element) =>
+      (element as HTMLVideoElement & { slowFrames: number[] }).slowFrames,
+  );
+  expect(new Set(frames).size).toBeGreaterThan(12);
+  for (let i = 1; i < frames.length; i++) {
+    expect(frames[i]).toBeLessThanOrEqual(frames[i - 1] + 0.001);
+    expect(frames[i - 1] - frames[i]).toBeLessThan(0.032);
+  }
+  await page.mouse.move(width * 0.7, 300);
+  await expect
+    .poll(() =>
+      video.evaluate((element) => (element as HTMLVideoElement).currentTime),
+    )
+    .toBeCloseTo(2, 1);
 });
 
 test("un fallo del fondo conserva el león y los accesos de compra", async ({

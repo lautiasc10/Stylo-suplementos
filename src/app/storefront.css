@@ -388,7 +388,7 @@
   overflow: hidden;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 1200ms ease;
+  transition: opacity 900ms ease;
 }
 .hero-dust[data-visible="true"] {
   opacity: 1;

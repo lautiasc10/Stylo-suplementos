@@ -28,7 +28,10 @@ describe("seguimiento del león", () => {
     }
   });
   it("busca dentro de los fotogramas y evita sus límites exactos", () => {
-    expect(gazeFrameTime(2)).toBeCloseTo(2 + 1 / 48, 8);
+    expect(gazeFrameTime(2)).toBeCloseTo(2 + 1 / 192, 8);
     expect(gazeFrameTime(2.001)).toBe(gazeFrameTime(2));
+    // Slow pointer input must expose intermediate poses, not hold the same
+    // original 24 fps frame until the cursor crosses its next threshold.
+    expect(gazeFrameTime(2.015)).toBeGreaterThan(gazeFrameTime(2));
   });
 });

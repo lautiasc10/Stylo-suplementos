@@ -32,6 +32,7 @@ export function HeroDust({
     const ctx: CanvasRenderingContext2D = context;
     const scene: HTMLElement = container;
     const motes: Mote[] = [];
+    const clouds: Mote[] = [];
     let width = 0;
     let height = 0;
     let inView = false;
@@ -46,8 +47,8 @@ export function HeroDust({
       return seed / 4294967296;
     };
 
-    // One tiny cached grain texture; no per-frame gradients, filters, images,
-    // video decoders or arrays of full-screen frames.
+    // Cached dust and haze textures. Their opacity and footprint are separate:
+    // the previous tiny, translucent grains became invisible on black.
     const grain = document.createElement("canvas");
     grain.width = grain.height = 40;
     const grainContext = grain.getContext("2d");
@@ -57,15 +58,16 @@ export function HeroDust({
     const rgb = [1, 3, 5]
       .map((start) => parseInt(hex.slice(start, start + 2), 16))
       .join(",");
-    const glow = grainContext.createRadialGradient(20, 20, 0, 20, 20, 8);
-    glow.addColorStop(0, `rgba(${rgb},.72)`);
-    glow.addColorStop(0.28, `rgba(${rgb},.42)`);
+    const glow = grainContext.createRadialGradient(20, 20, 0, 20, 20, 18);
+    glow.addColorStop(0, `rgba(${rgb},1)`);
+    glow.addColorStop(0.12, `rgba(${rgb},.8)`);
+    glow.addColorStop(0.35, `rgba(${rgb},.18)`);
     glow.addColorStop(1, `rgba(${rgb},0)`);
     grainContext.fillStyle = glow;
     grainContext.fillRect(0, 0, 40, 40);
-    for (let i = 0; i < 12; i++) {
-      grainContext.fillStyle = `rgba(${rgb},${0.1 + random() * 0.35})`;
-      const radius = 0.3 + random() * 0.65;
+    for (let i = 0; i < 8; i++) {
+      grainContext.fillStyle = `rgba(${rgb},${0.35 + random() * 0.5})`;
+      const radius = 0.6 + random() * 0.8;
       grainContext.beginPath();
       grainContext.arc(
         8 + random() * 24,
@@ -77,34 +79,78 @@ export function HeroDust({
       grainContext.fill();
     }
 
+    const haze = document.createElement("canvas");
+    haze.width = 192;
+    haze.height = 128;
+    const hazeContext = haze.getContext("2d");
+    if (!hazeContext) return;
+    for (let i = 0; i < 28; i++) {
+      const x = 38 + random() * 116;
+      const y = 34 + random() * 60;
+      const radius = 15 + random() * 23;
+      const patch = hazeContext.createRadialGradient(x, y, 0, x, y, radius);
+      patch.addColorStop(0, `rgba(${rgb},.12)`);
+      patch.addColorStop(0.5, `rgba(${rgb},.045)`);
+      patch.addColorStop(1, `rgba(${rgb},0)`);
+      hazeContext.fillStyle = patch;
+      hazeContext.fillRect(0, 0, 192, 128);
+    }
+    for (let i = 0; i < 16; i++)
+      clouds.push({
+        x: (i % 4) / 4 + random() * 0.2,
+        y: Math.floor(i / 4) / 4 + random() * 0.2,
+        depth: random(),
+        phase: random() * Math.PI * 2,
+      });
+
+    function protection(x: number, y: number) {
+      const dx = Math.max(copy.left - x, 0, x - copy.right);
+      const dy = Math.max(copy.top - y, 0, y - copy.bottom);
+      const copyWeight = 0.16 + 0.84 * Math.min(1, Math.hypot(dx, dy) / 70);
+      const faceDistance =
+        ((x - width * 0.7) / (width * 0.18)) ** 2 +
+        ((y - height * 0.42) / (height * 0.3)) ** 2;
+      const faceWeight = 0.08 + 0.92 * Math.min(1, faceDistance);
+      return copyWeight * faceWeight;
+    }
+
     function paint(dt: number) {
       if (!width || !height) return;
       motionTime += dt;
       ctx.clearRect(0, 0, width, height);
+      for (const cloud of clouds) {
+        cloud.x += ((4 + cloud.depth * 5) * dt) / width;
+        cloud.y -= ((2 + cloud.depth * 3) * dt) / height;
+        const size = Math.min(width * (0.3 + cloud.depth * 0.18), 700);
+        const marginX = (size / 2 + 24) / width;
+        const marginY = (size / 3 + 16) / height;
+        // Large patches wrap only once their entire footprint is offscreen.
+        if (cloud.x > 1 + marginX) cloud.x = -marginX;
+        if (cloud.y < -marginY) cloud.y = 1 + marginY;
+        const x =
+          cloud.x * width + Math.sin(motionTime * 0.12 + cloud.phase) * 24;
+        const y =
+          cloud.y * height + Math.cos(motionTime * 0.1 + cloud.phase) * 16;
+        ctx.globalAlpha = (0.18 + cloud.depth * 0.16) * protection(x, y);
+        ctx.drawImage(haze, x - size / 2, y - size / 3, size, (size * 2) / 3);
+      }
       for (const mote of motes) {
         mote.x +=
-          ((2 +
-            mote.depth * 7 +
-            Math.sin(motionTime * 0.09 + mote.phase) * 1.5) *
+          ((7 +
+            mote.depth * 14 +
+            Math.sin(motionTime * 0.18 + mote.phase) * 3) *
             dt) /
           width;
-        mote.y -= ((1 + mote.depth * 4) * dt) / height;
+        mote.y -= ((3 + mote.depth * 7) * dt) / height;
         if (mote.x > 1.03) mote.x = -0.03;
         if (mote.y < -0.03) mote.y = 1.03;
         const x =
           mote.x * width +
-          Math.sin(motionTime * 0.11 + mote.phase) * 6 * mote.depth;
+          Math.sin(motionTime * 0.23 + mote.phase) * 16 * mote.depth;
         const y =
-          mote.y * height + Math.cos(motionTime * 0.08 + mote.phase) * 3;
-        const dx = Math.max(copy.left - x, 0, x - copy.right);
-        const dy = Math.max(copy.top - y, 0, y - copy.bottom);
-        const copyWeight = 0.18 + 0.82 * Math.min(1, Math.hypot(dx, dy) / 48);
-        const faceDistance =
-          ((x - width * 0.7) / (width * 0.16)) ** 2 +
-          ((y - height * 0.42) / (height * 0.27)) ** 2;
-        const faceWeight = 0.12 + 0.88 * Math.min(1, faceDistance);
-        const size = 3 + mote.depth * 8;
-        ctx.globalAlpha = (0.18 + mote.depth * 0.28) * copyWeight * faceWeight;
+          mote.y * height + Math.cos(motionTime * 0.18 + mote.phase) * 8;
+        const size = 3.5 + mote.depth * 6;
+        ctx.globalAlpha = (0.5 + mote.depth * 0.4) * protection(x, y);
         ctx.drawImage(grain, x - size / 2, y - size / 2, size, size);
       }
       ctx.globalAlpha = 1;
@@ -136,8 +182,8 @@ export function HeroDust({
           bottom: bounds.bottom - origin.top + 12,
         };
       const count = Math.min(
-        120,
-        Math.max(50, Math.round((width * height) / 11000)),
+        440,
+        Math.max(220, Math.round((width * height) / 3600)),
       );
       while (motes.length < count)
         motes.push({

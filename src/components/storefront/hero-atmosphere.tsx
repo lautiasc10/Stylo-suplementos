@@ -142,6 +142,9 @@ export function HeroAtmosphere({
     function handleTime() {
       if (fading || finished || !playing || !Number.isFinite(video.duration))
         return;
+      // Establish the floating dust while the filmed powder is still visible,
+      // so its disappearance never leaves a dark gap between the two layers.
+      if (video.currentTime >= video.duration - 1.6) settle();
       if (video.currentTime >= video.duration - 0.75) {
         fading = true;
         setPhase("leaving");

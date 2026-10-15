@@ -1,4 +1,6 @@
-export const HERO_VIDEO_FPS = 24;
+// Intermediate frames are baked into the local clip, never computed on hover.
+export const HERO_VIDEO_FPS = 96;
+const SOURCE_VIDEO_FPS = 24;
 const ORIGIN = 0.7;
 const CENTER_WIDTH = 0.1;
 
@@ -25,7 +27,8 @@ export function gazeTime(progress: number, duration: number) {
   const x = Math.max(0, Math.min(1, progress));
   const first = duration * 0.15;
   const last = duration - first;
-  const center = Math.floor((duration / 2) * HERO_VIDEO_FPS) / HERO_VIDEO_FPS;
+  const center =
+    Math.floor((duration / 2) * SOURCE_VIDEO_FPS) / SOURCE_VIDEO_FPS;
   const leftSlope = (center - last) / ORIGIN;
   const rightSlope = (first - center) / (1 - ORIGIN);
   const centerSlope = (leftSlope + rightSlope) / 2;
