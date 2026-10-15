@@ -324,7 +324,9 @@
 :root:has(.flavor-product-detail) .category-mega-feature .eyebrow,
 :root:has(.flavor-product-detail) .category-mega-feature a,
 :root:has(.flavor-product-detail) .category-mega-other h3,
-:root:has(.flavor-product-detail) .category-mega-other a:is(:hover, :focus-visible) {
+:root:has(.flavor-product-detail)
+  .category-mega-other
+  a:is(:hover, :focus-visible) {
   color: #594722;
   border-color: #594722;
 }
@@ -372,11 +374,29 @@
 .hero-atmosphere[data-phase="playing"] {
   opacity: 0.34;
 }
+.hero-atmosphere[data-phase="leaving"] {
+  animation: hero-scoop-exit 1400ms ease-in-out both;
+}
 .hero-atmosphere video {
   width: 100%;
   height: 100%;
   object-fit: contain;
   transform: translate(-14%, 28%) scale(0.62);
+  transition: transform 1400ms cubic-bezier(0.4, 0, 0.7, 1);
+}
+.hero-atmosphere[data-phase="leaving"] video {
+  transform: translate(-85%, 28%) scale(0.62);
+}
+@keyframes hero-scoop-exit {
+  0% {
+    opacity: 0.34;
+  }
+  55% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 .sport-hero:has(.hero-atmosphere) .sport-hero-visual {
   z-index: 1;
@@ -567,7 +587,9 @@
       opacity 520ms ease var(--word-delay),
       transform 680ms var(--motion-ease) var(--word-delay);
   }
-  .hero-content[data-sequence="active"] .hero-text[data-revealed="false"] .hero-word {
+  .hero-content[data-sequence="active"]
+    .hero-text[data-revealed="false"]
+    .hero-word {
     opacity: 0;
     transform: translateX(-10px);
   }
@@ -597,10 +619,29 @@
     --hero-reveal-delay: 160ms;
   }
   .sport-hero[data-presentation="animated"] .sport-hero-visual {
-    transition: opacity 1800ms ease;
+    mix-blend-mode: screen;
   }
-  .sport-hero[data-presentation="animated"][data-lion-visible="false"] .sport-hero-visual {
+  .sport-hero[data-presentation="animated"][data-lion-visible="true"]
+    .sport-hero-visual {
+    animation: hero-lion-emerge 2400ms linear both;
+  }
+  .sport-hero[data-presentation="animated"][data-lion-visible="false"]
+    .sport-hero-visual {
     opacity: 0;
+  }
+}
+@keyframes hero-lion-emerge {
+  0% {
+    opacity: 0;
+  }
+  28% {
+    opacity: 0.08;
+  }
+  58% {
+    opacity: 0.34;
+  }
+  100% {
+    opacity: 1;
   }
 }
 .categories-section {

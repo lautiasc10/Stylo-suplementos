@@ -18,7 +18,7 @@ test("el hero conserva accesos y muestra un fotograma mientras carga", async ({
     )
     .toBeGreaterThan(0);
   await expect(
-    hero.getByRole("link", { name: "Conocé STYLO" }),
+    hero.getByRole("link", { name: "Conocé STYLO", includeHidden: true }),
   ).toHaveAttribute("href", "/nosotros");
   if (testInfo.project.name === "mobile") {
     await expect(hero.locator("video")).toHaveCount(0);
@@ -126,7 +126,7 @@ test("movimiento reducido y navegación sin JavaScript conservan el hero", async
   }
 });
 
-test("los renglones y botones siguen las etapas del scoop en orden", async ({
+test("los renglones y botones esperan al león y conservan su orden", async ({
   page,
 }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop");
@@ -135,16 +135,18 @@ test("los renglones y botones siguen las etapas del scoop en orden", async ({
     (
       window as typeof window & { contentSamples: typeof samples }
     ).contentSamples = samples;
+    document.addEventListener("animationend", (event) => {
+      if (event.animationName === "hero-lion-emerge")
+        (window as typeof window & { lionEnd: number }).lionEnd =
+          performance.now();
+    });
     const observer = new MutationObserver(() => {
       const content = document.querySelector<HTMLElement>(".hero-content");
       const stage = Number(content?.dataset.contentStage);
-      const video = document.querySelector<HTMLVideoElement>(
-        ".hero-atmosphere video",
-      );
-      if (stage > 0 && video && samples.at(-1)?.stage !== stage)
+      if (stage > 0 && samples.at(-1)?.stage !== stage)
         samples.push({
           stage,
-          time: video.currentTime,
+          time: performance.now(),
           buttons: Array.from(
             content!.querySelectorAll<HTMLAnchorElement>(
               '.hero-actions a[data-revealed="true"]',
@@ -161,7 +163,7 @@ test("los renglones y botones siguen las etapas del scoop en orden", async ({
   await page.goto("/");
   const content = page.locator(".hero-content");
   await expect(content).toHaveAttribute("data-content-stage", "6", {
-    timeout: 10000,
+    timeout: 15000,
   });
   const samples = await page.evaluate(
     () =>
@@ -175,13 +177,23 @@ test("los renglones y botones siguen las etapas del scoop en orden", async ({
   expect(samples[3].buttons).toEqual(["/nosotros"]);
   expect(samples[4].buttons).toEqual(["#categorias", "/nosotros"]);
   expect(samples[5].buttons).toEqual(["/catalogo", "#categorias", "/nosotros"]);
-  // The cue spacing comes from media time, including waiting for a buffered
-  // clip. Six independent page-load timers would fail these relationships.
-  const thresholds = [0, 0.8, 2, 2.8, 3.2, 3.6];
+  // The sequence starts at the lion's actual animation end, rather than at
+  // page load or while the scoop is still pouring.
+  const lionEnd = await page.evaluate(
+    () => (window as typeof window & { lionEnd: number }).lionEnd,
+  );
+  expect(lionEnd).toBeGreaterThan(0);
+  const thresholds = [0, 800, 2000, 2800, 3200, 3600];
   for (const [index, sample] of samples.entries()) {
-    expect(sample.time).toBeGreaterThanOrEqual(thresholds[index] - 0.05);
+    expect(sample.time - lionEnd).toBeGreaterThanOrEqual(
+      thresholds[index] - 80,
+    );
     if (index > 0) expect(sample.time).toBeGreaterThan(samples[index - 1].time);
   }
+  await expect(page.locator(".sport-hero")).toHaveAttribute(
+    "data-navigation",
+    "waiting",
+  );
   for (const link of await content.locator(".hero-actions a").all()) {
     await expect(link).toHaveCSS("opacity", "1");
     await expect(link).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
@@ -318,7 +330,7 @@ test("los logos vuelven al principio del hero desde otras páginas y desde el pi
   await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThan(2);
 });
 
-test("la cabecera entra después del scoop sobre las partículas y sin mover el hero", async ({
+test("polvo, silueta, león, contenido y navegación se encadenan sin mover el hero", async ({
   page,
 }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop");
@@ -337,17 +349,42 @@ test("la cabecera entra después del scoop sobre las partículas y sin mover el 
   const initial = await hero.boundingBox();
   expect(initial!.y).toBe(0);
   await expect(page.locator('.hero-dust[data-visible="true"]')).toBeVisible();
-  // Persistent particles start before the clip ends; navigation waits for the
-  // actual completion rather than using this earlier dust transition.
+  // The filmed powder, ambient dust and dim lion overlap. Copy and navigation
+  // remain hidden throughout the scoop's lateral exit and the lion reveal.
   await expect(page.locator(".site-header")).toBeHidden();
-  await expect(intro).toHaveCount(0, { timeout: 6000 });
+  await expect(intro).toHaveAttribute("data-phase", "leaving");
+  const scoopPosition = () =>
+    intro.locator("video").evaluate((element) => {
+      const transform = new DOMMatrixReadOnly(
+        getComputedStyle(element).transform,
+      );
+      return { x: transform.m41, scale: transform.a };
+    });
+  const exitStart = await scoopPosition();
+  await expect
+    .poll(async () => (await scoopPosition()).x)
+    .toBeLessThan(exitStart.x - 30);
+  expect((await scoopPosition()).scale).toBeCloseTo(exitStart.scale, 3);
   await expect(hero).toHaveAttribute("data-lion-visible", "true");
+  await expect(hero.locator(".hero-content")).toHaveAttribute(
+    "data-content-stage",
+    "0",
+  );
   await expect(hero.locator(".sport-hero-visual")).toHaveCSS(
-    "transition-duration",
-    "1.8s",
+    "animation-name",
+    "hero-lion-emerge",
+  );
+  await expect(intro).toHaveCount(0, { timeout: 6000 });
+  await expect(page.locator(".site-header")).toBeHidden();
+  await expect(hero.locator(".sport-hero-visual")).toHaveCSS(
+    "animation-duration",
+    "2.4s",
   );
   await expect(hero.locator(".sport-hero-visual")).toHaveCSS("opacity", "1");
-  await expect(hero).toHaveAttribute("data-navigation", "ready");
+  await expect(hero).toHaveAttribute("data-navigation", "waiting");
+  await expect(hero).toHaveAttribute("data-navigation", "ready", {
+    timeout: 6500,
+  });
   await expect(page.locator(".site-header")).toHaveCSS("opacity", "1");
   await expect(page.locator(".category-navigation-shell")).toHaveCSS(
     "opacity",

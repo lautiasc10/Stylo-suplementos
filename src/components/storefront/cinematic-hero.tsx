@@ -18,6 +18,7 @@ import { gazeFrameTime, gazeTime, HERO_VIDEO_FPS } from "./hero-gaze";
 const VIDEO_URL = "/visuals/stylo-lion-motion-v3.mp4";
 const POSTER_URL = "/visuals/stylo-lion-poster-v1.webp";
 const MESSAGE = "Potenciá tu mejor versión.";
+const CONTENT_CUES_MS = [0, 800, 2000, 2800, 3200, 3600];
 
 function HeroWords({
   text,
@@ -62,6 +63,7 @@ export function CinematicHero() {
   const [contentInstant, setContentInstant] = useState(introSeen);
   const [playIntro, setPlayIntro] = useState(!introSeen);
   const [lionVisible, setLionVisible] = useState(introSeen);
+  const [contentStarted, setContentStarted] = useState(false);
   const advanceContent = useCallback((stage: number) => {
     setContentStage((previous) => Math.max(previous, stage));
   }, []);
@@ -79,12 +81,31 @@ export function CinematicHero() {
     setDustReady(true);
     revealNavigation();
   }, [revealNavigation]);
-  const completePresentation = useCallback(() => {
-    setLionVisible(true);
-    setPlayIntro(false);
-    revealNavigation();
-  }, [revealNavigation]);
+  const completeScoop = useCallback(() => setPlayIntro(false), []);
+  const revealLion = useCallback(() => setLionVisible(true), []);
   const handleAtmosphereSettled = useCallback(() => setDustReady(true), []);
+
+  useEffect(() => {
+    if (!contentStarted || contentInstant) return;
+    // Start from the lion's actual animation end, retaining the existing text
+    // rhythm. Navigation waits for the final button's 160 + 740 ms entrance.
+    const cues = CONTENT_CUES_MS.map((delay, index) =>
+      window.setTimeout(() => advanceContent(index + 1), delay),
+    );
+    const navigation = window.setTimeout(revealNavigation, 4600);
+    return () => {
+      cues.forEach(window.clearTimeout);
+      window.clearTimeout(navigation);
+    };
+  }, [contentStarted, contentInstant, advanceContent, revealNavigation]);
+
+  useEffect(() => {
+    if (contentInstant || navigationReady) return;
+    // Bound both media preparation and the reveal in case media/CSS events
+    // are unavailable. This is a fallback, never the normal animation clock.
+    const fallback = window.setTimeout(revealAll, lionVisible ? 8000 : 8500);
+    return () => window.clearTimeout(fallback);
+  }, [contentInstant, navigationReady, lionVisible, revealAll]);
 
   useEffect(() => {
     const desktop = window.matchMedia(
@@ -114,21 +135,24 @@ export function CinematicHero() {
       }
     }
     updateEligibility();
-    const fallback = window.setTimeout(revealAll, 8500);
     function revealForKeyboard(event: KeyboardEvent) {
       if (event.key === "Tab" || event.key === "Escape") revealAll();
     }
     function revealForScroll() {
       if (window.scrollY > 8) revealAll();
     }
+    function revealForVisibility() {
+      if (document.hidden && !introFinished.current) revealAll();
+    }
     window.addEventListener("keydown", revealForKeyboard);
     window.addEventListener("scroll", revealForScroll, { passive: true });
+    document.addEventListener("visibilitychange", revealForVisibility);
     desktop.addEventListener("change", updateEligibility);
     reduced.addEventListener("change", updateEligibility);
     return () => {
-      window.clearTimeout(fallback);
       window.removeEventListener("keydown", revealForKeyboard);
       window.removeEventListener("scroll", revealForScroll);
+      document.removeEventListener("visibilitychange", revealForVisibility);
       setWaiting(false);
       desktop.removeEventListener("change", updateEligibility);
       reduced.removeEventListener("change", updateEligibility);
@@ -299,14 +323,25 @@ export function CinematicHero() {
             <HeroAtmosphere
               containerRef={heroRef}
               onSettled={handleAtmosphereSettled}
-              onComplete={completePresentation}
-              onCue={advanceContent}
+              onComplete={completeScoop}
+              onRevealLion={revealLion}
+              onUnavailable={revealAll}
             />
           )}
           <HeroDust containerRef={heroRef} enabled={dustReady} />
         </>
       )}
-      <div className="sport-hero-visual" aria-hidden="true">
+      <div
+        className="sport-hero-visual"
+        aria-hidden="true"
+        onAnimationEnd={(event) => {
+          if (
+            event.target === event.currentTarget &&
+            event.animationName === "hero-lion-emerge"
+          )
+            setContentStarted(true);
+        }}
+      >
         <div className="sport-hero-poster">
           <Image
             src={POSTER_URL}

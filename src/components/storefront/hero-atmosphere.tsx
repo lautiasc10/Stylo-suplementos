@@ -4,21 +4,23 @@ import { useEffect, useRef, useState, type RefObject } from "react";
 
 const INTRO_URL = "/visuals/stylo-scoop-intro-v1.mp4";
 const MAX_BYTES = 3_500_000;
-const CONTENT_CUES = [0, 0.2, 0.5, 0.7, 0.8, 0.9];
 
 /** A finite decorative entrance, loaded after the interactive lion is ready. */
 export function HeroAtmosphere({
   containerRef,
   onSettled,
   onComplete,
-  onCue,
+  onRevealLion,
+  onUnavailable,
 }: {
   containerRef: RefObject<HTMLElement | null>;
   onSettled: () => void;
   onComplete: () => void;
-  onCue: (stage: number) => void;
+  onRevealLion: () => void;
+  onUnavailable: () => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const completeExit = useRef<() => void>(() => {});
   const [phase, setPhase] = useState<
     "loading" | "playing" | "leaving" | "done"
   >("loading");
@@ -43,7 +45,7 @@ export function HeroAtmosphere({
     ) {
       setPhase("done");
       onSettled();
-      onComplete();
+      onUnavailable();
       return;
     }
 
@@ -54,7 +56,7 @@ export function HeroAtmosphere({
     let playing = false;
     let fading = false;
     let settled = false;
-    let contentCue = 0;
+    let lionRevealed = false;
     let videoFrame: number | null = null;
     let blobUrl: string | null = null;
     let idle: number | null = null;
@@ -88,6 +90,34 @@ export function HeroAtmosphere({
       setPhase("done");
     }
 
+    function skip() {
+      if (finished || disposed) return;
+      finish();
+      onUnavailable();
+    }
+
+    function leave() {
+      if (fading || finished || disposed) return;
+      fading = true;
+      setPhase("leaving");
+      settle();
+    }
+
+    function revealLion() {
+      if (lionRevealed || finished || disposed) return;
+      lionRevealed = true;
+      onRevealLion();
+    }
+
+    function handleEnded() {
+      // Keep the last decoded frame until the lateral exit completes. Removing
+      // the video at `ended` would cut the scoop off before it leaves the screen.
+      leave();
+      revealLion();
+    }
+
+    completeExit.current = finish;
+
     function settle() {
       if (settled || disposed) return;
       settled = true;
@@ -95,28 +125,28 @@ export function HeroAtmosphere({
     }
 
     async function load() {
-      if (disposed || finished || document.hidden) return finish();
+      if (disposed || finished || document.hidden) return skip();
       // Buffer this small, finite clip completely before playback to avoid a
       // frozen background on slower transfers. The lion never waits for it.
-      deadline = window.setTimeout(finish, 4000);
+      deadline = window.setTimeout(skip, 4000);
       try {
         const response = await fetch(INTRO_URL, {
           signal: request.signal,
           priority: "low",
         });
         const size = Number(response.headers.get("content-length"));
-        if (!response.ok || size > MAX_BYTES) return finish();
+        if (!response.ok || size > MAX_BYTES) return skip();
         const blob = await response.blob();
         if (disposed || finished) return;
-        if (blob.size > MAX_BYTES || !blob.size) return finish();
+        if (blob.size > MAX_BYTES || !blob.size) return skip();
         window.clearTimeout(deadline);
         blobUrl = URL.createObjectURL(blob);
         video.preload = "auto";
         video.src = blobUrl;
         video.load();
-        deadline = window.setTimeout(finish, 2000);
+        deadline = window.setTimeout(skip, 2000);
       } catch {
-        finish();
+        skip();
       }
     }
 
@@ -138,7 +168,7 @@ export function HeroAtmosphere({
     }
 
     function handleCanPlay() {
-      void video.play().catch(finish);
+      void video.play().catch(skip);
     }
 
     function handlePlaying() {
@@ -149,29 +179,17 @@ export function HeroAtmosphere({
       handleTime();
       if (typeof video.requestVideoFrameCallback === "function")
         videoFrame = video.requestVideoFrameCallback(handleVideoFrame);
-      // The entrance always ends in less than five seconds, including stalls.
-      presentation = window.setTimeout(finish, 4700);
+      // A stalled video must never keep the storefront waiting indefinitely.
+      presentation = window.setTimeout(skip, 5800);
     }
 
     function handleTime() {
       if (finished || !playing || !Number.isFinite(video.duration)) return;
-      const progress = video.currentTime / video.duration;
-      while (
-        contentCue < CONTENT_CUES.length &&
-        progress >= CONTENT_CUES[contentCue]
-      ) {
-        contentCue += 1;
-        onCue(contentCue);
-      }
-      if (fading) return;
       // Establish the floating dust while the filmed powder is still visible,
       // so its disappearance never leaves a dark gap between the two layers.
       if (video.currentTime >= video.duration - 1.6) settle();
-      if (video.currentTime >= video.duration - 0.75) {
-        fading = true;
-        setPhase("leaving");
-        settle();
-      }
+      if (video.currentTime >= video.duration - 1.3) leave();
+      if (video.currentTime >= video.duration - 1.1) revealLion();
     }
 
     function handleVideoFrame() {
@@ -183,13 +201,13 @@ export function HeroAtmosphere({
     }
 
     function handleVisibility() {
-      if (document.hidden) finish();
+      if (document.hidden) skip();
     }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.intersectionRatio >= 0.35) schedule();
-        else finish();
+        else skip();
       },
       { threshold: [0, 0.35] },
     );
@@ -197,26 +215,42 @@ export function HeroAtmosphere({
     video.addEventListener("canplay", handleCanPlay, { once: true });
     video.addEventListener("playing", handlePlaying);
     video.addEventListener("timeupdate", handleTime);
-    video.addEventListener("ended", finish);
-    video.addEventListener("error", finish);
+    video.addEventListener("ended", handleEnded);
+    video.addEventListener("error", skip);
     document.addEventListener("visibilitychange", handleVisibility);
     observer.observe(container);
     return () => {
       disposed = true;
+      completeExit.current = () => {};
       observer.disconnect();
       video.removeEventListener("canplay", handleCanPlay);
       video.removeEventListener("playing", handlePlaying);
       video.removeEventListener("timeupdate", handleTime);
-      video.removeEventListener("ended", finish);
-      video.removeEventListener("error", finish);
+      video.removeEventListener("ended", handleEnded);
+      video.removeEventListener("error", skip);
       document.removeEventListener("visibilitychange", handleVisibility);
       release();
     };
-  }, [containerRef, completed, onSettled, onComplete, onCue]);
+  }, [
+    containerRef,
+    completed,
+    onSettled,
+    onComplete,
+    onRevealLion,
+    onUnavailable,
+  ]);
 
   if (phase === "done") return null;
   return (
-    <div className="hero-atmosphere" data-phase={phase} aria-hidden="true">
+    <div
+      className="hero-atmosphere"
+      data-phase={phase}
+      aria-hidden="true"
+      onAnimationEnd={(event) => {
+        if (event.target === event.currentTarget && phase === "leaving")
+          completeExit.current();
+      }}
+    >
       <video ref={videoRef} muted playsInline preload="none" tabIndex={-1} />
     </div>
   );
