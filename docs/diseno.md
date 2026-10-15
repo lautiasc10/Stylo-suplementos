@@ -6,6 +6,8 @@ La portada cinematográfica usa los videos locales del león y del scoop entrega
 
 El desplegable de categorías reutiliza el polvo en la home y las páginas sin escena de sabor: hasta 180 granos y ocho parches de bruma, sin videos adicionales. La capa se monta únicamente mientras el panel está abierto y se limpia al cerrar. Tiene pausa accesible y responde a movimiento reducido en vivo. Las fichas con escena de sabor conservan sus colores también en el desplegable y no montan partículas doradas. El móvil conserva enlaces directos sin panel. Los fondos de otros sabores y la extensión de la escena a más productos quedan para la próxima entrega con recursos del usuario.
 
+El contenido de la portada conserva los tres renglones y los botones de la referencia del usuario. Se retira la escritura por caracteres: bienvenida, descripción, eslogan y tres acciones se revelan en ese orden al 0, 20, 50, 70, 80 y 90 % del tiempo real del scoop. Las entradas usan opacidad y desplazamiento corto, sin filtros ni cambios de tamaño. La cabecera entra al terminar el clip. Teclado, scroll, movimiento reducido, móvil y errores dejan el contenido completo disponible. Los logos de cabecera y pie apuntan a `/#inicio`, cuyo destino está al principio de la cabecera, y la acción dentro de la misma home sube explícitamente al comienzo; no se restaura accidentalmente la sección de categorías.
+
 ## Guía aplicada
 
 Se usa [landing-page-design de AI Design Skills](https://github.com/elayadesign/ai-design-skills/blob/main/skills/landing-page-design/SKILL.md), revisada el 10 de octubre de 2026, como guía adaptada al ecommerce. No se instaló un paquete ejecutable ni una skill global. Esta adaptación y las instrucciones del proyecto mantienen su aplicación en futuras iteraciones.

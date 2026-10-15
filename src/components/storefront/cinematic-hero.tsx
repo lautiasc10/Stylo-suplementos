@@ -12,61 +12,6 @@ const VIDEO_URL = "/visuals/stylo-lion-motion-v3.mp4";
 const POSTER_URL = "/visuals/stylo-lion-poster-v1.webp";
 const MESSAGE = "Potenciá tu mejor versión.";
 
-function useTypewriter({
-  text,
-  speed = 38,
-  startDelay = 600,
-}: {
-  text: string;
-  speed?: number;
-  startDelay?: number;
-}): { displayed: string; done: boolean } {
-  const [displayed, setDisplayed] = useState("");
-  const [done, setDone] = useState(false);
-
-  useEffect(() => {
-    const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
-    let delay: number | undefined;
-    let interval: number | undefined;
-
-    function stopTimers() {
-      window.clearTimeout(delay);
-      window.clearInterval(interval);
-    }
-
-    function start() {
-      stopTimers();
-      if (preference.matches) {
-        setDisplayed(text);
-        setDone(true);
-        return;
-      }
-      setDisplayed("");
-      setDone(false);
-      let characters = 0;
-      delay = window.setTimeout(() => {
-        interval = window.setInterval(() => {
-          characters += 1;
-          setDisplayed(text.slice(0, characters));
-          if (characters >= text.length) {
-            window.clearInterval(interval);
-            setDone(true);
-          }
-        }, speed);
-      }, startDelay);
-    }
-
-    start();
-    preference.addEventListener("change", start);
-    return () => {
-      stopTimers();
-      preference.removeEventListener("change", start);
-    };
-  }, [text, speed, startDelay]);
-
-  return { displayed, done };
-}
-
 export function CinematicHero() {
   const heroRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -81,15 +26,24 @@ export function CinematicHero() {
   const [videoReady, setVideoReady] = useState(false);
   const [dustReady, setDustReady] = useState(false);
   const [navigationReady, setNavigationReady] = useState(false);
+  const [contentStage, setContentStage] = useState(0);
+  const [contentInstant, setContentInstant] = useState(false);
+  const advanceContent = useCallback((stage: number) => {
+    setContentStage((previous) => Math.max(previous, stage));
+  }, []);
   const introFinished = useRef(false);
   const { setWaiting } = useHomeIntro();
   const revealNavigation = useCallback(() => {
     introFinished.current = true;
     setNavigationReady(true);
     setWaiting(false);
-  }, [setWaiting]);
+    advanceContent(6);
+  }, [setWaiting, advanceContent]);
+  const revealAll = useCallback(() => {
+    setContentInstant(true);
+    revealNavigation();
+  }, [revealNavigation]);
   const handleAtmosphereSettled = useCallback(() => setDustReady(true), []);
-  const { displayed, done } = useTypewriter({ text: MESSAGE });
 
   useEffect(() => {
     const desktop = window.matchMedia(
@@ -102,8 +56,12 @@ export function CinematicHero() {
       ).connection?.saveData;
       const eligible = desktop.matches && !reduced.matches && !saveData;
       setVideoEnabled(eligible);
-      if (!eligible || window.scrollY > 8 || window.location.hash)
-        revealNavigation();
+      if (
+        !eligible ||
+        window.scrollY > 8 ||
+        (window.location.hash && window.location.hash !== "#inicio")
+      )
+        revealAll();
       else if (!introFinished.current) setWaiting(true);
       if (!eligible) {
         setVideoReady(false);
@@ -111,12 +69,12 @@ export function CinematicHero() {
       }
     }
     updateEligibility();
-    const fallback = window.setTimeout(revealNavigation, 8500);
+    const fallback = window.setTimeout(revealAll, 8500);
     function revealForKeyboard(event: KeyboardEvent) {
-      if (event.key === "Tab" || event.key === "Escape") revealNavigation();
+      if (event.key === "Tab" || event.key === "Escape") revealAll();
     }
     function revealForScroll() {
-      if (window.scrollY > 8) revealNavigation();
+      if (window.scrollY > 8) revealAll();
     }
     window.addEventListener("keydown", revealForKeyboard);
     window.addEventListener("scroll", revealForScroll, { passive: true });
@@ -130,7 +88,7 @@ export function CinematicHero() {
       desktop.removeEventListener("change", updateEligibility);
       reduced.removeEventListener("change", updateEligibility);
     };
-  }, [revealNavigation, setWaiting]);
+  }, [revealAll, setWaiting]);
 
   useEffect(() => {
     if (!videoEnabled) return;
@@ -224,7 +182,7 @@ export function CinematicHero() {
       setVideoReady(false);
       setVideoEnabled(false);
       setDustReady(false);
-      revealNavigation();
+      revealAll();
     }
 
     const observer = new IntersectionObserver(
@@ -276,7 +234,7 @@ export function CinematicHero() {
       seeking.current = false;
       mediaReady.current = false;
     };
-  }, [videoEnabled, revealNavigation]);
+  }, [videoEnabled, revealAll]);
 
   return (
     <section
@@ -286,7 +244,7 @@ export function CinematicHero() {
       data-navigation={navigationReady ? "ready" : "waiting"}
     >
       <noscript>
-        <style>{`.site-header,.category-navigation-shell{opacity:1!important;visibility:visible!important;transform:none!important;pointer-events:auto!important}`}</style>
+        <style>{`.site-header,.category-navigation-shell,.hero-reveal{opacity:1!important;visibility:visible!important;transform:none!important;pointer-events:auto!important}`}</style>
       </noscript>
       {videoEnabled && videoReady && (
         <>
@@ -294,6 +252,7 @@ export function CinematicHero() {
             containerRef={heroRef}
             onSettled={handleAtmosphereSettled}
             onComplete={revealNavigation}
+            onCue={advanceContent}
           />
           <HeroDust containerRef={heroRef} enabled={dustReady} />
         </>
@@ -321,31 +280,52 @@ export function CinematicHero() {
         )}
       </div>
       <div className="container sport-hero-inner">
-        <div className="hero-content">
-          <h1 id="hero-title" className="hero-intro">
+        <div
+          className="hero-content"
+          data-sequence={contentInstant ? "static" : "active"}
+          data-content-stage={contentStage}
+        >
+          <h1
+            id="hero-title"
+            className="hero-intro hero-reveal"
+            data-revealed={contentStage >= 1}
+          >
             Bienvenido a <span>STYLO SUPLEMENTOS</span>
           </h1>
-          <p className="hero-description">
+          <p
+            className="hero-description hero-reveal"
+            data-revealed={contentStage >= 2}
+          >
             Una nueva experiencia está por comenzar.
           </p>
           <div className="hero-typewriter-slot">
-            <p className="hero-typewriter" aria-hidden="true">
-              {displayed}
-              {!done && <span className="hero-cursor" />}
+            <p
+              className="hero-typewriter hero-reveal"
+              data-revealed={contentStage >= 3}
+            >
+              {MESSAGE}
             </p>
-            <noscript>
-              <p className="hero-typewriter-static">{MESSAGE}</p>
-            </noscript>
-            <span className="sr-only">{MESSAGE}</span>
           </div>
           <div className="hero-actions">
-            <Link href="/catalogo" className="hero-pill hero-pill-primary">
+            <Link
+              href="/catalogo"
+              className="hero-pill hero-pill-primary hero-reveal"
+              data-revealed={contentStage >= 4}
+            >
               Explorar tienda
             </Link>
-            <a href="#categorias" className="hero-pill hero-pill-secondary">
+            <a
+              href="#categorias"
+              className="hero-pill hero-pill-secondary hero-reveal"
+              data-revealed={contentStage >= 5}
+            >
               Ver productos destacados
             </a>
-            <Link href="/nosotros" className="hero-pill hero-pill-outline">
+            <Link
+              href="/nosotros"
+              className="hero-pill hero-pill-outline hero-reveal"
+              data-revealed={contentStage >= 6}
+            >
               Conocé STYLO
             </Link>
           </div>

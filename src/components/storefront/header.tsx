@@ -1,6 +1,7 @@
 "use client";
 
 import { BrandMark } from "./brand-mark";
+import { HomeLink } from "./home-link";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -101,16 +102,11 @@ export function Header({
   }, [open]);
   return (
     <>
-      <header className="site-header" inert={introWaiting}>
+      <header id="inicio" className="site-header" inert={introWaiting}>
         <div className="container header-inner">
-          <Link
-            href="/"
-            aria-label="STYLO Suplementos, inicio"
-            className="brand-link"
-            onClick={() => setOpen(false)}
-          >
+          <HomeLink onClick={() => setOpen(false)}>
             <BrandMark priority />
-          </Link>
+          </HomeLink>
           <nav className="desktop-nav" aria-label="Navegación principal">
             {links.map((link) => (
               <Link

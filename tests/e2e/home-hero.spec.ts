@@ -99,7 +99,7 @@ test("movimiento reducido y navegación sin JavaScript conservan el hero", async
       "inert",
     );
     await expect(plainPage.locator(".category-navigation")).toBeVisible();
-    await expect(plainPage.locator(".hero-typewriter-static")).toHaveText(
+    await expect(plainPage.locator(".hero-typewriter")).toHaveText(
       "Potenciá tu mejor versión.",
     );
     await plainPage
@@ -107,9 +107,89 @@ test("movimiento reducido y navegación sin JavaScript conservan el hero", async
       .getByRole("link", { name: "Explorar tienda" })
       .click();
     await expect(plainPage).toHaveURL(/\/catalogo$/);
+    await plainPage.locator(".site-header .brand-link").click();
+    await expect(plainPage).toHaveURL(/\/#inicio$/);
+    await expect.poll(() => plainPage.evaluate(() => scrollY)).toBeLessThan(2);
+    await expect(plainPage.locator(".hero-actions a").first()).toBeVisible();
   } finally {
     await context.close();
   }
+});
+
+test("los renglones y botones siguen las etapas del scoop en orden", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop");
+  await page.addInitScript(() => {
+    const samples: { stage: number; time: number }[] = [];
+    (
+      window as typeof window & { contentSamples: typeof samples }
+    ).contentSamples = samples;
+    const observer = new MutationObserver(() => {
+      const content = document.querySelector<HTMLElement>(".hero-content");
+      const stage = Number(content?.dataset.contentStage);
+      const video = document.querySelector<HTMLVideoElement>(
+        ".hero-atmosphere video",
+      );
+      if (stage > 0 && video && samples.at(-1)?.stage !== stage)
+        samples.push({ stage, time: video.currentTime });
+    });
+    observer.observe(document, {
+      attributes: true,
+      attributeFilter: ["data-content-stage"],
+      subtree: true,
+    });
+  });
+  await page.goto("/");
+  const content = page.locator(".hero-content");
+  await expect(content).toHaveAttribute("data-content-stage", "6", {
+    timeout: 10000,
+  });
+  const samples = await page.evaluate(
+    () =>
+      (
+        window as typeof window & {
+          contentSamples: { stage: number; time: number }[];
+        }
+      ).contentSamples,
+  );
+  expect(samples.map((sample) => sample.stage)).toEqual([1, 2, 3, 4, 5, 6]);
+  // The cue spacing comes from media time, including waiting for a buffered
+  // clip. Six independent page-load timers would fail these relationships.
+  const thresholds = [0, 0.8, 2, 2.8, 3.2, 3.6];
+  for (const [index, sample] of samples.entries()) {
+    expect(sample.time).toBeGreaterThanOrEqual(thresholds[index] - 0.05);
+    if (index > 0) expect(sample.time).toBeGreaterThan(samples[index - 1].time);
+  }
+  for (const link of await content.locator(".hero-actions a").all())
+    await expect(link).toHaveCSS("opacity", "1");
+  await expect(content.locator(".hero-cursor")).toHaveCount(0);
+});
+
+test("los logos vuelven al principio del hero desde otras páginas y desde el pie", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.keyboard.press("Tab");
+  await page.locator('.hero-actions a[href="#categorias"]').click();
+  await expect(page).toHaveURL(/#categorias$/);
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(200);
+  await page.locator('#categorias a[href="/catalogo"]').click();
+  await expect(page).toHaveURL(/\/catalogo$/);
+  await page.locator(".site-header .brand-link").click();
+  await expect(page).toHaveURL(/\/#inicio$/);
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThan(2);
+  await expect(page.locator(".sport-hero")).toBeInViewport();
+  await page.goto("/nosotros");
+  await page.locator(".site-footer .brand-link").click();
+  await expect(page).toHaveURL(/\/#inicio$/);
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThan(2);
+  await page.keyboard.press("Tab");
+  await page.locator('.hero-actions a[href="#categorias"]').click();
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(200);
+  await page.locator(".site-footer .brand-link").click();
+  await expect(page).toHaveURL(/\/#inicio$/);
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThan(2);
 });
 
 test("la cabecera entra después del scoop sobre las partículas y sin mover el hero", async ({

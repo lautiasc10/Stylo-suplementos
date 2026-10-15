@@ -479,7 +479,6 @@
   line-height: 1.4;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  animation: hero-copy-enter 600ms ease both;
 }
 .hero-intro span {
   color: var(--gold);
@@ -490,15 +489,13 @@
   font-weight: 400;
   line-height: 1.3;
   color: var(--foreground);
-  animation: hero-copy-enter 650ms ease 120ms both;
 }
 .hero-typewriter-slot {
   min-height: 2.7em;
   margin-top: var(--space-2);
   font-size: clamp(18px, 4vw, 26px);
 }
-.hero-typewriter,
-.hero-typewriter-static {
+.hero-typewriter {
   display: flex;
   align-items: baseline;
   gap: 3px;
@@ -508,25 +505,12 @@
   line-height: 1.35;
   color: var(--foreground);
 }
-.hero-typewriter-static {
-  display: block;
-}
-.hero-cursor {
-  display: inline-block;
-  width: 2px;
-  height: 1.1em;
-  flex: none;
-  align-self: center;
-  background: var(--gold);
-  animation: hero-cursor-blink 1s step-end infinite;
-}
 .hero-actions {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: var(--space-2);
   margin-top: var(--space-6);
-  animation: hero-actions-enter 400ms ease 400ms both;
 }
 .hero-pill {
   display: inline-flex;
@@ -570,33 +554,30 @@
   background: var(--gold);
   color: var(--cinematic-background);
 }
-@keyframes hero-copy-enter {
-  from {
+@media (min-width: 801px) and (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .hero-content[data-sequence="active"] .hero-reveal {
+    transition:
+      opacity 600ms ease var(--hero-reveal-delay, 0ms),
+      transform 740ms var(--motion-ease) var(--hero-reveal-delay, 0ms),
+      visibility 0s var(--hero-reveal-delay, 0ms),
+      background-color 200ms ease,
+      color 200ms ease,
+      border-color 200ms ease;
+  }
+  .hero-content[data-sequence="active"] .hero-reveal[data-revealed="false"] {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(14px);
+    pointer-events: none;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  .hero-content[data-sequence="active"] .hero-pill[data-revealed="false"] {
+    visibility: hidden;
+    transition: none;
   }
-}
-@keyframes hero-actions-enter {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
+  .hero-content[data-sequence="active"] .hero-pill:nth-child(2) {
+    --hero-reveal-delay: 80ms;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-@keyframes hero-cursor-blink {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0;
+  .hero-content[data-sequence="active"] .hero-pill:nth-child(3) {
+    --hero-reveal-delay: 160ms;
   }
 }
 .categories-section {
@@ -1084,8 +1065,7 @@
   }
   .sport-hero .hero-intro,
   .hero-description,
-  .hero-actions,
-  .hero-cursor {
+  .hero-actions {
     animation: none;
   }
   .hero-pill {

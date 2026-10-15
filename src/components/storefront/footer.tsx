@@ -1,18 +1,15 @@
 import Link from "next/link";
 import { BrandMark } from "./brand-mark";
+import { HomeLink } from "./home-link";
 
 export function Footer() {
   return (
     <footer className="site-footer">
       <div className="container footer-inner">
         <div>
-          <Link
-            href="/"
-            className="brand-link"
-            aria-label="STYLO Suplementos, inicio"
-          >
+          <HomeLink>
             <BrandMark />
-          </Link>
+          </HomeLink>
           <p>Potenciá tu mejor versión.</p>
         </div>
         <nav aria-label="Navegación del pie">

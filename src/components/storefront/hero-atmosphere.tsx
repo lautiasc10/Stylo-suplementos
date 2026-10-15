@@ -4,16 +4,19 @@ import { useEffect, useRef, useState, type RefObject } from "react";
 
 const INTRO_URL = "/visuals/stylo-scoop-intro-v1.mp4";
 const MAX_BYTES = 3_500_000;
+const CONTENT_CUES = [0, 0.2, 0.5, 0.7, 0.8, 0.9];
 
 /** A finite decorative entrance, loaded after the interactive lion is ready. */
 export function HeroAtmosphere({
   containerRef,
   onSettled,
   onComplete,
+  onCue,
 }: {
   containerRef: RefObject<HTMLElement | null>;
   onSettled: () => void;
   onComplete: () => void;
+  onCue: (stage: number) => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [phase, setPhase] = useState<
@@ -51,6 +54,8 @@ export function HeroAtmosphere({
     let playing = false;
     let fading = false;
     let settled = false;
+    let contentCue = 0;
+    let videoFrame: number | null = null;
     let blobUrl: string | null = null;
     let idle: number | null = null;
     let delay: number | undefined;
@@ -63,6 +68,8 @@ export function HeroAtmosphere({
       window.clearTimeout(delay);
       window.clearTimeout(deadline);
       window.clearTimeout(presentation);
+      if (videoFrame !== null) video.cancelVideoFrameCallback(videoFrame);
+      videoFrame = null;
       video.pause();
       video.removeAttribute("src");
       video.load();
@@ -139,13 +146,24 @@ export function HeroAtmosphere({
       playing = true;
       window.clearTimeout(deadline);
       setPhase("playing");
+      handleTime();
+      if (typeof video.requestVideoFrameCallback === "function")
+        videoFrame = video.requestVideoFrameCallback(handleVideoFrame);
       // The entrance always ends in less than five seconds, including stalls.
       presentation = window.setTimeout(finish, 4700);
     }
 
     function handleTime() {
-      if (fading || finished || !playing || !Number.isFinite(video.duration))
-        return;
+      if (finished || !playing || !Number.isFinite(video.duration)) return;
+      const progress = video.currentTime / video.duration;
+      while (
+        contentCue < CONTENT_CUES.length &&
+        progress >= CONTENT_CUES[contentCue]
+      ) {
+        contentCue += 1;
+        onCue(contentCue);
+      }
+      if (fading) return;
       // Establish the floating dust while the filmed powder is still visible,
       // so its disappearance never leaves a dark gap between the two layers.
       if (video.currentTime >= video.duration - 1.6) settle();
@@ -154,6 +172,14 @@ export function HeroAtmosphere({
         setPhase("leaving");
         settle();
       }
+    }
+
+    function handleVideoFrame() {
+      videoFrame = null;
+      if (disposed || finished) return;
+      handleTime();
+      if (!disposed && !finished)
+        videoFrame = video.requestVideoFrameCallback(handleVideoFrame);
     }
 
     function handleVisibility() {
@@ -186,7 +212,7 @@ export function HeroAtmosphere({
       document.removeEventListener("visibilitychange", handleVisibility);
       release();
     };
-  }, [containerRef, completed, onSettled, onComplete]);
+  }, [containerRef, completed, onSettled, onComplete, onCue]);
 
   if (phase === "done") return null;
   return (
