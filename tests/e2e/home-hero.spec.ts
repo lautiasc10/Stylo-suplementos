@@ -45,7 +45,7 @@ test("la mirada sigue la posición del cursor y vuelve al mismo fotograma", asyn
     "El celular muestra un fotograma fijo",
   );
   await page.goto("/");
-  const video = page.locator(".sport-hero video");
+  const video = page.locator(".sport-hero-visual > video");
   await expect(video).toHaveClass(/is-ready/, { timeout: 15000 });
   const width = page.viewportSize()!.width;
   const currentTime = () =>
@@ -71,12 +71,18 @@ test("movimiento reducido y navegación sin JavaScript conservan el hero", async
   page,
   browser,
 }, testInfo) => {
+  const atmosphereRequests: string[] = [];
+  page.on("request", (request) => {
+    if (request.url().includes("stylo-scoop-intro"))
+      atmosphereRequests.push(request.url());
+  });
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   await expect(page.locator(".sport-hero video")).toHaveCount(0);
   await expect(page.locator(".hero-typewriter")).toHaveText(
     "Potenciá tu mejor versión.",
   );
+  expect(atmosphereRequests).toEqual([]);
   const context = await browser.newContext({
     javaScriptEnabled: false,
     viewport: testInfo.project.use.viewport,
@@ -96,4 +102,62 @@ test("movimiento reducido y navegación sin JavaScript conservan el hero", async
   } finally {
     await context.close();
   }
+});
+
+test("la entrada de polvo termina una sola vez y permite seguir la mirada", async ({
+  page,
+}, testInfo) => {
+  test.skip(
+    testInfo.project.name === "mobile",
+    "La entrada es una mejora para escritorio",
+  );
+  const requests: string[] = [];
+  page.on("request", (request) => {
+    if (request.url().includes("stylo-scoop-intro"))
+      requests.push(request.url());
+  });
+  await page.goto("/");
+  const intro = page.locator(".hero-atmosphere");
+  await expect(intro).toHaveAttribute("data-phase", "playing", {
+    timeout: 10000,
+  });
+  await expect(intro.locator("video")).toHaveJSProperty("muted", true);
+  await expect(intro.locator("video")).toHaveJSProperty("loop", false);
+  await expect(intro.locator("video")).toHaveJSProperty("paused", false);
+  const lion = page.locator(".sport-hero-visual > video");
+  await page.mouse.move(page.viewportSize()!.width * 0.1, 300);
+  await expect
+    .poll(() =>
+      lion.evaluate((element) => (element as HTMLVideoElement).currentTime),
+    )
+    .toBeGreaterThan(2.8);
+  await expect(intro).toHaveCount(0, { timeout: 6500 });
+  await page.mouse.move(page.viewportSize()!.width * 0.95, 300);
+  await expect
+    .poll(() =>
+      lion.evaluate((element) => (element as HTMLVideoElement).currentTime),
+    )
+    .toBeLessThan(1.2);
+  expect(requests).toHaveLength(1);
+});
+
+test("un fallo del fondo conserva el león y los accesos de compra", async ({
+  page,
+}, testInfo) => {
+  test.skip(
+    testInfo.project.name === "mobile",
+    "El celular no descarga el video decorativo",
+  );
+  await page.route("**/stylo-scoop-intro-v1.mp4", (route) => route.abort());
+  const attempted = page.waitForRequest("**/stylo-scoop-intro-v1.mp4");
+  await page.goto("/");
+  await attempted;
+  await expect(page.locator(".hero-atmosphere")).toHaveCount(0);
+  await expect(page.locator(".sport-hero-visual > video")).toHaveClass(
+    /is-ready/,
+  );
+  await page
+    .getByRole("link", { name: "Explorar tienda", exact: true })
+    .click();
+  await expect(page).toHaveURL(/\/catalogo$/);
 });

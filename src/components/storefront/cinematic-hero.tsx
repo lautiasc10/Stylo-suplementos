@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { HeroAtmosphere } from "./hero-atmosphere";
 
 const VIDEO_URL = "/visuals/stylo-lion-motion-v2.mp4";
 const POSTER_URL = "/visuals/stylo-lion-poster-v1.webp";
@@ -268,6 +269,7 @@ export function CinematicHero() {
 
   return (
     <section className="sport-hero" ref={heroRef} aria-labelledby="hero-title">
+      {videoEnabled && videoReady && <HeroAtmosphere containerRef={heroRef} />}
       <div className="sport-hero-visual" aria-hidden="true">
         <div className="sport-hero-poster">
           <Image
