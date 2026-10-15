@@ -4,9 +4,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
-const VIDEO_URL = "/visuals/stylo-lion-motion-v1.mp4";
+const VIDEO_URL = "/visuals/stylo-lion-motion-v2.mp4";
 const POSTER_URL = "/visuals/stylo-lion-poster-v1.webp";
-const SENSITIVITY = 0.8;
+const VIDEO_FPS = 24;
+const GAZE_ORIGIN = 0.7;
 const MESSAGE = "Potenciá tu mejor versión.";
 
 function useTypewriter({
@@ -68,9 +69,11 @@ export function CinematicHero() {
   const heroRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const targetTime = useRef(0);
-  const previousX = useRef<number | null>(null);
+  const submittedTime = useRef(0);
   const seeking = useRef(false);
   const active = useRef(false);
+  const mediaReady = useRef(false);
+  const animationFrame = useRef<number | null>(null);
   const [videoEnabled, setVideoEnabled] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
   const { displayed, done } = useTypewriter({ text: MESSAGE });
@@ -88,8 +91,6 @@ export function CinematicHero() {
       setVideoEnabled(eligible);
       if (!eligible) {
         setVideoReady(false);
-        previousX.current = null;
-        seeking.current = false;
       }
     }
     updateEligibility();
@@ -101,45 +102,124 @@ export function CinematicHero() {
     };
   }, []);
 
-  function seekToTarget() {
-    const video = videoRef.current;
-    if (!video || seeking.current || !Number.isFinite(video.duration)) return;
-    if (Math.abs(video.currentTime - targetTime.current) < 1 / 60) {
-      setVideoReady(true);
-      return;
-    }
-    seeking.current = true;
-    try {
-      video.currentTime = targetTime.current;
-    } catch {
-      seeking.current = false;
-      setVideoEnabled(false);
-    }
-  }
-
-  function handleMetadata() {
-    const video = videoRef.current;
-    if (!video || !Number.isFinite(video.duration) || video.duration <= 0)
-      return;
-    video.pause();
-    targetTime.current = video.duration / 2;
-    seekToTarget();
-  }
-
-  function handleSeeked() {
-    seeking.current = false;
-    seekToTarget();
-  }
-
   useEffect(() => {
     if (!videoEnabled) return;
     const hero = heroRef.current;
-    const video = videoRef.current;
-    if (!hero || !video) return;
+    const element = videoRef.current;
+    if (!hero || !element) return;
+    const video: HTMLVideoElement = element;
+    let pointerProgress: number | null = null;
+    let lastFrameTime = 0;
+    let disposed = false;
+    mediaReady.current = false;
+    seeking.current = false;
+
+    function timeForPointer(progress: number) {
+      // Exclude the held poses at the ends. The neutral gaze is aligned with
+      // the lion on the right, rather than the middle of the whole screen.
+      const firstFrame = video.duration * 0.15;
+      const lastFrame = video.duration - firstFrame;
+      const centerFrame =
+        Math.round((video.duration / 2) * VIDEO_FPS) / VIDEO_FPS;
+      const time =
+        progress <= GAZE_ORIGIN
+          ? centerFrame +
+            (lastFrame - centerFrame) * (1 - progress / GAZE_ORIGIN)
+          : centerFrame -
+            (centerFrame - firstFrame) *
+              ((progress - GAZE_ORIGIN) / (1 - GAZE_ORIGIN));
+      return Math.round(time * VIDEO_FPS) / VIDEO_FPS;
+    }
+
+    function cancelFrame() {
+      if (animationFrame.current !== null) {
+        window.cancelAnimationFrame(animationFrame.current);
+        animationFrame.current = null;
+      }
+      lastFrameTime = 0;
+    }
+
+    function scheduleFrame() {
+      if (
+        disposed ||
+        !active.current ||
+        document.hidden ||
+        !mediaReady.current ||
+        seeking.current ||
+        animationFrame.current !== null
+      )
+        return;
+      animationFrame.current = window.requestAnimationFrame(presentFrame);
+    }
+
+    function presentFrame(now: number) {
+      animationFrame.current = null;
+      if (disposed || !active.current || document.hidden || seeking.current)
+        return;
+      const difference = targetTime.current - submittedTime.current;
+      if (Math.abs(difference) < 1 / (VIDEO_FPS * 2)) {
+        lastFrameTime = 0;
+        return;
+      }
+      // A short, time-based ease follows the latest pointer position. At most
+      // one seek is in flight; stale mouse positions never form a queue.
+      const elapsed = lastFrameTime
+        ? Math.min(now - lastFrameTime, 80)
+        : 1000 / 60;
+      const eased =
+        Math.abs(difference) < 0.12
+          ? targetTime.current
+          : submittedTime.current + difference * (1 - Math.exp(-elapsed / 55));
+      const nextTime = Math.round(eased * VIDEO_FPS) / VIDEO_FPS;
+      if (nextTime === submittedTime.current) {
+        submittedTime.current = targetTime.current;
+      } else {
+        submittedTime.current = nextTime;
+      }
+      lastFrameTime = now;
+      seeking.current = true;
+      try {
+        video.currentTime = submittedTime.current;
+      } catch {
+        handleError();
+      }
+    }
+
+    function handleMetadata() {
+      if (!Number.isFinite(video.duration) || video.duration <= 0) return;
+      video.pause();
+      submittedTime.current =
+        Math.round((video.duration / 2) * VIDEO_FPS) / VIDEO_FPS;
+      targetTime.current =
+        pointerProgress === null
+          ? submittedTime.current
+          : timeForPointer(pointerProgress);
+      seeking.current = true;
+      video.currentTime = submittedTime.current;
+    }
+
+    function handleSeeked() {
+      if (disposed) return;
+      seeking.current = false;
+      if (!mediaReady.current) {
+        mediaReady.current = true;
+        setVideoReady(true);
+      }
+      scheduleFrame();
+    }
+
+    function handleError() {
+      if (disposed) return;
+      cancelFrame();
+      setVideoReady(false);
+      setVideoEnabled(false);
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         active.current = entry.intersectionRatio >= 0.35;
-        if (!active.current) previousX.current = null;
+        if (active.current) scheduleFrame();
+        else cancelFrame();
       },
       { threshold: [0, 0.35, 1] },
     );
@@ -147,64 +227,66 @@ export function CinematicHero() {
 
     function handleMove(event: MouseEvent) {
       if (!active.current || document.hidden) return;
-      const interactive = (event.target as Element | null)?.closest?.(
-        "a, button, input, select, textarea",
-      );
-      const currentX = event.clientX;
-      const lastX = previousX.current;
-      previousX.current = currentX;
-      if (interactive || lastX === null || !videoReady) return;
-      const duration = videoRef.current?.duration;
-      if (
-        typeof duration !== "number" ||
-        !Number.isFinite(duration) ||
-        duration <= 0
-      )
-        return;
-      const offset =
-        ((currentX - lastX) / window.innerWidth) * SENSITIVITY * duration;
-      targetTime.current = Math.max(
+      pointerProgress = Math.max(
         0,
-        Math.min(duration, targetTime.current + offset),
+        Math.min(1, event.clientX / window.innerWidth),
       );
-      seekToTarget();
+      if (!Number.isFinite(video.duration)) return;
+      targetTime.current = timeForPointer(pointerProgress);
+      scheduleFrame();
     }
 
     function handleVisibility() {
-      if (document.hidden) previousX.current = null;
+      if (document.hidden) cancelFrame();
+      else scheduleFrame();
     }
 
+    video.addEventListener("loadedmetadata", handleMetadata);
+    video.addEventListener("seeked", handleSeeked);
+    video.addEventListener("error", handleError);
     window.addEventListener("mousemove", handleMove, { passive: true });
     document.addEventListener("visibilitychange", handleVisibility);
+    video.src = VIDEO_URL;
+    video.load();
     return () => {
+      disposed = true;
       observer.disconnect();
+      cancelFrame();
+      video.removeEventListener("loadedmetadata", handleMetadata);
+      video.removeEventListener("seeked", handleSeeked);
+      video.removeEventListener("error", handleError);
       window.removeEventListener("mousemove", handleMove);
       document.removeEventListener("visibilitychange", handleVisibility);
       video.pause();
-      previousX.current = null;
+      video.removeAttribute("src");
+      video.load();
       active.current = false;
       seeking.current = false;
+      mediaReady.current = false;
     };
-  }, [videoEnabled, videoReady]);
+  }, [videoEnabled]);
 
   return (
     <section className="sport-hero" ref={heroRef} aria-labelledby="hero-title">
       <div className="sport-hero-visual" aria-hidden="true">
         <div className="sport-hero-poster">
-          <Image src={POSTER_URL} alt="" fill priority sizes="100vw" />
+          <Image
+            src={POSTER_URL}
+            alt=""
+            fill
+            priority
+            unoptimized
+            sizes="100vw"
+          />
         </div>
         {videoEnabled && (
           <video
             ref={videoRef}
-            src={VIDEO_URL}
             className={videoReady ? "is-ready" : ""}
             muted
             playsInline
             preload="auto"
             poster={POSTER_URL}
-            onLoadedMetadata={handleMetadata}
-            onSeeked={handleSeeked}
-            onError={() => setVideoEnabled(false)}
           />
         )}
       </div>

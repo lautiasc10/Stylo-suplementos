@@ -17,10 +17,9 @@ test("el hero conserva accesos y muestra un fotograma mientras carga", async ({
         .evaluate((image) => (image as HTMLImageElement).naturalWidth),
     )
     .toBeGreaterThan(0);
-  await expect(hero.getByRole("link", { name: "Conocé STYLO" })).toHaveAttribute(
-    "href",
-    "/nosotros",
-  );
+  await expect(
+    hero.getByRole("link", { name: "Conocé STYLO" }),
+  ).toHaveAttribute("href", "/nosotros");
   if (testInfo.project.name === "mobile") {
     await expect(hero.locator("video")).toHaveCount(0);
   }
@@ -38,7 +37,7 @@ test("el hero conserva accesos y muestra un fotograma mientras carga", async ({
   ).toBe(true);
 });
 
-test("el mouse recorre el video en ambos sentidos y el video queda pausado", async ({
+test("la mirada sigue la posición del cursor y vuelve al mismo fotograma", async ({
   page,
 }, testInfo) => {
   test.skip(
@@ -48,26 +47,24 @@ test("el mouse recorre el video en ambos sentidos y el video queda pausado", asy
   await page.goto("/");
   const video = page.locator(".sport-hero video");
   await expect(video).toHaveClass(/is-ready/, { timeout: 15000 });
-  const initial = await video.evaluate(
-    (element) => (element as HTMLVideoElement).currentTime,
+  const width = page.viewportSize()!.width;
+  const currentTime = () =>
+    video.evaluate((element) => (element as HTMLVideoElement).currentTime);
+  const duration = await video.evaluate(
+    (element) => (element as HTMLVideoElement).duration,
   );
-  await page.mouse.move(250, 300);
-  await page.mouse.move(850, 300);
-  await expect
-    .poll(async () =>
-      video.evaluate((element) => (element as HTMLVideoElement).currentTime),
-    )
-    .toBeGreaterThan(initial + 0.1);
-  const advanced = await video.evaluate(
-    (element) => (element as HTMLVideoElement).currentTime,
-  );
-  await page.mouse.move(270, 300);
-  await expect
-    .poll(async () =>
-      video.evaluate((element) => (element as HTMLVideoElement).currentTime),
-    )
-    .toBeLessThan(advanced - 0.1);
+  await page.mouse.move(width * 0.1, 300);
+  await expect.poll(currentTime).toBeGreaterThan(duration * 0.7);
+  await page.mouse.move(width * 0.95, 300);
+  await expect.poll(currentTime).toBeLessThan(duration * 0.3);
+  // Absolute positioning must not drift after a quick reversal.
+  await page.mouse.move(width * 0.15, 300);
+  await page.mouse.move(width * 0.85, 300);
+  await page.mouse.move(width * 0.7, 300);
+  await expect.poll(currentTime).toBeCloseTo(duration / 2, 1);
   await expect(video).toHaveJSProperty("paused", true);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(video).toHaveCount(0);
 });
 
 test("movimiento reducido y navegación sin JavaScript conservan el hero", async ({

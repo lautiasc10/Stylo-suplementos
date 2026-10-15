@@ -348,7 +348,7 @@
   position: relative;
   isolation: isolate;
   display: flex;
-  min-height: 100svh;
+  min-height: max(480px, calc(100svh - 181px));
   overflow: hidden;
   background: var(--cinematic-background);
 }
@@ -360,6 +360,7 @@
 .sport-hero-poster {
   position: absolute;
   inset: 0;
+  transform: translateX(17%) scale(0.88);
 }
 .sport-hero-poster img,
 .sport-hero-visual video {
@@ -367,12 +368,13 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
 }
 .sport-hero-visual video {
   z-index: 0;
   opacity: 0;
+  transform: translateX(17%) scale(0.88);
 }
 .sport-hero-visual video.is-ready {
   opacity: 1;
@@ -388,13 +390,13 @@
   position: relative;
   z-index: 2;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   min-height: inherit;
-  padding-block: var(--space-20) 220px;
+  padding-block: var(--space-16);
 }
 .hero-content {
   width: 100%;
-  max-width: 680px;
+  max-width: min(45vw, 640px);
 }
 .sport-hero .hero-intro {
   margin: 0;
@@ -866,12 +868,14 @@
     padding-inline: var(--space-4);
   }
   .sport-hero {
-    min-height: 100svh;
+    min-height: calc(100svh - 181px);
   }
   .sport-hero-poster {
-    height: 55%;
+    height: clamp(300px, 50svh, 480px);
+    transform: none;
   }
   .sport-hero-poster img {
+    object-fit: cover;
     object-position: center 36%;
   }
   .sport-hero-visual::after {
@@ -884,7 +888,7 @@
   }
   .sport-hero-inner {
     align-items: flex-end;
-    padding-block: 25svh 200px;
+    padding-block: clamp(300px, 45svh, 440px) var(--space-10);
   }
   .hero-content {
     max-width: 100%;
@@ -977,10 +981,6 @@
   }
 }
 @media (max-width: 380px) {
-  .sport-hero-inner {
-    padding-top: 20svh;
-    padding-bottom: 180px;
-  }
   .featured-category-copy h3 {
     font-size: var(--text-xl);
   }
