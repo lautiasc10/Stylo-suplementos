@@ -18,7 +18,7 @@ import { gazeFrameTime, gazeTime, HERO_VIDEO_FPS } from "./hero-gaze";
 const VIDEO_URL = "/visuals/stylo-lion-motion-v3.mp4";
 const POSTER_URL = "/visuals/stylo-lion-poster-v1.webp";
 const MESSAGE = "Potenciá tu mejor versión.";
-const CONTENT_CUES_MS = [0, 800, 2000, 2800, 3200, 3600];
+const CONTENT_CUES_MS = [0, 350, 800, 1200, 1440, 1680];
 
 function HeroWords({
   text,
@@ -35,7 +35,7 @@ function HeroWords({
         data-accent={
           accentFrom !== undefined && index >= accentFrom ? "true" : undefined
         }
-        style={{ "--word-delay": `${index * 55}ms` } as CSSProperties}
+        style={{ "--word-delay": `${index * 35}ms` } as CSSProperties}
       >
         {word}
       </span>
@@ -46,6 +46,8 @@ function HeroWords({
 export function CinematicHero() {
   const { setWaiting, introSeen, claimIntro } = useHomeIntro();
   const introChoice = useRef<boolean | null>(introSeen ? false : null);
+  const gazeUnlocked = useRef(introSeen);
+  const resumeGaze = useRef<() => void>(() => {});
   const heroRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const targetTime = useRef(0);
@@ -64,6 +66,7 @@ export function CinematicHero() {
   const [playIntro, setPlayIntro] = useState(!introSeen);
   const [lionVisible, setLionVisible] = useState(introSeen);
   const [contentStarted, setContentStarted] = useState(false);
+  const [brandVisible, setBrandVisible] = useState(false);
   const advanceContent = useCallback((stage: number) => {
     setContentStage((previous) => Math.max(previous, stage));
   }, []);
@@ -75,6 +78,8 @@ export function CinematicHero() {
     advanceContent(6);
   }, [setWaiting, advanceContent]);
   const revealAll = useCallback(() => {
+    gazeUnlocked.current = true;
+    resumeGaze.current();
     setContentInstant(true);
     setPlayIntro(false);
     setLionVisible(true);
@@ -84,15 +89,16 @@ export function CinematicHero() {
   const completeScoop = useCallback(() => setPlayIntro(false), []);
   const revealLion = useCallback(() => setLionVisible(true), []);
   const handleAtmosphereSettled = useCallback(() => setDustReady(true), []);
+  const revealBrand = useCallback(() => setBrandVisible(true), []);
 
   useEffect(() => {
     if (!contentStarted || contentInstant) return;
     // Start from the lion's actual animation end, retaining the existing text
-    // rhythm. Navigation waits for the final button's 160 + 740 ms entrance.
+    // order at a faster retail pace. The last button settles before navigation.
     const cues = CONTENT_CUES_MS.map((delay, index) =>
       window.setTimeout(() => advanceContent(index + 1), delay),
     );
-    const navigation = window.setTimeout(revealNavigation, 4600);
+    const navigation = window.setTimeout(revealNavigation, 2300);
     return () => {
       cues.forEach(window.clearTimeout);
       window.clearTimeout(navigation);
@@ -103,7 +109,7 @@ export function CinematicHero() {
     if (contentInstant || navigationReady) return;
     // Bound both media preparation and the reveal in case media/CSS events
     // are unavailable. This is a fallback, never the normal animation clock.
-    const fallback = window.setTimeout(revealAll, lionVisible ? 8000 : 8500);
+    const fallback = window.setTimeout(revealAll, lionVisible ? 5000 : 7000);
     return () => window.clearTimeout(fallback);
   }, [contentInstant, navigationReady, lionVisible, revealAll]);
 
@@ -123,6 +129,9 @@ export function CinematicHero() {
         !eligible ||
         !introChoice.current ||
         introFinished.current ||
+        document.activeElement?.matches(
+          "a,button,input,select,textarea,[tabindex]",
+        ) ||
         window.scrollY > 8 ||
         (window.location.hash && window.location.hash !== "#inicio")
       ) {
@@ -228,7 +237,7 @@ export function CinematicHero() {
       smoothedTime.current = gazeTime(0.7, video.duration);
       submittedTime.current = gazeFrameTime(smoothedTime.current);
       targetTime.current =
-        pointerProgress === null
+        pointerProgress === null || !gazeUnlocked.current
           ? smoothedTime.current
           : gazeTime(pointerProgress, video.duration);
       seeking.current = true;
@@ -270,6 +279,7 @@ export function CinematicHero() {
         0,
         Math.min(1, event.clientX / window.innerWidth),
       );
+      if (!gazeUnlocked.current) return;
       if (!Number.isFinite(video.duration)) return;
       targetTime.current = gazeTime(pointerProgress, video.duration);
       scheduleFrame();
@@ -280,6 +290,13 @@ export function CinematicHero() {
       else scheduleFrame();
     }
 
+    resumeGaze.current = () => {
+      if (pointerProgress !== null && Number.isFinite(video.duration)) {
+        targetTime.current = gazeTime(pointerProgress, video.duration);
+        scheduleFrame();
+      }
+    };
+
     video.addEventListener("loadedmetadata", handleMetadata);
     video.addEventListener("seeked", handleSeeked);
     video.addEventListener("error", handleError);
@@ -289,6 +306,7 @@ export function CinematicHero() {
     video.load();
     return () => {
       disposed = true;
+      resumeGaze.current = () => {};
       observer.disconnect();
       cancelFrame();
       video.removeEventListener("loadedmetadata", handleMetadata);
@@ -325,10 +343,42 @@ export function CinematicHero() {
               onSettled={handleAtmosphereSettled}
               onComplete={completeScoop}
               onRevealLion={revealLion}
+              onBrand={revealBrand}
               onUnavailable={revealAll}
             />
           )}
           <HeroDust containerRef={heroRef} enabled={dustReady} />
+        </>
+      )}
+      {videoEnabled && !contentInstant && !contentStarted && (
+        <>
+          <div className="hero-lion-shadow" aria-hidden="true">
+            <Image
+              src="/visuals/stylo-lion-shadow-v1.webp"
+              alt=""
+              fill
+              unoptimized
+              sizes="100vw"
+            />
+          </div>
+          <div
+            className="hero-intro-brand"
+            data-state={
+              brandVisible ? (lionVisible ? "leaving" : "visible") : "hidden"
+            }
+            aria-hidden="true"
+          >
+            <span>
+              <Image
+                src="/branding/logo-horizontal.webp"
+                alt=""
+                width={640}
+                height={640}
+                unoptimized
+                sizes="40vw"
+              />
+            </span>
+          </div>
         </>
       )}
       <div
@@ -338,8 +388,11 @@ export function CinematicHero() {
           if (
             event.target === event.currentTarget &&
             event.animationName === "hero-lion-emerge"
-          )
+          ) {
+            gazeUnlocked.current = true;
+            resumeGaze.current();
             setContentStarted(true);
+          }
         }}
       >
         <div className="sport-hero-poster">
