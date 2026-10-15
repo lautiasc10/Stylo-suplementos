@@ -1,4 +1,5 @@
 import { Header } from "@/components/storefront/header";
+import { HomeIntroProvider } from "@/components/storefront/home-intro";
 import { Footer } from "@/components/storefront/footer";
 import { getCatalog } from "@/modules/catalog/server";
 import { CartProvider } from "@/components/commerce/cart-provider";
@@ -40,11 +41,15 @@ export default async function StoreLayout({
       initialQuote={cart}
       initialCatalog={offerCatalog}
       initialPromotions={activePromotions}
-      imageBase={config ? `${config.url}/storage/v1/object/public/product-media` : ""}
+      imageBase={
+        config ? `${config.url}/storage/v1/object/public/product-media` : ""
+      }
     >
-      <Header catalogCategories={visible} />
-      <main id="contenido">{children}</main>
-      <Footer />
+      <HomeIntroProvider>
+        <Header catalogCategories={visible} />
+        <main id="contenido">{children}</main>
+        <Footer />
+      </HomeIntroProvider>
     </CartProvider>
   );
 }

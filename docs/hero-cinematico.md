@@ -18,6 +18,16 @@ Como el polvo permanece en movimiento, hay un botón circular de 48 px con nombr
 
 Los clips conservan las marcas de agua incluidas en los originales del usuario. No se modificaron las fotografías comerciales ni los logos del encabezado.
 
+## Entrada de la navegación y categorías
+
+La home de escritorio empieza en el borde superior y ocupa al menos un viewport. Cabecera de 96 px y categorías de 50 px se superponen al campo de partículas, sin superficies opacas. El león y el scoop conservan un área bajo esa navegación. La franja de Rosario se retira de toda la tienda.
+
+`HomeIntroProvider` comparte únicamente el estado de espera visual entre cabecera y hero. La aparición del polvo (`onSettled`) y el final de la entrada (`onComplete`) son señales independientes: la navegación espera a la segunda. Entra con opacidad y desplazamiento durante 760 ms, con 100 ms de desfase para categorías. No se anima altura ni se mueve el contenido. Durante la espera se ocultan las superficies y se usa `inert` para evitar foco invisible.
+
+No se exige esperar para comprar: las acciones HTML del hero siguen disponibles; Tab, Escape y scroll adelantan la navegación. Con un error, medios omitidos o un plazo de respaldo de 8,5 segundos se libera la espera. En móvil, con movimiento reducido y sin JavaScript la cabecera está disponible inmediatamente. La alternativa sin JavaScript conserva enlaces y foco: el HTML inicial no contiene `inert` y un bloque `noscript` desactiva la ocultación visual.
+
+El menú de categorías comparte `HeroDust` con configuración `menu`, hasta 180 granos y ocho parches; se monta solo al abrir, se pausa al ocultar pestaña y libera canvas, observadores y callbacks al cerrar. No añade solicitudes de medios. Un control propio permite pausarlo con teclado. En las fichas que ya presentan `.flavor-product-detail` se excluye el canvas y el menú hereda el color actual de Banana, Frutilla, Vainilla o neutral. Esta entrega no amplía aún la prueba de sabores a otros productos.
+
 ## Recursos
 
 | Recurso | Archivo público | Entrega |
@@ -48,3 +58,5 @@ Revisión visual en Chromium a 1868 × 1050, 1440 × 900, 1280 × 720, 390 × 84
 En una ventana de 1440 × 900, la revisión posterior al video `2026-10-15 15-18-19.mkv` presentó 16 fotogramas consecutivos durante un barrido del cruce frontal, sin saltos ni inversiones en ese recorrido. Con el polvo activo, las búsquedas promediaron 38 ms y los callbacks de animación registraron 0,2 ms en el percentil 95 y 0,4 ms de máximo en esa medición local. Estos resultados tampoco sustituyen pruebas en otros equipos o dispositivos físicos.
 
 La revisión posterior al video `2026-10-15 15-36-20.mkv` añade un recorrido lento del 67 % al 73 % de la pantalla durante casi seis segundos. En la misma ventana local de 1440 × 900, `v2` presentó cinco poses y `v3` presentó 19 consecutivas. El paso temporal máximo pasó de 41,67 a 10,42 ms; las búsquedas promediaron 21,8 ms con el polvo nuevo activo. Los callbacks midieron 0,5 ms en el percentil 95 y 0,8 ms de máximo en esa prueba. La medición no equivale a una garantía para todos los equipos. La prueba de navegador comprueba además la luminosidad real del canvas sobre negro después de la entrada, para que un canvas animado pero prácticamente invisible no vuelva a pasar como resultado válido.
+
+La entrada de cabecera y el fondo de categorías se verificaron con compilación, 61 pruebas unitarias y 29 recorridos de navegador aprobados entre hero, menú y fichas de sabor. Incluyen esperar al final real, igualdad de las medidas del hero antes/después, transparencia, limpieza al cerrar, pausa, teclado, colores por variante, carrito, ausencia de nuevos videos fuera de la home y alternativa sin JavaScript. La revisión visual a 1868 × 1050, 1280 × 720, 390 × 844 y 320 × 568 no registró errores ni desbordes; el hero empieza en Y=0 en escritorio y bajo los 146 px de navegación en móvil. Los desplazamientos acumulados medidos durante carga y escritura fueron inferiores a 0,00002 en esas ventanas de escritorio y cero en móvil; son resultados locales, no datos de campo.

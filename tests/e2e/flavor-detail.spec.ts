@@ -46,6 +46,43 @@ async function seed(page: Page, data = fixture()) {
   return data.catalog.products[0];
 }
 
+test("el menú conserva el color del sabor y excluye las partículas doradas", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop");
+  await seed(page);
+  await page.goto("/vista-previa/producto/whey-protein");
+  const navigation = page.getByRole("navigation", {
+    name: "Explorar por categoría",
+  });
+  const panel = page.locator(".category-mega-menu");
+  for (const flavor of ["banana", "frutilla"]) {
+    await expect(page.locator(".flavor-product-detail")).toHaveAttribute(
+      "data-flavor",
+      flavor,
+    );
+    await navigation.getByRole("link", { name: "Proteínas" }).hover();
+    await expect(panel).toHaveAttribute("data-open", "true");
+    await expect(panel.locator("canvas")).toHaveCount(0);
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () =>
+            getComputedStyle(document.querySelector(".category-mega-menu")!)
+              .backgroundColor ===
+            getComputedStyle(document.querySelector(".category-navigation")!)
+              .backgroundColor,
+        ),
+      )
+      .toBe(true);
+    await page.keyboard.press("Escape");
+    if (flavor === "banana")
+      await page
+        .getByRole("button", { name: "Sabor siguiente", exact: true })
+        .click();
+  }
+});
+
 test("las flechas sincronizan fondo, foto, stock, precio y carrito sin navegar", async ({
   page,
 }) => {
@@ -247,7 +284,9 @@ test("el fondo se detiene solo, permite cambiar de sabor y respeta movimiento re
   await page.goto("/vista-previa/producto/whey-protein");
   const decor = page.locator(".flavor-scene-decorations");
   await expect(decor).toHaveAttribute("data-playing", "true");
-  await expect(page.getByRole("button", { name: /Pausar fondo/i })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: /Pausar fondo/i })).toHaveCount(
+    0,
+  );
   await expect(decor.locator("img").first()).toHaveCSS(
     "animation-iteration-count",
     "1",

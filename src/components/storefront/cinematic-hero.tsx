@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { HeroAtmosphere } from "./hero-atmosphere";
 import { HeroDust } from "./hero-dust";
+import { useHomeIntro } from "./home-intro";
 import { gazeFrameTime, gazeTime, HERO_VIDEO_FPS } from "./hero-gaze";
 
 const VIDEO_URL = "/visuals/stylo-lion-motion-v3.mp4";
@@ -79,6 +80,14 @@ export function CinematicHero() {
   const [videoEnabled, setVideoEnabled] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
   const [dustReady, setDustReady] = useState(false);
+  const [navigationReady, setNavigationReady] = useState(false);
+  const introFinished = useRef(false);
+  const { setWaiting } = useHomeIntro();
+  const revealNavigation = useCallback(() => {
+    introFinished.current = true;
+    setNavigationReady(true);
+    setWaiting(false);
+  }, [setWaiting]);
   const handleAtmosphereSettled = useCallback(() => setDustReady(true), []);
   const { displayed, done } = useTypewriter({ text: MESSAGE });
 
@@ -93,19 +102,35 @@ export function CinematicHero() {
       ).connection?.saveData;
       const eligible = desktop.matches && !reduced.matches && !saveData;
       setVideoEnabled(eligible);
+      if (!eligible || window.scrollY > 8 || window.location.hash)
+        revealNavigation();
+      else if (!introFinished.current) setWaiting(true);
       if (!eligible) {
         setVideoReady(false);
         setDustReady(false);
       }
     }
     updateEligibility();
+    const fallback = window.setTimeout(revealNavigation, 8500);
+    function revealForKeyboard(event: KeyboardEvent) {
+      if (event.key === "Tab" || event.key === "Escape") revealNavigation();
+    }
+    function revealForScroll() {
+      if (window.scrollY > 8) revealNavigation();
+    }
+    window.addEventListener("keydown", revealForKeyboard);
+    window.addEventListener("scroll", revealForScroll, { passive: true });
     desktop.addEventListener("change", updateEligibility);
     reduced.addEventListener("change", updateEligibility);
     return () => {
+      window.clearTimeout(fallback);
+      window.removeEventListener("keydown", revealForKeyboard);
+      window.removeEventListener("scroll", revealForScroll);
+      setWaiting(false);
       desktop.removeEventListener("change", updateEligibility);
       reduced.removeEventListener("change", updateEligibility);
     };
-  }, []);
+  }, [revealNavigation, setWaiting]);
 
   useEffect(() => {
     if (!videoEnabled) return;
@@ -199,6 +224,7 @@ export function CinematicHero() {
       setVideoReady(false);
       setVideoEnabled(false);
       setDustReady(false);
+      revealNavigation();
     }
 
     const observer = new IntersectionObserver(
@@ -250,15 +276,24 @@ export function CinematicHero() {
       seeking.current = false;
       mediaReady.current = false;
     };
-  }, [videoEnabled]);
+  }, [videoEnabled, revealNavigation]);
 
   return (
-    <section className="sport-hero" ref={heroRef} aria-labelledby="hero-title">
+    <section
+      className="sport-hero"
+      ref={heroRef}
+      aria-labelledby="hero-title"
+      data-navigation={navigationReady ? "ready" : "waiting"}
+    >
+      <noscript>
+        <style>{`.site-header,.category-navigation-shell{opacity:1!important;visibility:visible!important;transform:none!important;pointer-events:auto!important}`}</style>
+      </noscript>
       {videoEnabled && videoReady && (
         <>
           <HeroAtmosphere
             containerRef={heroRef}
             onSettled={handleAtmosphereSettled}
+            onComplete={revealNavigation}
           />
           <HeroDust containerRef={heroRef} enabled={dustReady} />
         </>

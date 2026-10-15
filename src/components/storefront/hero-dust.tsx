@@ -8,14 +8,39 @@ type Mote = { x: number; y: number; depth: number; phase: number };
 export function HeroDust({
   containerRef,
   enabled,
+  variant = "hero",
 }: {
   containerRef: RefObject<HTMLElement | null>;
   enabled: boolean;
+  variant?: "hero" | "menu";
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pausedRef = useRef(false);
   const updatePlayback = useRef<() => void>(() => {});
   const [paused, setPaused] = useState(false);
+  const [motionAllowed, setMotionAllowed] = useState(false);
+
+  useEffect(() => {
+    if (variant !== "menu") return;
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const desktop = window.matchMedia("(min-width: 801px) and (hover: hover)");
+    function update() {
+      setMotionAllowed(
+        !media.matches &&
+          desktop.matches &&
+          !(navigator as Navigator & { connection?: { saveData?: boolean } })
+            .connection?.saveData,
+      );
+    }
+    update();
+    media.addEventListener("change", update);
+    desktop.addEventListener("change", update);
+    return () => {
+      media.removeEventListener("change", update);
+      desktop.removeEventListener("change", update);
+    };
+  }, [variant]);
+  const running = enabled && (variant === "hero" || motionAllowed);
 
   useEffect(() => {
     pausedRef.current = paused;
@@ -23,7 +48,7 @@ export function HeroDust({
   }, [paused]);
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!running) return;
     const container = containerRef.current;
     const canvas = canvasRef.current;
     const context = canvas?.getContext("2d", { alpha: true });
@@ -95,15 +120,17 @@ export function HeroDust({
       hazeContext.fillStyle = patch;
       hazeContext.fillRect(0, 0, 192, 128);
     }
-    for (let i = 0; i < 16; i++)
+    const cloudCount = variant === "menu" ? 8 : 16;
+    for (let i = 0; i < cloudCount; i++)
       clouds.push({
         x: (i % 4) / 4 + random() * 0.2,
-        y: Math.floor(i / 4) / 4 + random() * 0.2,
+        y: Math.floor(i / 4) / (cloudCount / 4) + random() * 0.2,
         depth: random(),
         phase: random() * Math.PI * 2,
       });
 
     function protection(x: number, y: number) {
+      if (variant === "menu") return 0.6;
       const dx = Math.max(copy.left - x, 0, x - copy.right);
       const dy = Math.max(copy.top - y, 0, y - copy.bottom);
       const copyWeight = 0.16 + 0.84 * Math.min(1, Math.hypot(dx, dy) / 70);
@@ -182,8 +209,11 @@ export function HeroDust({
           bottom: bounds.bottom - origin.top + 12,
         };
       const count = Math.min(
-        440,
-        Math.max(220, Math.round((width * height) / 3600)),
+        variant === "menu" ? 180 : 440,
+        Math.max(
+          variant === "menu" ? 70 : 220,
+          Math.round((width * height) / 3600),
+        ),
       );
       while (motes.length < count)
         motes.push({
@@ -238,18 +268,29 @@ export function HeroDust({
       updatePlayback.current = () => {};
       ctx.clearRect(0, 0, width, height);
     };
-  }, [containerRef, enabled]);
+  }, [containerRef, running, variant]);
 
-  const label = paused ? "Reanudar polvo del fondo" : "Pausar polvo del fondo";
+  const label =
+    variant === "menu"
+      ? paused
+        ? "Reanudar partículas de categorías"
+        : "Pausar partículas de categorías"
+      : paused
+        ? "Reanudar polvo del fondo"
+        : "Pausar polvo del fondo";
   return (
     <>
-      <div className="hero-dust" data-visible={enabled} aria-hidden="true">
-        <canvas ref={canvasRef} />
+      <div
+        className={variant === "menu" ? "category-dust" : "hero-dust"}
+        data-visible={running}
+        aria-hidden="true"
+      >
+        {running && <canvas ref={canvasRef} />}
       </div>
-      {enabled && (
+      {running && (
         <button
           type="button"
-          className="hero-dust-control"
+          className={`hero-dust-control${variant === "menu" ? " category-dust-control" : ""}`}
           aria-label={label}
           title={label}
           aria-pressed={paused}

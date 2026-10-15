@@ -9,9 +9,11 @@ const MAX_BYTES = 3_500_000;
 export function HeroAtmosphere({
   containerRef,
   onSettled,
+  onComplete,
 }: {
   containerRef: RefObject<HTMLElement | null>;
   onSettled: () => void;
+  onComplete: () => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [phase, setPhase] = useState<
@@ -38,6 +40,7 @@ export function HeroAtmosphere({
     ) {
       setPhase("done");
       onSettled();
+      onComplete();
       return;
     }
 
@@ -74,6 +77,7 @@ export function HeroAtmosphere({
       finished = true;
       release();
       settle();
+      onComplete();
       setPhase("done");
     }
 
@@ -182,7 +186,7 @@ export function HeroAtmosphere({
       document.removeEventListener("visibilitychange", handleVisibility);
       release();
     };
-  }, [containerRef, completed, onSettled]);
+  }, [containerRef, completed, onSettled, onComplete]);
 
   if (phase === "done") return null;
   return (

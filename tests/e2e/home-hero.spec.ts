@@ -80,6 +80,8 @@ test("movimiento reducido y navegación sin JavaScript conservan el hero", async
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   await expect(page.locator(".sport-hero video")).toHaveCount(0);
+  await expect(page.locator(".site-header")).toBeVisible();
+  await expect(page.locator(".site-header")).not.toHaveAttribute("inert");
   await expect(page.locator(".hero-typewriter")).toHaveText(
     "Potenciá tu mejor versión.",
   );
@@ -92,6 +94,11 @@ test("movimiento reducido y navegación sin JavaScript conservan el hero", async
     const plainPage = await context.newPage();
     await plainPage.goto(`${testInfo.project.use.baseURL}/`);
     await expect(plainPage.locator(".sport-hero video")).toHaveCount(0);
+    await expect(plainPage.locator(".site-header")).toBeVisible();
+    await expect(plainPage.locator(".site-header")).not.toHaveAttribute(
+      "inert",
+    );
+    await expect(plainPage.locator(".category-navigation")).toBeVisible();
     await expect(plainPage.locator(".hero-typewriter-static")).toHaveText(
       "Potenciá tu mejor versión.",
     );
@@ -103,6 +110,48 @@ test("movimiento reducido y navegación sin JavaScript conservan el hero", async
   } finally {
     await context.close();
   }
+});
+
+test("la cabecera entra después del scoop sobre las partículas y sin mover el hero", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop");
+  await page.goto("/");
+  const hero = page.locator(".sport-hero");
+  const intro = page.locator(".hero-atmosphere");
+  await expect(intro).toHaveAttribute("data-phase", "playing", {
+    timeout: 10000,
+  });
+  await expect(page.locator(".site-header")).toBeHidden();
+  await expect(page.locator(".category-navigation-shell")).toHaveAttribute(
+    "inert",
+  );
+  const initial = await hero.boundingBox();
+  expect(initial!.y).toBe(0);
+  await expect(page.locator('.hero-dust[data-visible="true"]')).toBeVisible();
+  // Persistent particles start before the clip ends; navigation waits for the
+  // actual completion rather than using this earlier dust transition.
+  await expect(page.locator(".site-header")).toBeHidden();
+  await expect(intro).toHaveCount(0, { timeout: 6000 });
+  await expect(hero).toHaveAttribute("data-navigation", "ready");
+  await expect(page.locator(".site-header")).toHaveCSS("opacity", "1");
+  await expect(page.locator(".category-navigation-shell")).toHaveCSS(
+    "opacity",
+    "1",
+  );
+  await expect(page.locator(".site-header")).not.toHaveAttribute("inert");
+  await expect(page.locator(".site-header")).toHaveCSS(
+    "background-color",
+    "rgba(0, 0, 0, 0)",
+  );
+  await expect(page.locator(".category-navigation")).toHaveCSS(
+    "background-color",
+    "rgba(0, 0, 0, 0)",
+  );
+  await expect(
+    page.getByText("STYLO SUPLEMENTOS · ROSARIO", { exact: true }),
+  ).toHaveCount(0);
+  expect(await hero.boundingBox()).toEqual(initial);
 });
 
 test("el scoop termina una vez y el polvo permanece con pausa accesible", async ({

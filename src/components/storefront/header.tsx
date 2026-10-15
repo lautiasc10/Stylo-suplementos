@@ -7,6 +7,8 @@ import { useEffect, useRef, useState } from "react";
 import { Icon } from "@/components/ui/icon";
 import { categories } from "@/modules/catalog/categories";
 import { CartLink } from "@/components/commerce/cart-provider";
+import { HeroDust } from "./hero-dust";
+import { useHomeIntro } from "./home-intro";
 
 const links = [
   { href: "/catalogo", label: "Catálogo" },
@@ -20,6 +22,9 @@ export function Header({
   catalogCategories?: readonly { name: string; slug: string }[];
 }) {
   const pathname = usePathname();
+  const { waiting } = useHomeIntro();
+  const introWaiting = pathname === "/" && waiting;
+  const [flavorPage, setFlavorPage] = useState(false);
   const [open, setOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [lastCategory, setLastCategory] = useState(
@@ -39,6 +44,7 @@ export function Header({
   );
 
   function showCategory(slug: string, trigger: HTMLAnchorElement) {
+    setFlavorPage(!!document.querySelector(".flavor-product-detail"));
     if (categoryCloseTimer.current !== null) {
       window.clearTimeout(categoryCloseTimer.current);
       categoryCloseTimer.current = null;
@@ -95,10 +101,7 @@ export function Header({
   }, [open]);
   return (
     <>
-      <div className="announcement">
-        <span>STYLO SUPLEMENTOS · ROSARIO</span>
-      </div>
-      <header className="site-header">
+      <header className="site-header" inert={introWaiting}>
         <div className="container header-inner">
           <Link
             href="/"
@@ -159,6 +162,7 @@ export function Header({
       </header>
       <div
         className="category-navigation-shell"
+        inert={introWaiting}
         onMouseEnter={() => {
           if (categoryCloseTimer.current !== null) {
             window.clearTimeout(categoryCloseTimer.current);
@@ -245,6 +249,9 @@ export function Header({
             aria-hidden={!activeCategory}
             inert={!activeCategory}
           >
+            {activeCategory && !flavorPage && (
+              <HeroDust containerRef={categoryPanel} enabled variant="menu" />
+            )}
             <div className="container category-mega-inner">
               <div className="category-mega-feature">
                 <span className="eyebrow">EXPLORÁ STYLO</span>
