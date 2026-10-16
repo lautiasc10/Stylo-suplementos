@@ -2,10 +2,11 @@
 
 import { useEffect, useRef, useState, type RefObject } from "react";
 
-const INTRO_URL = "/visuals/stylo-scoop-intro-v1.mp4";
+const INTRO_URL = "/visuals/stylo-scoop-intro-v3.mp4";
 const MAX_BYTES = 3_500_000;
 
-/** A finite decorative entrance, loaded after the interactive lion is ready. */
+/** Fully buffered, native playback. Its final moving frames crossfade into
+ * the lion; never freeze the last frame and move it with CSS afterward. */
 export function HeroAtmosphere({
   containerRef,
   onSettled,
@@ -41,8 +42,7 @@ export function HeroAtmosphere({
     ).connection;
     if (
       connection?.saveData ||
-      ["slow-2g", "2g", "3g"].includes(connection?.effectiveType ?? "") ||
-      !CSS.supports("mix-blend-mode", "screen")
+      ["slow-2g", "2g", "3g"].includes(connection?.effectiveType ?? "")
     ) {
       setPhase("done");
       onSettled();
@@ -61,15 +61,11 @@ export function HeroAtmosphere({
     let brandRevealed = false;
     let videoFrame: number | null = null;
     let blobUrl: string | null = null;
-    let idle: number | null = null;
-    let delay: number | undefined;
     let deadline: number | undefined;
     let presentation: number | undefined;
 
     function release() {
       request.abort();
-      if (idle !== null) window.cancelIdleCallback(idle);
-      window.clearTimeout(delay);
       window.clearTimeout(deadline);
       window.clearTimeout(presentation);
       if (videoFrame !== null) video.cancelVideoFrameCallback(videoFrame);
@@ -114,8 +110,7 @@ export function HeroAtmosphere({
     function handleEnded() {
       leave();
       revealLion();
-      // Keep the complete final frame until its upward fade finishes. There
-      // are no contour masks, separate panels or frozen fragments of the bowl.
+      finish();
     }
 
     completeExit.current = finish;
@@ -128,13 +123,13 @@ export function HeroAtmosphere({
 
     async function load() {
       if (disposed || finished || document.hidden) return skip();
-      // Buffer this small, finite clip completely before playback to avoid a
-      // frozen background on slower transfers. The lion never waits for it.
+      // Buffer the entrance first; its decoder is released before the
+      // interactive lion starts. The matching poster carries the crossfade.
       deadline = window.setTimeout(skip, 4000);
       try {
         const response = await fetch(INTRO_URL, {
           signal: request.signal,
-          priority: "low",
+          priority: "auto",
         });
         const size = Number(response.headers.get("content-length"));
         if (!response.ok || size > MAX_BYTES) return skip();
@@ -155,18 +150,7 @@ export function HeroAtmosphere({
     function schedule() {
       if (scheduled || finished || disposed) return;
       scheduled = true;
-      if (typeof window.requestIdleCallback === "function") {
-        idle = window.requestIdleCallback(
-          () => {
-            void load();
-          },
-          { timeout: 800 },
-        );
-      } else {
-        delay = window.setTimeout(() => {
-          void load();
-        }, 350);
-      }
+      void load();
     }
 
     function handleCanPlay() {
@@ -191,8 +175,9 @@ export function HeroAtmosphere({
         brandRevealed = true;
         onBrand();
       }
-      if (video.currentTime >= video.duration * 0.5) settle();
-      if (video.currentTime >= video.duration - 0.8) leave();
+      if (video.currentTime >= video.duration - 1.5) settle();
+      if (video.currentTime >= video.duration - 1.15) revealLion();
+      if (video.currentTime >= video.duration - 0.75) leave();
     }
 
     function handleVideoFrame() {

@@ -2,14 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import {
-  Fragment,
-  useCallback,
-  useEffect,
-  useId,
-  useRef,
-  useState,
-} from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { HeroAtmosphere } from "./hero-atmosphere";
 import { HERO_COPY } from "./hero-copy";
 import { HeroDust } from "./hero-dust";
@@ -17,7 +10,10 @@ import { useHomeIntro } from "./home-intro";
 import { gazeFrameTime, gazeTime, HERO_VIDEO_FPS } from "./hero-gaze";
 
 const VIDEO_URL = "/visuals/stylo-lion-motion-v3.mp4";
-const POSTER_URL = "/visuals/stylo-lion-poster-v1.webp";
+const POSTER_URL = "/visuals/stylo-lion-poster-right-v1.webp";
+// The source already contains this pose. Keep the poster and first decoded
+// frame identical; never mirror the lion or its lettering/watermark.
+const INITIAL_GAZE = 0.95;
 const CONTENT_CUES_MS = [0, 180, 520, 1000, 1220];
 
 function HeroWords({
@@ -43,7 +39,6 @@ function HeroWords({
 }
 
 export function CinematicHero() {
-  const eyesId = useId();
   const { setWaiting, introSeen, claimIntro } = useHomeIntro();
   const introChoice = useRef<boolean | null>(introSeen ? false : null);
   const gazeUnlocked = useRef(introSeen);
@@ -59,6 +54,7 @@ export function CinematicHero() {
   const animationFrame = useRef<number | null>(null);
   const [videoEnabled, setVideoEnabled] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
+  const [prepareLion, setPrepareLion] = useState(introSeen);
   const [dustReady, setDustReady] = useState(false);
   const [navigationReady, setNavigationReady] = useState(introSeen);
   const [contentStage, setContentStage] = useState(introSeen ? 5 : 0);
@@ -81,14 +77,22 @@ export function CinematicHero() {
     gazeUnlocked.current = true;
     resumeGaze.current();
     setContentInstant(true);
+    setPrepareLion(true);
     setPlayIntro(false);
     setLionVisible(true);
     setDustReady(true);
     revealNavigation();
   }, [revealNavigation]);
-  const completeScoop = useCallback(() => setPlayIntro(false), []);
+  const completeScoop = useCallback(() => {
+    setPlayIntro(false);
+    // The matching poster carries the lion's fade. Start its interactive
+    // decoder after the entrance decoder has released its resources.
+    setPrepareLion(true);
+  }, []);
   const revealLion = useCallback(() => setLionVisible(true), []);
-  const handleAtmosphereSettled = useCallback(() => setDustReady(true), []);
+  const handleAtmosphereSettled = useCallback(() => {
+    setDustReady(true);
+  }, []);
   const revealBrand = useCallback(() => setBrandVisible(true), []);
 
   useEffect(() => {
@@ -120,10 +124,16 @@ export function CinematicHero() {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
     if (introChoice.current === null) introChoice.current = claimIntro();
     function updateEligibility() {
-      const saveData = (
-        navigator as Navigator & { connection?: { saveData?: boolean } }
-      ).connection?.saveData;
-      const eligible = desktop.matches && !reduced.matches && !saveData;
+      const connection = (
+        navigator as Navigator & {
+          connection?: { saveData?: boolean; effectiveType?: string };
+        }
+      ).connection;
+      const eligible =
+        desktop.matches &&
+        !reduced.matches &&
+        !connection?.saveData &&
+        !["slow-2g", "2g", "3g"].includes(connection?.effectiveType ?? "");
       setVideoEnabled(eligible);
       if (
         !eligible ||
@@ -174,7 +184,7 @@ export function CinematicHero() {
   }, [revealAll, setWaiting, claimIntro]);
 
   useEffect(() => {
-    if (!videoEnabled) return;
+    if (!videoEnabled || !prepareLion) return;
     const hero = heroRef.current;
     const element = videoRef.current;
     if (!hero || !element) return;
@@ -239,7 +249,7 @@ export function CinematicHero() {
     function handleMetadata() {
       if (!Number.isFinite(video.duration) || video.duration <= 0) return;
       video.pause();
-      smoothedTime.current = gazeTime(0.7, video.duration);
+      smoothedTime.current = gazeTime(INITIAL_GAZE, video.duration);
       submittedTime.current = gazeFrameTime(smoothedTime.current);
       targetTime.current =
         pointerProgress === null || !gazeUnlocked.current
@@ -326,7 +336,7 @@ export function CinematicHero() {
       seeking.current = false;
       mediaReady.current = false;
     };
-  }, [videoEnabled, revealAll]);
+  }, [videoEnabled, prepareLion, revealAll]);
 
   return (
     <section
@@ -340,7 +350,7 @@ export function CinematicHero() {
       <noscript>
         <style>{`.site-header,.category-navigation-shell,.hero-reveal,.hero-word,.sport-hero-visual{opacity:1!important;visibility:visible!important;transform:none!important;pointer-events:auto!important}.sport-hero-visual{transition:none!important}`}</style>
       </noscript>
-      {videoEnabled && videoReady && (
+      {videoEnabled && (
         <>
           {playIntro && (
             <HeroAtmosphere
@@ -357,42 +367,6 @@ export function CinematicHero() {
       )}
       {videoEnabled && !contentInstant && !contentStarted && (
         <>
-          <svg
-            className="hero-lion-eyes"
-            viewBox="0 0 1440 812"
-            aria-hidden="true"
-            focusable="false"
-          >
-            <defs>
-              <radialGradient id={`${eyesId}-feather`}>
-                <stop offset="0" stopColor="white" />
-                <stop offset="0.55" stopColor="white" stopOpacity="0.85" />
-                <stop offset="1" stopColor="white" stopOpacity="0" />
-              </radialGradient>
-              <mask id={`${eyesId}-mask`}>
-                <ellipse
-                  cx="689"
-                  cy="256"
-                  rx="43"
-                  ry="17"
-                  fill={`url(#${eyesId}-feather)`}
-                />
-                <ellipse
-                  cx="841"
-                  cy="257"
-                  rx="35"
-                  ry="16"
-                  fill={`url(#${eyesId}-feather)`}
-                />
-              </mask>
-            </defs>
-            <image
-              href={POSTER_URL}
-              width="1440"
-              height="812"
-              mask={`url(#${eyesId}-mask)`}
-            />
-          </svg>
           <div
             className="hero-intro-brand"
             data-state={
@@ -407,7 +381,7 @@ export function CinematicHero() {
                 width={981}
                 height={236}
                 unoptimized
-                sizes="40vw"
+                sizes="(min-width: 1600px) 480px, 30vw"
               />
             </span>
           </div>
@@ -437,7 +411,7 @@ export function CinematicHero() {
             sizes="100vw"
           />
         </div>
-        {videoEnabled && (
+        {videoEnabled && prepareLion && (
           <video
             ref={videoRef}
             className={videoReady ? "is-ready" : ""}

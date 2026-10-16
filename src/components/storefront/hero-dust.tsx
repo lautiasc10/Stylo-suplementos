@@ -191,8 +191,8 @@ export function HeroDust({
       const scale = Math.min(
         window.devicePixelRatio || 1,
         1.25,
-        1920 / width,
-        1080 / height,
+        1600 / width,
+        900 / height,
       );
       surface.width = Math.ceil(width * scale);
       surface.height = Math.ceil(height * scale);
@@ -229,6 +229,9 @@ export function HeroDust({
     function tick(now: number) {
       frame = null;
       if (disposed || !inView || document.hidden || pausedRef.current) return;
+      // A short flourish settles into a static backdrop. Categories need no
+      // pause control and no indefinite animation while the customer browses.
+      if (variant === "menu" && motionTime >= 4) return;
       if (!lastDraw || now - lastDraw >= 1000 / 30) {
         const dt = lastDraw ? Math.min((now - lastDraw) / 1000, 0.067) : 0;
         lastDraw = now;
@@ -238,7 +241,11 @@ export function HeroDust({
     }
 
     function syncPlayback() {
-      const running = inView && !document.hidden && !pausedRef.current;
+      const running =
+        inView &&
+        !document.hidden &&
+        !pausedRef.current &&
+        !(variant === "menu" && motionTime >= 4);
       if (!running) {
         if (frame !== null) cancelAnimationFrame(frame);
         frame = null;
@@ -270,14 +277,7 @@ export function HeroDust({
     };
   }, [containerRef, running, variant]);
 
-  const label =
-    variant === "menu"
-      ? paused
-        ? "Reanudar partículas de categorías"
-        : "Pausar partículas de categorías"
-      : paused
-        ? "Reanudar polvo del fondo"
-        : "Pausar polvo del fondo";
+  const label = paused ? "Reanudar polvo del fondo" : "Pausar polvo del fondo";
   return (
     <>
       <div
@@ -287,10 +287,10 @@ export function HeroDust({
       >
         {running && <canvas ref={canvasRef} />}
       </div>
-      {running && (
+      {running && variant === "hero" && (
         <button
           type="button"
-          className={`hero-dust-control${variant === "menu" ? " category-dust-control" : ""}`}
+          className="hero-dust-control"
           aria-label={label}
           title={label}
           aria-pressed={paused}

@@ -165,12 +165,16 @@ test("el menú comparte partículas en catálogo y otras páginas sin descargar 
         .evaluate((canvas) => (canvas as HTMLCanvasElement).toDataURL());
     const before = await image();
     await expect.poll(image).not.toBe(before);
-    await panel
-      .getByRole("button", { name: "Pausar partículas de categorías" })
-      .click();
-    const paused = await image();
-    await page.waitForTimeout(150);
-    expect(await image()).toBe(paused);
+    await expect(
+      panel.getByRole("button", { name: /partículas de categorías/ }),
+    ).toHaveCount(0);
+    if (route === "/catalogo") {
+      // The decorative entrance settles without an extra control.
+      await page.waitForTimeout(4500);
+      const settled = await image();
+      await page.waitForTimeout(200);
+      expect(await image()).toBe(settled);
+    }
     await page.keyboard.press("Escape");
     await expect(panel).toHaveAttribute("data-open", "false");
     await expect(panel.locator("canvas")).toHaveCount(0);

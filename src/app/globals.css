@@ -279,11 +279,12 @@ img {
   transition-duration: 120ms;
 }
 .button-gold {
-  background: var(--gold);
+  background: var(--brand-gold-gradient);
   color: var(--background);
 }
 .button-gold:hover:not(:disabled) {
-  background: #e8c88e;
+  border-color: #ffd788;
+  box-shadow: 0 4px 22px #c58d4226;
 }
 .button-outline {
   border-color: var(--action-border);

@@ -360,14 +360,13 @@
   overflow: hidden;
   pointer-events: none;
   opacity: 0;
-  mix-blend-mode: screen;
   transition: opacity 550ms ease;
 }
 .hero-atmosphere[data-phase="playing"] {
-  opacity: 0.65;
+  opacity: 0.92;
 }
 .hero-atmosphere[data-phase="leaving"] {
-  animation: hero-scoop-rise 1800ms ease-in-out both;
+  animation: hero-scoop-dissolve 700ms ease-in-out both;
 }
 .hero-atmosphere video {
   position: absolute;
@@ -376,51 +375,30 @@
   height: 100%;
   object-fit: contain;
   transform: translate(-18%, 18%) scale(0.62);
-  transition: transform 1800ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
-.hero-atmosphere[data-phase="leaving"] video {
-  transform: translate(-18%, -2%) scale(0.62);
-}
-@keyframes hero-scoop-rise {
+@keyframes hero-scoop-dissolve {
   0% {
-    opacity: 0.65;
-  }
-  20% {
-    opacity: 0.58;
+    opacity: 0.92;
   }
   100% {
     opacity: 0;
   }
 }
-.hero-lion-eyes,
 .hero-intro-brand {
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 2;
   pointer-events: none;
   opacity: 0;
-}
-.hero-lion-eyes {
-  width: 100%;
-  height: calc(100% - 146px);
-  transform: translateX(17%) scale(0.88);
-  mix-blend-mode: screen;
-}
-.hero-intro-brand {
-  z-index: 2;
   display: grid;
   place-items: center;
   transform: translateX(17%) scale(0.88);
-  mix-blend-mode: screen;
   transition: opacity 600ms ease;
 }
 .hero-intro-brand > span {
   display: block;
-  width: min(45vw, 720px);
+  width: clamp(260px, 30vw, 480px);
   aspect-ratio: 981 / 236;
-  overflow: hidden;
-  transform: translateX(-8px);
-  transition: transform 650ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 .hero-intro-brand img {
   width: 100%;
@@ -430,18 +408,8 @@
 .hero-intro-brand[data-state="visible"] {
   opacity: 1;
 }
-.hero-intro-brand[data-state="visible"] > span {
-  transform: none;
-}
 .hero-intro-brand[data-state="leaving"] {
-  transition-duration: 800ms;
-}
-.hero-intro-brand[data-state="leaving"] > span {
-  transform: translateY(-8px);
-}
-.sport-hero:has(.hero-atmosphere) .sport-hero-visual {
-  z-index: 1;
-  mix-blend-mode: screen;
+  transition-duration: 650ms;
 }
 .hero-dust,
 .category-dust {
@@ -488,9 +456,6 @@
 .hero-dust-control .icon {
   width: 16px;
   height: 16px;
-}
-.category-dust-control {
-  inset: var(--space-3) var(--page-gutter) auto auto;
 }
 .sport-hero-poster {
   position: absolute;
@@ -544,7 +509,10 @@
   color: var(--gold);
 }
 .hero-word[data-accent="true"] {
-  color: var(--gold);
+  background: var(--brand-gold-gradient);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
 }
 .hero-word {
   display: inline-block;
@@ -552,7 +520,7 @@
 .sport-hero .hero-title {
   max-width: 12ch;
   margin: var(--space-6) 0;
-  font-size: clamp(2.5rem, 6vw, 5.5rem);
+  font-size: clamp(3rem, 7.2vw, 6.6rem);
   font-weight: 700;
   line-height: 1.05;
   letter-spacing: -0.015em;
@@ -591,13 +559,13 @@
     border-color 200ms ease;
 }
 .hero-pill-primary {
-  background: var(--gold);
+  background: var(--brand-gold-gradient);
   border-color: var(--gold);
   color: var(--background);
 }
 .hero-pill-primary:hover {
-  background: var(--foreground);
-  border-color: var(--foreground);
+  border-color: #ffd788;
+  box-shadow: 0 4px 22px #c58d4226;
   color: var(--background);
 }
 .hero-pill-secondary {
@@ -609,6 +577,17 @@
   background: transparent;
   border-color: var(--gold);
   color: var(--gold);
+}
+@media (forced-colors: active) {
+  .hero-word[data-accent="true"] {
+    background: none;
+    color: CanvasText;
+  }
+  .hero-pill-primary {
+    background: ButtonFace;
+    border-color: ButtonText;
+    color: ButtonText;
+  }
 }
 .hero-pill-outline {
   border-color: var(--foreground);
@@ -655,16 +634,9 @@
   .hero-content[data-sequence="active"] .hero-pill:nth-child(1) {
     --hero-reveal-delay: 80ms;
   }
-  .sport-hero[data-presentation="animated"] .sport-hero-visual {
-    mix-blend-mode: screen;
-  }
   .sport-hero[data-presentation="animated"][data-lion-visible="true"]
     .sport-hero-visual {
-    animation: hero-lion-emerge 3200ms cubic-bezier(0.4, 0, 0.2, 1) both;
-  }
-  .sport-hero[data-presentation="animated"][data-lion-visible="true"]
-    .hero-lion-eyes {
-    animation: hero-lion-eyes 3200ms ease-in-out both;
+    animation: hero-lion-emerge 1800ms cubic-bezier(0.4, 0, 0.2, 1) both;
   }
   .sport-hero[data-presentation="animated"][data-lion-visible="false"]
     .sport-hero-visual {
@@ -672,24 +644,11 @@
   }
 }
 @keyframes hero-lion-emerge {
-  0%,
-  12% {
+  0% {
     opacity: 0;
   }
   100% {
     opacity: 1;
-  }
-}
-@keyframes hero-lion-eyes {
-  0%,
-  100% {
-    opacity: 0;
-  }
-  24% {
-    opacity: 0.7;
-  }
-  65% {
-    opacity: 0.24;
   }
 }
 .categories-section {
@@ -1241,7 +1200,6 @@
   }
   .sport-hero-visual,
   .hero-atmosphere,
-  .hero-lion-eyes,
   .hero-intro-brand {
     top: 146px;
   }

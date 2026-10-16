@@ -233,12 +233,11 @@ test("los renglones y botones esperan al león y conservan su orden", async ({
   );
   for (const link of await content.locator(".hero-actions a").all()) {
     await expect(link).toHaveCSS("opacity", "1");
-    await expect(link).toHaveCSS(
-      "background-color",
-      (await link.getAttribute("href")) === "/catalogo"
-        ? "rgb(216, 180, 116)"
-        : "rgba(0, 0, 0, 0)",
-    );
+    if ((await link.getAttribute("href")) === "/catalogo") {
+      await expect(link).toHaveCSS("background-image", /linear-gradient/);
+    } else {
+      await expect(link).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+    }
   }
   await expect(content.locator(".hero-cursor")).toHaveCount(0);
 });
@@ -372,10 +371,14 @@ test("los logos vuelven al principio del hero desde otras páginas y desde el pi
   await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThan(2);
 });
 
-test("scoop completo sube y ojos, silueta y león aparecen gradualmente", async ({
+test("scoop fluido se funde con el león orientado a la derecha sin congelarse", async ({
   page,
 }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop");
+  const mediaRequests: string[] = [];
+  page.on("request", (request) => {
+    if (request.url().includes(".mp4")) mediaRequests.push(request.url());
+  });
   await page.goto("/");
   const hero = page.locator(".sport-hero");
   const intro = page.locator(".hero-atmosphere");
@@ -390,80 +393,71 @@ test("scoop completo sube y ojos, silueta y león aparecen gradualmente", async 
   );
   const initial = await hero.boundingBox();
   expect(initial!.y).toBe(0);
-  const introBrand = page.locator('.hero-intro-brand[data-state="visible"]');
-  await expect(introBrand).toHaveCSS("opacity", "1");
-  await expect(introBrand.locator("img")).toHaveAttribute(
+  // The entrance no longer waits for a second video to download and seek.
+  expect(
+    mediaRequests.some((url) => url.includes("stylo-scoop-intro-v3.mp4")),
+  ).toBe(true);
+  expect(mediaRequests.some((url) => url.includes("stylo-lion-motion"))).toBe(
+    false,
+  );
+  const brand = page.locator('.hero-intro-brand[data-state="visible"]');
+  await expect(brand).toHaveCSS("opacity", "1");
+  await expect(brand.locator("img")).toHaveAttribute(
     "src",
     "/branding/stylo-suplementos.svg",
   );
+  const brandBox = await brand.locator("span").boundingBox();
+  expect(brandBox!.width).toBeLessThanOrEqual(480);
   const brandReadableAt = await page.evaluate(() => performance.now());
-  const brandBox = await introBrand.locator("span").boundingBox();
-  await expect(intro.locator("canvas")).toHaveCount(0);
-  await expect(page.locator('.hero-dust[data-visible="true"]')).toBeVisible();
-  // The unsegmented clip rises as a whole. It retains its horizontal position
-  // and scale while fading into the ambient powder.
-  await expect(page.locator(".site-header")).toBeHidden();
-  await expect(intro).toHaveAttribute("data-phase", "leaving");
-  const scoopPosition = () =>
-    intro.locator("video").evaluate((element) => {
-      const transform = new DOMMatrixReadOnly(
-        getComputedStyle(element).transform,
-      );
-      return { x: transform.m41, y: transform.m42, scale: transform.a };
-    });
-  const exitStart = await scoopPosition();
-  await expect
-    .poll(async () => (await scoopPosition()).y)
-    .toBeLessThan(exitStart.y - 30);
-  expect((await scoopPosition()).scale).toBeCloseTo(exitStart.scale, 3);
-  expect((await scoopPosition()).x).toBeCloseTo(exitStart.x, 1);
   await expect(hero).toHaveAttribute("data-lion-visible", "true");
   expect(
     (await page.evaluate(() => performance.now())) - brandReadableAt,
-  ).toBeGreaterThan(2000);
-  await expect(hero.locator(".hero-content")).toHaveAttribute(
-    "data-content-stage",
-    "0",
-  );
-  await expect(hero.locator(".sport-hero-visual")).toHaveCSS(
-    "animation-name",
-    "hero-lion-emerge",
-  );
-  // The eyes come from the real neutral poster. No opaque shadow cutout is
-  // used; the body remains hidden through the first part of the eye reveal.
-  const eyes = hero.locator(".hero-lion-eyes");
-  await expect(hero.locator(".hero-lion-shadow")).toHaveCount(0);
-  await expect(eyes.locator("mask ellipse")).toHaveCount(2);
-  await expect
-    .poll(() =>
-      eyes.evaluate((element) => Number(getComputedStyle(element).opacity)),
-    )
-    .toBeGreaterThan(0.25);
-  expect(
-    await hero
-      .locator(".sport-hero-visual")
-      .evaluate((e) => Number(getComputedStyle(e).opacity)),
-  ).toBeLessThan(0.25);
-  const eyesBox = await eyes.boundingBox();
-  expect(
-    Math.abs(
-      brandBox!.x + brandBox!.width / 2 - (eyesBox!.x + eyesBox!.width / 2),
-    ),
-  ).toBeLessThan(2);
+  ).toBeGreaterThan(1400);
   await expect(page.locator(".hero-intro-brand")).toHaveAttribute(
     "data-state",
     "leaving",
   );
-  await expect(intro).toHaveCount(0, { timeout: 6000 });
-  await expect(page.locator(".site-header")).toBeHidden();
+  await expect(hero.locator(".hero-lion-eyes, .hero-lion-shadow")).toHaveCount(
+    0,
+  );
+  await expect(hero.locator(".hero-content")).toHaveAttribute(
+    "data-content-stage",
+    "0",
+  );
+  // The still poster carries the fade while the scoop is playing. There is
+  // only one video decoder in use during the entrance.
+  await expect(hero.locator(".sport-hero-visual > video")).toHaveCount(0);
+  await expect(intro).toHaveAttribute("data-phase", "leaving");
+  await expect(intro).toHaveCSS("animation-duration", "0.7s");
+  const scoop = intro.locator("video");
+  await expect(scoop).toHaveJSProperty("paused", false);
+  const before = await scoop.evaluate((element) => ({
+    time: (element as HTMLVideoElement).currentTime,
+    transform: getComputedStyle(element).transform,
+  }));
+  await page.waitForTimeout(120);
+  const after = await scoop.evaluate((element) => ({
+    time: (element as HTMLVideoElement).currentTime,
+    transform: getComputedStyle(element).transform,
+  }));
+  expect(after.time).toBeGreaterThan(before.time);
+  expect(after.transform).toBe(before.transform);
+  await expect(intro).toHaveCount(0, { timeout: 2500 });
+  const lion = hero.locator(".sport-hero-visual > video");
+  await expect(lion).toHaveClass(/is-ready/);
+  // A source pose facing right, not a mirrored or frontal poster.
+  await expect
+    .poll(() =>
+      lion.evaluate((element) => (element as HTMLVideoElement).currentTime),
+    )
+    .toBeCloseTo(0.849, 2);
   await expect(hero.locator(".sport-hero-visual")).toHaveCSS(
     "animation-duration",
-    "3.2s",
+    "1.8s",
   );
   await expect(hero.locator(".sport-hero-visual")).toHaveCSS("opacity", "1");
-  await expect(hero).toHaveAttribute("data-navigation", "waiting");
   await expect(hero).toHaveAttribute("data-navigation", "ready", {
-    timeout: 6500,
+    timeout: 5000,
   });
   await expect(page.locator(".site-header")).toHaveCSS("opacity", "1");
   await expect(page.locator(".category-navigation-shell")).toHaveCSS(
@@ -480,9 +474,19 @@ test("scoop completo sube y ojos, silueta y león aparecen gradualmente", async 
     "rgba(0, 0, 0, 0)",
   );
   await expect(
-    page.getByText("STYLO SUPLEMENTOS · ROSARIO", { exact: true }),
+    page.getByText("STYLO SUPLEMENTOS ? ROSARIO", { exact: true }),
   ).toHaveCount(0);
   expect(await hero.boundingBox()).toEqual(initial);
+  // The official SVG's five gold stops are shared by the word and main CTA.
+  const accent = hero.locator('.hero-word[data-accent="true"]');
+  const primary = hero.locator(".hero-pill-primary");
+  await expect(accent).toHaveCSS(
+    "background-image",
+    await primary.evaluate(
+      (element) => getComputedStyle(element).backgroundImage,
+    ),
+  );
+  await expect(accent).toHaveCSS("color", "rgba(0, 0, 0, 0)");
 });
 
 test("el scoop termina una vez y el polvo permanece con pausa accesible", async ({
@@ -676,8 +680,8 @@ test("un fallo del fondo conserva el león y los accesos de compra", async ({
     testInfo.project.name === "mobile",
     "El celular no descarga el video decorativo",
   );
-  await page.route("**/stylo-scoop-intro-v1.mp4", (route) => route.abort());
-  const attempted = page.waitForRequest("**/stylo-scoop-intro-v1.mp4");
+  await page.route("**/stylo-scoop-intro-v3.mp4", (route) => route.abort());
+  const attempted = page.waitForRequest("**/stylo-scoop-intro-v3.mp4");
   await page.goto("/");
   await attempted;
   await expect(page.locator(".hero-atmosphere")).toHaveCount(0);
