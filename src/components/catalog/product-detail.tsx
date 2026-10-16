@@ -3,7 +3,6 @@ import Link from "next/link";
 import { BrandLogo } from "./brand-logo";
 import { ProductPricing } from "@/components/commerce/product-pricing";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Icon } from "@/components/ui/icon";
 import { CategoryIllustration } from "@/components/storefront/category-illustration";
 import { ProductGallery, type GalleryImage } from "./product-gallery";
 import {
@@ -12,6 +11,8 @@ import {
   sceneIngredient,
 } from "./flavor-scene";
 import { AddToCart } from "@/components/commerce/add-to-cart";
+import { RevealGroup, RevealItem } from "@/components/ui/Reveal";
+import { Crossfade } from "@/components/ui/Crossfade";
 import { catalogMediaSource } from "@/modules/catalog/media-source";
 import {
   variantLabel,
@@ -166,7 +167,7 @@ export function ProductDetail({
             <ProductGallery
               images={flavorImages}
               mode="detail"
-              transition="turn"
+              transition="fade"
               flavorNavigation
               initialVariantId={variant.id}
               onImageChange={selectFlavorImage}
@@ -174,11 +175,14 @@ export function ProductDetail({
             />
           </>
         ) : images.length ? (
-          <ProductGallery
-            key={`${variant.id}:${images.map((image) => image.id).join(":")}`}
-            images={images}
-            mode="detail"
-          />
+          <Crossfade valueKey={variant.id} className="pack-crossfade">
+            <ProductGallery
+              key={`${variant.id}:${images.map((image) => image.id).join(":")}`}
+              images={images}
+              mode="detail"
+              transition="fade"
+            />
+          </Crossfade>
         ) : (
           <div className="product-detail-media">
             <>
@@ -192,72 +196,76 @@ export function ProductDetail({
           </div>
         )}
       </div>
-      <div className="product-detail-copy">
-        <p className="eyebrow product-brand">
+      <RevealGroup className="product-detail-copy" enterOnMount>
+        <RevealItem as="p" className="eyebrow product-brand">
           {logoSrc ? (
             <BrandLogo src={logoSrc} name={brandName} detail />
           ) : (
             brandName
           )}
-        </p>
-        <h1>
-          {flavorExperiment ? (
-            <>
-              <strong>{titleLead}</strong>
-              {titleRest.length > 0 && ` ${titleRest.join(" ")}`}
-            </>
-          ) : (
-            product.name
-          )}
-        </h1>
-        <p className="product-description">{product.description}</p>
-        {flavorExperiment && enhanced ? (
-          <div className="flavor-selected" role="status" aria-live="polite">
-            <span>Sabor elegido</span>
-            <div className="flavor-selected-row">
-              <div>
-                <strong>{variant.flavor || "Presentación"}</strong>
-                <p>
-                  {[variant.size, variant.presentation]
-                    .filter(Boolean)
-                    .join(" · ")}
-                </p>
+        </RevealItem>
+        <RevealItem>
+          <h1>
+            {flavorExperiment ? (
+              <>
+                <strong>{titleLead}</strong>
+                {titleRest.length > 0 && ` ${titleRest.join(" ")}`}
+              </>
+            ) : (
+              product.name
+            )}
+          </h1>
+          <p className="product-description">{product.description}</p>
+        </RevealItem>
+        <RevealItem>
+          {flavorExperiment && enhanced ? (
+            <div className="flavor-selected" role="status" aria-live="polite">
+              <span>Sabor elegido</span>
+              <div className="flavor-selected-row">
+                <div>
+                  <strong>{variant.flavor || "Presentación"}</strong>
+                  <p>
+                    {[variant.size, variant.presentation]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  </p>
+                </div>
+                <span
+                  className="stock-badge"
+                  data-stock={variant.stock > 0 ? "available" : "empty"}
+                >
+                  {variant.stock > 0 ? "Disponible" : "Sin stock"}
+                </span>
               </div>
-              <span
-                className="stock-badge"
-                data-stock={variant.stock > 0 ? "available" : "empty"}
-              >
-                {variant.stock > 0 ? "Disponible" : "Sin stock"}
-              </span>
             </div>
-          </div>
-        ) : (
-          <form method="get" className="variant-picker">
-            <label htmlFor="product-variant">Elegí tu presentación</label>
-            <select
-              name="variante"
-              id="product-variant"
-              value={variant.id}
-              onChange={(event) => {
-                setVariantId(event.target.value);
-              }}
-              aria-label="Presentación"
-            >
-              {product.variants.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {variantLabel(item)}
-                  {item.stock === 0 ? " · Sin stock" : ""}
-                </option>
-              ))}
-            </select>
-            <noscript>
-              <button className="button button-outline">
-                Ver presentación
-              </button>
-            </noscript>
-          </form>
-        )}
-        <div aria-live="polite" aria-atomic="true">
+          ) : (
+            <form method="get" className="variant-picker">
+              <label htmlFor="product-variant">Elegí tu presentación</label>
+              <select
+                name="variante"
+                id="product-variant"
+                value={variant.id}
+                onChange={(event) => {
+                  setVariantId(event.target.value);
+                }}
+                aria-label="Presentación"
+              >
+                {product.variants.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {variantLabel(item)}
+                    {item.stock === 0 ? " · Sin stock" : ""}
+                  </option>
+                ))}
+              </select>
+              <noscript>
+                <button className="button button-outline">
+                  Ver presentación
+                </button>
+              </noscript>
+            </form>
+          )}
+        </RevealItem>
+        <RevealItem aria-live="polite" aria-atomic="true">
           {!(flavorExperiment && enhanced) && (
             <p
               className="stock-badge"
@@ -266,8 +274,8 @@ export function ProductDetail({
               {variant.stock > 0 ? "Disponible" : "Sin stock"}
             </p>
           )}
-          <ProductPricing variant={variant} />
-        </div>
+          <ProductPricing variant={variant} animateChange />
+        </RevealItem>
         {(preview || !flavorExperiment) && (
           <p className="purchase-note">
             {preview
@@ -275,13 +283,15 @@ export function ProductDetail({
               : "La compra online estará disponible próximamente."}
           </p>
         )}
-        <AddToCart
-          variantId={variant.id}
-          stock={variant.stock}
-          slug={product.slug}
-          illustrated={flavorExperiment}
-        />
-      </div>
+        <RevealItem className="purchase-action">
+          <AddToCart
+            variantId={variant.id}
+            stock={variant.stock}
+            slug={product.slug}
+            illustrated={flavorExperiment}
+          />
+        </RevealItem>
+      </RevealGroup>
     </div>
   );
 }

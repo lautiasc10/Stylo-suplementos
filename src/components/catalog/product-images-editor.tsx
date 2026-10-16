@@ -44,7 +44,7 @@ export function ProductImagesEditor({
         document.getElementById(`image-association-${imageId}`)?.focus(),
       );
   }
-  function useFirst(image: ProductImage) {
+  function chooseCover(image: ProductImage) {
     const ordered = [...images].sort((a, b) => a.position - b.position);
     const firstIndex = ordered.findIndex((item) => item.id === scoped[0].id);
     ordered.splice(
@@ -157,7 +157,7 @@ export function ProductImagesEditor({
                 icon="back"
                 label="Usar primero"
                 disabled={busy || localIndex === 0}
-                onClick={() => useFirst(image)}
+                onClick={() => chooseCover(image)}
               />
               <IconAction
                 icon="trash"

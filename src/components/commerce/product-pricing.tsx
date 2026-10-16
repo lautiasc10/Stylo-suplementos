@@ -10,6 +10,7 @@ import { productOffers } from "@/modules/commerce/product-offers";
 import { priceLines } from "@/modules/commerce/promotions";
 import { useCart } from "./cart-provider";
 import { Icon } from "@/components/ui/icon";
+import { Crossfade } from "@/components/ui/Crossfade";
 
 function useOffers(variant: Variant) {
   const { catalog, promotions, preview } = useCart();
@@ -56,9 +57,11 @@ export function ProductPromotionBadge({ variant }: { variant: Variant }) {
 export function ProductPricing({
   variant,
   compact = false,
+  animateChange = false,
 }: {
   variant: Variant;
   compact?: boolean;
+  animateChange?: boolean;
 }) {
   const { offers, now, preview } = useOffers(variant);
   const lines = [
@@ -73,28 +76,31 @@ export function ProductPricing({
   const sales = offers.filter((p) => p.kind === "sale");
   const list = priceLines(lines, sales, "mercado-pago", now),
     cash = priceLines(lines, sales, "transferencia", now);
+  const prices = (
+    <dl className="product-prices">
+      <div>
+        <dt>Precio de lista</dt>
+        <dd>
+          {list.discount > 0 && <del>{formatPrice(variant.listPrice, 0)}</del>}{" "}
+          {formatPrice(list.total, 0)}
+        </dd>
+      </div>
+      <div>
+        <dt>Transferencia</dt>
+        <dd>
+          {cash.discount > 0 && <del>{formatPrice(variant.cashPrice, 0)}</del>}{" "}
+          {formatPrice(cash.total, 0)}
+        </dd>
+      </div>
+    </dl>
+  );
   return (
     <>
-      <dl className="product-prices">
-        <div>
-          <dt>Precio de lista</dt>
-          <dd>
-            {list.discount > 0 && (
-              <del>{formatPrice(variant.listPrice, 0)}</del>
-            )}{" "}
-            {formatPrice(list.total, 0)}
-          </dd>
-        </div>
-        <div>
-          <dt>Transferencia</dt>
-          <dd>
-            {cash.discount > 0 && (
-              <del>{formatPrice(variant.cashPrice, 0)}</del>
-            )}{" "}
-            {formatPrice(cash.total, 0)}
-          </dd>
-        </div>
-      </dl>
+      {animateChange ? (
+        <Crossfade valueKey={variant.id}>{prices}</Crossfade>
+      ) : (
+        prices
+      )}
       {!compact && offers.length > 0 && (
         <section
           className="product-offers"

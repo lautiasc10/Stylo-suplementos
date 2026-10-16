@@ -5,6 +5,8 @@ import { useCart } from "@/components/commerce/cart-provider";
 import { productOffers } from "@/modules/commerce/product-offers";
 import { formatPrice, variantLabel } from "@/modules/catalog/model";
 import { Icon } from "@/components/ui/icon";
+import { Reveal, RevealGroup, RevealItem } from "@/components/ui/Reveal";
+import { SectionHeading } from "./section-heading";
 
 export function HomePromotions({
   unavailable = false,
@@ -45,19 +47,15 @@ export function HomePromotions({
       aria-labelledby="promociones-title"
     >
       <div className="container">
-        <div className="home-section-heading">
-          <div>
-            <p className="eyebrow">OPORTUNIDADES STYLO</p>
-            <h2 id="promociones-title">Promociones</h2>
-          </div>
-          <Link href="/catalogo" className="text-link">
-            Explorar tienda <Icon name="arrow" />
-          </Link>
-        </div>
+        <SectionHeading
+          id="promociones-title"
+          title="Promociones"
+          eyebrow="OPORTUNIDADES STYLO"
+        />
         {offers.length ? (
-          <div className="home-offer-grid">
+          <RevealGroup className="home-offer-grid">
             {offers.map((offer) => (
-              <article className="home-offer" key={offer.id}>
+              <RevealItem as="article" className="home-offer" key={offer.id}>
                 <p className="eyebrow">
                   <Icon name="bolt" />
                   {offer.kind === "bundle"
@@ -98,11 +96,11 @@ export function HomePromotions({
                 >
                   Ver promoción <Icon name="arrow" />
                 </Link>
-              </article>
+              </RevealItem>
             ))}
-          </div>
+          </RevealGroup>
         ) : (
-          <div className="home-collection-empty">
+          <Reveal className="home-collection-empty">
             <p>
               {unavailable
                 ? "No pudimos cargar las promociones. Volvé a intentarlo en la tienda."
@@ -111,7 +109,7 @@ export function HomePromotions({
             <Link href="/catalogo" className="text-link">
               Ver productos <Icon name="arrow" />
             </Link>
-          </div>
+          </Reveal>
         )}
       </div>
     </section>

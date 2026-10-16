@@ -31,12 +31,16 @@ export function HomeIntroProvider({ children }: { children: ReactNode }) {
     let stored = false;
     try {
       stored = window.sessionStorage.getItem(INTRO_SEEN) === "1";
-    } catch {}
+    } catch {
+      // The layout's in-memory flag still prevents replay without storage.
+    }
     seen.current = true;
     setIntroSeen(true);
     try {
       window.sessionStorage.setItem(INTRO_SEEN, "1");
-    } catch {}
+    } catch {
+      // Storage is optional; navigation remains available without it.
+    }
     return !stored;
   }, []);
   useEffect(() => {

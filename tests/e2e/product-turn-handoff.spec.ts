@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { demoCatalog } from "../../src/modules/catalog/demo";
 
 for (const mode of ["card", "detail"] as const) {
-  test(`la etiqueta permanece opaca al cerrar el giro en ${mode}`, async ({
+  test(`la etiqueta permanece opaca al cerrar ${mode === "card" ? "el giro" : "el fundido"} en ${mode}`, async ({
     page,
   }) => {
     // A transparent pack with an opaque white label exposes background bleed
@@ -72,10 +72,10 @@ for (const mode of ["card", "detail"] as const) {
       "data-portrait",
       "true",
     );
-    await expect(gallery.locator(".product-frame-settled")).toHaveAttribute(
-      "data-portrait",
-      "true",
+    const finalFrame = gallery.locator(
+      mode === "card" ? ".product-frame-settled" : ".product-frame-current",
     );
+    await expect(finalFrame).toHaveAttribute("data-portrait", "true");
 
     for (const fraction of [0.8, 0.9, 0.99]) {
       await gallery.evaluate(
@@ -87,11 +87,9 @@ for (const mode of ["card", "detail"] as const) {
             }
           });
         },
-        (mode === "card" ? 900 : 660) * fraction,
+        (mode === "card" ? 900 : 250) * fraction,
       );
-      const frame = await gallery
-        .locator(".product-frame-settled")
-        .boundingBox();
+      const frame = await finalFrame.boundingBox();
       const stage = gallery.locator(".product-image-stage");
       const bounds = await stage.boundingBox();
       const screenshot = await stage.screenshot({ scale: "css" });

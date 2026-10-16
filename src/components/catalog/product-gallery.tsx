@@ -124,7 +124,7 @@ export function ProductGallery({
   delay?: number;
   startDelay?: number;
   onImageChange?: (image: GalleryImage) => void;
-  transition?: "fragments" | "turn";
+  transition?: "fragments" | "turn" | "fade";
   flavorNavigation?: boolean;
   initialVariantId?: string;
   onPrepareImage?: (image: GalleryImage) => void;
@@ -343,7 +343,7 @@ export function ProductGallery({
           setMessage("No pudimos cargar esta imagen. Podés intentar otra vez.");
         });
     },
-    [active, images, reduced, onImageChange],
+    [images, reduced, onImageChange],
   );
 
   useEffect(() => {
@@ -366,12 +366,14 @@ export function ProductGallery({
       // for browsers that cancel an animation without dispatching that event.
       turning
         ? (flavorNavigation ? 660 : 900) + 250
-        : mode === "card"
-          ? 860
-          : 360,
+        : transition === "fade"
+          ? 270
+          : mode === "card"
+            ? 860
+            : 360,
     );
     return () => window.clearTimeout(timer);
-  }, [previous, active, mode, turning, flavorNavigation]);
+  }, [previous, active, mode, turning, flavorNavigation, transition]);
 
   function choose(index: number) {
     setPaused(true);
@@ -503,7 +505,9 @@ export function ProductGallery({
       ref={root}
       className={`product-image-gallery product-image-gallery-${mode}`}
       data-auto-playing={playing ? "true" : undefined}
-      data-transition={turning ? "turn" : undefined}
+      data-transition={
+        turning ? "turn" : transition === "fade" ? "fade" : undefined
+      }
       data-flavor-navigation={flavorNavigation ? "true" : undefined}
       data-loading={loading ? "true" : undefined}
       data-animated={previous !== null && !reduced ? "true" : undefined}

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Form from "next/form";
 import { ProductCard } from "./product-card";
+import { RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { Icon } from "@/components/ui/icon";
 import {
   parseMoney,
@@ -86,8 +87,10 @@ export function SearchResults({
       "pagina",
     ])
       if (params[key]) search.set(key, params[key]!);
-    for (const [key, value] of Object.entries(changes))
-      value ? search.set(key, value) : search.delete(key);
+    for (const [key, value] of Object.entries(changes)) {
+      if (value) search.set(key, value);
+      else search.delete(key);
+    }
     if (!("pagina" in changes)) search.delete("pagina");
     return `${target}${search.size ? `?${search}` : ""}`;
   }
@@ -279,29 +282,36 @@ export function SearchResults({
           </Link>
         </div>
       ) : visible.length ? (
-        <div className="product-grid search-product-grid">
+        <RevealGroup
+          className="product-grid search-product-grid"
+          revision={JSON.stringify(params)}
+        >
           {visible.map(({ product: hit, variant, variants }, i) => {
             const product = data.products.find((p) => p.id === hit.id)!,
               ids = new Set(variants.map((v) => v.id));
             return (
-              <ProductCard
-                key={`${product.id}:${JSON.stringify(params)}`}
-                product={product}
-                variants={product.variants.filter((v) => ids.has(v.id))}
-                initialVariantId={variant.id}
-                brand={data.brands.find((b) => b.id === product.brandId)!}
-                category={data.categories.find((c) =>
-                  product.categoryIds.includes(c.id),
-                )}
-                index={i}
-                productPrefix={preview ? "/vista-previa/producto" : "/producto"}
-                imageBase={imageBase}
-                imageUrls={imageUrls}
-                preview={preview}
-              />
+              <RevealItem key={product.id} className="reveal-card">
+                <ProductCard
+                  key={`${product.id}:${JSON.stringify(params)}`}
+                  product={product}
+                  variants={product.variants.filter((v) => ids.has(v.id))}
+                  initialVariantId={variant.id}
+                  brand={data.brands.find((b) => b.id === product.brandId)!}
+                  category={data.categories.find((c) =>
+                    product.categoryIds.includes(c.id),
+                  )}
+                  index={i}
+                  productPrefix={
+                    preview ? "/vista-previa/producto" : "/producto"
+                  }
+                  imageBase={imageBase}
+                  imageUrls={imageUrls}
+                  preview={preview}
+                />
+              </RevealItem>
             );
           })}
-        </div>
+        </RevealGroup>
       ) : (
         <div className="search-results-empty">
           <h2>

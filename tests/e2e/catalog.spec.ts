@@ -158,9 +158,9 @@ test("búsqueda, orden por lista y selección de variante actualizan la ficha", 
   await expect(page.getByLabel("Presentación", { exact: true })).toHaveValue(
     demoCatalog().products[0].variants[1].id,
   );
-  await expect(page.locator("#contenido .product-prices")).toContainText(
-    "47.000",
-  );
+  await expect(
+    page.locator("#contenido .crossfade-layer:not([inert]) .product-prices"),
+  ).toContainText("47.000");
   await expect(
     page.getByRole("button", { name: "Sin stock", exact: true }),
   ).toBeDisabled();
@@ -733,6 +733,7 @@ test("la galería automática sincroniza variantes y la ficha conserva sus fotos
   await expect(
     page.getByAltText("Vainilla frente", { exact: true }),
   ).toBeVisible();
+  await page.clock.runFor(350);
   await expect(
     page.getByAltText("Chocolate dorso", { exact: true }),
   ).toHaveCount(0);

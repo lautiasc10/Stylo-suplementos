@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { CatalogActiveFilters, CatalogFilterSidebar } from "./filters";
 import { ProductCard } from "./product-card";
+import { RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import {
   filterCatalog,
   publicCatalog,
@@ -53,28 +54,33 @@ export function CatalogListing({
           <p>Encontrá lo que acompaña tu rutina.</p>
         </div>
         {results.length ? (
-          <div className="product-grid">
+          <RevealGroup
+            className="product-grid"
+            revision={JSON.stringify(filters)}
+          >
             {results.map(({ product, variant, brand }, index) => {
               const category = data.categories.find((item) =>
                 product.categoryIds.includes(item.id),
               );
               return (
-                <ProductCard
-                  key={`${product.id}:${JSON.stringify(filters)}`}
-                  product={product}
-                  variants={matchingVariants(product, filters)}
-                  initialVariantId={variant.id}
-                  brand={brand}
-                  category={category}
-                  index={index}
-                  productPrefix={productPrefix}
-                  imageBase={imageBase}
-                  imageUrls={imageUrls}
-                  preview={preview}
-                />
+                <RevealItem key={product.id} className="reveal-card">
+                  <ProductCard
+                    key={`${product.id}:${JSON.stringify(filters)}`}
+                    product={product}
+                    variants={matchingVariants(product, filters)}
+                    initialVariantId={variant.id}
+                    brand={brand}
+                    category={category}
+                    index={index}
+                    productPrefix={productPrefix}
+                    imageBase={imageBase}
+                    imageUrls={imageUrls}
+                    preview={preview}
+                  />
+                </RevealItem>
               );
             })}
-          </div>
+          </RevealGroup>
         ) : (
           <div className="empty-state">
             <h2>

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { ProductCard } from "@/components/catalog/product-card";
 import { Icon } from "@/components/ui/icon";
+import { Reveal, RevealGroup, RevealItem } from "@/components/ui/Reveal";
+import { SectionHeading } from "./section-heading";
 import type { Catalog, Product } from "@/modules/catalog/model";
 
 export function HomeProducts({
@@ -27,42 +29,35 @@ export function HomeProducts({
       aria-labelledby={`${id}-title`}
     >
       <div className="container">
-        <div className="home-section-heading">
-          <div>
-            <p className="eyebrow">{eyebrow}</p>
-            <h2 id={`${id}-title`}>{title}</h2>
-          </div>
-          <Link href="/catalogo" className="text-link">
-            Explorar tienda <Icon name="arrow" />
-          </Link>
-        </div>
+        <SectionHeading id={`${id}-title`} title={title} eyebrow={eyebrow} />
         {products.length ? (
-          <div className="home-product-grid">
+          <RevealGroup className="home-product-grid">
             {products.map((product, index) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                variants={product.variants}
-                initialVariantId={
-                  (
-                    product.variants.find((v) => v.stock > 0) ??
-                    product.variants[0]
-                  ).id
-                }
-                brand={catalog.brands.find((b) => b.id === product.brandId)!}
-                category={catalog.categories.find((c) =>
-                  product.categoryIds.includes(c.id),
-                )}
-                index={index}
-                productPrefix="/producto"
-                imageBase={imageBase}
-                imageUrls={{}}
-                preview={false}
-              />
+              <RevealItem key={product.id} className="reveal-card">
+                <ProductCard
+                  product={product}
+                  variants={product.variants}
+                  initialVariantId={
+                    (
+                      product.variants.find((v) => v.stock > 0) ??
+                      product.variants[0]
+                    ).id
+                  }
+                  brand={catalog.brands.find((b) => b.id === product.brandId)!}
+                  category={catalog.categories.find((c) =>
+                    product.categoryIds.includes(c.id),
+                  )}
+                  index={index}
+                  productPrefix="/producto"
+                  imageBase={imageBase}
+                  imageUrls={{}}
+                  preview={false}
+                />
+              </RevealItem>
             ))}
-          </div>
+          </RevealGroup>
         ) : (
-          <div className="home-collection-empty">
+          <Reveal className="home-collection-empty">
             <p>
               {unavailable
                 ? "No pudimos cargar los productos. Volvé a intentarlo en la tienda."
@@ -73,7 +68,7 @@ export function HomeProducts({
             <Link href="/catalogo" className="text-link">
               Ver productos <Icon name="arrow" />
             </Link>
-          </div>
+          </Reveal>
         )}
       </div>
     </section>

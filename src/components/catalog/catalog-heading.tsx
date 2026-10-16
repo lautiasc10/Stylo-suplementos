@@ -1,3 +1,5 @@
+import { Reveal } from "@/components/ui/Reveal";
+
 export function CatalogHeading({
   title,
   description,
@@ -8,7 +10,12 @@ export function CatalogHeading({
   preview?: boolean;
 }) {
   return (
-    <header className="catalog-campaign">
+    <Reveal
+      as="header"
+      direction="none"
+      enterOnMount
+      className="catalog-campaign"
+    >
       <div className="catalog-campaign-copy">
         <p className="eyebrow">
           {preview ? "EXPLORÁ STYLO" : "LA SELECCIÓN STYLO"}
@@ -16,6 +23,6 @@ export function CatalogHeading({
         <h1>{title}</h1>
         {description && <p className="page-intro">{description}</p>}
       </div>
-    </header>
+    </Reveal>
   );
 }

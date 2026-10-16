@@ -140,7 +140,7 @@ export function priceLines(
       )
     )
       continue;
-    let discount = 0;
+    let discount: number;
     if (p.kind === "bundle") {
       const repeats = Math.min(
         ...matched.map(({ component, line }) =>

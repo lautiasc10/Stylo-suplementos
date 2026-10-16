@@ -883,49 +883,6 @@
 .interior-page .empty-state :focus-visible {
   outline-color: var(--background);
 }
-/* Reveal only offscreen content after JS initializes. No-JS and reduced motion stay visible. */
-.scroll-reveal[data-reveal="pending"] {
-  opacity: 0;
-  transform: translateY(24px);
-}
-.scroll-reveal[data-reveal="visible"] {
-  animation: reveal-in 800ms var(--motion-ease) both;
-}
-.reveal-stagger[data-reveal="visible"] {
-  animation: none;
-}
-.reveal-stagger[data-reveal="visible"] > * {
-  animation: reveal-in 800ms var(--motion-ease) both;
-}
-.reveal-stagger[data-reveal="visible"] > :nth-child(2) {
-  animation-delay: 80ms;
-}
-.reveal-stagger[data-reveal="visible"] > :nth-child(3) {
-  animation-delay: 160ms;
-}
-.scroll-reveal:focus-within {
-  opacity: 1;
-  transform: none;
-}
-.tagline-word {
-  transition: color var(--motion-duration) var(--motion-ease);
-}
-.tagline-word[data-word-reveal="pending"] {
-  color: #ffffff55;
-}
-.tagline-word[data-word-reveal="visible"] {
-  color: var(--foreground);
-}
-@keyframes reveal-in {
-  from {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 @keyframes menu-link-in {
   from {
     opacity: 0;
@@ -1135,14 +1092,6 @@
   }
   .hero-pill {
     transition: none;
-  }
-  .scroll-reveal[data-reveal],
-  .scroll-reveal[data-reveal] > * {
-    opacity: 1;
-    transform: none;
-  }
-  .tagline-word[data-word-reveal] {
-    color: var(--foreground);
   }
   .featured-category:is(:hover, :focus-visible) .featured-category-action .icon,
   .button:active:not(:disabled),

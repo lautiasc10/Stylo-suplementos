@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { BrandMark } from "./brand-mark";
 import { HomeLink } from "./home-link";
+import { Reveal } from "@/components/ui/Reveal";
 
 export function Footer() {
   return (
-    <footer className="site-footer">
+    <Reveal as="footer" direction="none" className="site-footer">
       <div className="container footer-inner">
         <div>
           <HomeLink>
@@ -22,6 +23,6 @@ export function Footer() {
           <br />© {new Date().getFullYear()} STYLO Suplementos
         </p>
       </div>
-    </footer>
+    </Reveal>
   );
 }
