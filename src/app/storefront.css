@@ -417,15 +417,15 @@
 .hero-intro-brand > span {
   display: block;
   width: min(45vw, 720px);
-  aspect-ratio: 3;
+  aspect-ratio: 981 / 236;
   overflow: hidden;
-  transform: translateX(-24px);
-  transition: transform 650ms var(--motion-ease);
+  transform: translateX(-8px);
+  transition: transform 650ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 .hero-intro-brand img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 .hero-intro-brand[data-state="visible"] {
   opacity: 1;
@@ -437,7 +437,7 @@
   transition-duration: 800ms;
 }
 .hero-intro-brand[data-state="leaving"] > span {
-  transform: translateX(24px);
+  transform: translateY(-8px);
 }
 .sport-hero:has(.hero-atmosphere) .sport-hero-visual {
   z-index: 1;
@@ -621,16 +621,14 @@
   color: var(--gold);
 }
 @media (min-width: 801px) and (hover: hover) and (prefers-reduced-motion: no-preference) {
-  .hero-content[data-sequence="active"] .hero-word {
+  .hero-content[data-sequence="active"] .hero-text {
     transition:
-      opacity 350ms ease var(--word-delay),
-      transform 440ms var(--motion-ease) var(--word-delay);
+      opacity 550ms ease,
+      transform 650ms cubic-bezier(0.22, 1, 0.36, 1);
   }
-  .hero-content[data-sequence="active"]
-    .hero-text[data-revealed="false"]
-    .hero-word {
+  .hero-content[data-sequence="active"] .hero-text[data-revealed="false"] {
     opacity: 0;
-    transform: translateX(-10px);
+    transform: translateX(-12px);
   }
   .hero-content[data-sequence="active"] .hero-pill {
     transition:
@@ -643,7 +641,7 @@
   }
   .hero-content[data-sequence="active"] .hero-pill[data-revealed="false"] {
     opacity: 0;
-    transform: translateX(-22px);
+    transform: translateX(-12px);
     pointer-events: none;
     visibility: hidden;
     transition: none;
@@ -662,7 +660,7 @@
   }
   .sport-hero[data-presentation="animated"][data-lion-visible="true"]
     .sport-hero-visual {
-    animation: hero-lion-emerge 3200ms linear both;
+    animation: hero-lion-emerge 3200ms cubic-bezier(0.4, 0, 0.2, 1) both;
   }
   .sport-hero[data-presentation="animated"][data-lion-visible="true"]
     .hero-lion-eyes {
@@ -675,14 +673,8 @@
 }
 @keyframes hero-lion-emerge {
   0%,
-  30% {
+  12% {
     opacity: 0;
-  }
-  50% {
-    opacity: 0.1;
-  }
-  75% {
-    opacity: 0.36;
   }
   100% {
     opacity: 1;
@@ -693,9 +685,11 @@
   100% {
     opacity: 0;
   }
-  28%,
-  62% {
-    opacity: 0.85;
+  24% {
+    opacity: 0.7;
+  }
+  65% {
+    opacity: 0.24;
   }
 }
 .categories-section {
@@ -1225,8 +1219,8 @@
     inset-inline: 0;
     background: transparent;
     transition:
-      transform 760ms var(--motion-ease),
-      opacity 640ms ease,
+      transform 520ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 480ms ease,
       visibility 0s;
   }
   :root:has(.sport-hero) .site-header {
@@ -1258,7 +1252,7 @@
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    transform: translateY(-160px);
+    transform: translateY(-18px);
     transition: none;
   }
 }
@@ -1275,53 +1269,40 @@
 .featured-category {
   border-radius: var(--radius-panel);
 }
+.brand-official {
+  display: block;
+  flex: none;
+  width: 170px;
+  height: auto;
+}
+.site-footer .brand-official {
+  width: 190px;
+}
+@media (max-width: 800px) {
+  .brand-official,
+  .site-footer .brand-official {
+    width: 120px;
+  }
+}
+@media (max-width: 480px) {
+  .site-header .brand-official {
+    width: clamp(90px, 25vw, 110px);
+  }
+  .admin-header .brand-official {
+    width: 100px;
+  }
+}
 
 /* Native disclosure menus keep search and mobile navigation usable without JS. */
-.header-search > summary,
 .mobile-menu > summary {
   list-style: none;
   cursor: pointer;
 }
-.header-search > summary::-webkit-details-marker,
 .mobile-menu > summary::-webkit-details-marker {
   display: none;
 }
 .mobile-menu {
   display: none;
-}
-.header-search-form {
-  position: absolute;
-  z-index: 3;
-  top: 100%;
-  right: var(--page-gutter);
-  width: min(520px, calc(100vw - var(--page-gutter) * 2));
-  padding: var(--space-6);
-  background: var(--surface);
-  border: 1px solid var(--control-border);
-  box-shadow: 0 20px 45px #0008;
-}
-.header-search-form label {
-  display: block;
-  margin-bottom: var(--space-4);
-  font-size: var(--text-base);
-  font-weight: 600;
-}
-.header-search-form > div {
-  display: flex;
-  gap: var(--space-3);
-}
-.header-search-form input {
-  width: 100%;
-  min-width: 0;
-  min-height: 48px;
-  padding: var(--space-3);
-  border: 1px solid var(--control-border);
-  background: var(--background);
-  color: var(--foreground);
-  border-radius: var(--radius-control);
-}
-.header-search-form .button {
-  flex-shrink: 0;
 }
 .mega-products-label {
   margin: 0 0 var(--space-4);
@@ -1531,21 +1512,6 @@
     width: 40px;
     height: 48px;
   }
-  .brand-wordmark {
-    font-size: 34px;
-  }
-  .brand-caption {
-    font-size: 8px;
-    letter-spacing: 0.16em;
-    gap: 4px;
-  }
-  .brand-caption::before,
-  .brand-caption::after {
-    width: 8px;
-  }
-  .brand-copy {
-    gap: 2px;
-  }
   .header-actions {
     gap: 4px;
   }
@@ -1620,20 +1586,7 @@
     width: 30px;
     height: 42px;
   }
-  .site-header .brand-wordmark {
-    font-size: 30px;
-  }
-  .site-header .brand-caption::before,
-  .site-header .brand-caption::after {
-    display: none;
-  }
   .home-product-grid {
     grid-template-columns: 1fr;
-  }
-  .header-search-form {
-    padding: var(--space-4);
-  }
-  .header-search-form > div {
-    flex-direction: column;
   }
 }

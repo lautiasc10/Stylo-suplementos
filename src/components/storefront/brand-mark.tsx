@@ -46,10 +46,16 @@ export function BrandMark({ priority = false }: { priority?: boolean }) {
           filter={`url(#${filterId})`}
         />
       </svg>
-      <span className="brand-copy">
-        <span className="brand-wordmark">STYLO</span>
-        <span className="brand-caption">SUPLEMENTOS</span>
-      </span>
+      <img
+        className="brand-official"
+        src="/branding/stylo-suplementos.svg"
+        width={981}
+        height={236}
+        alt=""
+        aria-hidden="true"
+        fetchPriority={priority ? "high" : "auto"}
+      />
+      <span className="sr-only">Stylo Suplementos</span>
     </>
   );
 }

@@ -11,14 +11,6 @@ const display = Barlow_Condensed({
   variable: "--font-display",
   display: "swap",
 });
-const brand = Barlow_Condensed({
-  subsets: ["latin"],
-  weight: "700",
-  style: "italic",
-  variable: "--font-brand",
-  display: "swap",
-  preload: false,
-});
 const body = Inter({
   subsets: ["latin"],
   variable: "--font-body",
@@ -64,10 +56,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html
-      lang="es-AR"
-      className={`${display.variable} ${body.variable} ${brand.variable}`}
-    >
+    <html lang="es-AR" className={`${display.variable} ${body.variable}`}>
       <body>
         <a href="#contenido" className="skip-link">
           Saltar al contenido

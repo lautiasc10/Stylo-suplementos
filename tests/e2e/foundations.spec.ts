@@ -112,10 +112,14 @@ test("teclado, menú y movimiento reducido", async ({ page }, info) => {
 
 test("la lupa busca productos y Escape devuelve el foco", async ({ page }) => {
   await page.goto("/catalogo");
-  const toggle = page.locator(".header-search summary");
+  const toggle = page.getByRole("link", {
+    name: "Buscar productos",
+    exact: true,
+  });
   await toggle.click();
-  const input = page.getByRole("searchbox", {
-    name: "Buscá tu próximo producto",
+  const input = page.getByRole("combobox", {
+    name: "Buscar productos",
+    exact: true,
   });
   await expect(input).toBeFocused();
   await page.keyboard.press("Escape");
@@ -124,8 +128,8 @@ test("la lupa busca productos y Escape devuelve el foco", async ({ page }) => {
   await toggle.click();
   await input.fill("creatina");
   await input.press("Enter");
-  await expect(page).toHaveURL(/\/catalogo\?q=creatina$/);
-  await expect(page.locator(".header-search")).not.toHaveAttribute("open");
+  await expect(page).toHaveURL(/\/buscar\?q=creatina$/);
+  await expect(page.locator(".search-dialog")).not.toHaveAttribute("open");
 });
 
 test("página inexistente devuelve 404 y permite volver", async ({ page }) => {
@@ -146,9 +150,11 @@ test("búsqueda y categorías siguen disponibles sin JavaScript", async ({
     const page = await context.newPage();
     await page.goto(`${info.project.use.baseURL}/`);
     await expect(page.locator(".hero-title")).toBeVisible();
-    await page.locator(".header-search summary").click();
     await page
-      .getByRole("searchbox", { name: "Buscá tu próximo producto" })
+      .getByRole("link", { name: "Buscar productos", exact: true })
+      .click();
+    await page
+      .getByRole("searchbox", { name: "Buscar productos" })
       .fill("proteina");
     await page.getByRole("button", { name: "Buscar", exact: true }).click();
     await expect(page).toHaveURL(/q=proteina/);

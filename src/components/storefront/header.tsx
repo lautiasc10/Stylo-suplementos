@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import Form from "next/form";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { SearchPanel } from "./search-panel";
 import { BrandMark } from "./brand-mark";
 import { HomeLink } from "./home-link";
 import { Icon } from "@/components/ui/icon";
@@ -45,7 +45,6 @@ export function Header({
   const [lastCategory, setLastCategory] = useState(
     catalogCategories[0]?.slug ?? "",
   );
-  const search = useRef<HTMLDetailsElement>(null);
   const mobile = useRef<HTMLDetailsElement>(null);
   const categoryTrigger = useRef<HTMLAnchorElement>(null);
   const categoryPanel = useRef<HTMLElement>(null);
@@ -65,7 +64,6 @@ export function Header({
   function closeMenus() {
     clearTimers();
     setActiveCategory(null);
-    if (search.current) search.current.open = false;
     if (mobile.current) mobile.current.open = false;
   }
   function showCategory(slug: string, trigger: HTMLAnchorElement) {
@@ -83,7 +81,6 @@ export function Header({
   useEffect(() => {
     clearTimers();
     setActiveCategory(null);
-    if (search.current) search.current.open = false;
     if (mobile.current) mobile.current.open = false;
   }, [pathname]);
   useEffect(() => {
@@ -101,11 +98,7 @@ export function Header({
       if (event.key !== "Escape") return;
       // The cart owns Escape until its modal closes; keep its opener available.
       if (document.querySelector(".cart-drawer[open]")) return;
-      const details = search.current?.open
-        ? search.current
-        : mobile.current?.open
-          ? mobile.current
-          : null;
+      const details = mobile.current?.open ? mobile.current : null;
       if (details) {
         event.preventDefault();
         details.open = false;
@@ -122,7 +115,7 @@ export function Header({
       }
     }
     function outside(event: PointerEvent) {
-      for (const details of [search.current, mobile.current]) {
+      for (const details of [mobile.current]) {
         if (details?.open && !details.contains(event.target as Node))
           details.open = false;
       }
@@ -154,49 +147,9 @@ export function Header({
             ))}
           </nav>
           <div className="header-actions">
-            <details
-              className="header-search"
-              ref={search}
-              onToggle={(event) => {
-                if (!event.currentTarget.open) return;
-                if (mobile.current) mobile.current.open = false;
-                event.currentTarget.querySelector("input")?.focus();
-              }}
-            >
-              <summary className="icon-button" aria-label="Buscar productos">
-                <Icon name="search" />
-              </summary>
-              <Form
-                action="/catalogo"
-                className="header-search-form"
-                onSubmit={closeMenus}
-              >
-                <label htmlFor="header-search-input">
-                  Buscá tu próximo producto
-                </label>
-                <div>
-                  <input
-                    id="header-search-input"
-                    name="q"
-                    type="search"
-                    placeholder="Producto o marca"
-                    maxLength={100}
-                  />
-                  <button type="submit" className="button button-gold">
-                    Buscar <Icon name="arrow" />
-                  </button>
-                </div>
-              </Form>
-            </details>
+            <SearchPanel onOpen={closeMenus} />
             <CartLink />
-            <details
-              className="mobile-menu"
-              ref={mobile}
-              onToggle={(event) => {
-                if (event.currentTarget.open && search.current)
-                  search.current.open = false;
-              }}
-            >
+            <details className="mobile-menu" ref={mobile}>
               <summary
                 className="icon-button menu-toggle"
                 aria-label="Menú de navegación"
@@ -249,7 +202,10 @@ export function Header({
           clearTimers();
           if (event.currentTarget.querySelector(":focus-visible")) return;
           closeTimer.current = setTimeout(() => {
-            if (!document.querySelector(".cart-drawer[open]"))
+            if (
+              !document.querySelector(".cart-drawer[open]") &&
+              !categoryPanel.current?.querySelector(":focus-visible")
+            )
               setActiveCategory(null);
           }, HOVER_DELAY);
         }}

@@ -9,7 +9,6 @@ import {
   useId,
   useRef,
   useState,
-  type CSSProperties,
 } from "react";
 import { HeroAtmosphere } from "./hero-atmosphere";
 import { HERO_COPY } from "./hero-copy";
@@ -19,7 +18,7 @@ import { gazeFrameTime, gazeTime, HERO_VIDEO_FPS } from "./hero-gaze";
 
 const VIDEO_URL = "/visuals/stylo-lion-motion-v3.mp4";
 const POSTER_URL = "/visuals/stylo-lion-poster-v1.webp";
-const CONTENT_CUES_MS = [0, 350, 950, 1400, 1680];
+const CONTENT_CUES_MS = [0, 180, 520, 1000, 1220];
 
 function HeroWords({
   text,
@@ -36,7 +35,6 @@ function HeroWords({
         data-accent={
           accentFrom !== undefined && index >= accentFrom ? "true" : undefined
         }
-        style={{ "--word-delay": `${index * 35}ms` } as CSSProperties}
       >
         {word}
       </span>
@@ -100,7 +98,7 @@ export function CinematicHero() {
     const cues = CONTENT_CUES_MS.map((delay, index) =>
       window.setTimeout(() => advanceContent(index + 1), delay),
     );
-    const navigation = window.setTimeout(revealNavigation, 2300);
+    const navigation = window.setTimeout(revealNavigation, 1900);
     return () => {
       cues.forEach(window.clearTimeout);
       window.clearTimeout(navigation);
@@ -147,7 +145,12 @@ export function CinematicHero() {
     }
     updateEligibility();
     function revealForKeyboard(event: KeyboardEvent) {
-      if (event.key === "Tab" || event.key === "Escape") revealAll();
+      if (
+        event.key === "Tab" ||
+        event.key === "Escape" ||
+        ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k")
+      )
+        revealAll();
     }
     function revealForScroll() {
       if (window.scrollY > 8) revealAll();
@@ -399,10 +402,10 @@ export function CinematicHero() {
           >
             <span>
               <Image
-                src="/branding/logo-horizontal.webp"
+                src="/branding/stylo-suplementos.svg"
                 alt=""
-                width={640}
-                height={640}
+                width={981}
+                height={236}
                 unoptimized
                 sizes="40vw"
               />

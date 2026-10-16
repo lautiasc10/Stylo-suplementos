@@ -7,6 +7,7 @@ import { publicCatalog } from "@/modules/catalog/model";
 import { readPromotions } from "@/modules/commerce/promotions-server";
 import { readCart } from "@/modules/commerce/server";
 import "../commerce.css";
+import "../search.css";
 import { getEnvironment } from "@/lib/config/server";
 import { navigationCategories } from "@/components/storefront/navigation-model";
 

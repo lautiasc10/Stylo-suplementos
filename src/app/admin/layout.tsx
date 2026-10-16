@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
+import { BrandMark } from "@/components/storefront/brand-mark";
 import { AdminNavigation } from "@/components/admin/navigation";
 import { AdminWorkspaceScope } from "@/components/admin/workspace-navigation";
 import "../commerce.css";
@@ -18,16 +18,12 @@ export default function AdminLayout({
   return (
     <div className="admin-shell">
       <header className="admin-header">
-        <Link href="/" className="brand-link">
-          <Image
-            src="/branding/logo-principal.webp"
-            width={60}
-            height={60}
-            alt="STYLO, volver al inicio"
-          />
-          <span className="brand-name brand-caption">
-            Administración<span>STYLO SUPLEMENTOS</span>
-          </span>
+        <Link
+          href="/"
+          className="brand-link"
+          aria-label="Stylo Suplementos, volver a la tienda"
+        >
+          <BrandMark />
         </Link>
         <Link href="/" className="text-link">
           Volver a la tienda

@@ -84,3 +84,6 @@ Esta entrega deja el comercio revisable, con pedidos manuales protegidos prepara
 
 
 La revisión de portada del 15 de octubre incorpora la tipografía Barlow Condensed/Inter solicitada, dos acciones del hero, marca sin rectángulo de fondo, búsqueda por producto y navegación móvil vertical. El mega menú presenta productos reales con Agregar, sin duplicar categorías, con demora de hover de 180 ms y recorrido por teclado. Debajo del hero quedan Productos destacados, Novedades y Promociones, según el orden confirmado. Los destacados usan el indicador existente; las novedades se marcan con etiqueta nuevo/novedad/novedades. El texto de beneficios y envíos permanece editable y pendiente de confirmación antes de publicar. Detalle y capturas: [hero cinematográfico](hero-cinematico.md). No cambia las condiciones pendientes de compra ni integra la rama.
+
+
+La entrega posterior del 15 de octubre integra el SVG horizontal transparente del dueño y suaviza la secuencia del hero. Añade búsqueda modal con teclado e historial, sugerencias locales tolerantes y /buscar con filtros y paginación por URL, reutilizando las tarjetas. No hay cambios de esquema ni gastos. El orden Más nuevos queda pendiente de fechas reales de incorporación; no se infieren a partir de nombres ni versiones. Alcance, limitaciones y comprobaciones: [búsqueda de productos](busqueda.md).

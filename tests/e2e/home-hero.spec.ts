@@ -220,7 +220,7 @@ test("los renglones y botones esperan al león y conservan su orden", async ({
     () => (window as typeof window & { lionEnd: number }).lionEnd,
   );
   expect(lionEnd).toBeGreaterThan(0);
-  const thresholds = [0, 350, 950, 1400, 1680];
+  const thresholds = [0, 180, 520, 1000, 1220];
   for (const [index, sample] of samples.entries()) {
     expect(sample.time - lionEnd).toBeGreaterThanOrEqual(
       thresholds[index] - 80,
@@ -394,7 +394,7 @@ test("scoop completo sube y ojos, silueta y león aparecen gradualmente", async 
   await expect(introBrand).toHaveCSS("opacity", "1");
   await expect(introBrand.locator("img")).toHaveAttribute(
     "src",
-    "/branding/logo-horizontal.webp",
+    "/branding/stylo-suplementos.svg",
   );
   const brandReadableAt = await page.evaluate(() => performance.now());
   const brandBox = await introBrand.locator("span").boundingBox();
@@ -439,7 +439,11 @@ test("scoop completo sube y ojos, silueta y león aparecen gradualmente", async 
       eyes.evaluate((element) => Number(getComputedStyle(element).opacity)),
     )
     .toBeGreaterThan(0.25);
-  await expect(hero.locator(".sport-hero-visual")).toHaveCSS("opacity", "0");
+  expect(
+    await hero
+      .locator(".sport-hero-visual")
+      .evaluate((e) => Number(getComputedStyle(e).opacity)),
+  ).toBeLessThan(0.25);
   const eyesBox = await eyes.boundingBox();
   expect(
     Math.abs(
