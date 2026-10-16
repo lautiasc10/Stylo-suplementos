@@ -9,10 +9,12 @@ export function HeroDust({
   containerRef,
   enabled,
   variant = "hero",
+  onPauseChange,
 }: {
   containerRef: RefObject<HTMLElement | null>;
   enabled: boolean;
-  variant?: "hero" | "menu";
+  variant?: "hero" | "menu" | "product";
+  onPauseChange?: (paused: boolean) => void;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pausedRef = useRef(false);
@@ -21,13 +23,13 @@ export function HeroDust({
   const [motionAllowed, setMotionAllowed] = useState(false);
 
   useEffect(() => {
-    if (variant !== "menu") return;
+    if (variant === "hero") return;
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
     const desktop = window.matchMedia("(min-width: 801px) and (hover: hover)");
     function update() {
       setMotionAllowed(
         !media.matches &&
-          desktop.matches &&
+          (variant === "product" || desktop.matches) &&
           !(navigator as Navigator & { connection?: { saveData?: boolean } })
             .connection?.saveData,
       );
@@ -120,7 +122,7 @@ export function HeroDust({
       hazeContext.fillStyle = patch;
       hazeContext.fillRect(0, 0, 192, 128);
     }
-    const cloudCount = variant === "menu" ? 8 : 16;
+    const cloudCount = variant === "hero" ? 16 : 8;
     for (let i = 0; i < cloudCount; i++)
       clouds.push({
         x: (i % 4) / 4 + random() * 0.2,
@@ -134,6 +136,7 @@ export function HeroDust({
       const dx = Math.max(copy.left - x, 0, x - copy.right);
       const dy = Math.max(copy.top - y, 0, y - copy.bottom);
       const copyWeight = 0.16 + 0.84 * Math.min(1, Math.hypot(dx, dy) / 70);
+      if (variant === "product") return copyWeight;
       const faceDistance =
         ((x - width * 0.7) / (width * 0.18)) ** 2 +
         ((y - height * 0.42) / (height * 0.3)) ** 2;
@@ -199,7 +202,9 @@ export function HeroDust({
       ctx.setTransform(scale, 0, 0, scale, 0, 0);
       const origin = scene.getBoundingClientRect();
       const bounds = scene
-        .querySelector(".hero-content")
+        .querySelector(
+          variant === "product" ? ".gainer-product-copy" : ".hero-content",
+        )
         ?.getBoundingClientRect();
       if (bounds)
         copy = {
@@ -209,9 +214,9 @@ export function HeroDust({
           bottom: bounds.bottom - origin.top + 12,
         };
       const count = Math.min(
-        variant === "menu" ? 180 : 440,
+        variant === "menu" ? 180 : variant === "product" ? 260 : 440,
         Math.max(
-          variant === "menu" ? 70 : 220,
+          variant === "menu" ? 70 : variant === "product" ? 100 : 220,
           Math.round((width * height) / 3600),
         ),
       );
@@ -277,7 +282,14 @@ export function HeroDust({
     };
   }, [containerRef, running, variant]);
 
-  const label = paused ? "Reanudar polvo del fondo" : "Pausar polvo del fondo";
+  const label =
+    variant === "product"
+      ? paused
+        ? "Reanudar animación del fondo"
+        : "Pausar animación del fondo"
+      : paused
+        ? "Reanudar polvo del fondo"
+        : "Pausar polvo del fondo";
   return (
     <>
       <div
@@ -287,14 +299,17 @@ export function HeroDust({
       >
         {running && <canvas ref={canvasRef} />}
       </div>
-      {running && variant === "hero" && (
+      {running && variant !== "menu" && (
         <button
           type="button"
           className="hero-dust-control"
           aria-label={label}
           title={label}
           aria-pressed={paused}
-          onClick={() => setPaused((value) => !value)}
+          onClick={() => {
+            setPaused(!paused);
+            onPauseChange?.(!paused);
+          }}
         >
           <Icon name={paused ? "play" : "pause"} />
         </button>

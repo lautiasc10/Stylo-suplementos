@@ -13,6 +13,7 @@ import {
 import { AddToCart } from "@/components/commerce/add-to-cart";
 import { RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { Crossfade } from "@/components/ui/Crossfade";
+import { GainerProductDetail } from "./gainer-product-detail";
 import { catalogMediaSource } from "@/modules/catalog/media-source";
 import {
   variantLabel,
@@ -20,16 +21,7 @@ import {
   type Product,
 } from "@/modules/catalog/model";
 const emptyImageUrls: Record<string, string> = {};
-export function ProductDetail({
-  product,
-  brandName,
-  brandLogo,
-  category,
-  selectedId,
-  imageBase = "",
-  imageUrls = emptyImageUrls,
-  preview = false,
-}: {
+export type ProductDetailProps = {
   product: Product;
   brandName: string;
   brandLogo?: string | null;
@@ -38,7 +30,26 @@ export function ProductDetail({
   imageBase?: string;
   imageUrls?: Record<string, string>;
   preview?: boolean;
-}) {
+};
+
+export function ProductDetail(props: ProductDetailProps) {
+  return props.category === "ganadores-de-masa" ? (
+    <GainerProductDetail {...props} />
+  ) : (
+    <StandardProductDetail {...props} />
+  );
+}
+
+function StandardProductDetail({
+  product,
+  brandName,
+  brandLogo,
+  category,
+  selectedId,
+  imageBase = "",
+  imageUrls = emptyImageUrls,
+  preview = false,
+}: ProductDetailProps) {
   const [variantId, setVariantId] = useState(
     selectedId ?? product.variants[0].id,
   );

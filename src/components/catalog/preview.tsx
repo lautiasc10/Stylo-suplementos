@@ -93,8 +93,15 @@ export function CatalogPreview({
               data.brands.find((item) => item.id === product.brandId)!.logo
             }
             category={
-              data.categories.find((item) =>
-                product.categoryIds.includes(item.id),
+              (
+                data.categories.find(
+                  (item) =>
+                    item.slug === "ganadores-de-masa" &&
+                    product.categoryIds.includes(item.id),
+                ) ??
+                data.categories.find((item) =>
+                  product.categoryIds.includes(item.id),
+                )
               )?.slug ?? ""
             }
             selectedId={selectedId}

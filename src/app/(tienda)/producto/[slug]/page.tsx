@@ -40,15 +40,19 @@ export default async function ProductPage({
   if (!product) notFound();
   const flavorExperience =
     product.slug === "whey-protein" && product.variants.length > 1;
-  const category = data.categories.find((item) =>
-      product.categoryIds.includes(item.id),
-    ),
+  const category =
+      data.categories.find(
+        (item) =>
+          item.slug === "ganadores-de-masa" &&
+          product.categoryIds.includes(item.id),
+      ) ??
+      data.categories.find((item) => product.categoryIds.includes(item.id)),
     config = getEnvironment().supabase;
   return (
     <section
-      className={`container interior-page${flavorExperience ? " flavor-product-page" : ""}`}
+      className={`container interior-page${flavorExperience ? " flavor-product-page" : category?.slug === "ganadores-de-masa" ? " gainer-product-page" : ""}`}
     >
-      {!flavorExperience && (
+      {!flavorExperience && category?.slug !== "ganadores-de-masa" && (
         <Link href="/catalogo" className="text-link">
           ← Volver al catálogo
         </Link>

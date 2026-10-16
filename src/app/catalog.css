@@ -755,6 +755,360 @@
   gap: var(--space-20);
   margin-top: var(--space-8);
 }
+
+/* Mass gainers: a transparent editorial layout over the hero's gold dust.
+   Scoped to this trial; the store cards and other detail scenes are unchanged. */
+.gainer-product-page {
+  padding-block: 0;
+}
+.product-detail.gainer-product-detail {
+  position: relative;
+  isolation: isolate;
+  width: calc(100% + var(--page-gutter) * 2);
+  margin: 0 calc(var(--page-gutter) * -1);
+  padding: var(--space-20) var(--page-gutter) var(--space-16);
+  min-height: calc(100svh - 160px);
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  align-items: center;
+  gap: clamp(32px, 5vw, 96px);
+  overflow: clip;
+  background: var(--cinematic-background);
+}
+.gainer-product-detail > .product-gallery {
+  position: relative;
+  z-index: 2;
+  container-type: inline-size;
+  max-width: 720px;
+}
+.gainer-product-detail .product-image-stage {
+  background: transparent;
+}
+.gainer-product-detail .product-image-stage .product-frame {
+  inset: -25%;
+  width: 150%;
+  max-width: none;
+  height: 150%;
+  padding: 0;
+}
+.gainer-product-detail
+  .product-image-gallery[data-transition="turn"]
+  .product-frame-link {
+  perspective-origin: center;
+}
+.gainer-product-detail
+  .product-image-gallery[data-transition="turn"][data-animated="true"]
+  .product-frame-pair {
+  transform-origin: center;
+}
+.gainer-product-detail .flavor-navigation button {
+  width: 48px;
+  height: 48px;
+  color: var(--foreground);
+  background: #080808b3;
+  border-color: var(--action-border);
+}
+.gainer-product-detail .flavor-navigation button:is(:hover, :focus-visible) {
+  color: var(--gold);
+  border-color: var(--gold);
+  outline-color: var(--gold);
+}
+.gainer-product-detail .flavor-loading span,
+.gainer-product-detail .product-thumbnails button {
+  background: transparent;
+}
+.gainer-product-detail .product-thumbnails {
+  justify-content: center;
+}
+.gainer-product-detail .product-thumbnails img {
+  width: 56px;
+  height: 56px;
+}
+.gainer-product-detail .product-no-photo {
+  color: var(--muted);
+}
+.gainer-product-detail .product-image-stage .product-no-photo {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.gainer-back-link {
+  position: absolute;
+  z-index: 3;
+  top: var(--space-6);
+  left: var(--page-gutter);
+  font-size: var(--text-sm);
+}
+.gainer-product-detail .gainer-product-copy {
+  position: relative;
+  z-index: 2;
+  max-width: 560px;
+  justify-self: start;
+  background: transparent;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+}
+.gainer-brand {
+  margin: 0 0 var(--space-2);
+  color: #c3c1ba;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+.gainer-product-detail .gainer-product-copy h1 {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: clamp(2.5rem, 4vw, 4.5rem);
+  line-height: 1.05;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+.gainer-product-copy .product-description {
+  margin: var(--space-3) 0 var(--space-6);
+  color: #b9b7b0;
+  font-size: var(--text-base);
+  line-height: 1.6;
+}
+.gainer-flavor-picker > p {
+  margin: 0 0 var(--space-2);
+  color: #b9b7b0;
+  font-size: var(--text-sm);
+}
+.gainer-flavor-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.gainer-flavor-options a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 48px;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+.gainer-flavor-options a[aria-current="true"] {
+  border-color: var(--gold);
+  background: #d8b4740f;
+}
+.gainer-flavor-options a:hover {
+  border-color: var(--gold);
+}
+.gainer-flavor-options a[data-unavailable="true"] > span:last-child {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+.gainer-flavor-dot,
+.gainer-stock-dot {
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+[data-flavor="frutilla"] > .gainer-flavor-dot {
+  background: #d07c92;
+}
+[data-flavor="banana"] > .gainer-flavor-dot {
+  background: #edcc55;
+}
+[data-flavor="vainilla"] > .gainer-flavor-dot {
+  background: #dfd2b1;
+}
+[data-flavor="cookies"] > .gainer-flavor-dot {
+  background: #b99476;
+}
+.gainer-stock {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: var(--space-3) 0 var(--space-6);
+  color: #b9b7b0;
+  font-size: var(--text-sm);
+}
+.gainer-stock[data-stock="available"] .gainer-stock-dot {
+  background: #8acb95;
+}
+.transfer-pricing {
+  min-height: 94px;
+  padding-bottom: var(--space-4);
+}
+.transfer-pricing-primary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-3);
+  margin: 0 0 var(--space-2);
+}
+.transfer-pricing-primary strong {
+  color: var(--foreground);
+  font-family: var(--font-heading);
+  font-size: clamp(2.5rem, 3vw, 3.75rem);
+  font-weight: 700;
+  line-height: 1.1;
+}
+.transfer-pricing-primary > span {
+  color: var(--gold);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+.transfer-pricing-secondary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin: 0;
+  color: #b9b7b0;
+  font-size: var(--text-sm);
+}
+.transfer-saving {
+  padding: 2px var(--space-2);
+  border: 1px solid var(--action-border);
+  border-radius: 4px;
+  color: var(--gold);
+  white-space: nowrap;
+}
+.gainer-product-copy .add-to-cart .button {
+  width: 100%;
+  min-height: 52px;
+  border-radius: 4px;
+  margin-top: var(--space-2);
+}
+.gainer-product-copy .product-offer {
+  background: transparent;
+}
+.gainer-product-detail .hero-dust {
+  z-index: 0;
+}
+.gainer-product-detail .hero-dust-control {
+  z-index: 3;
+}
+.gainer-ingredients {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+  contain: strict;
+}
+.gainer-ingredients > .crossfade,
+.gainer-ingredients .crossfade-layer {
+  position: absolute;
+  inset: 0;
+}
+.gainer-ingredient {
+  position: absolute;
+  width: clamp(76px, 9vw, 170px);
+  aspect-ratio: 1;
+}
+.gainer-ingredient img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0.9;
+  animation: gainer-ingredient-float 9s ease-in-out infinite alternate;
+  animation-play-state: paused;
+}
+.gainer-ingredients[data-moving="true"] img {
+  animation-play-state: running;
+}
+.gainer-ingredient-1 {
+  left: 1%;
+  top: 24%;
+  transform: rotate(-24deg);
+}
+.gainer-ingredient-2 {
+  left: 39%;
+  top: 10%;
+  transform: rotate(18deg) scale(0.7);
+}
+.gainer-ingredient-2 img {
+  animation-duration: 11s;
+  animation-delay: -3s;
+}
+.gainer-ingredient-3 {
+  left: 43%;
+  top: 69%;
+  transform: rotate(-16deg) scale(0.85);
+}
+.gainer-ingredient-3 img {
+  animation-duration: 12s;
+  animation-delay: -5s;
+}
+.gainer-ingredient-4 {
+  right: -3%;
+  top: 16%;
+  transform: rotate(28deg);
+}
+.gainer-ingredient-4 img {
+  animation-duration: 10s;
+  animation-delay: -2s;
+  opacity: 0.65;
+}
+@keyframes gainer-ingredient-float {
+  from {
+    transform: translate3d(0, 8px, 0) rotate(-3deg);
+  }
+  to {
+    transform: translate3d(8px, -12px, 0) rotate(4deg);
+  }
+}
+@media (max-width: 1000px) {
+  .product-detail.gainer-product-detail {
+    gap: var(--space-8);
+  }
+}
+@media (max-width: 800px) {
+  .product-detail.gainer-product-detail {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4);
+    padding-block: var(--space-16) var(--space-20);
+  }
+  .gainer-product-detail > .product-gallery {
+    max-width: 480px;
+  }
+  .gainer-product-detail .gainer-product-copy {
+    justify-self: center;
+  }
+  .gainer-product-detail .gainer-product-copy h1 {
+    font-size: clamp(2.5rem, 8vw, 3.75rem);
+  }
+  .gainer-ingredient {
+    width: 100px;
+  }
+  .gainer-ingredient-1 {
+    left: -5%;
+    top: 120px;
+  }
+  .gainer-ingredient-2 {
+    left: auto;
+    right: -5%;
+    top: 60px;
+  }
+  .gainer-ingredient-3 {
+    left: auto;
+    right: -2%;
+    top: 370px;
+  }
+  .gainer-ingredient-4 {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gainer-ingredient img {
+    animation: none;
+  }
+}
 .product-detail > .product-gallery {
   width: 100%;
   max-width: 640px;

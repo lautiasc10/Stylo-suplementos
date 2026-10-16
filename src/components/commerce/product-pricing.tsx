@@ -58,10 +58,12 @@ export function ProductPricing({
   variant,
   compact = false,
   animateChange = false,
+  transferFirst = false,
 }: {
   variant: Variant;
   compact?: boolean;
   animateChange?: boolean;
+  transferFirst?: boolean;
 }) {
   const { offers, now, preview } = useOffers(variant);
   const lines = [
@@ -76,7 +78,22 @@ export function ProductPricing({
   const sales = offers.filter((p) => p.kind === "sale");
   const list = priceLines(lines, sales, "mercado-pago", now),
     cash = priceLines(lines, sales, "transferencia", now);
-  const prices = (
+  const prices = transferFirst ? (
+    <div className="transfer-pricing">
+      <p className="transfer-pricing-primary">
+        <strong>{formatPrice(cash.total, 0)}</strong>
+        <span>por transferencia</span>
+      </p>
+      <p className="transfer-pricing-secondary">
+        <span>Precio de lista {formatPrice(list.total, 0)}</span>
+        {list.total > cash.total && (
+          <span className="transfer-saving">
+            Ahorrás {formatPrice(list.total - cash.total, 0)}
+          </span>
+        )}
+      </p>
+    </div>
+  ) : (
     <dl className="product-prices">
       <div>
         <dt>Precio de lista</dt>

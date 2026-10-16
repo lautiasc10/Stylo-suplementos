@@ -116,6 +116,7 @@ export function ProductGallery({
   flavorNavigation = false,
   initialVariantId,
   onPrepareImage,
+  selectionRequest,
 }: {
   images: GalleryImage[];
   href?: string;
@@ -128,6 +129,7 @@ export function ProductGallery({
   flavorNavigation?: boolean;
   initialVariantId?: string;
   onPrepareImage?: (image: GalleryImage) => void;
+  selectionRequest?: { variantId: string; nonce: number } | null;
 }) {
   const root = useRef<HTMLDivElement>(null);
   const framePair = useRef<HTMLSpanElement>(null);
@@ -155,6 +157,9 @@ export function ProductGallery({
   const [loading, setLoading] = useState(false);
   const [readyImage, setReadyImage] = useState<string | null>(null);
   const pending = useRef<number | null>(null);
+  const processedSelection = useRef<typeof selectionRequest>(null);
+  const explicitSelectionPending = useRef(false);
+  const visibleRef = useRef(false);
   const multiple = images.length > 1;
   const turning = transition === "turn";
   const automatic =
@@ -232,7 +237,14 @@ export function ProductGallery({
   }, []);
 
   useEffect(() => {
+    visibleRef.current = visible;
     if (!visible || !documentVisible) {
+      // A mobile swatch may be below the photograph. Finish that explicit
+      // choice even when scrolling to it moves the gallery offscreen.
+      if (documentVisible && explicitSelectionPending.current) {
+        setPrevious(null);
+        return;
+      }
       request.current++;
       pending.current = null;
       setLoading(false);
@@ -305,9 +317,11 @@ export function ProductGallery({
   ]);
 
   const showImage = useCallback(
-    (index: number) => {
+    (index: number, allowOffscreen = false) => {
       const sequence = ++request.current;
+      explicitSelectionPending.current = allowOffscreen;
       if (index === activeIndex.current) {
+        explicitSelectionPending.current = false;
         pending.current = null;
         setLoading(false);
         return;
@@ -316,10 +330,13 @@ export function ProductGallery({
       setLoading(true);
       const commitImage = () => {
         if (request.current !== sequence) return;
-        setPrevious(reduced ? null : activeIndex.current);
+        setPrevious(
+          reduced || !visibleRef.current ? null : activeIndex.current,
+        );
         activeIndex.current = index;
         setActive(index);
         pending.current = null;
+        explicitSelectionPending.current = false;
         setLoading(false);
         onImageChange?.(images[index]);
         setMessage("");
@@ -338,6 +355,7 @@ export function ProductGallery({
         .catch(() => {
           if (request.current !== sequence) return;
           pending.current = null;
+          explicitSelectionPending.current = false;
           setLoading(false);
           setPaused(true);
           setMessage("No pudimos cargar esta imagen. Podés intentar otra vez.");
@@ -345,6 +363,16 @@ export function ProductGallery({
     },
     [images, reduced, onImageChange],
   );
+
+  useEffect(() => {
+    if (!selectionRequest || processedSelection.current === selectionRequest)
+      return;
+    processedSelection.current = selectionRequest;
+    const index = images.findIndex(
+      (image) => image.variantId === selectionRequest.variantId,
+    );
+    if (index >= 0) showImage(index, true);
+  }, [selectionRequest, images, showImage]);
 
   useEffect(() => {
     if (!playing) return;
