@@ -41,8 +41,10 @@ test("inicio, orden de colecciones y navegación sin desbordamiento", async ({
     .click();
   await expect(page).toHaveURL(/\/catalogo$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "Nuestro catálogo",
+    "Tienda",
   );
+  await expect(page.locator(".catalog-campaign")).toHaveCount(0);
+  expect((await page.locator(".catalog-layout").boundingBox())!.y).toBeLessThan(250);
   expect(errors).toEqual([]);
 });
 

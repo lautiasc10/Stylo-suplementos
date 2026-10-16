@@ -34,60 +34,15 @@
 .catalog-manager textarea {
   resize: vertical;
 }
-.catalog-campaign {
-  position: relative;
-  isolation: isolate;
-  display: flex;
-  align-items: center;
-  min-height: 280px;
-  padding: var(--space-10);
-  border: 1px solid var(--action-border);
-  background: var(--commercial-background);
-  overflow: hidden;
+.catalog-page.interior-page {
+  padding-block: var(--space-8) var(--space-16);
 }
-.catalog-campaign::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 0 auto;
-  width: 65%;
-  z-index: -1;
-  background: url("/visuals/catalog-lion-stone-v1.webp") right center / cover
-    no-repeat;
-  mask-image: linear-gradient(to right, transparent, #000 30%);
-  pointer-events: none;
-}
-.catalog-campaign-copy {
-  max-width: 60%;
-}
-.catalog-campaign .eyebrow {
-  margin: 0 0 var(--space-4);
-}
-.catalog-campaign h1 {
-  margin: 0 0 var(--space-4);
-  text-wrap: balance;
-}
-.catalog-campaign .page-intro {
-  margin: 0;
-  color: var(--foreground);
-  max-width: 48ch;
+.catalog-page .catalog-layout {
+  margin-top: 0;
 }
 @media (max-width: 800px) {
-  .catalog-campaign {
-    min-height: 240px;
-    padding: var(--space-6);
-  }
-  .catalog-campaign::before {
-    width: 100%;
-    mask-image: linear-gradient(to right, transparent 20%, #000 72%);
-  }
-  .catalog-campaign-copy {
-    max-width: 62%;
-  }
-  .catalog-campaign h1 {
-    font-size: var(--text-2xl);
-  }
-  .catalog-campaign .page-intro {
-    font-size: var(--text-sm);
+  .catalog-page.interior-page {
+    padding-block: var(--space-6) var(--space-12);
   }
 }
 .catalog-layout {

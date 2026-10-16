@@ -2,7 +2,7 @@
 
 El 13 de octubre de 2026 el usuario aportó «Tarjeta premium de proteína con león dorado.png» como dirección visual. La adaptación usa el fondo [catalog-lion-stone-v1.webp](../public/visuals/catalog-lion-stone-v1.webp), generado mediante la herramienta integrada `imagegen`: león ilustrativo, piedra negra y luz dorada. Los logos oficiales y las fotos comerciales no fueron generados ni modificados.
 
-La referencia orienta materiales, iluminación y ambiente. No se incorporan sus textos de beneficios, su lettering de marca, sus precios ni una tarjeta rasterizada. Los datos reales y la navegación permanecen en los componentes existentes. El león decorativo ocupa el costado del encabezado para que no quede oculto por el envase; las galerías reutilizan únicamente la textura del lado izquierdo del fondo.
+La referencia orienta materiales, iluminación y ambiente. No se incorporan sus textos de beneficios, su lettering de marca, sus precios ni una tarjeta rasterizada. Los datos reales y la navegación permanecen en los componentes existentes. La implementación original colocaba el león en el encabezado; por pedido posterior del usuario se retiró ese banner de la tienda. Las galerías siguen utilizando únicamente la textura del lado izquierdo del fondo.
 
 Resumen del prompt conservado: fondo panorámico cinematográfico; 65 % izquierdo de piedra negra con vetas doradas contenidas y una base baja de roca; 35 % derecho con cabeza de león en tres cuartos, ojo y hocico visibles, iluminación de borde cálida; espacio oscuro para texto y fotos transparentes. Paleta cercana a #080808 y #D8B474. Solo ambiente y león: sin productos, paquetes, logos, letras, precios, iconos, marcos de interfaz ni afirmaciones comerciales.
 
