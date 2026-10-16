@@ -1,4 +1,70 @@
 import { expect, test } from "@playwright/test";
+import { demoCatalog } from "../../src/modules/catalog/demo";
+
+test("agregar desde el mega menú conserva variante, aislamiento y regreso del foco", async ({
+  page,
+}, info) => {
+  test.skip(info.project.name !== "desktop");
+  const catalog = demoCatalog(),
+    product = catalog.products[0];
+  await page.addInitScript(
+    (catalog) =>
+      localStorage.setItem(
+        "stylo.catalog-preview.v1",
+        JSON.stringify({ catalog, images: {} }),
+      ),
+    catalog,
+  );
+  const writes: string[] = [];
+  page.on("request", (request) => {
+    if (request.method() === "POST" && request.headers()["next-action"])
+      writes.push(request.url());
+  });
+  await page.goto("/vista-previa");
+  const trigger = page
+    .locator(".category-navigation")
+    .getByRole("link", { name: "Proteínas", exact: true });
+  await trigger.hover();
+  const panel = page.locator(".category-mega-menu");
+  const card = panel.locator(".mega-product").first();
+  await expect(card.locator("h3")).toHaveText(product.name);
+  await expect(card.locator(".mega-product-link")).toHaveAttribute(
+    "href",
+    `/vista-previa/producto/${product.slug}?variante=${product.variants[0].id}`,
+  );
+  const add = card.getByRole("button", { name: /Agregar/ });
+  await add.click();
+  const cart = page.getByRole("dialog");
+  await expect(cart).toBeVisible();
+  await expect(cart).toContainText(product.name);
+  await expect(cart).toContainText("Chocolate");
+  await page.keyboard.press("Escape");
+  await expect(cart).not.toBeVisible();
+  await expect(add).toBeFocused();
+  await expect(panel).toHaveAttribute("data-open", "true");
+  await page.keyboard.press("Escape");
+  await expect(trigger).toBeFocused();
+  expect(writes).toEqual([]);
+});
+
+test("el hover breve no abre el panel y la salida tiene tolerancia", async ({
+  page,
+}, info) => {
+  test.skip(info.project.name !== "desktop");
+  await page.goto("/catalogo");
+  const trigger = page.locator(".category-navigation a").first();
+  const panel = page.locator(".category-mega-menu");
+  await trigger.hover();
+  await page.mouse.move(5, 300);
+  await page.waitForTimeout(220);
+  await expect(panel).toHaveAttribute("data-open", "false");
+  await trigger.hover();
+  await expect(panel).toHaveAttribute("data-open", "true");
+  await page.mouse.move(5, 700);
+  // A brief excursion should not close an open menu.
+  await expect(panel).toHaveAttribute("data-open", "true");
+  await expect(panel).toHaveAttribute("data-open", "false");
+});
 
 test("el panel de categorías sigue al hover y conserva enlaces reales", async ({
   page,
@@ -60,8 +126,10 @@ test("en móvil las categorías navegan directamente sin panel", async ({
   test.skip(testInfo.project.name !== "mobile");
   await page.goto("/");
   const navigation = page.getByRole("navigation", {
-    name: "Explorar por categoría",
+    name: "Navegación móvil",
   });
+  await expect(page.locator(".category-navigation-shell")).toBeHidden();
+  await page.locator(".mobile-menu summary").click();
   const panel = page.locator(".category-mega-menu");
   await expect(panel).toBeHidden();
   await expect(panel.locator("canvas")).toHaveCount(0);

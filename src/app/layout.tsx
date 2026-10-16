@@ -1,8 +1,29 @@
 import type { Metadata, Viewport } from "next";
+import { Barlow_Condensed, Inter } from "next/font/google";
 import "./globals.css";
 import "./storefront.css";
 import "./catalog.css";
 import { getEnvironment } from "@/lib/config/server";
+
+const display = Barlow_Condensed({
+  subsets: ["latin"],
+  weight: ["600", "700"],
+  variable: "--font-display",
+  display: "swap",
+});
+const brand = Barlow_Condensed({
+  subsets: ["latin"],
+  weight: "700",
+  style: "italic",
+  variable: "--font-brand",
+  display: "swap",
+  preload: false,
+});
+const body = Inter({
+  subsets: ["latin"],
+  variable: "--font-body",
+  display: "swap",
+});
 
 export const viewport: Viewport = {
   themeColor: "#050505",
@@ -43,7 +64,10 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es-AR">
+    <html
+      lang="es-AR"
+      className={`${display.variable} ${body.variable} ${brand.variable}`}
+    >
       <body>
         <a href="#contenido" className="skip-link">
           Saltar al contenido

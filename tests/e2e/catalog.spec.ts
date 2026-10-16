@@ -158,7 +158,9 @@ test("búsqueda, orden por lista y selección de variante actualizan la ficha", 
   await expect(page.getByLabel("Presentación", { exact: true })).toHaveValue(
     demoCatalog().products[0].variants[1].id,
   );
-  await expect(page.locator(".product-prices")).toContainText("47.000");
+  await expect(page.locator("#contenido .product-prices")).toContainText(
+    "47.000",
+  );
   await expect(
     page.getByRole("button", { name: "Sin stock", exact: true }),
   ).toBeDisabled();
@@ -196,12 +198,16 @@ test("edición de precio, stock e imágenes persiste sin tocar la tienda real", 
   );
   expect(storedPrice).toBe(5100029);
   await page.goto("/vista-previa/producto/proteina-de-prueba");
-  await expect(page.locator(".product-prices")).toContainText("51.000");
+  await expect(page.locator("#contenido .product-prices")).toContainText(
+    "51.000",
+  );
   await expect(
     page.getByRole("img", { name: "Imagen de prueba para chocolate" }),
   ).toHaveAttribute("src", /^data:image\/webp;base64,/);
   await page.reload();
-  await expect(page.locator(".product-prices")).toContainText("51.000");
+  await expect(page.locator("#contenido .product-prices")).toContainText(
+    "51.000",
+  );
   await page.goto("/catalogo");
   await expect(page.locator(".product-card")).toHaveCount(0);
 });
@@ -488,7 +494,9 @@ test("CSV previsualiza antes de aplicar y conserva variantes omitidas", async ({
     .click();
   await expect(page.getByRole("status")).toContainText("Cambios guardados.");
   await page.goto("/vista-previa/producto/proteina-de-prueba");
-  await expect(page.locator(".product-prices")).toContainText("49.000");
+  await expect(page.locator("#contenido .product-prices")).toContainText(
+    "49.000",
+  );
   await expect(
     page.getByLabel("Presentación", { exact: true }).locator("option"),
   ).toHaveCount(2);

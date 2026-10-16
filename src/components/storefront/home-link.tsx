@@ -16,7 +16,7 @@ export function HomeLink({
     <Link
       href="/#inicio"
       className="brand-link"
-      aria-label="STYLO Suplementos, inicio"
+      aria-label="Stylo Suplementos"
       onClick={(event) => {
         onClick?.();
         if (

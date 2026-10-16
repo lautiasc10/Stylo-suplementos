@@ -12,14 +12,14 @@ import {
   type CSSProperties,
 } from "react";
 import { HeroAtmosphere } from "./hero-atmosphere";
+import { HERO_COPY } from "./hero-copy";
 import { HeroDust } from "./hero-dust";
 import { useHomeIntro } from "./home-intro";
 import { gazeFrameTime, gazeTime, HERO_VIDEO_FPS } from "./hero-gaze";
 
 const VIDEO_URL = "/visuals/stylo-lion-motion-v3.mp4";
 const POSTER_URL = "/visuals/stylo-lion-poster-v1.webp";
-const MESSAGE = "Potenciá tu mejor versión.";
-const CONTENT_CUES_MS = [0, 350, 800, 1200, 1440, 1680];
+const CONTENT_CUES_MS = [0, 350, 950, 1400, 1680];
 
 function HeroWords({
   text,
@@ -63,7 +63,7 @@ export function CinematicHero() {
   const [videoReady, setVideoReady] = useState(false);
   const [dustReady, setDustReady] = useState(false);
   const [navigationReady, setNavigationReady] = useState(introSeen);
-  const [contentStage, setContentStage] = useState(introSeen ? 6 : 0);
+  const [contentStage, setContentStage] = useState(introSeen ? 5 : 0);
   const [contentInstant, setContentInstant] = useState(introSeen);
   const [playIntro, setPlayIntro] = useState(!introSeen);
   const [lionVisible, setLionVisible] = useState(introSeen);
@@ -77,7 +77,7 @@ export function CinematicHero() {
     introFinished.current = true;
     setNavigationReady(true);
     setWaiting(false);
-    advanceContent(6);
+    advanceContent(5);
   }, [setWaiting, advanceContent]);
   const revealAll = useCallback(() => {
     gazeUnlocked.current = true;
@@ -451,49 +451,40 @@ export function CinematicHero() {
           data-sequence={contentInstant ? "static" : "active"}
           data-content-stage={contentStage}
         >
-          <h1
-            id="hero-title"
-            className="hero-intro hero-reveal hero-text"
+          <p
+            className="hero-eyebrow hero-reveal hero-text"
             data-revealed={contentStage >= 1}
           >
-            <HeroWords text="Bienvenido a STYLO SUPLEMENTOS" accentFrom={2} />
-          </h1>
-          <p
-            className="hero-description hero-reveal hero-text"
+            <HeroWords text={HERO_COPY.eyebrow} />
+          </p>
+          <h1
+            id="hero-title"
+            className="hero-title hero-reveal hero-text"
             data-revealed={contentStage >= 2}
           >
-            <HeroWords text="Una nueva experiencia está por comenzar." />
+            <HeroWords text={HERO_COPY.title} accentFrom={3} />
+          </h1>
+          <p
+            className="hero-subtitle hero-reveal hero-text"
+            data-revealed={contentStage >= 3}
+          >
+            <HeroWords text={HERO_COPY.subtitle} />
           </p>
-          <div className="hero-typewriter-slot">
-            <p
-              className="hero-typewriter hero-reveal hero-text"
-              data-revealed={contentStage >= 3}
-            >
-              <HeroWords text={MESSAGE} />
-            </p>
-          </div>
           <div className="hero-actions">
             <Link
               href="/catalogo"
               className="hero-pill hero-pill-primary hero-reveal"
-              data-revealed={contentStage >= 6}
+              data-revealed={contentStage >= 5}
             >
               Explorar tienda
             </Link>
             <a
-              href="#categorias"
+              href="#destacados"
               className="hero-pill hero-pill-secondary hero-reveal"
-              data-revealed={contentStage >= 5}
-            >
-              Ver productos destacados
-            </a>
-            <Link
-              href="/nosotros"
-              className="hero-pill hero-pill-outline hero-reveal"
               data-revealed={contentStage >= 4}
             >
-              Conocé STYLO
-            </Link>
+              Ver destacados
+            </a>
           </div>
         </div>
       </div>

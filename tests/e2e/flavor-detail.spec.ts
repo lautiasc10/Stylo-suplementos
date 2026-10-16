@@ -115,12 +115,14 @@ test("las flechas sincronizan fondo, foto, stock, precio y carrito sin navegar",
     "Foto Frutilla 2",
   );
   await expect(
-    page.locator('.add-to-cart input[name="variantId"]'),
+    page.locator('.flavor-product-detail .add-to-cart input[name="variantId"]'),
   ).toHaveValue(product.variants[1].id);
   await expect(
     page.getByRole("button", { name: "Sin stock", exact: true }),
   ).toBeDisabled();
-  await expect(page.locator(".product-prices")).toContainText("46.000");
+  await expect(page.locator("#contenido .product-prices")).toContainText(
+    "46.000",
+  );
   await expect(page).toHaveURL(
     new RegExp(`variante=${product.variants[1].id}`),
   );
@@ -242,7 +244,7 @@ test("una foto fallida conserva el sabor y la variante de compra anteriores", as
     "banana",
   );
   await expect(
-    page.locator('.add-to-cart input[name="variantId"]'),
+    page.locator('.flavor-product-detail .add-to-cart input[name="variantId"]'),
   ).toHaveValue(product.variants[0].id);
   await expect(page.locator(".product-frame-current")).toHaveAttribute(
     "alt",

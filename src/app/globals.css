@@ -4,8 +4,8 @@
   --color-stylo-black: #050505;
   --color-stylo-gold: #d8b474;
   --color-stylo-white: #ece9e1;
-  --font-sans: Arial, Helvetica, sans-serif;
-  --font-heading: Arial, Helvetica, sans-serif;
+  --font-sans: var(--font-body), Arial, Helvetica, sans-serif;
+  --font-heading: var(--font-display), "Arial Narrow", Arial, sans-serif;
 }
 
 :root {
@@ -183,11 +183,12 @@ button:disabled {
 }
 h1,
 h2,
-h3 {
+h3,
+h4 {
   font-family: var(--font-heading);
   line-height: 1.08;
-  font-weight: 500;
-  letter-spacing: -0.035em;
+  font-weight: 600;
+  letter-spacing: -0.015em;
   text-wrap: balance;
 }
 p {
@@ -231,8 +232,9 @@ img {
   flex-shrink: 0;
 }
 .brand-isotype {
-  width: 80px;
-  height: 80px;
+  width: 58px;
+  height: 64px;
+  flex-shrink: 0;
 }
 .brand-horizontal {
   display: block;
@@ -259,15 +261,38 @@ img {
 }
 .brand-caption {
   font-family: var(--font-sans);
-  font-size: var(--text-base);
+  font-size: 10px;
   font-weight: 600;
+  letter-spacing: 0.24em;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--gold);
+}
+.brand-caption::before,
+.brand-caption::after {
+  content: "";
+  height: 1px;
+  width: 16px;
+  background: currentColor;
+  opacity: 0.65;
+}
+.brand-copy {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
 }
 .brand-wordmark {
-  font-size: var(--text-2xl);
-  font-weight: 900;
+  font-family: var(--font-brand), var(--font-heading);
+  font-size: 48px;
+  font-weight: 700;
   font-style: italic;
   letter-spacing: -0.025em;
   line-height: 1;
+  color: var(--gold);
+  background: linear-gradient(135deg, #f5d98b, #c9962b);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 .brand-wordmark span {
   color: var(--gold);

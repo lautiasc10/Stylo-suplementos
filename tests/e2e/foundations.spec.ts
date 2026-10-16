@@ -1,32 +1,44 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 
-test("inicio, navegación y categorías sin desbordamiento", async ({
+async function categoryNavigation(page: Page, mobile: boolean) {
+  if (mobile) await page.locator(".mobile-menu summary").click();
+  return page.getByRole("navigation", {
+    name: mobile ? "Navegación móvil" : "Explorar por categoría",
+  });
+}
+
+test("inicio, orden de colecciones y navegación sin desbordamiento", async ({
   page,
-}, testInfo) => {
+}, info) => {
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "Bienvenido a STYLO SUPLEMENTOS",
+    "Potenciá tu mejor versión.",
   );
-  await expect(page.locator(".category-card")).toHaveCount(9);
+  await expect(page.locator(".home-collection h2")).toHaveText([
+    "Productos destacados",
+    "Novedades",
+    "Promociones",
+  ]);
+  await expect(page.locator(".home-product-grid .product-card")).toHaveCount(0);
   expect(
     await page.evaluate(
-      () => document.documentElement.scrollWidth <= window.innerWidth,
+      () => document.documentElement.scrollWidth <= innerWidth,
     ),
   ).toBe(true);
-  if (testInfo.project.name === "mobile") {
-    await page.getByRole("button", { name: "Abrir menú" }).click();
-    await page
-      .getByRole("navigation", { name: "Navegación móvil" })
-      .getByRole("link", { name: "Catálogo" })
-      .click();
-  } else {
-    await page
-      .getByRole("navigation", { name: "Navegación principal" })
-      .getByRole("link", { name: "Catálogo" })
-      .click();
-  }
+  if (info.project.name === "mobile")
+    await page.locator(".mobile-menu summary").click();
+  await page
+    .getByRole("navigation", {
+      name:
+        info.project.name === "mobile"
+          ? "Navegación móvil"
+          : "Navegación principal",
+    })
+    .getByRole("link", { name: "Tienda", exact: true })
+    .click();
   await expect(page).toHaveURL(/\/catalogo$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     "Nuestro catálogo",
@@ -36,9 +48,11 @@ test("inicio, navegación y categorías sin desbordamiento", async ({
 
 test("categorías conservan su selección sin simular productos", async ({
   page,
-}) => {
+}, info) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
-  await page.locator(".category-card").filter({ hasText: "Creatinas" }).click();
+  const nav = await categoryNavigation(page, info.project.name === "mobile");
+  await nav.getByRole("link", { name: "Creatinas", exact: true }).click();
   await expect(page).toHaveURL(/categoria=creatinas/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Creatinas");
   await expect(
@@ -74,7 +88,7 @@ test("admin y MFA no habilitan acceso sin configuración", async ({
   expect(response.headers()["x-frame-options"]).toBe("DENY");
 });
 
-test("teclado, menú y movimiento reducido", async ({ page }, testInfo) => {
+test("teclado, menú y movimiento reducido", async ({ page }, info) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   await page.keyboard.press("Tab");
@@ -86,13 +100,32 @@ test("teclado, menú y movimiento reducido", async ({ page }, testInfo) => {
       () => getComputedStyle(document.documentElement).scrollBehavior,
     ),
   ).toBe("auto");
-  if (testInfo.project.name === "mobile") {
-    const toggle = page.getByRole("button", { name: "Abrir menú" });
+  if (info.project.name === "mobile") {
+    const toggle = page.locator(".mobile-menu summary");
     await toggle.click();
+    await expect(page.locator(".mobile-menu")).toHaveAttribute("open");
     await page.keyboard.press("Escape");
     await expect(toggle).toBeFocused();
-    await expect(toggle).toHaveAttribute("aria-expanded", "false");
+    await expect(page.locator(".mobile-menu")).not.toHaveAttribute("open");
   }
+});
+
+test("la lupa busca productos y Escape devuelve el foco", async ({ page }) => {
+  await page.goto("/catalogo");
+  const toggle = page.locator(".header-search summary");
+  await toggle.click();
+  const input = page.getByRole("searchbox", {
+    name: "Buscá tu próximo producto",
+  });
+  await expect(input).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(toggle).toBeFocused();
+  await expect(input).toBeHidden();
+  await toggle.click();
+  await input.fill("creatina");
+  await input.press("Enter");
+  await expect(page).toHaveURL(/\/catalogo\?q=creatina$/);
+  await expect(page.locator(".header-search")).not.toHaveAttribute("open");
 });
 
 test("página inexistente devuelve 404 y permite volver", async ({ page }) => {
@@ -102,67 +135,25 @@ test("página inexistente devuelve 404 y permite volver", async ({ page }) => {
   await expect(page).toHaveURL("/");
 });
 
-test("las apariciones respetan cambios de movimiento reducido", async ({
-  page,
-}) => {
-  await page.setViewportSize({ width: 390, height: 600 });
-  await page.emulateMedia({ reducedMotion: "no-preference" });
-  await page.goto("/");
-  const group = page.locator(".featured-category-grid");
-  await expect(group).toHaveAttribute("data-reveal", "pending");
-  await group.scrollIntoViewIfNeeded();
-  await expect(group).toHaveAttribute("data-reveal", "visible");
-  await expect(group.locator(".category-card").first()).toHaveCSS(
-    "opacity",
-    "1",
-  );
-  const word = page.locator(".tagline-word").first();
-  await expect(word).toHaveAttribute("data-word-reveal", "pending");
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await expect(word).not.toHaveAttribute("data-word-reveal", "pending");
-  await expect(word).toHaveCSS("color", "rgb(236, 233, 225)");
-  await expect(group).toHaveCSS("transform", "none");
-});
-
-test("las categorías quedan accesibles al enfocarlas con teclado", async ({
-  page,
-}) => {
-  await page.setViewportSize({ width: 390, height: 600 });
-  await page.emulateMedia({ reducedMotion: "no-preference" });
-  await page.goto("/");
-  const card = page.locator(".featured-category-grid .category-card").first();
-  await card.focus();
-  await expect(card).toBeFocused();
-  await expect(page.locator(".featured-category-grid")).toHaveCSS(
-    "opacity",
-    "1",
-  );
-  await page.keyboard.press("Enter");
-  await expect(page).toHaveURL(/categoria=proteinas/);
-});
-
-test("sin JavaScript se conserva el contenido y la navegación por categorías", async ({
+test("búsqueda y categorías siguen disponibles sin JavaScript", async ({
   browser,
-}, testInfo) => {
+}, info) => {
   const context = await browser.newContext({
     javaScriptEnabled: false,
-    viewport: testInfo.project.use.viewport,
+    viewport: info.project.use.viewport,
   });
   try {
     const page = await context.newPage();
-    await page.goto(`${testInfo.project.use.baseURL}/`);
-    await expect(page.locator(".featured-category-grid")).toHaveCSS(
-      "opacity",
-      "1",
-    );
-    await expect(page.locator(".tagline-word").first()).toHaveCSS(
-      "color",
-      "rgb(236, 233, 225)",
-    );
+    await page.goto(`${info.project.use.baseURL}/`);
+    await expect(page.locator(".hero-title")).toBeVisible();
+    await page.locator(".header-search summary").click();
     await page
-      .getByRole("navigation", { name: "Explorar por categoría" })
-      .getByRole("link", { name: "Creatinas", exact: true })
-      .click();
+      .getByRole("searchbox", { name: "Buscá tu próximo producto" })
+      .fill("proteina");
+    await page.getByRole("button", { name: "Buscar", exact: true }).click();
+    await expect(page).toHaveURL(/q=proteina/);
+    const nav = await categoryNavigation(page, info.project.name === "mobile");
+    await nav.getByRole("link", { name: "Creatinas", exact: true }).click();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(
       "Creatinas",
     );

@@ -15,6 +15,7 @@ const paths = {
 
 // Simple outlined actions drawn locally to match the existing 24 px icon system.
 const actionPaths = {
+  search: "M176 104A72 72 0 1 1 32 104A72 72 0 1 1 176 104 M160 160 224 224",
   edit: "M48 176 176 48 208 80 80 208 48 208Z M152 72 184 104",
   trash:
     "M40 64H216 M96 64V32H160V64 M64 64 80 224H176L192 64 M104 104V184 M152 104V184",

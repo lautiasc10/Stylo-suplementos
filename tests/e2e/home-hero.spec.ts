@@ -6,9 +6,9 @@ test("el hero conserva accesos y muestra un fotograma mientras carga", async ({
   await page.goto("/");
   const hero = page.locator(".sport-hero");
   await expect(hero.getByRole("heading", { level: 1 })).toHaveText(
-    "Bienvenido a STYLO SUPLEMENTOS",
+    "Potenciá tu mejor versión.",
   );
-  await expect(hero).toContainText("Una nueva experiencia está por comenzar.");
+  await expect(hero).toContainText("Proteínas, creatinas y pre-entrenos");
   await expect(hero).toContainText("Potenciá tu mejor versión.");
   await expect
     .poll(() =>
@@ -17,16 +17,14 @@ test("el hero conserva accesos y muestra un fotograma mientras carga", async ({
         .evaluate((image) => (image as HTMLImageElement).naturalWidth),
     )
     .toBeGreaterThan(0);
-  await expect(
-    hero.getByRole("link", { name: "Conocé STYLO", includeHidden: true }),
-  ).toHaveAttribute("href", "/nosotros");
+  await expect(hero.getByRole("link", { name: "Conocé STYLO" })).toHaveCount(0);
   if (testInfo.project.name === "mobile") {
     await expect(hero.locator("video")).toHaveCount(0);
   }
-  await hero.getByRole("link", { name: "Ver productos destacados" }).click();
-  await expect(page).toHaveURL(/#categorias$/);
+  await hero.getByRole("link", { name: "Ver destacados" }).click();
+  await expect(page).toHaveURL(/#destacados$/);
   await expect(
-    page.getByRole("heading", { name: /Tu rutina empieza acá/ }),
+    page.getByRole("heading", { name: "Productos destacados" }),
   ).toBeVisible();
   await hero.getByRole("link", { name: "Explorar tienda" }).click();
   await expect(page).toHaveURL(/\/catalogo$/);
@@ -93,7 +91,7 @@ test("movimiento reducido y navegación sin JavaScript conservan el hero", async
   await expect(page.locator(".sport-hero video")).toHaveCount(0);
   await expect(page.locator(".site-header")).toBeVisible();
   await expect(page.locator(".site-header")).not.toHaveAttribute("inert");
-  await expect(page.locator(".hero-typewriter")).toHaveText(
+  await expect(page.locator(".hero-title")).toHaveText(
     "Potenciá tu mejor versión.",
   );
   expect(atmosphereRequests).toEqual([]);
@@ -109,8 +107,10 @@ test("movimiento reducido y navegación sin JavaScript conservan el hero", async
     await expect(plainPage.locator(".site-header")).not.toHaveAttribute(
       "inert",
     );
-    await expect(plainPage.locator(".category-navigation")).toBeVisible();
-    await expect(plainPage.locator(".hero-typewriter")).toHaveText(
+    if (testInfo.project.name === "desktop")
+      await expect(plainPage.locator(".category-navigation")).toBeVisible();
+    else await expect(plainPage.locator(".mobile-menu summary")).toBeVisible();
+    await expect(plainPage.locator(".hero-title")).toHaveText(
       "Potenciá tu mejor versión.",
     );
     await plainPage
@@ -156,7 +156,7 @@ test("Tab antes de hidratar conserva la navegación accesible", async ({
     await expect(page.locator(".site-header")).not.toHaveAttribute("inert");
     await expect(page.locator(".hero-content")).toHaveAttribute(
       "data-content-stage",
-      "6",
+      "5",
     );
     await expect(page.locator(".hero-atmosphere")).toHaveCount(0);
   } finally {
@@ -200,7 +200,7 @@ test("los renglones y botones esperan al león y conservan su orden", async ({
   });
   await page.goto("/");
   const content = page.locator(".hero-content");
-  await expect(content).toHaveAttribute("data-content-stage", "6", {
+  await expect(content).toHaveAttribute("data-content-stage", "5", {
     timeout: 15000,
   });
   const samples = await page.evaluate(
@@ -211,17 +211,16 @@ test("los renglones y botones esperan al león y conservan su orden", async ({
         }
       ).contentSamples,
   );
-  expect(samples.map((sample) => sample.stage)).toEqual([1, 2, 3, 4, 5, 6]);
-  expect(samples[3].buttons).toEqual(["/nosotros"]);
-  expect(samples[4].buttons).toEqual(["#categorias", "/nosotros"]);
-  expect(samples[5].buttons).toEqual(["/catalogo", "#categorias", "/nosotros"]);
+  expect(samples.map((sample) => sample.stage)).toEqual([1, 2, 3, 4, 5]);
+  expect(samples[3].buttons).toEqual(["#destacados"]);
+  expect(samples[4].buttons).toEqual(["/catalogo", "#destacados"]);
   // The sequence starts at the lion's actual animation end, rather than at
   // page load or while the scoop is still pouring.
   const lionEnd = await page.evaluate(
     () => (window as typeof window & { lionEnd: number }).lionEnd,
   );
   expect(lionEnd).toBeGreaterThan(0);
-  const thresholds = [0, 350, 800, 1200, 1440, 1680];
+  const thresholds = [0, 350, 950, 1400, 1680];
   for (const [index, sample] of samples.entries()) {
     expect(sample.time - lionEnd).toBeGreaterThanOrEqual(
       thresholds[index] - 80,
@@ -234,7 +233,12 @@ test("los renglones y botones esperan al león y conservan su orden", async ({
   );
   for (const link of await content.locator(".hero-actions a").all()) {
     await expect(link).toHaveCSS("opacity", "1");
-    await expect(link).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+    await expect(link).toHaveCSS(
+      "background-color",
+      (await link.getAttribute("href")) === "/catalogo"
+        ? "rgb(216, 180, 116)"
+        : "rgba(0, 0, 0, 0)",
+    );
   }
   await expect(content.locator(".hero-cursor")).toHaveCount(0);
 });
@@ -266,7 +270,7 @@ test("la presentación se muestra una vez por visita y el logo no la reinicia", 
   );
   await expect(page.locator(".hero-content")).toHaveAttribute(
     "data-content-stage",
-    "6",
+    "5",
   );
   await expect(page.locator(".hero-atmosphere")).toHaveCount(0);
   await expect(page.locator(".site-header")).toHaveCSS("opacity", "1");
@@ -334,7 +338,7 @@ test("entrar directamente al catálogo no agrega una presentación al volver con
   await expect(page.locator(".site-header")).not.toHaveAttribute("inert");
   await expect(page.locator(".hero-content")).toHaveAttribute(
     "data-content-stage",
-    "6",
+    "5",
   );
   await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThan(2);
   expect(requests).toEqual([]);
@@ -345,10 +349,12 @@ test("los logos vuelven al principio del hero desde otras páginas y desde el pi
 }) => {
   await page.goto("/");
   await page.keyboard.press("Tab");
-  await page.locator('.hero-actions a[href="#categorias"]').click();
-  await expect(page).toHaveURL(/#categorias$/);
+  await page.locator('.hero-actions a[href="#destacados"]').click();
+  await expect(page).toHaveURL(/#destacados$/);
   await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(200);
-  await page.locator('#categorias a[href="/catalogo"]').click();
+  await page
+    .locator('#destacados .home-section-heading a[href="/catalogo"]')
+    .click();
   await expect(page).toHaveURL(/\/catalogo$/);
   await page.locator(".site-header .brand-link").click();
   await expect(page).toHaveURL(/\/#inicio$/);
@@ -359,7 +365,7 @@ test("los logos vuelven al principio del hero desde otras páginas y desde el pi
   await expect(page).toHaveURL(/\/#inicio$/);
   await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThan(2);
   await page.keyboard.press("Tab");
-  await page.locator('.hero-actions a[href="#categorias"]').click();
+  await page.locator('.hero-actions a[href="#destacados"]').click();
   await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(200);
   await page.locator(".site-footer .brand-link").click();
   await expect(page).toHaveURL(/\/#inicio$/);
@@ -675,6 +681,7 @@ test("un fallo del fondo conserva el león y los accesos de compra", async ({
     /is-ready/,
   );
   await page
+    .locator(".sport-hero")
     .getByRole("link", { name: "Explorar tienda", exact: true })
     .click();
   await expect(page).toHaveURL(/\/catalogo$/);

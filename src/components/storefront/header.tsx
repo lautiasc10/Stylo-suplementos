@@ -1,110 +1,145 @@
 "use client";
 
+import Link from "next/link";
+import Form from "next/form";
+import { usePathname } from "next/navigation";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { BrandMark } from "./brand-mark";
 import { HomeLink } from "./home-link";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
 import { Icon } from "@/components/ui/icon";
 import { categories } from "@/modules/catalog/categories";
-import { CartLink } from "@/components/commerce/cart-provider";
+import { CartLink, useCart } from "@/components/commerce/cart-provider";
+import { AddToCart } from "@/components/commerce/add-to-cart";
+import { ProductPricing } from "@/components/commerce/product-pricing";
 import { HeroDust } from "./hero-dust";
 import { useHomeIntro } from "./home-intro";
+import { navigationCategories, type MenuCategory } from "./navigation-model";
 
 const links = [
-  { href: "/catalogo", label: "Catálogo" },
+  { href: "/catalogo", label: "Tienda" },
   { href: "/nosotros", label: "Sobre STYLO" },
   { href: "/contacto", label: "Contacto" },
 ];
+const HOVER_DELAY = 180;
 
 export function Header({
   catalogCategories = categories,
 }: {
-  catalogCategories?: readonly { name: string; slug: string }[];
+  catalogCategories?: readonly MenuCategory[];
 }) {
   const pathname = usePathname();
+  const { preview, catalog: localCatalog, imageUrls } = useCart();
+  // Preview purchases must use only the explicitly labelled local catalog.
+  const menuCategories = useMemo(
+    () =>
+      preview
+        ? navigationCategories(localCatalog, "", imageUrls)
+        : catalogCategories,
+    [preview, localCatalog, imageUrls, catalogCategories],
+  );
+  const productPrefix = preview ? "/vista-previa/producto" : "/producto";
   const { waiting } = useHomeIntro();
   const introWaiting = pathname === "/" && waiting;
   const [flavorPage, setFlavorPage] = useState(false);
-  const [open, setOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [lastCategory, setLastCategory] = useState(
     catalogCategories[0]?.slug ?? "",
   );
-  const toggle = useRef<HTMLButtonElement>(null);
+  const search = useRef<HTMLDetailsElement>(null);
+  const mobile = useRef<HTMLDetailsElement>(null);
   const categoryTrigger = useRef<HTMLAnchorElement>(null);
   const categoryPanel = useRef<HTMLElement>(null);
   const suppressFocusOpen = useRef(false);
   const focusPanelOnOpen = useRef(false);
-  const categoryCloseTimer = useRef<number | null>(null);
+  const openTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const featuredCategory =
-    catalogCategories.find((item) => item.slug === lastCategory) ??
-    catalogCategories[0];
-  const otherCategories = catalogCategories.filter(
-    (item) => item.slug !== featuredCategory?.slug,
-  );
+    menuCategories.find((item) => item.slug === lastCategory) ??
+    menuCategories[0];
 
+  function clearTimers() {
+    if (openTimer.current !== null) clearTimeout(openTimer.current);
+    if (closeTimer.current !== null) clearTimeout(closeTimer.current);
+    openTimer.current = closeTimer.current = null;
+  }
+  function closeMenus() {
+    clearTimers();
+    setActiveCategory(null);
+    if (search.current) search.current.open = false;
+    if (mobile.current) mobile.current.open = false;
+  }
   function showCategory(slug: string, trigger: HTMLAnchorElement) {
+    clearTimers();
     setFlavorPage(!!document.querySelector(".flavor-product-detail"));
-    if (categoryCloseTimer.current !== null) {
-      window.clearTimeout(categoryCloseTimer.current);
-      categoryCloseTimer.current = null;
-    }
     categoryTrigger.current = trigger;
     setLastCategory(slug);
     setActiveCategory(slug);
   }
+  function desktopMenu() {
+    return window.matchMedia("(min-width: 801px) and (hover: hover)").matches;
+  }
 
-  useEffect(
-    () => () => {
-      if (categoryCloseTimer.current !== null)
-        window.clearTimeout(categoryCloseTimer.current);
-    },
-    [],
-  );
-  useEffect(() => setActiveCategory(null), [pathname]);
+  useEffect(() => () => clearTimers(), []);
+  useEffect(() => {
+    clearTimers();
+    setActiveCategory(null);
+    if (search.current) search.current.open = false;
+    if (mobile.current) mobile.current.open = false;
+  }, [pathname]);
   useEffect(() => {
     if (!activeCategory || !focusPanelOnOpen.current) return;
-    const frame = window.requestAnimationFrame(() => {
-      if (categoryPanel.current?.dataset.open !== "true") return;
+    const frame = requestAnimationFrame(() => {
       focusPanelOnOpen.current = false;
       categoryPanel.current
-        .querySelector<HTMLAnchorElement>(".category-mega-feature a")
+        ?.querySelector<HTMLAnchorElement>(".category-mega-feature a")
         ?.focus({ preventScroll: true });
     });
-    return () => window.cancelAnimationFrame(frame);
+    return () => cancelAnimationFrame(frame);
   }, [activeCategory]);
   useEffect(() => {
-    if (!activeCategory) return;
-    function closeWithEscape(event: KeyboardEvent) {
+    function escape(event: KeyboardEvent) {
       if (event.key !== "Escape") return;
-      event.preventDefault();
-      focusPanelOnOpen.current = false;
-      setActiveCategory(null);
-      if (document.activeElement !== categoryTrigger.current) {
-        suppressFocusOpen.current = true;
-        categoryTrigger.current?.focus();
+      // The cart owns Escape until its modal closes; keep its opener available.
+      if (document.querySelector(".cart-drawer[open]")) return;
+      const details = search.current?.open
+        ? search.current
+        : mobile.current?.open
+          ? mobile.current
+          : null;
+      if (details) {
+        event.preventDefault();
+        details.open = false;
+        details.querySelector("summary")?.focus();
+      } else if (activeCategory) {
+        event.preventDefault();
+        clearTimers();
+        focusPanelOnOpen.current = false;
+        setActiveCategory(null);
+        if (document.activeElement !== categoryTrigger.current) {
+          suppressFocusOpen.current = true;
+          categoryTrigger.current?.focus();
+        }
       }
     }
-    document.addEventListener("keydown", closeWithEscape);
-    return () => document.removeEventListener("keydown", closeWithEscape);
+    function outside(event: PointerEvent) {
+      for (const details of [search.current, mobile.current]) {
+        if (details?.open && !details.contains(event.target as Node))
+          details.open = false;
+      }
+    }
+    document.addEventListener("keydown", escape);
+    document.addEventListener("pointerdown", outside);
+    return () => {
+      document.removeEventListener("keydown", escape);
+      document.removeEventListener("pointerdown", outside);
+    };
   }, [activeCategory]);
-  useEffect(() => {
-    if (!open) return;
-    function closeWithEscape(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        setOpen(false);
-        toggle.current?.focus();
-      }
-    }
-    document.addEventListener("keydown", closeWithEscape);
-    return () => document.removeEventListener("keydown", closeWithEscape);
-  }, [open]);
+
   return (
     <>
       <header id="inicio" className="site-header" inert={introWaiting}>
         <div className="container header-inner">
-          <HomeLink onClick={() => setOpen(false)}>
+          <HomeLink onClick={closeMenus}>
             <BrandMark priority />
           </HomeLink>
           <nav className="desktop-nav" aria-label="Navegación principal">
@@ -119,61 +154,114 @@ export function Header({
             ))}
           </nav>
           <div className="header-actions">
-            <CartLink />
-            <button
-              className="icon-button menu-toggle"
-              ref={toggle}
-              type="button"
-              aria-label={open ? "Cerrar menú" : "Abrir menú"}
-              aria-expanded={open}
-              aria-controls="mobile-navigation"
-              onClick={() => setOpen((value) => !value)}
+            <details
+              className="header-search"
+              ref={search}
+              onToggle={(event) => {
+                if (!event.currentTarget.open) return;
+                if (mobile.current) mobile.current.open = false;
+                event.currentTarget.querySelector("input")?.focus();
+              }}
             >
-              <span className="menu-glyph" aria-hidden="true">
-                <span />
-                <span />
-                <span />
-              </span>
-            </button>
+              <summary className="icon-button" aria-label="Buscar productos">
+                <Icon name="search" />
+              </summary>
+              <Form
+                action="/catalogo"
+                className="header-search-form"
+                onSubmit={closeMenus}
+              >
+                <label htmlFor="header-search-input">
+                  Buscá tu próximo producto
+                </label>
+                <div>
+                  <input
+                    id="header-search-input"
+                    name="q"
+                    type="search"
+                    placeholder="Producto o marca"
+                    maxLength={100}
+                  />
+                  <button type="submit" className="button button-gold">
+                    Buscar <Icon name="arrow" />
+                  </button>
+                </div>
+              </Form>
+            </details>
+            <CartLink />
+            <details
+              className="mobile-menu"
+              ref={mobile}
+              onToggle={(event) => {
+                if (event.currentTarget.open && search.current)
+                  search.current.open = false;
+              }}
+            >
+              <summary
+                className="icon-button menu-toggle"
+                aria-label="Menú de navegación"
+              >
+                <span className="menu-glyph" aria-hidden="true">
+                  <span />
+                  <span />
+                  <span />
+                </span>
+              </summary>
+              <nav className="mobile-nav" aria-label="Navegación móvil">
+                <div className="mobile-primary-links">
+                  {links.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      aria-current={pathname === link.href ? "page" : undefined}
+                      onClick={closeMenus}
+                    >
+                      {link.label}
+                      <Icon name="arrow" />
+                    </Link>
+                  ))}
+                </div>
+                <p className="eyebrow">Categorías</p>
+                <div className="mobile-category-links">
+                  {menuCategories.map((category) => (
+                    <Link
+                      key={category.slug}
+                      href={`/catalogo?categoria=${category.slug}`}
+                      onClick={closeMenus}
+                    >
+                      {category.name}
+                      <Icon name="arrow" />
+                    </Link>
+                  ))}
+                </div>
+              </nav>
+            </details>
           </div>
         </div>
-        <nav
-          id="mobile-navigation"
-          className="mobile-nav"
-          aria-label="Navegación móvil"
-          hidden={!open}
-        >
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              aria-current={pathname === link.href ? "page" : undefined}
-              onClick={() => setOpen(false)}
-            >
-              {link.label}
-              <Icon name="arrow" />
-            </Link>
-          ))}
-        </nav>
       </header>
       <div
         className="category-navigation-shell"
         inert={introWaiting}
         onMouseEnter={() => {
-          if (categoryCloseTimer.current !== null) {
-            window.clearTimeout(categoryCloseTimer.current);
-            categoryCloseTimer.current = null;
-          }
+          if (closeTimer.current !== null) clearTimeout(closeTimer.current);
         }}
-        onMouseLeave={() => {
-          categoryCloseTimer.current = window.setTimeout(() => {
-            setActiveCategory(null);
-            categoryCloseTimer.current = null;
-          }, 150);
+        onMouseLeave={(event) => {
+          clearTimers();
+          if (event.currentTarget.querySelector(":focus-visible")) return;
+          closeTimer.current = setTimeout(() => {
+            if (!document.querySelector(".cart-drawer[open]"))
+              setActiveCategory(null);
+          }, HOVER_DELAY);
         }}
         onBlur={(event) => {
-          if (!event.currentTarget.contains(event.relatedTarget))
+          if (document.querySelector(".cart-drawer[open]")) {
+            clearTimers();
+            return;
+          }
+          if (!event.currentTarget.contains(event.relatedTarget)) {
+            clearTimers();
             setActiveCategory(null);
+          }
         }}
       >
         <nav
@@ -181,7 +269,7 @@ export function Header({
           aria-label="Explorar por categoría"
         >
           <div className="container">
-            {catalogCategories.map((category) => (
+            {menuCategories.map((category) => (
               <Link
                 key={category.slug}
                 href={`/catalogo?categoria=${category.slug}`}
@@ -189,18 +277,20 @@ export function Header({
                   activeCategory === category.slug ? "true" : undefined
                 }
                 onMouseEnter={(event) => {
-                  if (
-                    window.matchMedia("(min-width: 801px) and (hover: hover)")
-                      .matches
-                  )
-                    showCategory(category.slug, event.currentTarget);
+                  if (!desktopMenu()) return;
+                  clearTimers();
+                  const trigger = event.currentTarget;
+                  openTimer.current = setTimeout(
+                    () => showCategory(category.slug, trigger),
+                    HOVER_DELAY,
+                  );
+                }}
+                onMouseLeave={() => {
+                  if (openTimer.current !== null)
+                    clearTimeout(openTimer.current);
                 }}
                 onFocus={(event) => {
-                  if (
-                    !window.matchMedia("(min-width: 801px) and (hover: hover)")
-                      .matches
-                  )
-                    return;
+                  if (!desktopMenu()) return;
                   if (suppressFocusOpen.current) {
                     suppressFocusOpen.current = false;
                     return;
@@ -208,28 +298,20 @@ export function Header({
                   showCategory(category.slug, event.currentTarget);
                 }}
                 onKeyDown={(event) => {
-                  if (
-                    event.key !== "ArrowDown" ||
-                    !window.matchMedia("(min-width: 801px) and (hover: hover)")
-                      .matches
-                  )
-                    return;
+                  if (event.key !== "ArrowDown" || !desktopMenu()) return;
                   event.preventDefault();
-                  if (activeCategory === category.slug) {
+                  if (activeCategory === category.slug)
                     categoryPanel.current
                       ?.querySelector<HTMLAnchorElement>(
                         ".category-mega-feature a",
                       )
                       ?.focus();
-                    return;
+                  else {
+                    focusPanelOnOpen.current = true;
+                    showCategory(category.slug, event.currentTarget);
                   }
-                  focusPanelOnOpen.current = true;
-                  showCategory(category.slug, event.currentTarget);
                 }}
-                onClick={() => {
-                  setActiveCategory(null);
-                  setOpen(false);
-                }}
+                onClick={closeMenus}
               >
                 {category.name}
               </Link>
@@ -250,28 +332,70 @@ export function Header({
             )}
             <div className="container category-mega-inner">
               <div className="category-mega-feature">
-                <span className="eyebrow">EXPLORÁ STYLO</span>
+                <span className="eyebrow">ENCONTRÁ TU STYLO</span>
                 <h2>{featuredCategory.name}</h2>
                 <Link
                   href={`/catalogo?categoria=${featuredCategory.slug}`}
-                  onClick={() => setActiveCategory(null)}
+                  onClick={closeMenus}
                 >
                   Ver categoría <Icon name="arrow" />
                 </Link>
               </div>
-              <div className="category-mega-other">
-                <h3>Otras categorías</h3>
-                <div>
-                  {otherCategories.map((category) => (
+              <div className="category-mega-products">
+                {featuredCategory.products?.length ? (
+                  <>
+                    <p className="mega-products-label">De esta categoría</p>
+                    <div className="mega-product-grid">
+                      {featuredCategory.products.map((product) => (
+                        <article className="mega-product" key={product.id}>
+                          <Link
+                            className="mega-product-link"
+                            href={`${productPrefix}/${product.slug}?variante=${product.variant.id}`}
+                            onClick={closeMenus}
+                          >
+                            <div className="mega-product-image">
+                              {product.image ? (
+                                <img
+                                  src={product.image}
+                                  alt=""
+                                  width={112}
+                                  height={112}
+                                  loading="lazy"
+                                />
+                              ) : (
+                                <Icon name="bag" />
+                              )}
+                            </div>
+                            <h3>{product.name}</h3>
+                            <p>{product.variantLabel}</p>
+                          </Link>
+                          <ProductPricing variant={product.variant} compact />
+                          <AddToCart
+                            variantId={product.variant.id}
+                            stock={product.variant.stock}
+                            slug={product.slug}
+                            compact
+                            accessibleLabel={`Agregar ${product.name}, ${product.variantLabel}`}
+                          />
+                        </article>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <div className="mega-empty">
+                    <p>
+                      Encontrá tu próxima elección en{" "}
+                      {featuredCategory.name.toLocaleLowerCase("es-AR")}.
+                    </p>
                     <Link
-                      key={category.slug}
-                      href={`/catalogo?categoria=${category.slug}`}
-                      onClick={() => setActiveCategory(null)}
+                      className="text-link"
+                      href={`/catalogo?categoria=${featuredCategory.slug}`}
+                      onClick={closeMenus}
                     >
-                      {category.name}
+                      Explorar productos <Icon name="arrow" />
                     </Link>
-                  ))}
-                </div>
+                  </div>
+                )}
               </div>
             </div>
           </section>

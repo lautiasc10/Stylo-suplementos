@@ -13,7 +13,7 @@ export function Footer() {
           <p>Potenciá tu mejor versión.</p>
         </div>
         <nav aria-label="Navegación del pie">
-          <Link href="/catalogo">Catálogo</Link>
+          <Link href="/catalogo">Tienda</Link>
           <Link href="/nosotros">Sobre STYLO</Link>
           <Link href="/contacto">Contacto</Link>
         </nav>
