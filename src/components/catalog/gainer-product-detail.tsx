@@ -7,7 +7,12 @@ import { ProductPricing } from "@/components/commerce/product-pricing";
 import { RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { catalogMediaSource } from "@/modules/catalog/media-source";
 import { variantImages, variantLabel } from "@/modules/catalog/model";
-import { GainerBackdrop, gainerIngredientKey } from "./gainer-backdrop";
+import { GainerBackdrop } from "./gainer-backdrop";
+import {
+  gainerIngredientKey,
+  gainerIngredientSources,
+} from "./gainer-ingredients";
+import { createGalleryPhotoCache } from "./gallery-photo-cache";
 import { ProductGallery, type GalleryImage } from "./product-gallery";
 import type { ProductDetailProps } from "./product-detail";
 
@@ -23,6 +28,9 @@ export function GainerProductDetail({
   preview = false,
 }: ProductDetailProps) {
   const root = useRef<HTMLDivElement>(null);
+  const ingredientCache = useRef<ReturnType<
+    typeof createGalleryPhotoCache
+  > | null>(null);
   const [variantId, setVariantId] = useState(
     selectedId ?? product.variants[0].id,
   );
@@ -35,6 +43,53 @@ export function GainerProductDetail({
     nonce: number;
   } | null>(null);
   useEffect(() => setEnhanced(true), []);
+  useEffect(() => {
+    const cache = createGalleryPhotoCache();
+    ingredientCache.current = cache;
+    const stopHiddenLoads = () => {
+      if (document.hidden) cache.cancelPending();
+    };
+    document.addEventListener("visibilitychange", stopHiddenLoads);
+    return () => {
+      document.removeEventListener("visibilitychange", stopHiddenLoads);
+      cache.dispose();
+      ingredientCache.current = null;
+    };
+  }, []);
+  const loadIngredients = useCallback(
+    (image: GalleryImage, priority: "high" | "low") => {
+      const flavor =
+        product.variants.find((item) => item.id === image.variantId)?.flavor ??
+        "";
+      return Promise.allSettled(
+        gainerIngredientSources(gainerIngredientKey(flavor)).map((src) =>
+          ingredientCache.current?.load(src, priority),
+        ),
+      );
+    },
+    [product.variants],
+  );
+  const warmIngredients = useCallback(
+    (image: GalleryImage) => {
+      void loadIngredients(image, "low");
+    },
+    [loadIngredients],
+  );
+  const prepareIngredients = useCallback(
+    async (image: GalleryImage) => {
+      // Decorations never hold up shopping on a slow/broken connection. Warm
+      // neighbors normally resolve immediately; a cold choice waits at most 180ms.
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      await Promise.race([
+        loadIngredients(image, "high"),
+        new Promise<void>((resolve) => {
+          timer = setTimeout(resolve, 180);
+        }),
+      ]);
+      clearTimeout(timer);
+    },
+    [loadIngredients],
+  );
   const prefix = preview ? "/vista-previa" : "";
   const variantHref = (id: string) =>
     `${prefix}/producto/${product.slug}?variante=${id}`;
@@ -106,6 +161,8 @@ export function GainerProductDetail({
           flavorNavigation
           initialVariantId={variant.id}
           onImageChange={selectImage}
+          onPrepareImage={warmIngredients}
+          prepareImage={prepareIngredients}
           selectionRequest={selectionRequest}
         />
       </div>
@@ -136,6 +193,22 @@ export function GainerProductDetail({
                   aria-label={`${variantLabel(item)}${item.stock === 0 ? " · Sin stock" : ""}`}
                   data-unavailable={item.stock === 0}
                   data-flavor={gainerIngredientKey(item.flavor) ?? "neutral"}
+                  onPointerEnter={() =>
+                    warmIngredients({
+                      id: item.id,
+                      variantId: item.id,
+                      src: "",
+                      alt: "",
+                    })
+                  }
+                  onFocus={() =>
+                    warmIngredients({
+                      id: item.id,
+                      variantId: item.id,
+                      src: "",
+                      alt: "",
+                    })
+                  }
                   onClick={(event) => {
                     if (
                       !enhanced ||

@@ -116,6 +116,7 @@ export function ProductGallery({
   flavorNavigation = false,
   initialVariantId,
   onPrepareImage,
+  prepareImage,
   selectionRequest,
 }: {
   images: GalleryImage[];
@@ -129,6 +130,9 @@ export function ProductGallery({
   flavorNavigation?: boolean;
   initialVariantId?: string;
   onPrepareImage?: (image: GalleryImage) => void;
+  /** Optional decoration readiness. The caller must bound its wait and handle
+   * decorative failures; a failed product photograph still preserves selection. */
+  prepareImage?: (image: GalleryImage) => Promise<unknown>;
   selectionRequest?: { variantId: string; nonce: number } | null;
 }) {
   const root = useRef<HTMLDivElement>(null);
@@ -341,6 +345,26 @@ export function ProductGallery({
         onImageChange?.(images[index]);
         setMessage("");
       };
+      if (prepareImage) {
+        void Promise.all([
+          images[index].src && !photoCache.current?.has(images[index].src)
+            ? photoCache.current?.load(images[index].src)
+            : undefined,
+          prepareImage(images[index]),
+        ])
+          .then(commitImage)
+          .catch(() => {
+            if (request.current !== sequence) return;
+            pending.current = null;
+            explicitSelectionPending.current = false;
+            setLoading(false);
+            setPaused(true);
+            setMessage(
+              "No pudimos cargar esta imagen. Podés intentar otra vez.",
+            );
+          });
+        return;
+      }
       if (!images[index].src) {
         commitImage();
         return;
@@ -361,7 +385,7 @@ export function ProductGallery({
           setMessage("No pudimos cargar esta imagen. Podés intentar otra vez.");
         });
     },
-    [images, reduced, onImageChange],
+    [images, reduced, onImageChange, prepareImage],
   );
 
   useEffect(() => {

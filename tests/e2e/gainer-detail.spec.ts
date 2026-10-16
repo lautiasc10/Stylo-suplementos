@@ -222,3 +222,102 @@ test("una imagen fallida conserva el sabor, el precio y el SKU anterior", async 
     product.variants[2].id,
   );
 });
+
+test("los cambios rápidos mantienen dos conjuntos como máximo y terminan en el sabor elegido", async ({
+  page,
+}) => {
+  const product = await seed(page);
+  await page.goto("/vista-previa/producto/ganador-de-prueba");
+  const ingredients = page.locator(".gainer-ingredients");
+  await expect(ingredients).toHaveAttribute("data-moving", "true");
+  await expect(ingredients.locator(".gainer-ingredient-2 img")).toHaveCSS(
+    "filter",
+    /blur\(1.5px\)/,
+  );
+  await expect(page.locator(".gainer-product-detail")).toHaveCSS(
+    "background-color",
+    "rgb(10, 10, 10)",
+  );
+  await page.evaluate(() => {
+    const root = document.querySelector(".gainer-ingredients")!;
+    const counts = () => root.querySelectorAll(".gainer-ingredient-set").length;
+    const sample = { max: counts() };
+    Object.assign(window, { ingredientSample: sample });
+    new MutationObserver(() => {
+      sample.max = Math.max(sample.max, counts());
+    }).observe(root, { childList: true });
+  });
+  const options = page.locator(".gainer-flavor-options");
+  for (const flavor of ["Frutilla", "Vainilla", "Banana", "Cookies"]) {
+    await options.getByRole("link", { name: new RegExp(flavor) }).click();
+    await expect(ingredients).toHaveAttribute(
+      "data-ingredient",
+      flavor === "Cookies" ? "cookies" : flavor.toLowerCase(),
+    );
+  }
+  await expect(page.locator(".gainer-product-detail")).toHaveAttribute(
+    "data-variant",
+    product.variants[0].id,
+  );
+  await expect(ingredients.locator(".gainer-ingredient-set")).toHaveCount(1);
+  await expect(
+    ingredients.locator(".gainer-ingredient-motion").first(),
+  ).toHaveCSS("opacity", "1");
+  await expect(
+    page.locator('.gainer-product-detail .add-to-cart input[name="variantId"]'),
+  ).toHaveValue(product.variants[0].id);
+  expect(
+    await page.evaluate(
+      () =>
+        (window as unknown as { ingredientSample: { max: number } })
+          .ingredientSample.max,
+    ),
+  ).toBeLessThanOrEqual(2);
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+});
+
+test("ingredientes lentos o fallidos no bloquean la compra ni revierten una selección nueva", async ({
+  page,
+}) => {
+  const product = await seed(page);
+  let release!: () => void;
+  const held = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  await page.route("**/sabores/frutilla-*.webp", async (route) => {
+    await held;
+    await route.abort();
+  });
+  await page.goto("/vista-previa/producto/ganador-de-prueba");
+  const options = page.locator(".gainer-flavor-options");
+  try {
+    await options.getByRole("link", { name: /Frutilla/ }).click();
+    await expect(page.locator(".gainer-product-detail")).toHaveAttribute(
+      "data-variant",
+      product.variants[1].id,
+      { timeout: 1500 },
+    );
+    await expect(page.locator(".gainer-stock")).toContainText("Sin stock");
+    await options.getByRole("link", { name: /Vainilla/ }).click();
+    await expect(page.locator(".gainer-product-detail")).toHaveAttribute(
+      "data-variant",
+      product.variants[2].id,
+    );
+  } finally {
+    release();
+  }
+  await expect(
+    page.locator('.gainer-product-detail .add-to-cart input[name="variantId"]'),
+  ).toHaveValue(product.variants[2].id);
+  await expect(
+    page.locator('.gainer-ingredient-set[data-outgoing="false"]'),
+  ).toHaveAttribute("data-flavor", "vainilla");
+  await expect(
+    page.getByRole("button", { name: "Agregar al carrito", exact: true }),
+  ).toBeEnabled();
+  await expect(page.locator(".gallery-message")).toHaveCount(0);
+});
