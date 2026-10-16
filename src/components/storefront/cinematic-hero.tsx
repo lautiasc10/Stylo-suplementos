@@ -7,14 +7,19 @@ import { HeroAtmosphere } from "./hero-atmosphere";
 import { HERO_COPY } from "./hero-copy";
 import { HeroDust } from "./hero-dust";
 import { useHomeIntro } from "./home-intro";
-import { gazeFrameTime, gazeTime, HERO_VIDEO_FPS } from "./hero-gaze";
+import { HERO_SEQUENCE } from "./hero-sequence";
+import {
+  advanceGaze,
+  gazeFrameTime,
+  gazeTime,
+  HERO_VIDEO_FPS,
+} from "./hero-gaze";
 
 const VIDEO_URL = "/visuals/stylo-lion-motion-v3.mp4";
 const POSTER_URL = "/visuals/stylo-lion-poster-right-v1.webp";
 // The source already contains this pose. Keep the poster and first decoded
 // frame identical; never mirror the lion or its lettering/watermark.
 const INITIAL_GAZE = 0.95;
-const CONTENT_CUES_MS = [0, 180, 520, 1000, 1220];
 
 function HeroWords({
   text,
@@ -48,6 +53,7 @@ export function CinematicHero() {
   const targetTime = useRef(0);
   const submittedTime = useRef(0);
   const smoothedTime = useRef(0);
+  const gazeVelocity = useRef(0);
   const seeking = useRef(false);
   const active = useRef(false);
   const mediaReady = useRef(false);
@@ -63,6 +69,12 @@ export function CinematicHero() {
   const [lionVisible, setLionVisible] = useState(introSeen);
   const [contentStarted, setContentStarted] = useState(false);
   const [brandVisible, setBrandVisible] = useState(false);
+  const [sequenceStartedAt, setSequenceStartedAt] = useState<number | null>(
+    null,
+  );
+  const [entranceDone, setEntranceDone] = useState(introSeen);
+  const [ambientPaused, setAmbientPaused] = useState(false);
+  const [ambientActive, setAmbientActive] = useState(true);
   const advanceContent = useCallback((stage: number) => {
     setContentStage((previous) => Math.max(previous, stage));
   }, []);
@@ -81,41 +93,43 @@ export function CinematicHero() {
     setPlayIntro(false);
     setLionVisible(true);
     setDustReady(true);
+    setEntranceDone(true);
     revealNavigation();
   }, [revealNavigation]);
-  const completeScoop = useCallback(() => {
-    setPlayIntro(false);
-    // The matching poster carries the lion's fade. Start its interactive
-    // decoder after the entrance decoder has released its resources.
-    setPrepareLion(true);
-  }, []);
-  const revealLion = useCallback(() => setLionVisible(true), []);
-  const handleAtmosphereSettled = useCallback(() => {
-    setDustReady(true);
-  }, []);
-  const revealBrand = useCallback(() => setBrandVisible(true), []);
 
   useEffect(() => {
-    if (!contentStarted || contentInstant) return;
-    // Start from the lion's actual animation end, retaining the existing text
-    // order at a faster retail pace. The last button settles before navigation.
-    const cues = CONTENT_CUES_MS.map((delay, index) =>
-      window.setTimeout(() => advanceContent(index + 1), delay),
+    if (sequenceStartedAt === null || contentInstant) return;
+    const timers: number[] = [];
+    const cue = (at: number, action: () => void) =>
+      timers.push(
+        window.setTimeout(
+          action,
+          Math.max(0, at - (performance.now() - sequenceStartedAt)),
+        ),
+      );
+    cue(HERO_SEQUENCE.lion, () => {
+      setDustReady(true);
+      setLionVisible(true);
+    });
+    cue(HERO_SEQUENCE.scoopEnd, () => {
+      setPlayIntro(false);
+      setContentStarted(true);
+    });
+    HERO_SEQUENCE.content.forEach((at, index) =>
+      cue(at, () => advanceContent(index + 1)),
     );
-    const navigation = window.setTimeout(revealNavigation, 1900);
+    cue(HERO_SEQUENCE.navigation, revealNavigation);
+    cue(HERO_SEQUENCE.complete, () => {
+      setEntranceDone(true);
+      setPrepareLion(true);
+      gazeUnlocked.current = true;
+      resumeGaze.current();
+      revealNavigation();
+    });
     return () => {
-      cues.forEach(window.clearTimeout);
-      window.clearTimeout(navigation);
+      timers.forEach(window.clearTimeout);
     };
-  }, [contentStarted, contentInstant, advanceContent, revealNavigation]);
-
-  useEffect(() => {
-    if (contentInstant || navigationReady) return;
-    // Bound both media preparation and the reveal in case media/CSS events
-    // are unavailable. This is a fallback, never the normal animation clock.
-    const fallback = window.setTimeout(revealAll, lionVisible ? 7000 : 8500);
-    return () => window.clearTimeout(fallback);
-  }, [contentInstant, navigationReady, lionVisible, revealAll]);
+  }, [sequenceStartedAt, contentInstant, advanceContent, revealNavigation]);
 
   useEffect(() => {
     const desktop = window.matchMedia(
@@ -147,7 +161,11 @@ export function CinematicHero() {
       ) {
         revealAll();
         if (eligible) setDustReady(true);
-      } else if (!introFinished.current) setWaiting(true);
+      } else if (!introFinished.current) {
+        setWaiting(true);
+        setBrandVisible(true);
+        setSequenceStartedAt((previous) => previous ?? performance.now());
+      }
       if (!eligible) {
         setVideoReady(false);
         setDustReady(false);
@@ -192,6 +210,8 @@ export function CinematicHero() {
     let pointerProgress: number | null = null;
     let lastFrameTime = 0;
     let disposed = false;
+    let firstVideoFrame: number | null = null;
+    let firstFrameDeadline: number | undefined;
     mediaReady.current = false;
     seeking.current = false;
 
@@ -201,6 +221,7 @@ export function CinematicHero() {
         animationFrame.current = null;
       }
       lastFrameTime = 0;
+      gazeVelocity.current = 0;
     }
 
     function scheduleFrame() {
@@ -224,12 +245,21 @@ export function CinematicHero() {
       const elapsed = lastFrameTime
         ? Math.min(now - lastFrameTime, 80)
         : 1000 / 60;
-      const settled = Math.abs(difference) < 1 / (HERO_VIDEO_FPS * 8);
-      // Keep the filter's fractional position even when no new source frame
-      // is due. Rounding this accumulator caused a stall and snap near front.
-      smoothedTime.current = settled
-        ? targetTime.current
-        : smoothedTime.current + difference * (1 - Math.exp(-elapsed / 55));
+      const settled =
+        Math.abs(difference) < 1 / (HERO_VIDEO_FPS * 8) &&
+        Math.abs(gazeVelocity.current) < 0.02;
+      // Keep a fractional accumulator, but bound velocity through the entire
+      // turn. Unlocking a distant cursor target must not jump over its poses.
+      const next = settled
+        ? { position: targetTime.current, velocity: 0 }
+        : advanceGaze(
+            smoothedTime.current,
+            gazeVelocity.current,
+            targetTime.current,
+            elapsed,
+          );
+      smoothedTime.current = next.position;
+      gazeVelocity.current = next.velocity;
       const nextTime = gazeFrameTime(smoothedTime.current);
       lastFrameTime = now;
       if (Math.abs(nextTime - submittedTime.current) < 0.001) {
@@ -250,21 +280,64 @@ export function CinematicHero() {
       if (!Number.isFinite(video.duration) || video.duration <= 0) return;
       video.pause();
       smoothedTime.current = gazeTime(INITIAL_GAZE, video.duration);
+      gazeVelocity.current = 0;
       submittedTime.current = gazeFrameTime(smoothedTime.current);
       targetTime.current =
         pointerProgress === null || !gazeUnlocked.current
           ? smoothedTime.current
           : gazeTime(pointerProgress, video.duration);
       seeking.current = true;
+      if (typeof video.requestVideoFrameCallback === "function") {
+        const confirmFrame: VideoFrameRequestCallback = (_now, metadata) => {
+          firstVideoFrame = null;
+          if (disposed) return;
+          if (
+            Math.abs(metadata.mediaTime - submittedTime.current) <
+            2 / HERO_VIDEO_FPS
+          ) {
+            markMediaReady();
+          } else
+            firstVideoFrame = video.requestVideoFrameCallback(confirmFrame);
+        };
+        firstVideoFrame = video.requestVideoFrameCallback(confirmFrame);
+        // Keep the matching poster if a decoder never presents its first pose.
+        firstFrameDeadline = window.setTimeout(handleError, 2500);
+      }
       video.currentTime = submittedTime.current;
+    }
+
+    function markMediaReady() {
+      if (disposed || mediaReady.current) return;
+      window.clearTimeout(firstFrameDeadline);
+      if (firstVideoFrame !== null) {
+        video.cancelVideoFrameCallback(firstVideoFrame);
+        firstVideoFrame = null;
+      }
+      mediaReady.current = true;
+      setVideoReady(true);
+      scheduleFrame();
     }
 
     function handleSeeked() {
       if (disposed) return;
       seeking.current = false;
-      if (!mediaReady.current) {
-        mediaReady.current = true;
-        setVideoReady(true);
+      if (typeof video.requestVideoFrameCallback !== "function")
+        markMediaReady();
+      else if (!mediaReady.current) {
+        // Some compositors suppress presentation callbacks for opacity:0
+        // videos. A confirmed seek plus a drawable decoded frame is the
+        // bounded fallback; the poster stays underneath the 240 ms fade.
+        window.clearTimeout(firstFrameDeadline);
+        firstFrameDeadline = window.setTimeout(() => {
+          if (disposed || mediaReady.current) return;
+          if (
+            video.readyState >= video.HAVE_CURRENT_DATA &&
+            Math.abs(video.currentTime - submittedTime.current) <
+              2 / HERO_VIDEO_FPS
+          )
+            markMediaReady();
+          else handleError();
+        }, 160);
       }
       scheduleFrame();
     }
@@ -281,6 +354,7 @@ export function CinematicHero() {
     const observer = new IntersectionObserver(
       ([entry]) => {
         active.current = entry.intersectionRatio >= 0.35;
+        setAmbientActive(active.current && !document.hidden);
         if (active.current) scheduleFrame();
         else cancelFrame();
       },
@@ -301,6 +375,7 @@ export function CinematicHero() {
     }
 
     function handleVisibility() {
+      setAmbientActive(active.current && !document.hidden);
       if (document.hidden) cancelFrame();
       else scheduleFrame();
     }
@@ -324,6 +399,9 @@ export function CinematicHero() {
       resumeGaze.current = () => {};
       observer.disconnect();
       cancelFrame();
+      window.clearTimeout(firstFrameDeadline);
+      if (firstVideoFrame !== null)
+        video.cancelVideoFrameCallback(firstVideoFrame);
       video.removeEventListener("loadedmetadata", handleMetadata);
       video.removeEventListener("seeked", handleSeeked);
       video.removeEventListener("error", handleError);
@@ -346,23 +424,26 @@ export function CinematicHero() {
       data-navigation={navigationReady ? "ready" : "waiting"}
       data-presentation={contentInstant ? "static" : "animated"}
       data-lion-visible={lionVisible}
+      data-intro-start={sequenceStartedAt ?? undefined}
+      data-entrance-complete={entranceDone}
+      data-ambient-paused={ambientPaused || !ambientActive}
     >
       <noscript>
         <style>{`.site-header,.category-navigation-shell,.hero-reveal,.hero-word,.sport-hero-visual{opacity:1!important;visibility:visible!important;transform:none!important;pointer-events:auto!important}.sport-hero-visual{transition:none!important}`}</style>
       </noscript>
       {videoEnabled && (
         <>
-          {playIntro && (
+          {playIntro && sequenceStartedAt !== null && (
             <HeroAtmosphere
-              containerRef={heroRef}
-              onSettled={handleAtmosphereSettled}
-              onComplete={completeScoop}
-              onRevealLion={revealLion}
-              onBrand={revealBrand}
-              onUnavailable={revealAll}
+              startedAt={sequenceStartedAt}
+              leaving={lionVisible}
             />
           )}
-          <HeroDust containerRef={heroRef} enabled={dustReady} />
+          <HeroDust
+            containerRef={heroRef}
+            enabled={dustReady}
+            onPauseChange={setAmbientPaused}
+          />
         </>
       )}
       {videoEnabled && !contentInstant && !contentStarted && (
@@ -387,40 +468,29 @@ export function CinematicHero() {
           </div>
         </>
       )}
-      <div
-        className="sport-hero-visual"
-        aria-hidden="true"
-        onAnimationEnd={(event) => {
-          if (
-            event.target === event.currentTarget &&
-            event.animationName === "hero-lion-emerge"
-          ) {
-            gazeUnlocked.current = true;
-            resumeGaze.current();
-            setContentStarted(true);
-          }
-        }}
-      >
-        <div className="sport-hero-poster">
-          <Image
-            src={POSTER_URL}
-            alt=""
-            fill
-            priority
-            unoptimized
-            sizes="100vw"
-          />
+      <div className="sport-hero-visual" aria-hidden="true">
+        <div className="hero-lion-ambient">
+          <div className="sport-hero-poster">
+            <Image
+              src={POSTER_URL}
+              alt=""
+              fill
+              priority
+              unoptimized
+              sizes="100vw"
+            />
+          </div>
+          {videoEnabled && prepareLion && (
+            <video
+              ref={videoRef}
+              className={videoReady ? "is-ready" : ""}
+              muted
+              playsInline
+              preload="auto"
+              poster={POSTER_URL}
+            />
+          )}
         </div>
-        {videoEnabled && prepareLion && (
-          <video
-            ref={videoRef}
-            className={videoReady ? "is-ready" : ""}
-            muted
-            playsInline
-            preload="auto"
-            poster={POSTER_URL}
-          />
-        )}
       </div>
       <div className="container sport-hero-inner">
         <div
@@ -451,14 +521,14 @@ export function CinematicHero() {
             <Link
               href="/catalogo"
               className="hero-pill hero-pill-primary hero-reveal"
-              data-revealed={contentStage >= 5}
+              data-revealed={contentStage >= 4}
             >
               Explorar tienda
             </Link>
             <a
               href="#destacados"
               className="hero-pill hero-pill-secondary hero-reveal"
-              data-revealed={contentStage >= 4}
+              data-revealed={contentStage >= 5}
             >
               Ver destacados
             </a>

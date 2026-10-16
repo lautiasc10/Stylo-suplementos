@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { gazeFrameTime, gazeTime } from "@/components/storefront/hero-gaze";
+import {
+  advanceGaze,
+  gazeFrameTime,
+  gazeTime,
+} from "@/components/storefront/hero-gaze";
 
 describe("seguimiento del león", () => {
   const duration = 97 / 24;
@@ -33,5 +37,36 @@ describe("seguimiento del león", () => {
     // Slow pointer input must expose intermediate poses, not hold the same
     // original 24 fps frame until the cursor crosses its next threshold.
     expect(gazeFrameTime(2.015)).toBeGreaterThan(gazeFrameTime(2));
+  });
+  it("entrega el control a un cursor distante sin saltarse de golpe el giro", () => {
+    let position = 0.849;
+    let velocity = 0;
+    const target = 3.2;
+    for (let frame = 0; frame < 180; frame++) {
+      const next = advanceGaze(position, velocity, target, 1000 / 60);
+      expect(next.position).toBeGreaterThanOrEqual(position);
+      expect(next.position - position).toBeLessThanOrEqual(2.4 / 60 + 1e-10);
+      expect(next.position).toBeLessThanOrEqual(target);
+      position = next.position;
+      velocity = next.velocity;
+    }
+    expect(position).toBeCloseTo(target, 5);
+  });
+  it("cambiar de dirección o volver de una pestaña oculta conserva una velocidad acotada", () => {
+    let state = { position: 2, velocity: 2.4 };
+    for (let frame = 0; frame < 180; frame++) {
+      const next = advanceGaze(
+        state.position,
+        state.velocity,
+        0.7,
+        frame === 0 ? 5000 : 1000 / 60,
+      );
+      expect(Math.abs(next.position - state.position)).toBeLessThanOrEqual(
+        frame === 0 ? 0.12 + 1e-10 : 2.4 / 60 + 1e-10,
+      );
+      expect(Math.abs(next.velocity)).toBeLessThanOrEqual(2.4);
+      state = next;
+    }
+    expect(state.position).toBeCloseTo(0.7, 5);
   });
 });

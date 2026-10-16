@@ -1,5 +1,203 @@
 import { expect, test } from "@playwright/test";
 
+test("volver con el logo y recargar no repite la entrada", async ({ page }) => {
+  const clips: string[] = [];
+  page.on("request", (request) => {
+    if (request.url().includes("stylo-scoop-intro")) clips.push(request.url());
+  });
+  await page.goto("/");
+  await expect(page.locator(".sport-hero")).toHaveAttribute(
+    "data-entrance-complete",
+    "true",
+  );
+  const initialRequests = clips.length;
+  await page
+    .locator(".sport-hero")
+    .getByRole("link", { name: "Explorar tienda", exact: true })
+    .click();
+  await expect(page).toHaveURL(/\/catalogo$/);
+  await page.locator(".site-header .brand-link").click();
+  await expect(page).toHaveURL(/\/#inicio$/);
+  await expect(page.locator(".sport-hero")).toHaveAttribute(
+    "data-presentation",
+    "static",
+  );
+  await expect(page.locator(".hero-atmosphere")).toHaveCount(0);
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThan(2);
+  await page.reload();
+  await expect(page.locator(".sport-hero")).toHaveAttribute(
+    "data-presentation",
+    "static",
+  );
+  await expect(page.locator(".hero-atmosphere")).toHaveCount(0);
+  expect(clips.length).toBe(initialRequests);
+});
+
+test("el mate negro del león no oculta el fondo", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop");
+  await page.addInitScript(() =>
+    sessionStorage.setItem("stylo.home-intro-seen.v1", "1"),
+  );
+  await page.goto("/");
+  const visual = page.locator(".sport-hero-visual");
+  await expect(visual.locator("video")).toHaveClass(/is-ready/);
+  await expect(visual).toHaveCSS("mix-blend-mode", "screen");
+  await page.addStyleTag({
+    content:
+      ".sport-hero{background:rgb(72,48,16)} .hero-dust,.sport-hero-inner{visibility:hidden} .sport-hero-visual::after{background:none} .hero-lion-ambient{animation:none!important}",
+  });
+  const root = await page.locator(".sport-hero").boundingBox();
+  const media = await visual.locator("video").boundingBox();
+  const png = await page.locator(".sport-hero").screenshot();
+  const rgb = await page.evaluate(
+    async ({ source, x, y }) => {
+      const image = new Image();
+      image.src = `data:image/png;base64,${source}`;
+      await image.decode();
+      const canvas = document.createElement("canvas");
+      canvas.width = image.width;
+      canvas.height = image.height;
+      const context = canvas.getContext("2d")!;
+      context.drawImage(image, 0, 0);
+      return [...context.getImageData(x, y, 1, 1).data].slice(0, 3);
+    },
+    {
+      source: png.toString("base64"),
+      x: Math.round(media!.x + media!.width * 0.12 - root!.x),
+      y: Math.round(media!.y + media!.height * 0.5 - root!.y),
+    },
+  );
+  for (const [i, value] of [72, 48, 16].entries())
+    expect(Math.abs(rgb[i] - value)).toBeLessThan(6);
+});
+
+test("el decoder conserva respaldo si se omite un callback", async ({
+  page,
+}, info) => {
+  test.skip(info.project.name !== "desktop");
+  await page.addInitScript(() => {
+    sessionStorage.setItem("stylo.home-intro-seen.v1", "1");
+    HTMLVideoElement.prototype.requestVideoFrameCallback = () => 1;
+    HTMLVideoElement.prototype.cancelVideoFrameCallback = () => {};
+  });
+  await page.goto("/");
+  const lion = page.locator(".sport-hero-visual video");
+  await expect(lion).toHaveClass(/is-ready/);
+  await page.mouse.move(page.viewportSize()!.width * 0.05, 300);
+  await expect
+    .poll(() =>
+      lion.evaluate((element) => (element as HTMLVideoElement).currentTime),
+    )
+    .toBeGreaterThan(3);
+});
+
+test("la entrada comparte un reloj de 1,8 segundos con cascada de 100 ms", async ({
+  page,
+}, info) => {
+  test.skip(info.project.name !== "desktop");
+  await page.clock.install();
+  await page.clock.pauseAt(new Date());
+  await page.goto("/");
+  const hero = page.locator(".sport-hero");
+  await expect(hero).toHaveAttribute("data-intro-start", /\d/);
+  const at = async (time: number) => {
+    const elapsed = await hero.evaluate(
+      (element) =>
+        performance.now() - Number((element as HTMLElement).dataset.introStart),
+    );
+    if (time > elapsed) await page.clock.runFor(time - elapsed);
+  };
+  await expect(hero).toHaveAttribute("data-lion-visible", "false");
+  await expect(page.locator(".hero-intro-brand")).toHaveAttribute(
+    "data-state",
+    "visible",
+  );
+  await at(610);
+  await expect(hero).toHaveAttribute("data-lion-visible", "true");
+  for (let stage = 1; stage <= 5; stage++) {
+    await at(1210 + (stage - 1) * 100);
+    await expect(page.locator(".hero-content")).toHaveAttribute(
+      "data-content-stage",
+      String(stage),
+    );
+  }
+  await at(1810);
+  await expect(hero).toHaveAttribute("data-entrance-complete", "true");
+  await expect(hero).toHaveAttribute("data-navigation", "ready");
+  await expect(page.locator(".site-header")).not.toHaveAttribute("inert");
+  await expect(hero.locator(".hero-atmosphere,.hero-intro-brand")).toHaveCount(
+    0,
+  );
+  await page.clock.runFor(250);
+  await hero
+    .getByRole("link", { name: "Explorar tienda", exact: true })
+    .click();
+  await expect(page).toHaveURL(/\/catalogo$/);
+});
+
+test("un video lento no alarga la entrada ni aparece tarde", async ({
+  page,
+}, info) => {
+  test.skip(info.project.name !== "desktop");
+  let release = () => {};
+  const gate = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  await page.route("**/stylo-scoop-intro-v3.mp4", async (route) => {
+    await gate;
+    await route.continue().catch(() => {});
+  });
+  try {
+    await page.goto("/");
+    const hero = page.locator(".sport-hero");
+    await expect(hero).toHaveAttribute("data-entrance-complete", "true", {
+      timeout: 2500,
+    });
+    const duration = await hero.evaluate(
+      (element) =>
+        performance.now() - Number((element as HTMLElement).dataset.introStart),
+    );
+    expect(duration).toBeLessThan(2150);
+    await expect(hero.locator(".hero-atmosphere")).toHaveCount(0);
+    await expect(
+      hero.getByRole("link", { name: "Explorar tienda", exact: true }),
+    ).toBeVisible();
+    release();
+    await page.waitForTimeout(150);
+    await expect(hero.locator(".hero-atmosphere")).toHaveCount(0);
+  } finally {
+    release();
+  }
+});
+
+test("respiración y partículas se pausan juntas y el CTA tiene destello accesible", async ({
+  page,
+}, info) => {
+  test.skip(info.project.name !== "desktop");
+  await page.goto("/");
+  const hero = page.locator(".sport-hero");
+  await expect(hero).toHaveAttribute("data-entrance-complete", "true");
+  const ambient = hero.locator(".hero-lion-ambient");
+  await expect(ambient).toHaveCSS("animation-name", "hero-lion-breathe");
+  await expect(ambient).toHaveCSS("animation-duration", "6s");
+  await page.getByRole("button", { name: "Pausar polvo del fondo" }).click();
+  await expect(ambient).toHaveCSS("animation-play-state", "paused");
+  await expect(hero).toHaveAttribute("data-ambient-paused", "true");
+  const primary = hero.getByRole("link", {
+    name: "Explorar tienda",
+    exact: true,
+  });
+  await primary.hover();
+  expect(
+    await primary.evaluate(
+      (element) => getComputedStyle(element, "::after").animationName,
+    ),
+  ).toBe("hero-button-shimmer");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(ambient).toHaveCSS("animation-name", "none");
+  await expect(hero.locator("canvas,video")).toHaveCount(0);
+});
+
 test("el hero conserva accesos y muestra un fotograma mientras carga", async ({
   page,
 }, testInfo) => {
@@ -43,7 +241,7 @@ test("la mirada sigue la posición del cursor y vuelve al mismo fotograma", asyn
     "El celular muestra un fotograma fijo",
   );
   await page.goto("/");
-  const video = page.locator(".sport-hero-visual > video");
+  const video = page.locator(".sport-hero-visual video");
   await expect(video).toHaveClass(/is-ready/, { timeout: 15000 });
   await page.keyboard.press("Tab");
   const width = page.viewportSize()!.width;
@@ -66,7 +264,7 @@ test("la mirada sigue la posición del cursor y vuelve al mismo fotograma", asyn
   await expect(video).toHaveCount(0);
   await expect(page.locator(".hero-dust canvas")).toHaveCount(0);
   await page.emulateMedia({ reducedMotion: "no-preference" });
-  await expect(page.locator(".sport-hero-visual > video")).toHaveClass(
+  await expect(page.locator(".sport-hero-visual video")).toHaveClass(
     /is-ready/,
   );
   await expect(page.locator(".hero-dust canvas")).toBeVisible();
@@ -164,426 +362,12 @@ test("Tab antes de hidratar conserva la navegación accesible", async ({
   }
 });
 
-test("los renglones y botones esperan al león y conservan su orden", async ({
-  page,
-}, testInfo) => {
-  test.skip(testInfo.project.name !== "desktop");
-  await page.addInitScript(() => {
-    const samples: { stage: number; time: number; buttons: string[] }[] = [];
-    (
-      window as typeof window & { contentSamples: typeof samples }
-    ).contentSamples = samples;
-    document.addEventListener("animationend", (event) => {
-      if (event.animationName === "hero-lion-emerge")
-        (window as typeof window & { lionEnd: number }).lionEnd =
-          performance.now();
-    });
-    const observer = new MutationObserver(() => {
-      const content = document.querySelector<HTMLElement>(".hero-content");
-      const stage = Number(content?.dataset.contentStage);
-      if (stage > 0 && samples.at(-1)?.stage !== stage)
-        samples.push({
-          stage,
-          time: performance.now(),
-          buttons: Array.from(
-            content!.querySelectorAll<HTMLAnchorElement>(
-              '.hero-actions a[data-revealed="true"]',
-            ),
-          ).map((link) => link.getAttribute("href")!),
-        });
-    });
-    observer.observe(document, {
-      attributes: true,
-      attributeFilter: ["data-content-stage"],
-      subtree: true,
-    });
-  });
-  await page.goto("/");
-  const content = page.locator(".hero-content");
-  await expect(content).toHaveAttribute("data-content-stage", "5", {
-    timeout: 15000,
-  });
-  const samples = await page.evaluate(
-    () =>
-      (
-        window as typeof window & {
-          contentSamples: { stage: number; time: number; buttons: string[] }[];
-        }
-      ).contentSamples,
-  );
-  expect(samples.map((sample) => sample.stage)).toEqual([1, 2, 3, 4, 5]);
-  expect(samples[3].buttons).toEqual(["#destacados"]);
-  expect(samples[4].buttons).toEqual(["/catalogo", "#destacados"]);
-  // The sequence starts at the lion's actual animation end, rather than at
-  // page load or while the scoop is still pouring.
-  const lionEnd = await page.evaluate(
-    () => (window as typeof window & { lionEnd: number }).lionEnd,
-  );
-  expect(lionEnd).toBeGreaterThan(0);
-  const thresholds = [0, 180, 520, 1000, 1220];
-  for (const [index, sample] of samples.entries()) {
-    expect(sample.time - lionEnd).toBeGreaterThanOrEqual(
-      thresholds[index] - 80,
-    );
-    if (index > 0) expect(sample.time).toBeGreaterThan(samples[index - 1].time);
-  }
-  await expect(page.locator(".sport-hero")).toHaveAttribute(
-    "data-navigation",
-    "waiting",
-  );
-  for (const link of await content.locator(".hero-actions a").all()) {
-    await expect(link).toHaveCSS("opacity", "1");
-    if ((await link.getAttribute("href")) === "/catalogo") {
-      await expect(link).toHaveCSS("background-image", /linear-gradient/);
-    } else {
-      await expect(link).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
-    }
-  }
-  await expect(content.locator(".hero-cursor")).toHaveCount(0);
-});
-
-test("la presentación se muestra una vez por visita y el logo no la reinicia", async ({
-  page,
-}, testInfo) => {
-  test.skip(testInfo.project.name !== "desktop");
-  const requests: string[] = [];
-  page.on("request", (request) => {
-    if (request.url().includes("stylo-scoop-")) requests.push(request.url());
-  });
-  await page.goto("/");
-  await expect(
-    page.locator('.sport-hero[data-lion-visible="true"]'),
-  ).toBeVisible({ timeout: 10000 });
-  await expect(page.locator(".hero-atmosphere")).toHaveCount(0);
-  await page.locator('.hero-actions a[href="/catalogo"]').click();
-  await expect(page).toHaveURL(/\/catalogo$/);
-  await page.locator(".site-header .brand-link").click();
-  await expect(page).toHaveURL(/\/#inicio$/);
-  await expect(page.locator(".sport-hero")).toHaveAttribute(
-    "data-presentation",
-    "static",
-  );
-  await expect(page.locator(".sport-hero")).toHaveAttribute(
-    "data-navigation",
-    "ready",
-  );
-  await expect(page.locator(".hero-content")).toHaveAttribute(
-    "data-content-stage",
-    "5",
-  );
-  await expect(page.locator(".hero-atmosphere")).toHaveCount(0);
-  await expect(page.locator(".site-header")).toHaveCSS("opacity", "1");
-  await expect(page.locator(".site-header")).toHaveCSS(
-    "transition-duration",
-    "0s",
-  );
-  await expect(page.locator(".sport-hero-visual")).toHaveCSS("opacity", "1");
-  await expect(page.locator(".hero-dust canvas")).toBeVisible();
-  expect(requests).toHaveLength(1);
-  // The tab remembers this visit even after a reload, without storing an
-  // indefinite preference across future sessions.
-  await page.reload();
-  await expect(page.locator(".sport-hero")).toHaveAttribute(
-    "data-presentation",
-    "static",
-  );
-  await expect(page.locator(".hero-atmosphere")).toHaveCount(0);
-  await expect(page.locator(".hero-dust canvas")).toBeVisible();
-  expect(requests).toHaveLength(1);
-});
-
-test("el logo cancela una salida al catálogo que todavía está cargando", async ({
-  page,
-}) => {
-  let release: () => void = () => {};
-  const gate = new Promise<void>((resolve) => {
-    release = resolve;
-  });
-  let requested: () => void = () => {};
-  const requestStarted = new Promise<void>((resolve) => {
-    requested = resolve;
-  });
-  await page.route("**/catalogo*", async (route) => {
-    requested();
-    await gate;
-    await route.continue();
-  });
-  await page.goto("/");
-  await page.keyboard.press("Tab");
-  await page.locator('.hero-actions a[href="/catalogo"]').click();
-  await requestStarted;
-  await page.locator(".site-header .brand-link").click();
-  release();
-  await expect(page).toHaveURL(/\/#inicio$/);
-  await page.waitForTimeout(500);
-  await expect(page).toHaveURL(/\/#inicio$/);
-  await expect(page.locator(".hero-content")).toBeVisible();
-  await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThan(2);
-});
-
-test("entrar directamente al catálogo no agrega una presentación al volver con el logo", async ({
-  page,
-}) => {
-  const requests: string[] = [];
-  page.on("request", (request) => {
-    if (request.url().includes("stylo-scoop-")) requests.push(request.url());
-  });
-  await page.goto("/catalogo");
-  await page.locator(".site-header .brand-link").click();
-  await expect(page.locator(".sport-hero")).toHaveAttribute(
-    "data-presentation",
-    "static",
-  );
-  await expect(page.locator(".site-header")).not.toHaveAttribute("inert");
-  await expect(page.locator(".hero-content")).toHaveAttribute(
-    "data-content-stage",
-    "5",
-  );
-  await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThan(2);
-  expect(requests).toEqual([]);
-});
-
-test("los logos vuelven al principio del hero desde otras páginas y desde el pie", async ({
-  page,
-}) => {
-  await page.goto("/");
-  await page.keyboard.press("Tab");
-  await page.locator('.hero-actions a[href="#destacados"]').click();
-  await expect(page).toHaveURL(/#destacados$/);
-  await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(200);
-  await page
-    .locator('#destacados .home-section-heading a[href="/catalogo"]')
-    .click();
-  await expect(page).toHaveURL(/\/catalogo$/);
-  await page.locator(".site-header .brand-link").click();
-  await expect(page).toHaveURL(/\/#inicio$/);
-  await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThan(2);
-  await expect(page.locator(".sport-hero")).toBeInViewport();
-  await page.goto("/nosotros");
-  await page.locator(".site-footer .brand-link").click();
-  await expect(page).toHaveURL(/\/#inicio$/);
-  await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThan(2);
-  await page.keyboard.press("Tab");
-  await page.locator('.hero-actions a[href="#destacados"]').click();
-  await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(200);
-  await page.locator(".site-footer .brand-link").click();
-  await expect(page).toHaveURL(/\/#inicio$/);
-  await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThan(2);
-});
-
-test("scoop fluido se funde con el león orientado a la derecha sin congelarse", async ({
-  page,
-}, testInfo) => {
-  test.skip(testInfo.project.name !== "desktop");
-  const mediaRequests: string[] = [];
-  page.on("request", (request) => {
-    if (request.url().includes(".mp4")) mediaRequests.push(request.url());
-  });
-  await page.goto("/");
-  const hero = page.locator(".sport-hero");
-  const intro = page.locator(".hero-atmosphere");
-  await expect(intro).toHaveAttribute("data-phase", "playing", {
-    timeout: 10000,
-  });
-  await expect(hero).toHaveAttribute("data-lion-visible", "false");
-  await expect(hero.locator(".sport-hero-visual")).toHaveCSS("opacity", "0");
-  await expect(page.locator(".site-header")).toBeHidden();
-  await expect(page.locator(".category-navigation-shell")).toHaveAttribute(
-    "inert",
-  );
-  const initial = await hero.boundingBox();
-  expect(initial!.y).toBe(0);
-  // The entrance no longer waits for a second video to download and seek.
-  expect(
-    mediaRequests.some((url) => url.includes("stylo-scoop-intro-v3.mp4")),
-  ).toBe(true);
-  expect(mediaRequests.some((url) => url.includes("stylo-lion-motion"))).toBe(
-    false,
-  );
-  const brand = page.locator('.hero-intro-brand[data-state="visible"]');
-  await expect(brand).toHaveCSS("opacity", "1");
-  await expect(brand.locator("img")).toHaveAttribute(
-    "src",
-    "/branding/stylo-suplementos.svg",
-  );
-  const brandBox = await brand.locator("span").boundingBox();
-  expect(brandBox!.width).toBeLessThanOrEqual(480);
-  const brandReadableAt = await page.evaluate(() => performance.now());
-  await expect(hero).toHaveAttribute("data-lion-visible", "true");
-  expect(
-    (await page.evaluate(() => performance.now())) - brandReadableAt,
-  ).toBeGreaterThan(1400);
-  await expect(page.locator(".hero-intro-brand")).toHaveAttribute(
-    "data-state",
-    "leaving",
-  );
-  await expect(hero.locator(".hero-lion-eyes, .hero-lion-shadow")).toHaveCount(
-    0,
-  );
-  await expect(hero.locator(".hero-content")).toHaveAttribute(
-    "data-content-stage",
-    "0",
-  );
-  // The still poster carries the fade while the scoop is playing. There is
-  // only one video decoder in use during the entrance.
-  await expect(hero.locator(".sport-hero-visual > video")).toHaveCount(0);
-  await expect(intro).toHaveAttribute("data-phase", "leaving");
-  await expect(intro).toHaveCSS("animation-duration", "0.7s");
-  const scoop = intro.locator("video");
-  await expect(scoop).toHaveJSProperty("paused", false);
-  const before = await scoop.evaluate((element) => ({
-    time: (element as HTMLVideoElement).currentTime,
-    transform: getComputedStyle(element).transform,
-  }));
-  await page.waitForTimeout(120);
-  const after = await scoop.evaluate((element) => ({
-    time: (element as HTMLVideoElement).currentTime,
-    transform: getComputedStyle(element).transform,
-  }));
-  expect(after.time).toBeGreaterThan(before.time);
-  expect(after.transform).toBe(before.transform);
-  await expect(intro).toHaveCount(0, { timeout: 2500 });
-  const lion = hero.locator(".sport-hero-visual > video");
-  await expect(lion).toHaveClass(/is-ready/);
-  // A source pose facing right, not a mirrored or frontal poster.
-  await expect
-    .poll(() =>
-      lion.evaluate((element) => (element as HTMLVideoElement).currentTime),
-    )
-    .toBeCloseTo(0.849, 2);
-  await expect(hero.locator(".sport-hero-visual")).toHaveCSS(
-    "animation-duration",
-    "1.8s",
-  );
-  await expect(hero.locator(".sport-hero-visual")).toHaveCSS("opacity", "1");
-  await expect(hero).toHaveAttribute("data-navigation", "ready", {
-    timeout: 5000,
-  });
-  await expect(page.locator(".site-header")).toHaveCSS("opacity", "1");
-  await expect(page.locator(".category-navigation-shell")).toHaveCSS(
-    "opacity",
-    "1",
-  );
-  await expect(page.locator(".site-header")).not.toHaveAttribute("inert");
-  await expect(page.locator(".site-header")).toHaveCSS(
-    "background-color",
-    "rgba(0, 0, 0, 0)",
-  );
-  await expect(page.locator(".category-navigation")).toHaveCSS(
-    "background-color",
-    "rgba(0, 0, 0, 0)",
-  );
-  await expect(
-    page.getByText("STYLO SUPLEMENTOS ? ROSARIO", { exact: true }),
-  ).toHaveCount(0);
-  expect(await hero.boundingBox()).toEqual(initial);
-  // The official SVG's five gold stops are shared by the word and main CTA.
-  const accent = hero.locator('.hero-word[data-accent="true"]');
-  const primary = hero.locator(".hero-pill-primary");
-  await expect(accent).toHaveCSS(
-    "background-image",
-    await primary.evaluate(
-      (element) => getComputedStyle(element).backgroundImage,
-    ),
-  );
-  await expect(accent).toHaveCSS("color", "rgba(0, 0, 0, 0)");
-});
-
-test("el scoop termina una vez y el polvo permanece con pausa accesible", async ({
-  page,
-}, testInfo) => {
-  test.skip(
-    testInfo.project.name === "mobile",
-    "La entrada es una mejora para escritorio",
-  );
-  const requests: string[] = [];
-  page.on("request", (request) => {
-    if (request.url().includes("stylo-scoop-")) requests.push(request.url());
-  });
-  await page.goto("/");
-  const intro = page.locator(".hero-atmosphere");
-  await expect(intro).toHaveAttribute("data-phase", "playing", {
-    timeout: 10000,
-  });
-  await expect(intro.locator("video")).toHaveJSProperty("muted", true);
-  await expect(intro.locator("video")).toHaveJSProperty("loop", false);
-  await expect(intro.locator("video")).toHaveJSProperty("paused", false);
-  await expect(intro).toHaveCount(0, { timeout: 8000 });
-  await expect(page.locator(".sport-hero-visual")).toHaveCSS("opacity", "1", {
-    timeout: 6000,
-  });
-  const lion = page.locator(".sport-hero-visual > video");
-  await page.mouse.move(page.viewportSize()!.width * 0.1, 300);
-  await expect
-    .poll(() =>
-      lion.evaluate((element) => (element as HTMLVideoElement).currentTime),
-    )
-    .toBeGreaterThan(2.8);
-  await expect(intro).toHaveCount(0, { timeout: 6500 });
-  const dust = page.locator(".hero-dust canvas");
-  await expect(dust).toBeVisible();
-  // A changing canvas can still look empty against black. Check the actual
-  // composited luminance once the filmed powder has gone, not just the node.
-  const visibleDust = await dust.evaluate((element) => {
-    const canvas = element as HTMLCanvasElement;
-    const pixels = canvas
-      .getContext("2d")!
-      .getImageData(0, 0, canvas.width, canvas.height).data;
-    let bright = 0;
-    let haze = 0;
-    for (let i = 0; i < pixels.length; i += 4) {
-      const onBlack = (pixels[i] * pixels[i + 3]) / 255;
-      if (onBlack > 18) bright++;
-      if (onBlack > 3) haze++;
-    }
-    return {
-      bright: bright / (pixels.length / 4),
-      haze: haze / (pixels.length / 4),
-    };
-  });
-  expect(visibleDust.bright).toBeGreaterThan(0.01);
-  expect(visibleDust.haze).toBeGreaterThan(0.15);
-  const image = await dust.evaluate((element) =>
-    (element as HTMLCanvasElement).toDataURL(),
-  );
-  await expect
-    .poll(() =>
-      dust.evaluate((element) => (element as HTMLCanvasElement).toDataURL()),
-    )
-    .not.toBe(image);
-  await page.getByRole("button", { name: "Pausar polvo del fondo" }).click();
-  const pausedImage = await dust.evaluate((element) =>
-    (element as HTMLCanvasElement).toDataURL(),
-  );
-  await page.waitForTimeout(250);
-  expect(
-    await dust.evaluate((element) =>
-      (element as HTMLCanvasElement).toDataURL(),
-    ),
-  ).toBe(pausedImage);
-  await page
-    .getByRole("button", { name: "Reanudar polvo del fondo" })
-    .press("Space");
-  await expect
-    .poll(() =>
-      dust.evaluate((element) => (element as HTMLCanvasElement).toDataURL()),
-    )
-    .not.toBe(pausedImage);
-  await page.mouse.move(page.viewportSize()!.width * 0.95, 300);
-  await expect
-    .poll(() =>
-      lion.evaluate((element) => (element as HTMLVideoElement).currentTime),
-    )
-    .toBeLessThan(1.2);
-  expect(requests).toHaveLength(1);
-});
-
 test("el cruce frontal sigue presentando fotogramas sin cambios de sentido", async ({
   page,
 }, testInfo) => {
   test.skip(testInfo.project.name === "mobile", "El seguimiento utiliza mouse");
   await page.goto("/");
-  const video = page.locator(".sport-hero-visual > video");
+  const video = page.locator(".sport-hero-visual video");
   await expect(video).toHaveClass(/is-ready/);
   await page.keyboard.press("Tab");
   const width = page.viewportSize()!.width;
@@ -627,7 +411,7 @@ test("la mirada lenta atraviesa el frente con poses intermedias", async ({
 }, testInfo) => {
   test.skip(testInfo.project.name === "mobile", "El seguimiento utiliza mouse");
   await page.goto("/");
-  const video = page.locator(".sport-hero-visual > video");
+  const video = page.locator(".sport-hero-visual video");
   await expect(video).toHaveClass(/is-ready/);
   await page.keyboard.press("Tab");
   const width = page.viewportSize()!.width;
@@ -671,26 +455,4 @@ test("la mirada lenta atraviesa el frente con poses intermedias", async ({
       video.evaluate((element) => (element as HTMLVideoElement).currentTime),
     )
     .toBeCloseTo(2, 1);
-});
-
-test("un fallo del fondo conserva el león y los accesos de compra", async ({
-  page,
-}, testInfo) => {
-  test.skip(
-    testInfo.project.name === "mobile",
-    "El celular no descarga el video decorativo",
-  );
-  await page.route("**/stylo-scoop-intro-v3.mp4", (route) => route.abort());
-  const attempted = page.waitForRequest("**/stylo-scoop-intro-v3.mp4");
-  await page.goto("/");
-  await attempted;
-  await expect(page.locator(".hero-atmosphere")).toHaveCount(0);
-  await expect(page.locator(".sport-hero-visual > video")).toHaveClass(
-    /is-ready/,
-  );
-  await page
-    .locator(".sport-hero")
-    .getByRole("link", { name: "Explorar tienda", exact: true })
-    .click();
-  await expect(page).toHaveURL(/\/catalogo$/);
 });

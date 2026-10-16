@@ -111,6 +111,12 @@ export function HeroDust({
     haze.height = 128;
     const hazeContext = haze.getContext("2d");
     if (!hazeContext) return;
+    // The hero's large translucent clouds used to repaint millions of
+    // overlapping pixels per frame. Bake their field on resize, then move a
+    // single low-resolution texture; small grains retain individual motion.
+    const hazeField = document.createElement("canvas");
+    const fieldContext = hazeField.getContext("2d");
+    const fieldPadding = 64;
     for (let i = 0; i < 28; i++) {
       const x = 38 + random() * 116;
       const y = 34 + random() * 60;
@@ -148,22 +154,32 @@ export function HeroDust({
       if (!width || !height) return;
       motionTime += dt;
       ctx.clearRect(0, 0, width, height);
-      for (const cloud of clouds) {
-        cloud.x += ((4 + cloud.depth * 5) * dt) / width;
-        cloud.y -= ((2 + cloud.depth * 3) * dt) / height;
-        const size = Math.min(width * (0.3 + cloud.depth * 0.18), 700);
-        const marginX = (size / 2 + 24) / width;
-        const marginY = (size / 3 + 16) / height;
-        // Large patches wrap only once their entire footprint is offscreen.
-        if (cloud.x > 1 + marginX) cloud.x = -marginX;
-        if (cloud.y < -marginY) cloud.y = 1 + marginY;
-        const x =
-          cloud.x * width + Math.sin(motionTime * 0.12 + cloud.phase) * 24;
-        const y =
-          cloud.y * height + Math.cos(motionTime * 0.1 + cloud.phase) * 16;
-        ctx.globalAlpha = (0.18 + cloud.depth * 0.16) * protection(x, y);
-        ctx.drawImage(haze, x - size / 2, y - size / 3, size, (size * 2) / 3);
-      }
+      if (variant === "hero" && fieldContext) {
+        ctx.globalAlpha = 1;
+        ctx.drawImage(
+          hazeField,
+          -fieldPadding + Math.sin(motionTime * 0.1) * 18,
+          -fieldPadding + Math.cos(motionTime * 0.08) * 12,
+          width + fieldPadding * 2,
+          height + fieldPadding * 2,
+        );
+      } else
+        for (const cloud of clouds) {
+          cloud.x += ((4 + cloud.depth * 5) * dt) / width;
+          cloud.y -= ((2 + cloud.depth * 3) * dt) / height;
+          const size = Math.min(width * (0.3 + cloud.depth * 0.18), 700);
+          const marginX = (size / 2 + 24) / width;
+          const marginY = (size / 3 + 16) / height;
+          // Large patches wrap only once their entire footprint is offscreen.
+          if (cloud.x > 1 + marginX) cloud.x = -marginX;
+          if (cloud.y < -marginY) cloud.y = 1 + marginY;
+          const x =
+            cloud.x * width + Math.sin(motionTime * 0.12 + cloud.phase) * 24;
+          const y =
+            cloud.y * height + Math.cos(motionTime * 0.1 + cloud.phase) * 16;
+          ctx.globalAlpha = (0.18 + cloud.depth * 0.16) * protection(x, y);
+          ctx.drawImage(haze, x - size / 2, y - size / 3, size, (size * 2) / 3);
+        }
       for (const mote of motes) {
         mote.x +=
           ((7 +
@@ -194,8 +210,8 @@ export function HeroDust({
       const scale = Math.min(
         window.devicePixelRatio || 1,
         1.25,
-        1600 / width,
-        900 / height,
+        (variant === "hero" ? 1000 : 1600) / width,
+        (variant === "hero" ? 600 : 900) / height,
       );
       surface.width = Math.ceil(width * scale);
       surface.height = Math.ceil(height * scale);
@@ -213,11 +229,35 @@ export function HeroDust({
           top: bounds.top - origin.top - 12,
           bottom: bounds.bottom - origin.top + 12,
         };
+      if (variant === "hero" && fieldContext) {
+        const fieldScale = Math.min(
+          0.5,
+          900 / (width + fieldPadding * 2),
+          600 / (height + fieldPadding * 2),
+        );
+        hazeField.width = Math.ceil((width + fieldPadding * 2) * fieldScale);
+        hazeField.height = Math.ceil((height + fieldPadding * 2) * fieldScale);
+        fieldContext.setTransform(fieldScale, 0, 0, fieldScale, 0, 0);
+        for (const cloud of clouds) {
+          const x = cloud.x * width + Math.sin(cloud.phase) * 24;
+          const y = cloud.y * height + Math.cos(cloud.phase) * 16;
+          const size = Math.min(width * (0.3 + cloud.depth * 0.18), 700);
+          fieldContext.globalAlpha =
+            (0.18 + cloud.depth * 0.16) * protection(x, y);
+          fieldContext.drawImage(
+            haze,
+            x + fieldPadding - size / 2,
+            y + fieldPadding - size / 3,
+            size,
+            (size * 2) / 3,
+          );
+        }
+      }
       const count = Math.min(
-        variant === "menu" ? 180 : variant === "product" ? 260 : 440,
+        variant === "menu" ? 180 : variant === "product" ? 260 : 220,
         Math.max(
-          variant === "menu" ? 70 : variant === "product" ? 100 : 220,
-          Math.round((width * height) / 3600),
+          variant === "menu" ? 70 : 100,
+          Math.round((width * height) / (variant === "hero" ? 6500 : 3600)),
         ),
       );
       while (motes.length < count)

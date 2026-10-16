@@ -59,3 +59,35 @@ export function gazeTime(progress: number, duration: number) {
 export function gazeFrameTime(time: number) {
   return (Math.round(time * HERO_VIDEO_FPS) + 0.5) / HERO_VIDEO_FPS;
 }
+
+/** Damped tracking with a bounded source-time velocity. A new pointer target
+ * must not skip half the clip when the entrance hands control to the mouse. */
+export function advanceGaze(
+  position: number,
+  velocity: number,
+  target: number,
+  elapsedMs: number,
+) {
+  const dt = Math.max(0, Math.min(elapsedMs, 50)) / 1000;
+  if (!dt) return { position, velocity };
+  const omega = 12;
+  const maxSpeed = 2.4;
+  const change = position - target;
+  const decay = Math.exp(-omega * dt);
+  const impulse = (velocity + omega * change) * dt;
+  const desired = target + (change + impulse) * decay;
+  const step = Math.max(
+    -maxSpeed * dt,
+    Math.min(maxSpeed * dt, desired - position),
+  );
+  const next = position + step;
+  if ((target - position) * (target - next) <= 0)
+    return { position: target, velocity: 0 };
+  return {
+    position: next,
+    velocity: Math.max(
+      -maxSpeed,
+      Math.min(maxSpeed, (velocity - omega * impulse) * decay),
+    ),
+  };
+}
