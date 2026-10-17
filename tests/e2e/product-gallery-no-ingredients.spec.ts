@@ -61,7 +61,7 @@ test("cambiar de variante conserva el envase independiente y no carga ingredient
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/vista-previa?q=proteina");
   const card = page.locator(".product-card"),
-    gallery = card.locator(".variant-ring");
+    gallery = card.locator(".variant-spinner");
   await card.scrollIntoViewIfNeeded();
   await card.hover();
   const before = await card.evaluate((e) => [e.clientWidth, e.clientHeight]);
@@ -71,7 +71,7 @@ test("cambiar de variante conserva el envase independiente y no carga ingredient
   await expect(card.locator(".product-card-marker-current")).toHaveText(
     "Frutilla",
   );
-  await expect(gallery).toHaveAttribute("data-ring-phase", "idle");
+  await expect(gallery).toHaveAttribute("data-spinner-phase", "idle");
   await expect(card.locator(".product-frame-current")).toHaveAttribute(
     "alt",
     "Foto de prueba Frutilla 2",
@@ -100,32 +100,16 @@ test("el autoplay cambia solo frentes de variantes, limpia capas y pausa con foc
   await page.clock.install();
   await page.clock.pauseAt(new Date());
   await page.goto("/vista-previa?q=proteina");
-  const gallery = page.locator(".variant-ring");
+  const gallery = page.locator(".variant-spinner");
   await gallery.scrollIntoViewIfNeeded();
-  await gallery.dispatchEvent("pointerover", { pointerType: "mouse" });
   await expect(gallery).toHaveAttribute("data-auto-playing", "true");
-  await page.clock.runFor(3800);
-  // Native Motion timelines use real compositor time; finish their visual pass
-  // after advancing the mocked autoplay timer, without changing application state.
-  await page.waitForTimeout(50);
-  await page
-    .locator(".variant-ring")
-    .evaluateAll((roots) =>
-      roots.forEach((root) =>
-        root
-          .querySelectorAll("*")
-          .forEach((node) => node.getAnimations().forEach((a) => a.finish())),
-      ),
-    );
+  await page.clock.runFor(3100);
   await expect(gallery.locator(".product-frame-current")).toHaveAttribute(
     "alt",
     "Foto de prueba Frutilla 2",
   );
-  await expect(gallery).toHaveAttribute("data-ring-phase", "idle");
-  await page.clock.runFor(200);
-  await expect(
-    gallery.locator(".variant-ring-item[data-visible=true]"),
-  ).toHaveCount(3);
+  await expect(gallery).toHaveAttribute("data-spinner-phase", "idle");
+  await expect(gallery.locator(".variant-spinner-frame")).toHaveCount(1);
   await gallery.locator(".product-frame-link").focus();
   await expect(gallery).not.toHaveAttribute("data-auto-playing", "true");
   await page.clock.runFor(6000);
@@ -151,7 +135,7 @@ test("si la siguiente foto falla, el giro conserva imagen, sabor y enlace actual
   await seed(page, data);
   await page.goto("/vista-previa?q=proteina");
   const card = page.locator(".product-card"),
-    gallery = card.locator(".variant-ring");
+    gallery = card.locator(".variant-spinner");
   await card.scrollIntoViewIfNeeded();
   await card.hover();
   const href = await card.locator(".product-card-action").getAttribute("href");

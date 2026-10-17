@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import { existsSync, readFileSync } from "node:fs";
 import { normalizedPhotoProps } from "../../src/modules/catalog/normalized-media";
 import registry from "../../src/modules/catalog/normalized-images.json";
-import gallery from "../../src/modules/catalog/normalized-gallery.json";
 
 describe("fotografías normalizadas del catálogo", () => {
   const [original, derivative] = Object.entries(registry)[0];
@@ -14,13 +13,7 @@ describe("fotografías normalizadas del catálogo", () => {
       imageBase,
     });
     expect(result.normalized).toBe(true);
-    const updated = (gallery as Record<string, { src: string }>)[original]?.src;
-    expect(result.src).toBe(
-      (updated || derivative).replace(
-        "-1000.webp",
-        updated ? "-600.webp" : "-640.webp",
-      ),
-    );
+    expect(result.src).toBe(derivative.replace("-1000.webp", "-640.webp"));
     expect(result.srcSet).toContain("320w");
     expect(
       normalizedPhotoProps("data:image/png;base64,preview", "card", {

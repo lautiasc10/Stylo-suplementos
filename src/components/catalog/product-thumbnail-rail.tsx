@@ -2,7 +2,6 @@
 
 import { useRef, useState, useEffect } from "react";
 import { Icon } from "@/components/ui/icon";
-import Image from "next/image";
 import type { GalleryImage } from "./product-gallery";
 
 export function ProductThumbnailRail({
@@ -82,8 +81,7 @@ export function ProductThumbnailRail({
               onSelect(image);
             }}
           >
-            <Image
-              unoptimized
+            <img
               src={image.thumbnailSrc ?? image.src}
               alt=""
               width={80}

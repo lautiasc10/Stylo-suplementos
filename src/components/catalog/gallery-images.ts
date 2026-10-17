@@ -72,10 +72,6 @@ export function galleryInformation(
             alt: image.alt,
             thumbnailSrc: catalogMediaSource(src, imageBase, "thumbnail"),
             information: true,
-            ...normalizedPhotoProps(src, "detail", {
-              path: image.path,
-              imageBase,
-            }),
           },
         ]
       : [];

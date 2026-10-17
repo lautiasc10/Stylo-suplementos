@@ -1,0 +1,74 @@
+[
+  {
+    "slug": "star-nutrition-proteina-whey-protein-x-2-lbs-dp",
+    "flavor": "frutilla",
+    "width": 1800,
+    "height": 1000,
+    "bg": "rgb(243, 165, 178)",
+    "nav": "rgb(243, 165, 178)",
+    "stage": "none",
+    "overflow": false,
+    "ring": false,
+    "title": "PROTEÍNA \"WHEY PROTEIN\" x 2 LBS DP",
+    "errors": []
+  },
+  {
+    "slug": "star-nutrition-proteina-whey-protein-x-2-lbs-dp",
+    "flavor": "vainilla",
+    "width": 375,
+    "height": 900,
+    "bg": "rgb(240, 224, 194)",
+    "nav": "rgb(240, 224, 194)",
+    "stage": "none",
+    "overflow": false,
+    "ring": false,
+    "title": "PROTEÍNA \"WHEY PROTEIN\" x 2 LBS DP",
+    "errors": []
+  },
+  {
+    "slug": "onefit-proteina-whey-protein-2lbs-dp",
+    "flavor": "frutilla",
+    "width": 768,
+    "height": 1000,
+    "bg": "rgb(243, 165, 178)",
+    "nav": "rgb(243, 165, 178)",
+    "stage": "none",
+    "overflow": false,
+    "ring": false,
+    "title": "PROTEÍNA \"WHEY PROTEIN\" 2LBS DP",
+    "errors": []
+  },
+  {
+    "slug": "star-nutrition-ganador-de-peso-mutant-mass-x-1-5-kgs",
+    "flavor": "chocolate",
+    "width": 1800,
+    "height": 1000,
+    "bg": "rgb(213, 185, 157)",
+    "nav": "rgb(213, 185, 157)",
+    "stage": "none",
+    "overflow": false,
+    "ring": false,
+    "title": "GANADOR DE PESO \"MUTANT MASS\" x 1,5 KGS",
+    "errors": []
+  },
+  {
+    "slug": "onefit-aminoacidos-eeaa-essential-amino-acid",
+    "flavor": "uva",
+    "width": 1800,
+    "height": 1000,
+    "bg": "rgb(207, 192, 230)",
+    "nav": "rgb(207, 192, 230)",
+    "stage": "none",
+    "overflow": false,
+    "ring": false,
+    "title": "AMINOÁCIDOS \"EEAA + ESSENTIAL AMINO ACID\"",
+    "errors": []
+  },
+  {
+    "noJavaScript": "Public route selection, color and form variant verified",
+    "color": "rgb(240, 224, 194)"
+  },
+  {
+    "realVariantChange": "URL and purchase variant synchronized; informational dialog contrast and Escape verified"
+  }
+]

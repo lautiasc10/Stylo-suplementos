@@ -1,25 +1,24 @@
 "use client";
+
 import Link from "next/link";
-import { BrandLogo } from "./brand-logo";
-import { ProductPricing } from "@/components/commerce/product-pricing";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { CategoryIllustration } from "@/components/storefront/category-illustration";
-import { galleryPhotos, galleryInformation } from "./gallery-images";
-import { ProductGallery, type GalleryImage } from "./product-gallery";
+import { AddToCart } from "@/components/commerce/add-to-cart";
+import { ProductPricing } from "@/components/commerce/product-pricing";
+import { RevealGroup, RevealItem } from "@/components/ui/Reveal";
+import { variantLabel } from "@/modules/catalog/model";
 import {
   FlavorSceneDecorations,
   sceneFlavor,
   sceneIngredient,
 } from "./flavor-scene";
-import { AddToCart } from "@/components/commerce/add-to-cart";
-import { RevealGroup, RevealItem } from "@/components/ui/Reveal";
-import { Crossfade } from "@/components/ui/Crossfade";
-import { GainerProductDetail } from "./gainer-product-detail";
-import { ProductInformation } from "./product-information";
-import { VariantPicker } from "./variant-picker";
+import { productFlavor } from "@/modules/catalog/product-flavor";
+import { BrandLogo } from "./brand-logo";
 import { catalogMediaSource } from "@/modules/catalog/media-source";
-import { variantLabel, type Product } from "@/modules/catalog/model";
-const emptyImageUrls: Record<string, string> = {};
+import type { Product } from "@/modules/catalog/model";
+import { createGalleryPhotoCache } from "./gallery-photo-cache";
+import { galleryPhotos, galleryInformation } from "./gallery-images";
+import { ProductGallery, type GalleryImage } from "./product-gallery";
+import { ProductInformation } from "./product-information";
 export type ProductDetailProps = {
   product: Product;
   brandName: string;
@@ -30,85 +29,88 @@ export type ProductDetailProps = {
   imageUrls?: Record<string, string>;
   preview?: boolean;
 };
+const emptyImages: Record<string, string> = {};
 
-export function ProductDetail(props: ProductDetailProps) {
-  return props.category === "ganadores-de-masa" ? (
-    <GainerProductDetail {...props} />
-  ) : (
-    <StandardProductDetail {...props} />
-  );
-}
-
-function StandardProductDetail({
+/** Shared information layout; flavor scenes use the same variant committed by the gallery. */
+export function ProductDetail({
   product,
   brandName,
   brandLogo,
-  category,
   selectedId,
   imageBase = "",
-  imageUrls = emptyImageUrls,
+  imageUrls = emptyImages,
   preview = false,
 }: ProductDetailProps) {
+  const ingredientCache = useRef<ReturnType<
+    typeof createGalleryPhotoCache
+  > | null>(null);
   const [variantId, setVariantId] = useState(
     selectedId ?? product.variants[0].id,
   );
   const variant =
     product.variants.find((item) => item.id === variantId) ??
     product.variants[0];
-  const flavorExperiment =
-    product.slug === "whey-protein" && product.variants.length > 1;
-  const variantGallery = product.variants.length > 1;
+  const [enhanced, setEnhanced] = useState(false);
   const [selectionRequest, setSelectionRequest] = useState<{
     variantId: string;
     nonce: number;
   } | null>(null);
-  const [enhanced, setEnhanced] = useState(false);
-  const preparedIngredients = useRef(new Map<string, HTMLImageElement>());
   useEffect(() => setEnhanced(true), []);
   useEffect(() => {
-    if (
-      !flavorExperiment ||
-      preview ||
-      window.scrollY > 1 ||
-      window.location.hash
-    )
-      return;
-    const categories = document.querySelector(".category-navigation");
-    if (categories)
-      window.scrollTo({
-        top: categories.getBoundingClientRect().top + window.scrollY,
-        behavior: "instant",
-      });
-  }, [flavorExperiment, preview]);
-  const flavor = sceneFlavor(variant.flavor);
-  const [titleLead, ...titleRest] = product.name.split(" ");
-  const prepareFlavorImage = useCallback(
-    (image: GalleryImage) => {
-      const item = product.variants.find(
-        (variant) => variant.id === image.variantId,
-      );
-      const flavor = item && sceneFlavor(item.flavor);
-      if (!flavor || preparedIngredients.current.has(flavor)) return;
-      const ingredient = new Image();
-      ingredient.fetchPriority = "low";
-      ingredient.decoding = "async";
-      ingredient.src = sceneIngredient(flavor);
-      preparedIngredients.current.set(flavor, ingredient);
-    },
-    [product],
-  );
-  const flavorImages = useMemo(() => {
-    if (!variantGallery) return [];
-    const order = { banana: 0, frutilla: 1, vainilla: 2 };
-    const flavorOrder = (value: string) => {
-      const match = sceneFlavor(value);
-      return match ? order[match] : 3;
+    const cache = createGalleryPhotoCache();
+    ingredientCache.current = cache;
+    const stopHiddenLoads = () => {
+      if (document.hidden) cache.cancelPending();
     };
-    return [...product.variants]
-      .sort((a, b) => flavorOrder(a.flavor) - flavorOrder(b.flavor))
-      .flatMap((item) => {
+    document.addEventListener("visibilitychange", stopHiddenLoads);
+    return () => {
+      document.removeEventListener("visibilitychange", stopHiddenLoads);
+      cache.dispose();
+      ingredientCache.current = null;
+    };
+  }, []);
+  const loadIngredients = useCallback(
+    (image: GalleryImage, priority: "high" | "low") => {
+      const flavor =
+        product.variants.find((item) => item.id === image.variantId)?.flavor ??
+        "";
+      return Promise.allSettled(
+        (sceneFlavor(flavor)
+          ? [sceneIngredient(sceneFlavor(flavor)!)]
+          : []
+        ).map((src) => ingredientCache.current?.load(src, priority)),
+      );
+    },
+    [product.variants],
+  );
+  const warmIngredients = useCallback(
+    (image: GalleryImage) => {
+      void loadIngredients(image, "low");
+    },
+    [loadIngredients],
+  );
+  const prepareIngredients = useCallback(
+    async (image: GalleryImage) => {
+      // Decorations never hold up shopping on a slow/broken connection. Warm
+      // neighbors normally resolve immediately; a cold choice waits at most 180ms.
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      await Promise.race([
+        loadIngredients(image, "high"),
+        new Promise<void>((resolve) => {
+          timer = setTimeout(resolve, 180);
+        }),
+      ]);
+      clearTimeout(timer);
+    },
+    [loadIngredients],
+  );
+  // Preserve both the public route and the local image-review route without JS.
+  const variantHref = (id: string) => `?variante=${id}`;
+  const images = useMemo(
+    () =>
+      product.variants.flatMap((item) => {
         const photos = galleryPhotos(product, item.id, imageBase, imageUrls);
-        const href = `${preview ? "/vista-previa" : ""}/producto/${product.slug}?variante=${item.id}`;
+        const href = `?variante=${item.id}`;
         return photos.length
           ? photos.map((image) => ({ ...image, href }))
           : [
@@ -120,10 +122,12 @@ function StandardProductDetail({
                 alt: `${product.name} · ${variantLabel(item)}`,
               },
             ];
-      });
-  }, [variantGallery, product, imageBase, imageUrls, preview]);
-  const selectFlavorImage = useCallback((image: GalleryImage) => {
+      }),
+    [product, imageBase, imageUrls],
+  );
+  const selectImage = useCallback((image: GalleryImage) => {
     if (!image.variantId) return;
+    // Gallery commits only after decoding, so pack, price and cart stay in sync.
     setVariantId(image.variantId);
     const url = new URL(window.location.href);
     url.searchParams.set("variante", image.variantId);
@@ -133,13 +137,7 @@ function StandardProductDetail({
       url.pathname + url.search + url.hash,
     );
   }, []);
-  const images = galleryPhotos(product, variant.id, imageBase, imageUrls);
-  const informationImages = galleryInformation(
-    product,
-    variant.id,
-    imageBase,
-    imageUrls,
-  );
+  const flavor = productFlavor(variant.flavor);
   const logoSrc =
     brandLogo &&
     catalogMediaSource(
@@ -147,114 +145,161 @@ function StandardProductDetail({
       imageBase,
       "brand",
     );
+  const repeatedFlavor = product.variants.some(
+    (item, index, all) =>
+      all.findIndex((other) => other.flavor === item.flavor) !== index,
+  );
   return (
     <div
-      className={`product-detail${flavorExperiment ? " flavor-product-detail" : ""}`}
-      data-flavor={flavorExperiment ? (flavor ?? "neutral") : undefined}
+      className={`product-detail gainer-product-detail unified-product-detail${flavor ? " flavor-product-detail" : ""}`}
+      data-flavor={flavor ?? undefined}
       data-enhanced={enhanced ? "true" : undefined}
       data-variant={variant.id}
     >
-      {flavorExperiment && !preview && (
-        <Link href="/catalogo" className="text-link flavor-back-link">
-          ← Volver al catálogo
-        </Link>
+      {flavor && (
+        <FlavorSceneDecorations flavor={sceneFlavor(variant.flavor)} />
       )}
-      {flavorExperiment && <FlavorSceneDecorations flavor={flavor} />}
+      <Link
+        href={preview ? "/vista-previa" : "/catalogo"}
+        className="text-link gainer-back-link"
+      >
+        ← Volver a la tienda
+      </Link>
       <div className="product-gallery">
-        {variantGallery ? (
-          <>
-            {flavorExperiment && (
-              <p className="flavor-scene-heading">Encontrá tu sabor</p>
-            )}
-            <ProductGallery
-              images={flavorImages}
-              variants={product.variants}
-              mode="detail"
-              informationImages={informationImages}
-              initialVariantId={variant.id}
-              onImageChange={selectFlavorImage}
-              onPrepareImage={flavorExperiment ? prepareFlavorImage : undefined}
-              selectionRequest={selectionRequest}
-            />
-          </>
-        ) : images.length ? (
-          <Crossfade valueKey={variant.id} className="pack-crossfade">
-            <ProductGallery
-              key={`${variant.id}:${images.map((image) => image.id).join(":")}`}
-              images={images}
-              variants={product.variants}
-              initialVariantId={variant.id}
-              informationImages={informationImages}
-              mode="detail"
-            />
-          </Crossfade>
-        ) : (
-          <div className="product-detail-media">
-            <>
-              <CategoryIllustration kind={category} />
-              <p>
-                {preview
-                  ? "Ilustración de categoría · producto de prueba"
-                  : "Imagen del producto pendiente"}
-              </p>
-            </>
-          </div>
-        )}
+        <ProductGallery
+          images={images}
+          variants={product.variants}
+          mode="detail"
+          transition="turn"
+          flavorNavigation
+          initialVariantId={variant.id}
+          onImageChange={selectImage}
+          onPrepareImage={warmIngredients}
+          prepareImage={prepareIngredients}
+          selectionRequest={selectionRequest}
+          informationImages={galleryInformation(
+            product,
+            variant.id,
+            imageBase,
+            imageUrls,
+          )}
+        />
       </div>
-      <RevealGroup className="product-detail-copy" enterOnMount>
-        <RevealItem as="p" className="eyebrow product-brand">
-          {logoSrc ? (
-            <BrandLogo src={logoSrc} name={brandName} detail />
-          ) : (
-            brandName
+      <RevealGroup
+        className="product-detail-copy gainer-product-copy"
+        enterOnMount
+      >
+        <RevealItem>
+          <p className="gainer-brand product-brand">
+            {logoSrc ? (
+              <BrandLogo src={logoSrc} name={brandName} detail />
+            ) : (
+              brandName
+            )}
+          </p>
+          <h1>{product.name}</h1>
+          {product.description && (
+            <p className="product-description">{product.description}</p>
           )}
         </RevealItem>
-        <RevealItem>
-          <h1>
-            {flavorExperiment ? (
-              <>
-                <strong>{titleLead}</strong>
-                {titleRest.length > 0 && ` ${titleRest.join(" ")}`}
-              </>
-            ) : (
-              product.name
-            )}
-          </h1>
-          <p className="product-description">{product.description}</p>
-        </RevealItem>
-        <RevealItem>
-          <VariantPicker
-            variants={product.variants}
-            selected={variant}
-            href={(id) => `?variante=${id}`}
-            onSelect={(id) => {
-              if (variantGallery)
-                setSelectionRequest((previous) => ({
-                  variantId: id,
-                  nonce: (previous?.nonce ?? 0) + 1,
-                }));
-              else selectFlavorImage({ id, variantId: id, src: "", alt: "" });
-            }}
-          />
+        <RevealItem direction="none">
+          <div
+            className="gainer-flavor-picker"
+            role="group"
+            aria-label="Elegir presentación"
+            data-selected-variant={variant.id}
+          >
+            <p>
+              {product.variants.some((item) => productFlavor(item.flavor))
+                ? "Sabor"
+                : "Presentación"}
+            </p>
+            <div className="gainer-flavor-options">
+              {product.variants.map((item) => (
+                <a
+                  key={item.id}
+                  className="variant-chip"
+                  href={variantHref(item.id)}
+                  aria-current={item.id === variant.id ? "true" : undefined}
+                  aria-label={`${variantLabel(item)}${item.stock === 0 ? " · Sin stock" : ""}`}
+                  data-unavailable={item.stock === 0}
+                  data-flavor={productFlavor(item.flavor) ?? "neutral"}
+                  onPointerEnter={() =>
+                    warmIngredients({
+                      id: item.id,
+                      variantId: item.id,
+                      src: "",
+                      alt: "",
+                    })
+                  }
+                  onFocus={() =>
+                    warmIngredients({
+                      id: item.id,
+                      variantId: item.id,
+                      src: "",
+                      alt: "",
+                    })
+                  }
+                  onClick={(event) => {
+                    if (
+                      !enhanced ||
+                      event.metaKey ||
+                      event.ctrlKey ||
+                      event.shiftKey ||
+                      event.altKey ||
+                      event.button !== 0
+                    )
+                      return;
+                    event.preventDefault();
+                    setSelectionRequest((previous) => ({
+                      variantId: item.id,
+                      nonce: (previous?.nonce ?? 0) + 1,
+                    }));
+                  }}
+                >
+                  <span aria-hidden="true" className="gainer-flavor-dot" />
+                  <span>
+                    {repeatedFlavor
+                      ? variantLabel(item)
+                      : item.flavor || variantLabel(item)}
+                  </span>
+                  {item.stock === 0 && item.id !== variant.id && (
+                    <small>Sin stock</small>
+                  )}
+                </a>
+              ))}
+            </div>
+          </div>
+          <p
+            className="gainer-stock"
+            role="status"
+            aria-live="polite"
+            data-stock={variant.stock > 0 ? "available" : "empty"}
+          >
+            <span className="gainer-stock-dot" aria-hidden="true" />
+            <span className={variant.stock === 0 ? "sr-only" : undefined}>
+              {variant.stock > 0 ? "Disponible" : "Sin stock"}
+            </span>
+            {[variant.size, variant.presentation].filter(Boolean).length > 0 &&
+              `${variant.stock > 0 ? " · " : ""}${[variant.size, variant.presentation].filter(Boolean).join(" · ")}`}
+          </p>
         </RevealItem>
         <RevealItem aria-live="polite" aria-atomic="true">
-          <ProductPricing variant={variant} animateChange />
+          <ProductPricing variant={variant} animateChange transferFirst />
         </RevealItem>
-        {(preview || !flavorExperiment) && (
-          <p className="purchase-note">
-            {preview
-              ? "Vista previa: precios y existencias ficticios. No se realizan compras."
-              : "La compra online estará disponible próximamente."}
-          </p>
-        )}
-        <RevealItem className="purchase-action">
+        <RevealItem className="purchase-action" direction="none">
           <AddToCart
             variantId={variant.id}
             stock={variant.stock}
             slug={product.slug}
-            illustrated={flavorExperiment}
           />
         </RevealItem>
+        {preview && (
+          <p className="purchase-note">
+            Vista previa: precios y existencias ficticios. No se realizan
+            compras.
+          </p>
+        )}
       </RevealGroup>
       <ProductInformation
         product={product}

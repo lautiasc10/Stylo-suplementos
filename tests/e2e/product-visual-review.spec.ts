@@ -59,7 +59,7 @@ test("galería de 560–640 px, columnas próximas y miniaturas oscuras con fich
   );
   await expect(page.locator(".product-thumbnail-rail")).toHaveCSS(
     "background-color",
-    "rgb(8, 8, 8)",
+    "rgba(255, 255, 255, 0.14)",
   );
   const thumbs = page.locator(".product-thumbnail-viewport a");
   await expect(thumbs.first()).toHaveAccessibleName("Ver Envase Chocolate");
@@ -73,7 +73,7 @@ test("chips accesibles sincronizan precio, stock, foto y URL sin duplicar el est
   const product = await seed(page);
   await page.goto("/vista-previa/producto/proteina-de-prueba");
   const chip = page
-    .locator(".variant-picker")
+    .locator(".gainer-flavor-picker")
     .getByRole("link", { name: /Vainilla/ });
   await chip.focus();
   await page.keyboard.press("Enter");
@@ -86,7 +86,9 @@ test("chips accesibles sincronizan precio, stock, foto y URL sin duplicar el est
     "Envase Vainilla",
   );
   await expect(
-    page.locator(".product-detail-copy .product-prices"),
+    page.locator(
+      ".product-detail-copy .crossfade-layer:not([inert]) .transfer-pricing",
+    ),
   ).toContainText("47.000");
   await expect(
     page.getByRole("button", { name: "Sin stock", exact: true }),
@@ -94,7 +96,7 @@ test("chips accesibles sincronizan precio, stock, foto y URL sin duplicar el est
   await expect(chip.locator("small")).toHaveCount(0);
   await expect(page.locator("select[name=variante]")).toHaveCount(0);
   await page
-    .locator(".variant-picker")
+    .locator(".gainer-flavor-picker")
     .getByRole("link", { name: /Chocolate/ })
     .click();
   await page
@@ -144,7 +146,7 @@ test("375 y 768 px: dos columnas, swipe y acción de compra dentro de la pantall
       clientX: 80,
       clientY: 206,
     });
-    await expect(page.locator(".variant-picker")).toHaveAttribute(
+    await expect(page.locator(".gainer-flavor-picker")).toHaveAttribute(
       "data-selected-variant",
       product.variants[1].id,
     );
@@ -176,7 +178,7 @@ test("las variantes del detalle conservan enlaces y compra sin JavaScript", asyn
   const next = product.variants[1];
   await page.locator(`.variant-chip[href="?variante=${next.id}"]`).click();
   await expect(page).toHaveURL(new RegExp(`variante=${next.id}`));
-  await expect(page.locator(".variant-picker")).toHaveAttribute(
+  await expect(page.locator(".gainer-flavor-picker")).toHaveAttribute(
     "data-selected-variant",
     next.id,
   );

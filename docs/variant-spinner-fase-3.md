@@ -2,8 +2,6 @@
 
 17 de octubre de 2026. Rama: `fase-3-variant-spinner`. Continúa la [normalización de Fase 1](normalizacion-imagenes-aplicada.md) y la [revisión visual de Fase 2](revision-visual-fase-2.md), con autorización del usuario. No corresponde a una nueva fase comercial.
 
-Registro histórico: el anillo y tilt de la [Fase 3C](variant-ring-fase-3c.md) reemplazan este motor y su giro de carta.
-
 ## Comportamiento
 
 `src/components/catalog/VariantSpinner.tsx` comparte el giro entre tarjetas y fichas con varias variantes. `ProductGallery` conserva su API y deriva esos productos al nuevo componente; las galerías de una sola variante mantienen el recorrido de fotos mediante fundido.

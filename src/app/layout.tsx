@@ -6,7 +6,8 @@ import "./hero.css";
 import "./catalog.css";
 import "./product-media.css";
 import "./product-detail.css";
-import "./variant-ring.css";
+import "./variant-spinner.css";
+import "./product-flavors.css";
 import { getEnvironment } from "@/lib/config/server";
 
 const display = Barlow_Condensed({

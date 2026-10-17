@@ -1,0 +1,218 @@
+/* Shared mass-gainer information hierarchy + flavor scenes for every category. */
+.interior-page.product-flavor-page {
+  padding-block: 0;
+}
+.product-detail.unified-product-detail {
+  padding-top: var(--space-20);
+  align-items: center;
+}
+.unified-product-detail > .product-detail-copy {
+  top: var(--space-6);
+}
+.unified-product-detail .gainer-product-copy h1 {
+  font-family: var(--font-heading);
+  font-size: clamp(2.5rem, 4vw, 4.5rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+}
+.unified-product-detail .product-brand {
+  display: flex;
+  justify-content: flex-start;
+  margin: 0 0 var(--space-3);
+}
+.unified-product-detail .product-brand-logo {
+  background: transparent;
+  padding: 0;
+}
+.unified-product-detail .product-description {
+  font-size: var(--text-base);
+  line-height: 1.6;
+}
+.unified-product-detail .gainer-flavor-options a {
+  border-radius: 4px;
+  box-shadow: none;
+}
+.unified-product-detail .gainer-flavor-options a[data-unavailable="true"] {
+  text-decoration: none;
+}
+.unified-product-detail
+  .gainer-flavor-options
+  a[data-unavailable="true"]
+  > span:last-child {
+  text-decoration: none;
+}
+.unified-product-detail.flavor-product-detail {
+  --flavor-background: var(--flavor-nav-background, #ded5c5);
+  --flavor-ink: #21180e;
+  --flavor-secondary: #59452f;
+  --foreground: var(--flavor-ink);
+  --muted: var(--flavor-secondary);
+  --gold: #725018;
+  --line: #4b351b30;
+  --border-strong: #59452f70;
+  --control-border: #59452f70;
+  --action-border: #725018;
+  --flavor-button-top: #f5d98b;
+  --flavor-button-bottom: #d8b474;
+  background-color: var(--flavor-background);
+  min-height: 100svh;
+  min-height: 100dvh;
+}
+.unified-product-detail.flavor-product-detail .gainer-brand,
+.unified-product-detail.flavor-product-detail .product-description,
+.unified-product-detail.flavor-product-detail .gainer-flavor-picker > p,
+.unified-product-detail.flavor-product-detail .gainer-stock,
+.unified-product-detail.flavor-product-detail .transfer-pricing-secondary {
+  color: var(--flavor-secondary);
+}
+.unified-product-detail.flavor-product-detail .gainer-back-link,
+.unified-product-detail.flavor-product-detail .variant-spinner-caption {
+  color: var(--flavor-ink);
+}
+.unified-product-detail.flavor-product-detail
+  .gainer-stock[data-stock="available"]
+  .gainer-stock-dot {
+  background: #347537;
+}
+.unified-product-detail.flavor-product-detail
+  .gainer-flavor-options
+  a[aria-current="true"] {
+  border-color: var(--gold);
+  background: #ffffff40;
+}
+.unified-product-detail.flavor-product-detail .product-image-stage {
+  background: transparent;
+}
+.unified-product-detail.flavor-product-detail .product-image-stage::after {
+  background: none;
+}
+.unified-product-detail.flavor-product-detail .variant-navigation button {
+  background: #fff4d6df;
+  border-color: #59452f50;
+  color: var(--flavor-ink);
+}
+.unified-product-detail.flavor-product-detail
+  .variant-navigation
+  button:is(:hover, :focus-visible) {
+  background: #fff4d6;
+  border-color: var(--gold);
+}
+.unified-product-detail.flavor-product-detail .variant-spinner-count {
+  background: #fff4d6df;
+  color: var(--flavor-ink);
+}
+.unified-product-detail.flavor-product-detail .add-to-cart .button {
+  min-height: 52px;
+  justify-content: center;
+  border-radius: 4px;
+  font-size: var(--text-base);
+  font-weight: 600;
+}
+.unified-product-detail.flavor-product-detail .product-thumbnail-rail {
+  background: #ffffff24;
+  border-color: var(--line);
+  color: var(--flavor-ink);
+}
+.unified-product-detail.flavor-product-detail .product-thumbnail-viewport a {
+  background: transparent;
+}
+.unified-product-detail.flavor-product-detail
+  .product-thumbnail-viewport
+  a[aria-current="true"] {
+  border-color: var(--gold);
+  background: #ffffff38;
+}
+.unified-product-detail.flavor-product-detail :focus-visible {
+  outline-color: var(--gold);
+}
+.unified-product-detail.flavor-product-detail .product-information {
+  background: transparent;
+}
+.unified-product-detail.flavor-product-detail .product-information-dialog {
+  --foreground: #ece9e1;
+  --gold: #d8b474;
+  --muted: #b9b7b0;
+  --line: #ece9e130;
+  --action-border: #d8b474;
+  color-scheme: dark;
+}
+:root:has(.flavor-product-detail) .mobile-nav {
+  background: var(--flavor-nav-background);
+  color: #21180e;
+  border-color: #59452f50;
+}
+:root:has(.flavor-product-detail) .mobile-nav :is(a, .eyebrow, .icon) {
+  color: #21180e;
+}
+:root:has(.flavor-product-detail) .mobile-nav a:is(:hover, :focus-visible) {
+  background: #ffffff38;
+  outline-color: #725018;
+}
+/* Inherit the same token in the scene, category bar and open mega menu. */
+:root:has(.flavor-product-detail[data-flavor="banana"]) {
+  --flavor-nav-background: #f2d34e;
+}
+:root:has(.flavor-product-detail[data-flavor="frutilla"]) {
+  --flavor-nav-background: #f3a5b2;
+}
+:root:has(.flavor-product-detail[data-flavor="vainilla"]) {
+  --flavor-nav-background: #f0e0c2;
+}
+:root:has(.flavor-product-detail[data-flavor="chocolate"]) {
+  --flavor-nav-background: #d5b99d;
+}
+:root:has(.flavor-product-detail[data-flavor="cookies"]) {
+  --flavor-nav-background: #e2d0b8;
+}
+:root:has(.flavor-product-detail[data-flavor="dulce"]) {
+  --flavor-nav-background: #e2bd8d;
+}
+:root:has(.flavor-product-detail[data-flavor="frutos-rojos"]) {
+  --flavor-nav-background: #e8a9bd;
+}
+:root:has(.flavor-product-detail[data-flavor="citrus"]) {
+  --flavor-nav-background: #e4e7a2;
+}
+:root:has(.flavor-product-detail[data-flavor="limon"]) {
+  --flavor-nav-background: #ebedac;
+}
+:root:has(.flavor-product-detail[data-flavor="uva"]) {
+  --flavor-nav-background: #cfc0e6;
+}
+:root:has(.flavor-product-detail[data-flavor="sandia"]) {
+  --flavor-nav-background: #edafb2;
+}
+:root:has(.flavor-product-detail[data-flavor="anana"]) {
+  --flavor-nav-background: #f3df88;
+}
+:root:has(.flavor-product-detail[data-flavor="naranja"]) {
+  --flavor-nav-background: #f3bf8c;
+}
+:root:has(.flavor-product-detail[data-flavor="pomelo"]) {
+  --flavor-nav-background: #f0b2a4;
+}
+:root:has(.flavor-product-detail[data-flavor="cereza"]) {
+  --flavor-nav-background: #e9a2aa;
+}
+:root:has(.flavor-product-detail[data-flavor="multifruta"]) {
+  --flavor-nav-background: #eed192;
+}
+:root:has(.flavor-product-detail[data-flavor="neutral"]) {
+  --flavor-nav-background: #ded5c5;
+}
+@media (max-width: 959px) {
+  .product-detail.unified-product-detail {
+    align-items: start;
+  }
+  .unified-product-detail > .product-gallery {
+    justify-self: center;
+  }
+  .unified-product-detail > .product-detail-copy {
+    /* A reveal below the fold must not hide its fixed purchase action. */
+    opacity: 1 !important;
+  }
+  .unified-product-detail.flavor-product-detail .purchase-action {
+    background: var(--flavor-background);
+  }
+}

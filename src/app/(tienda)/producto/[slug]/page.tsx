@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCatalog } from "@/modules/catalog/server";
 import { publicCatalog } from "@/modules/catalog/model";
@@ -38,8 +37,6 @@ export default async function ProductPage({
   const data = publicCatalog(catalog),
     product = data.products.find((item) => item.slug === slug);
   if (!product) notFound();
-  const flavorExperience =
-    product.slug === "whey-protein" && product.variants.length > 1;
   const category =
       data.categories.find(
         (item) =>
@@ -49,14 +46,7 @@ export default async function ProductPage({
       data.categories.find((item) => product.categoryIds.includes(item.id)),
     config = getEnvironment().supabase;
   return (
-    <section
-      className={`container interior-page${flavorExperience ? " flavor-product-page" : category?.slug === "ganadores-de-masa" ? " gainer-product-page" : ""}`}
-    >
-      {!flavorExperience && category?.slug !== "ganadores-de-masa" && (
-        <Link href="/catalogo" className="text-link">
-          ← Volver al catálogo
-        </Link>
-      )}
+    <section className="container interior-page product-flavor-page">
       <ProductDetail
         key={product.id}
         product={product}

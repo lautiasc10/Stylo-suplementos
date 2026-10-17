@@ -6,7 +6,7 @@ import {
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Icon } from "@/components/ui/icon";
 import { CategoryIllustration } from "@/components/storefront/category-illustration";
 import { ProductGallery, type GalleryImage } from "./product-gallery";
@@ -65,7 +65,7 @@ function FlavorBadge({ flavor }: { flavor: string }) {
   );
 }
 
-export const ProductCard = memo(function ProductCard({
+export function ProductCard({
   product,
   variants,
   initialVariantId,
@@ -91,6 +91,13 @@ export const ProductCard = memo(function ProductCard({
   const router = useRouter();
   const [variantId, setVariantId] = useState(initialVariantId);
   const variant = variants.find((item) => item.id === variantId) ?? variants[0];
+  const differentFlavors =
+    new Set(
+      product.variants
+        .filter((item) => item.active)
+        .map((item) => item.flavor.trim().toLocaleLowerCase())
+        .filter(Boolean),
+    ).size > 1;
   const brandLogo =
     brand.logo &&
     catalogMediaSource(
@@ -188,8 +195,9 @@ export const ProductCard = memo(function ProductCard({
             href={href}
             linkLabel={`Ver ${product.name}`}
             startDelay={(index % 5) * 180}
-            eager={index < 4 && photos[0]?.normalized}
+            eager={index < 2 && photos[0]?.normalized}
             onImageChange={selectPhoto}
+            transition={differentFlavors ? "turn" : "fragments"}
           />
         ) : (
           <Link
@@ -222,4 +230,4 @@ export const ProductCard = memo(function ProductCard({
       </div>
     </article>
   );
-});
+}
