@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Barlow_Condensed, Inter } from "next/font/google";
 import "./globals.css";
 import "./storefront.css";
+import "./hero.css";
 import "./catalog.css";
 import { getEnvironment } from "@/lib/config/server";
 

@@ -1,67 +1,41 @@
-# Hero cinematográfico — entrada de 1,8 segundos
+# Hero editorial — prueba con león interactivo
 
-Revisión del 16 de octubre de 2026. Sustituye la secuencia anterior de unos 6,6 segundos por la entrada breve solicitada por el usuario. React coordina un único reloj y CSS anima opacidad y transformaciones; no se añade GSAP ni otra dependencia. Se conservan los archivos originales públicos, los logos oficiales, la tipografía y el dorado de marca.
+Revisión del 16 de octubre de 2026, autorizada por el usuario como prueba. Combina la referencia de león sobre tipografía condensada con los medios existentes de STYLO. Reemplaza la introducción de 1,8 segundos: se retiran HeroAtmosphere, su reloj y el logo animado, conservando los archivos originales. No hay generaciones, gastos, fuentes nuevas ni dependencias adicionales.
 
-## Secuencia
+## Composición
 
-Los tiempos se cuentan desde la activación de la mejora tras hidratar; no son una promesa sobre el tiempo de descarga del HTML o JavaScript.
+La frase «Potenciá tu mejor versión.» se presenta completa en tres líneas de Barlow Condensed 700. La primera usa contorno dorado; la segunda, blanco cálido; la última, el degradado de marca. El león ocupa la derecha y la frase queda legible a su izquierda. Descripción y acciones se ubican debajo de la composición. El logo oficial de la cabecera se conserva.
 
-| Tiempo | Presentación |
-| --- | --- |
-| 0–600 ms | Scoop desde la izquierda, curva `cubic-bezier(0.16, 1, 0.3, 1)`. SVG oficial con opacidad y escala de 0,96 a 1. |
-| 600–1200 ms | Aparece el polvo persistente. Scoop y marca se desvanecen; el león emerge mediante opacidad durante 600 ms. |
-| 1200 ms | Sale definitivamente el scoop. Entra la línea STYLO SUPLEMENTOS. |
-| 1300 / 1400 ms | Entran el título «Potenciá tu mejor versión.» y la descripción. |
-| 1500 / 1600 ms | Entran Explorar tienda y Ver destacados, conservando sus ubicaciones. La navegación comienza su aparición de 200 ms a los 1600 ms. |
-| 1800 ms | Contenido y acciones asentados. Empieza la respiración del león y se prepara su video interactivo. |
+En celular el león se ubica debajo de las tres líneas, con descripción y botones a continuación. Se conserva su proporción y el contenido puede crecer sin recortar acciones. El material cinematográfico no se descarga en dispositivos táctiles pequeños, ahorro de datos, conexiones lentas detectadas o movimiento reducido.
 
-La cascada usa separaciones de 100 ms y apariciones de 200 ms hacia arriba. Los temporizadores compensan el tiempo transcurrido desde el mismo inicio, en lugar de encadenar esperas. Un bloqueo del hilo principal puede demorar cualquier animación del navegador; no se garantiza 60 fps universales.
+La home recibe las categorías públicas ya leídas por el servidor, conservando su orden. Si no hay catálogo disponible se usan los mismos enlaces de categorías base que la navegación. No hay consultas nuevas. El carrusel inferior recorre dos grupos de idéntico ancho; el duplicado queda fuera del orden de teclado y de los lectores de pantalla. Sus enlaces siguen operativos con mouse. Hover pausa el recorrido; foco desactiva el movimiento y permite desplazar la lista. En celular y sin JavaScript hay una sola lista horizontal manual.
 
-## Medios y continuidad
+## Presentación inmediata y accesibilidad
 
-`HeroAtmosphere` reutiliza un fragmento del MP4 existente desde aproximadamente 2,2 s, a velocidad normal. No acelera el clip completo, recorta un archivo nuevo ni fabrica cuadros. Su descarga y preparación tienen un presupuesto de 300 ms: si no puede estar listo en el primer tramo, se omite esa decoración. El logo, las partículas, el león y la compra continúan a tiempo; el video no aparece tarde ni reinicia la secuencia. Al llegar a 1200 ms se cancela y libera la entrada.
+Título, imagen, cabecera y botones están visibles en el HTML inicial. La mejora de la primera visita desplaza las líneas 16 px y cambia su opacidad de 0,65 a 1 durante 650 ms, con intervalos de 60 ms; nunca bloquea navegación o compra. Volver con el logo o recargar no repite esa entrada. Se conserva el enlace al inicio y no hay scroll fijado.
 
-El póster del león y su primer cuadro corresponden a la misma pose mirando a la derecha, alrededor de 0,849 s. El póster sostiene la presentación mientras se prepara el decodificador interactivo después de los 1800 ms, para evitar competir con la aparición del contenido. Se prefiere confirmación de `requestVideoFrameCallback`; si un compositor omite ese callback en un video transparente, existe un respaldo con `seeked`, datos decodificados y comprobación de posición tras 160 ms. El video se resuelve sobre el póster mediante opacidad de 240 ms.
+El control «Pausar animación del hero» pausa conjuntamente partículas, respiración, carrusel y luz ambiental. Los movimientos se suspenden fuera de pantalla y con pestaña oculta. La preferencia de movimiento reducido responde en vivo: retira video y canvas, elimina la luz y deja categorías y contenido estáticos. Los controles mantienen áreas de 48 px o mayores, foco visible y enlaces HTML reales.
 
-La revisión del video `2026-10-16 15-50-48.mkv` identificó un mate negro opaco que tapaba el polvo. Un solo grupo `mix-blend-mode: screen`, limitado al león de escritorio y aislado dentro del hero, evita ese rectángulo durante el cruce. Texto, botones y logos quedan fuera del grupo. No hay keying por píxel, máscaras nuevas ni videos superpuestos adicionales.
+## León y cursor
 
-El seguimiento conserva posiciones absolutas y una sola búsqueda pendiente. `advanceGaze` añade amortiguación y una velocidad máxima de 2,4 segundos de material por segundo real, evitando saltos al entregar el control a un cursor lejano. El material mantiene sus límites: no proporciona seguimiento vertical ni geometría 3D real.
+Se conserva /visuals/stylo-lion-motion-v3.mp4 (1916 × 1080, 96 fps, 6.499.065 bytes) y el póster correspondiente a su pose derecha, /visuals/stylo-lion-poster-right-v1.webp (102.280 bytes). Se muestran como medios originales, sin pasarlos por canvas ni reducir su resolución.
 
-## Microinteracciones y rendimiento
+El video permanece pausado y su tiempo sigue la posición horizontal del puntero. Se conservan amortiguación, velocidad acotada, acumulador fraccional y una sola búsqueda pendiente. El compositor confirma la pose inicial mediante requestVideoFrameCallback, con respaldo acotado por seeked. En el mismo render que muestra el video se oculta el póster, sin fundir dos ángulos distintos. Esto evita el doble contorno producido por la superposición de capas; no modifica defectos que ya existan dentro del video.
 
-La respiración tiene un ciclo de seis segundos: escala 1 → 1,02 → 1, separado del fundido de aparición. Se detiene con el control de pausa compartido, fuera de pantalla, en pestañas ocultas y con movimiento reducido. El botón principal conserva el gradiente metálico de marca y suma destello de 650 ms y halo dorado al hacer hover; el foco es visible y la reducción de movimiento elimina el destello.
+El mate negro se integra mediante un solo grupo mix-blend-mode: screen. Texto, enlaces y controles quedan fuera del grupo. Un fallo de video conserva el póster y las acciones; tampoco bloquea la carga del resto del hero.
 
-La bruma del hero se prepara una sola vez por tamaño y se dibuja como una textura desplazada. Los granos mantienen su movimiento individual. El perfil del hero limita la superficie a 1000 × 600 y las motas a 220; la actualización del polvo sigue a 30 Hz, mientras las transiciones CSS y la respiración pueden componerse a la cadencia de pantalla. Las fotos y videos mantienen su resolución. Los perfiles del mega menú y de ganadores de masa conservan sus presupuestos anteriores.
+La luz dorada es un único gradiente radial estático. El puntero actualiza un destino y requestAnimationFrame desplaza esa capa mediante translate3d, con amortiguación independiente de la cadencia. No hay estado de React por cuadro, filtros animados ni repintado de gradientes por movimiento. El callback termina al alcanzar el destino; observers y listeners se limpian al salir de la ruta.
 
-No se actualiza React por cuadro ni por movimiento del mouse. Se limpian reproductores, eventos, observadores, temporizadores y URLs de blobs al abandonar la ruta. No hay scroll fijado ni rueda interceptada.
+## Rendimiento
 
-## Acceso y presentación única
+Se elimina toda solicitud del scoop y se simplifican los estados de entrada. Solo se prepara el video del león. Las partículas conservan la textura de bruma preparada por tamaño, superficie máxima 800 × 480 y hasta 120 motas a 24 Hz. La respiración, el carrusel y la luz usan transformaciones; los medios conservan resolución y caché versionada.
 
-`HomeIntroProvider` conserva `stylo.home-intro-seen.v1`: volver con el logo o recargar no repite la introducción. Entrar desde una ruta interior tampoco introduce una espera al volver. Tab, Escape, scroll y Ctrl/Cmd K pueden adelantar la presentación.
+La referencia de video es una guía de composición; su grabación de pantalla no se incorpora a la página. La calidad y continuidad del giro siguen limitadas por los fotogramas del recurso entregado. Esta entrega no acredita 60 fps universales ni mediciones en teléfonos físicos o Safari/iOS.
 
-En móvil, con movimiento reducido, ahorro de datos o 2G/3G detectado se conserva la portada estática y el acceso inmediato, sin descargar videos. Sin JavaScript siguen disponibles título, enlaces, categorías y navegación. El bucle decorativo tiene control de pausa y responde en vivo al movimiento reducido. No se cambia información comercial, stock, promociones, pagos o permisos.
+## Comprobación de la prueba
 
-## Recursos conservados
+Compilación de producción y TypeScript correctos. Las 69 pruebas unitarias pasan. Lint no presenta errores; conserva cuatro advertencias anteriores de gestión y galería. Pasan 56 recorridos Chromium de hero, navegación, categorías y búsqueda; se omiten 16 casos exclusivos del perfil contrario de escritorio/celular. Incluyen carga lenta y error de video, ausencia de solicitudes del scoop, relevo del póster, cursor lento por el frente, pausa compartida, enlaces repetidos del carrusel, teclado, retorno con logo, movimiento reducido y navegación sin JavaScript.
 
-| Recurso | Archivo |
-| --- | --- |
-| Scoop y polvo | `/visuals/stylo-scoop-intro-v3.mp4`: 1280 × 722, 60 fps, 2.112.998 B. |
-| León interactivo | `/visuals/stylo-lion-motion-v3.mp4`: 1916 × 1080, 96 fps, 6.499.065 B. |
-| Póster derecho | `/visuals/stylo-lion-poster-right-v1.webp`: 102.280 B. |
-| Marca | `/branding/stylo-suplementos.svg`, oficial. |
+Revisión visual a 320, 390, 768, 1280 y 1868 px, sin desbordamiento horizontal ni errores de página. Capturas: [1868 px](previews/hero-editorial-trial-1868.jpg), [1280 px](previews/hero-editorial-trial-1280.jpg), [tablet](previews/hero-editorial-trial-768.jpg), [390 px](previews/hero-editorial-trial-390.jpg) y [320 px](previews/hero-editorial-trial-320.jpg).
 
-## Límites del material y alternativas
-
-CSS y el controlador actual resuelven la composición del negro, los fundidos, el orden y la suavidad del seguimiento. GSAP puede organizar una timeline más extensa y ScrollTrigger puede vincularla al desplazamiento, pero no corrigen cuadros, iluminación o deformaciones grabadas. Para esta entrada breve no aportan una ventaja que justifique añadirlos o buscar video en cada evento de scroll.
-
-Un polvo que realmente se transforme en el león, un giro 3D con luz perfectamente estable o una salida exclusiva del scoop separado del polvo requieren otra toma continua o composición previa con capas compatibles. Eso queda pendiente de consulta con el usuario; esta entrega no genera ni reemplaza recursos.
-
-Referencias técnicas: [composición CSS en MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/mix-blend-mode) y [ScrollTrigger oficial](https://gsap.com/docs/v3/Plugins/ScrollTrigger/). Las decisiones anteriores corresponden a la implementación local.
-
-## Revisión
-
-Compilación, TypeScript y 69 pruebas unitarias aprobadas. Lint sin errores nuevos; mantiene cuatro advertencias anteriores. Pasaron 39 recorridos Chromium de hero, categorías y búsqueda; otros 15 se omiten por corresponder al perfil contrario de escritorio/celular. Comprueban fases a 600/1200/1800 ms, cascada de 100 ms, medios lentos, navegación sin JavaScript, teclado, retorno al home, mirada, pausa, movimiento reducido y búsqueda. La comprobación de píxeles verifica que el mate negro del león conserve el fondo detrás.
-
-Medición de producción en Chromium a 1868 × 943, sin capturas durante la muestra: el reloj de 1800 ms se reflejó en el DOM a los 1812 ms; los intervalos de callbacks tuvieron mediana de 16,7 ms y p95 de 33,4 ms, sin tareas largas y con CLS 0. Con CPU ×4, el final se observó a los 1835 ms, mediana de 16,7 ms, p95 de 50 ms y dos tareas de 58/54 ms cerca del relevo al decodificador; CLS 0. La muestra incluye el arranque, y no acredita 60 fps constantes: hubo cuadros demorados, especialmente en la simulación lenta. El diseño utiliza un presupuesto de 1,8 s, pero el navegador y el equipo determinan el instante efectivo de pintura. Se necesita validar en hardware real antes de afirmar fluidez sostenida en equipos modestos.
-
-Vistas revisadas a 1868, 1280 y 390 px, sin desbordamiento horizontal ni errores de página. El móvil no monta videos. Capturas: [inicio](previews/hero-1800-180.jpg), [relevo](previews/hero-1800-780.jpg), [contenido](previews/hero-1800-1430.jpg), [final escritorio](previews/hero-1800-final-1868.jpg), [1280 px](previews/hero-1800-final-1280.jpg) y [móvil](previews/hero-1800-final-390.jpg). Pendiente validación en teléfonos físicos y Safari/iOS.
+Muestra local de producción de 3,5 segundos a 1868 × 943, moviendo el puntero sin tomar capturas durante la medición: intervalo mediano de callbacks de 16,7 ms y percentil 95 de 33,4 ms. Con CPU ×4: mediana 16,7 ms y p95 49,9 ms. No se observaron tareas largas durante esas muestras; CLS 0 desde la carga. Hay cuadros demorados y estos datos no acreditan 60 fps constantes. La composición del video con el polvo continúa siendo el principal costo visual; se redujeron superficie y motas del polvo sin modificar los medios. Pendiente validación en dispositivos físicos y Safari/iOS.

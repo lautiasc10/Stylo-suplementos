@@ -10,11 +10,13 @@ export function HeroDust({
   enabled,
   variant = "hero",
   onPauseChange,
+  controlLabel,
 }: {
   containerRef: RefObject<HTMLElement | null>;
   enabled: boolean;
   variant?: "hero" | "menu" | "product";
   onPauseChange?: (paused: boolean) => void;
+  controlLabel?: string;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pausedRef = useRef(false);
@@ -210,8 +212,8 @@ export function HeroDust({
       const scale = Math.min(
         window.devicePixelRatio || 1,
         1.25,
-        (variant === "hero" ? 1000 : 1600) / width,
-        (variant === "hero" ? 600 : 900) / height,
+        (variant === "hero" ? 800 : 1600) / width,
+        (variant === "hero" ? 480 : 900) / height,
       );
       surface.width = Math.ceil(width * scale);
       surface.height = Math.ceil(height * scale);
@@ -219,7 +221,7 @@ export function HeroDust({
       const origin = scene.getBoundingClientRect();
       const bounds = scene
         .querySelector(
-          variant === "product" ? ".gainer-product-copy" : ".hero-content",
+          variant === "product" ? ".gainer-product-copy" : ".hero-subtitle",
         )
         ?.getBoundingClientRect();
       if (bounds)
@@ -232,8 +234,8 @@ export function HeroDust({
       if (variant === "hero" && fieldContext) {
         const fieldScale = Math.min(
           0.5,
-          900 / (width + fieldPadding * 2),
-          600 / (height + fieldPadding * 2),
+          640 / (width + fieldPadding * 2),
+          400 / (height + fieldPadding * 2),
         );
         hazeField.width = Math.ceil((width + fieldPadding * 2) * fieldScale);
         hazeField.height = Math.ceil((height + fieldPadding * 2) * fieldScale);
@@ -254,7 +256,7 @@ export function HeroDust({
         }
       }
       const count = Math.min(
-        variant === "menu" ? 180 : variant === "product" ? 260 : 220,
+        variant === "menu" ? 180 : variant === "product" ? 260 : 120,
         Math.max(
           variant === "menu" ? 70 : 100,
           Math.round((width * height) / (variant === "hero" ? 6500 : 3600)),
@@ -277,7 +279,10 @@ export function HeroDust({
       // A short flourish settles into a static backdrop. Categories need no
       // pause control and no indefinite animation while the customer browses.
       if (variant === "menu" && motionTime >= 4) return;
-      if (!lastDraw || now - lastDraw >= 1000 / 30) {
+      if (
+        !lastDraw ||
+        now - lastDraw >= 1000 / (variant === "hero" ? 24 : 30)
+      ) {
         const dt = lastDraw ? Math.min((now - lastDraw) / 1000, 0.067) : 0;
         lastDraw = now;
         paint(dt);
@@ -322,8 +327,9 @@ export function HeroDust({
     };
   }, [containerRef, running, variant]);
 
-  const label =
-    variant === "product"
+  const label = controlLabel
+    ? `${paused ? "Reanudar" : "Pausar"} ${controlLabel}`
+    : variant === "product"
       ? paused
         ? "Reanudar animación del fondo"
         : "Pausar animación del fondo"

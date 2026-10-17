@@ -2,12 +2,16 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Fragment, useCallback, useEffect, useRef, useState } from "react";
-import { HeroAtmosphere } from "./hero-atmosphere";
+import { useEffect, useRef, useState } from "react";
+import { categories as defaultCategories } from "@/modules/catalog/categories";
+import {
+  HeroCategoryMarquee,
+  type HeroCategory,
+} from "./hero-category-marquee";
+import { HeroCursorLight } from "./hero-cursor-light";
 import { HERO_COPY } from "./hero-copy";
 import { HeroDust } from "./hero-dust";
 import { useHomeIntro } from "./home-intro";
-import { HERO_SEQUENCE } from "./hero-sequence";
 import {
   advanceGaze,
   gazeFrameTime,
@@ -17,37 +21,15 @@ import {
 
 const VIDEO_URL = "/visuals/stylo-lion-motion-v3.mp4";
 const POSTER_URL = "/visuals/stylo-lion-poster-right-v1.webp";
-// The source already contains this pose. Keep the poster and first decoded
-// frame identical; never mirror the lion or its lettering/watermark.
+// Use the supplied source pose and matching poster. Never mirror or redraw it.
 const INITIAL_GAZE = 0.95;
 
-function HeroWords({
-  text,
-  accentFrom,
+export function CinematicHero({
+  categories = defaultCategories,
 }: {
-  text: string;
-  accentFrom?: number;
+  categories?: readonly HeroCategory[];
 }) {
-  return text.split(" ").map((word, index) => (
-    <Fragment key={`${index}-${word}`}>
-      {index > 0 && " "}
-      <span
-        className="hero-word"
-        data-accent={
-          accentFrom !== undefined && index >= accentFrom ? "true" : undefined
-        }
-      >
-        {word}
-      </span>
-    </Fragment>
-  ));
-}
-
-export function CinematicHero() {
-  const { setWaiting, introSeen, claimIntro } = useHomeIntro();
-  const introChoice = useRef<boolean | null>(introSeen ? false : null);
-  const gazeUnlocked = useRef(introSeen);
-  const resumeGaze = useRef<() => void>(() => {});
+  const { setWaiting, claimIntro } = useHomeIntro();
   const heroRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const targetTime = useRef(0);
@@ -60,83 +42,20 @@ export function CinematicHero() {
   const animationFrame = useRef<number | null>(null);
   const [videoEnabled, setVideoEnabled] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
-  const [prepareLion, setPrepareLion] = useState(introSeen);
-  const [dustReady, setDustReady] = useState(false);
-  const [navigationReady, setNavigationReady] = useState(introSeen);
-  const [contentStage, setContentStage] = useState(introSeen ? 5 : 0);
-  const [contentInstant, setContentInstant] = useState(introSeen);
-  const [playIntro, setPlayIntro] = useState(!introSeen);
-  const [lionVisible, setLionVisible] = useState(introSeen);
-  const [contentStarted, setContentStarted] = useState(false);
-  const [brandVisible, setBrandVisible] = useState(false);
-  const [sequenceStartedAt, setSequenceStartedAt] = useState<number | null>(
-    null,
-  );
-  const [entranceDone, setEntranceDone] = useState(introSeen);
+  const [videoFailed, setVideoFailed] = useState(false);
+  const [presentation, setPresentation] = useState("static");
   const [ambientPaused, setAmbientPaused] = useState(false);
   const [ambientActive, setAmbientActive] = useState(true);
-  const advanceContent = useCallback((stage: number) => {
-    setContentStage((previous) => Math.max(previous, stage));
-  }, []);
-  const introFinished = useRef(false);
-  const revealNavigation = useCallback(() => {
-    introFinished.current = true;
-    setNavigationReady(true);
-    setWaiting(false);
-    advanceContent(5);
-  }, [setWaiting, advanceContent]);
-  const revealAll = useCallback(() => {
-    gazeUnlocked.current = true;
-    resumeGaze.current();
-    setContentInstant(true);
-    setPrepareLion(true);
-    setPlayIntro(false);
-    setLionVisible(true);
-    setDustReady(true);
-    setEntranceDone(true);
-    revealNavigation();
-  }, [revealNavigation]);
-
-  useEffect(() => {
-    if (sequenceStartedAt === null || contentInstant) return;
-    const timers: number[] = [];
-    const cue = (at: number, action: () => void) =>
-      timers.push(
-        window.setTimeout(
-          action,
-          Math.max(0, at - (performance.now() - sequenceStartedAt)),
-        ),
-      );
-    cue(HERO_SEQUENCE.lion, () => {
-      setDustReady(true);
-      setLionVisible(true);
-    });
-    cue(HERO_SEQUENCE.scoopEnd, () => {
-      setPlayIntro(false);
-      setContentStarted(true);
-    });
-    HERO_SEQUENCE.content.forEach((at, index) =>
-      cue(at, () => advanceContent(index + 1)),
-    );
-    cue(HERO_SEQUENCE.navigation, revealNavigation);
-    cue(HERO_SEQUENCE.complete, () => {
-      setEntranceDone(true);
-      setPrepareLion(true);
-      gazeUnlocked.current = true;
-      resumeGaze.current();
-      revealNavigation();
-    });
-    return () => {
-      timers.forEach(window.clearTimeout);
-    };
-  }, [sequenceStartedAt, contentInstant, advanceContent, revealNavigation]);
 
   useEffect(() => {
     const desktop = window.matchMedia(
       "(min-width: 801px) and (hover: hover) and (pointer: fine)",
     );
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (introChoice.current === null) introChoice.current = claimIntro();
+    const firstVisit = claimIntro();
+    let firstPass = true;
+    // The header, text and shopping actions are available from the server HTML.
+    setWaiting(false);
     function updateEligibility() {
       const connection = (
         navigator as Navigator & {
@@ -149,60 +68,33 @@ export function CinematicHero() {
         !connection?.saveData &&
         !["slow-2g", "2g", "3g"].includes(connection?.effectiveType ?? "");
       setVideoEnabled(eligible);
-      if (
-        !eligible ||
-        !introChoice.current ||
-        introFinished.current ||
-        document.activeElement?.matches(
-          "a,button,input,select,textarea,[tabindex]",
-        ) ||
-        window.scrollY > 8 ||
-        (window.location.hash && window.location.hash !== "#inicio")
-      ) {
-        revealAll();
-        if (eligible) setDustReady(true);
-      } else if (!introFinished.current) {
-        setWaiting(true);
-        setBrandVisible(true);
-        setSequenceStartedAt((previous) => previous ?? performance.now());
-      }
-      if (!eligible) {
-        setVideoReady(false);
-        setDustReady(false);
-      }
+      if (!eligible) setVideoReady(false);
+      if (firstPass) {
+        setPresentation(
+          firstVisit &&
+            eligible &&
+            window.scrollY < 8 &&
+            !document.activeElement?.matches(
+              "a,button,input,select,textarea,[tabindex]",
+            )
+            ? "animated"
+            : "static",
+        );
+        firstPass = false;
+      } else setPresentation("static");
     }
     updateEligibility();
-    function revealForKeyboard(event: KeyboardEvent) {
-      if (
-        event.key === "Tab" ||
-        event.key === "Escape" ||
-        ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k")
-      )
-        revealAll();
-    }
-    function revealForScroll() {
-      if (window.scrollY > 8) revealAll();
-    }
-    function revealForVisibility() {
-      if (document.hidden && !introFinished.current) revealAll();
-    }
-    window.addEventListener("keydown", revealForKeyboard);
-    window.addEventListener("scroll", revealForScroll, { passive: true });
-    document.addEventListener("visibilitychange", revealForVisibility);
     desktop.addEventListener("change", updateEligibility);
     reduced.addEventListener("change", updateEligibility);
     return () => {
-      window.removeEventListener("keydown", revealForKeyboard);
-      window.removeEventListener("scroll", revealForScroll);
-      document.removeEventListener("visibilitychange", revealForVisibility);
       setWaiting(false);
       desktop.removeEventListener("change", updateEligibility);
       reduced.removeEventListener("change", updateEligibility);
     };
-  }, [revealAll, setWaiting, claimIntro]);
+  }, [setWaiting, claimIntro]);
 
   useEffect(() => {
-    if (!videoEnabled || !prepareLion) return;
+    if (!videoEnabled || videoFailed) return;
     const hero = heroRef.current;
     const element = videoRef.current;
     if (!hero || !element) return;
@@ -282,10 +174,7 @@ export function CinematicHero() {
       smoothedTime.current = gazeTime(INITIAL_GAZE, video.duration);
       gazeVelocity.current = 0;
       submittedTime.current = gazeFrameTime(smoothedTime.current);
-      targetTime.current =
-        pointerProgress === null || !gazeUnlocked.current
-          ? smoothedTime.current
-          : gazeTime(pointerProgress, video.duration);
+      targetTime.current = smoothedTime.current;
       seeking.current = true;
       if (typeof video.requestVideoFrameCallback === "function") {
         const confirmFrame: VideoFrameRequestCallback = (_now, metadata) => {
@@ -315,6 +204,8 @@ export function CinematicHero() {
       }
       mediaReady.current = true;
       setVideoReady(true);
+      if (pointerProgress !== null)
+        targetTime.current = gazeTime(pointerProgress, video.duration);
       scheduleFrame();
     }
 
@@ -326,7 +217,7 @@ export function CinematicHero() {
       else if (!mediaReady.current) {
         // Some compositors suppress presentation callbacks for opacity:0
         // videos. A confirmed seek plus a drawable decoded frame is the
-        // bounded fallback; the poster stays underneath the 240 ms fade.
+        // bounded fallback. The matched frame replaces the poster atomically.
         window.clearTimeout(firstFrameDeadline);
         firstFrameDeadline = window.setTimeout(() => {
           if (disposed || mediaReady.current) return;
@@ -346,9 +237,7 @@ export function CinematicHero() {
       if (disposed) return;
       cancelFrame();
       setVideoReady(false);
-      setVideoEnabled(false);
-      setDustReady(false);
-      revealAll();
+      setVideoFailed(true);
     }
 
     const observer = new IntersectionObserver(
@@ -368,7 +257,6 @@ export function CinematicHero() {
         0,
         Math.min(1, event.clientX / window.innerWidth),
       );
-      if (!gazeUnlocked.current) return;
       if (!Number.isFinite(video.duration)) return;
       targetTime.current = gazeTime(pointerProgress, video.duration);
       scheduleFrame();
@@ -380,13 +268,6 @@ export function CinematicHero() {
       else scheduleFrame();
     }
 
-    resumeGaze.current = () => {
-      if (pointerProgress !== null && Number.isFinite(video.duration)) {
-        targetTime.current = gazeTime(pointerProgress, video.duration);
-        scheduleFrame();
-      }
-    };
-
     video.addEventListener("loadedmetadata", handleMetadata);
     video.addEventListener("seeked", handleSeeked);
     video.addEventListener("error", handleError);
@@ -396,7 +277,6 @@ export function CinematicHero() {
     video.load();
     return () => {
       disposed = true;
-      resumeGaze.current = () => {};
       observer.disconnect();
       cancelFrame();
       window.clearTimeout(firstFrameDeadline);
@@ -414,61 +294,35 @@ export function CinematicHero() {
       seeking.current = false;
       mediaReady.current = false;
     };
-  }, [videoEnabled, prepareLion, revealAll]);
+  }, [videoEnabled, videoFailed]);
 
   return (
     <section
-      className="sport-hero"
+      className="sport-hero editorial-hero"
       ref={heroRef}
       aria-labelledby="hero-title"
-      data-navigation={navigationReady ? "ready" : "waiting"}
-      data-presentation={contentInstant ? "static" : "animated"}
-      data-lion-visible={lionVisible}
-      data-intro-start={sequenceStartedAt ?? undefined}
-      data-entrance-complete={entranceDone}
+      data-navigation="ready"
+      data-presentation={presentation}
+      data-enhanced={videoEnabled}
       data-ambient-paused={ambientPaused || !ambientActive}
     >
-      <noscript>
-        <style>{`.site-header,.category-navigation-shell,.hero-reveal,.hero-word,.sport-hero-visual{opacity:1!important;visibility:visible!important;transform:none!important;pointer-events:auto!important}.sport-hero-visual{transition:none!important}`}</style>
-      </noscript>
       {videoEnabled && (
-        <>
-          {playIntro && sequenceStartedAt !== null && (
-            <HeroAtmosphere
-              startedAt={sequenceStartedAt}
-              leaving={lionVisible}
-            />
-          )}
-          <HeroDust
-            containerRef={heroRef}
-            enabled={dustReady}
-            onPauseChange={setAmbientPaused}
-          />
-        </>
+        <HeroDust
+          containerRef={heroRef}
+          enabled
+          onPauseChange={setAmbientPaused}
+          controlLabel="animación del hero"
+        />
       )}
-      {videoEnabled && !contentInstant && !contentStarted && (
-        <>
-          <div
-            className="hero-intro-brand"
-            data-state={
-              brandVisible ? (lionVisible ? "leaving" : "visible") : "hidden"
-            }
-            aria-hidden="true"
-          >
-            <span>
-              <Image
-                src="/branding/stylo-suplementos.svg"
-                alt=""
-                width={981}
-                height={236}
-                unoptimized
-                sizes="(min-width: 1600px) 480px, 30vw"
-              />
-            </span>
-          </div>
-        </>
-      )}
-      <div className="sport-hero-visual" aria-hidden="true">
+      <HeroCursorLight
+        containerRef={heroRef}
+        enabled={videoEnabled && !ambientPaused && ambientActive}
+      />
+      <div
+        className="sport-hero-visual"
+        aria-hidden="true"
+        data-video-ready={videoReady}
+      >
         <div className="hero-lion-ambient">
           <div className="sport-hero-poster">
             <Image
@@ -477,10 +331,10 @@ export function CinematicHero() {
               fill
               priority
               unoptimized
-              sizes="100vw"
+              sizes="(max-width: 800px) 100vw, 70vw"
             />
           </div>
-          {videoEnabled && prepareLion && (
+          {videoEnabled && !videoFailed && (
             <video
               ref={videoRef}
               className={videoReady ? "is-ready" : ""}
@@ -493,48 +347,31 @@ export function CinematicHero() {
         </div>
       </div>
       <div className="container sport-hero-inner">
-        <div
-          className="hero-content"
-          data-sequence={contentInstant ? "static" : "active"}
-          data-content-stage={contentStage}
-        >
-          <p
-            className="hero-eyebrow hero-reveal hero-text"
-            data-revealed={contentStage >= 1}
-          >
-            <HeroWords text={HERO_COPY.eyebrow} />
-          </p>
-          <h1
-            id="hero-title"
-            className="hero-title hero-reveal hero-text"
-            data-revealed={contentStage >= 2}
-          >
-            <HeroWords text={HERO_COPY.title} accentFrom={3} />
+        <div className="hero-content">
+          <p className="hero-eyebrow">{HERO_COPY.eyebrow}</p>
+          <h1 id="hero-title" className="hero-title">
+            <span className="hero-title-line hero-title-outline">
+              {HERO_COPY.titleLines[0]}
+            </span>{" "}
+            <span className="hero-title-line">{HERO_COPY.titleLines[1]}</span>{" "}
+            <span className="hero-title-line hero-title-gold">
+              {HERO_COPY.titleLines[2]}
+            </span>
           </h1>
-          <p
-            className="hero-subtitle hero-reveal hero-text"
-            data-revealed={contentStage >= 3}
-          >
-            <HeroWords text={HERO_COPY.subtitle} />
-          </p>
-          <div className="hero-actions">
-            <Link
-              href="/catalogo"
-              className="hero-pill hero-pill-primary hero-reveal"
-              data-revealed={contentStage >= 4}
-            >
-              Explorar tienda
-            </Link>
-            <a
-              href="#destacados"
-              className="hero-pill hero-pill-secondary hero-reveal"
-              data-revealed={contentStage >= 5}
-            >
-              Ver destacados
-            </a>
+          <div className="hero-bottom-row">
+            <p className="hero-subtitle">{HERO_COPY.subtitle}</p>
+            <div className="hero-actions">
+              <Link href="/catalogo" className="hero-pill hero-pill-primary">
+                Explorar tienda <span aria-hidden="true">↗</span>
+              </Link>
+              <a href="#destacados" className="hero-pill hero-pill-secondary">
+                Ver destacados <span aria-hidden="true">↓</span>
+              </a>
+            </div>
           </div>
         </div>
       </div>
+      <HeroCategoryMarquee categories={categories} />
     </section>
   );
 }

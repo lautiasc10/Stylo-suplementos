@@ -12,7 +12,7 @@ async function fixture(page: Page) {
   return () => requests;
 }
 
-test("Ctrl K permite buscar durante la introducción sin reiniciarla", async ({
+test("Ctrl K permite buscar desde el hero sin bloquear la navegación", async ({
   page,
 }) => {
   await fixture(page);
@@ -28,8 +28,8 @@ test("Ctrl K permite buscar durante la introducción sin reiniciarla", async ({
     panel.getByRole("combobox", { name: "Buscar productos" }),
   ).toBeFocused();
   await expect(page.locator(".sport-hero")).toHaveAttribute(
-    "data-presentation",
-    "static",
+    "data-navigation",
+    "ready",
   );
   await page.keyboard.press("Escape");
   await expect(panel).not.toBeVisible();
