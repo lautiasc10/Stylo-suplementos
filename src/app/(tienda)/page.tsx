@@ -29,15 +29,7 @@ export default async function HomePage() {
     .slice(0, 4);
   return (
     <>
-      <CinematicHero
-        categories={
-          error || !data.categories.length
-            ? undefined
-            : [...data.categories]
-                .sort((a, b) => a.sortOrder - b.sortOrder)
-                .map(({ name, slug }) => ({ name, slug }))
-        }
-      />
+      <CinematicHero />
       <HomeProducts
         id="destacados"
         title="Productos destacados"

@@ -1,5 +1,45 @@
 import { expect, test } from "@playwright/test";
 
+test("las fuentes de la referencia quedan limitadas al hero", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.evaluate(() => document.fonts.ready);
+  await expect(page.locator(".hero-title")).toHaveCSS("font-family", /Anton/);
+  await expect(page.locator(".hero-title")).toHaveCSS("font-weight", "400");
+  await expect(page.locator(".hero-subtitle")).toHaveCSS(
+    "font-family",
+    /Manrope/,
+  );
+  await expect(page.locator(".site-header")).toHaveCSS("font-family", /Inter/);
+});
+
+test("la frase sigue al cursor en sentido inverso y se detiene al pausar", async ({
+  page,
+}, info) => {
+  test.skip(info.project.name !== "desktop");
+  await page.goto("/");
+  await expect(page.locator(".sport-hero-visual video")).toHaveClass(/is-ready/);
+  const title = page.locator(".hero-title-parallax");
+  const position = () =>
+    title.evaluate((e) => {
+      const t = new DOMMatrix(getComputedStyle(e).transform);
+      return { x: t.m41, y: t.m42 };
+    });
+  const width = page.viewportSize()!.width;
+  await page.mouse.move(width * 0.1, 240);
+  await expect.poll(async () => (await position()).x).toBeGreaterThan(8);
+  await page.mouse.move(width * 0.9, 500);
+  await expect.poll(async () => (await position()).x).toBeLessThan(-8);
+  await page.getByRole("button", { name: "Pausar animación del hero" }).click();
+  const frozen = await position();
+  await page.mouse.move(width * 0.1, 250);
+  await page.waitForTimeout(150);
+  expect(await position()).toEqual(frozen);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect.poll(async () => (await position()).x).toBe(0);
+});
+
 test("el hero abre sin splash y volver con el logo no lo reinicia", async ({
   page,
 }) => {
@@ -115,7 +155,7 @@ test("el carrusel permite navegar con teclado y conserva enlaces sin movimiento"
     name: "Categorías de la tienda",
     exact: true,
   });
-  const link = nav.getByRole("link", { name: "Proteínas", exact: true });
+  const link = nav.getByRole("link", { name: "Proteína", exact: true });
   await expect(link).toHaveCount(1);
   await link.focus();
   await expect(link).toBeFocused();
@@ -154,10 +194,11 @@ test("el mate negro del león no oculta el fondo", async ({ page }, info) => {
   await page.goto("/");
   const visual = page.locator(".sport-hero-visual");
   await expect(visual.locator("video")).toHaveClass(/is-ready/);
-  await expect(visual).toHaveCSS("mix-blend-mode", "screen");
+  await expect(visual).toHaveCSS("mix-blend-mode", "normal");
+  await expect(visual).toHaveCSS("mask-image", /radial-gradient/);
   await page.addStyleTag({
     content:
-      ".sport-hero{background:rgb(72,48,16)} .hero-dust,.sport-hero-inner{visibility:hidden} .sport-hero-visual::after{background:none} .hero-lion-ambient{animation:none!important}",
+      ".sport-hero{background:rgb(72,48,16)} .hero-dust,.hero-title,.hero-cursor-light,.sport-hero-inner{visibility:hidden} .sport-hero::after{background:none} .sport-hero-visual::after{background:none} .hero-lion-ambient{animation:none!important}",
   });
   const root = await page.locator(".sport-hero").boundingBox();
   const media = await visual.locator("video").boundingBox();
@@ -225,7 +266,7 @@ test("el hero conserva accesos y muestra un fotograma mientras carga", async ({
   if (testInfo.project.name === "mobile") {
     await expect(hero.locator("video")).toHaveCount(0);
   }
-  await hero.getByRole("link", { name: "Ver destacados" }).click();
+  await hero.getByRole("link", { name: "Destacados" }).click();
   await expect(page).toHaveURL(/#destacados$/);
   await expect(
     page.getByRole("heading", { name: "Productos destacados" }),
@@ -263,7 +304,7 @@ test("la mirada sigue la posición del cursor y vuelve al mismo fotograma", asyn
   // Absolute positioning must not drift after a quick reversal.
   await page.mouse.move(width * 0.15, 300);
   await page.mouse.move(width * 0.85, 300);
-  await page.mouse.move(width * 0.7, 300);
+  await page.mouse.move(width * 0.5, 300);
   await expect.poll(currentTime).toBeCloseTo(duration / 2, 1);
   await expect(video).toHaveJSProperty("paused", true);
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -374,12 +415,12 @@ test("el cruce frontal sigue presentando fotogramas sin cambios de sentido", asy
   await expect(video).toHaveClass(/is-ready/);
   await page.keyboard.press("Tab");
   const width = page.viewportSize()!.width;
-  await page.mouse.move(width * 0.6, 300);
+  await page.mouse.move(width * 0.4, 300);
   await expect
     .poll(() =>
       video.evaluate((element) => (element as HTMLVideoElement).currentTime),
     )
-    .toBeCloseTo(2.23, 1);
+    .toBeCloseTo(2.29, 1);
   await video.evaluate((element) => {
     const media = element as HTMLVideoElement & { presented: number[] };
     media.presented = [];
@@ -388,14 +429,14 @@ test("el cruce frontal sigue presentando fotogramas sin cambios de sentido", asy
     );
   });
   for (let step = 1; step <= 40; step++) {
-    await page.mouse.move(width * (0.6 + step * 0.005), 300);
+    await page.mouse.move(width * (0.4 + step * 0.005), 300);
     await page.waitForTimeout(35);
   }
   await expect
     .poll(() =>
       video.evaluate((element) => (element as HTMLVideoElement).currentTime),
     )
-    .toBeLessThan(1.65);
+    .toBeLessThan(1.75);
   const frames = await video.evaluate(
     (element) =>
       (element as HTMLVideoElement & { presented: number[] }).presented,
@@ -418,7 +459,7 @@ test("la mirada lenta atraviesa el frente con poses intermedias", async ({
   await expect(video).toHaveClass(/is-ready/);
   await page.keyboard.press("Tab");
   const width = page.viewportSize()!.width;
-  await page.mouse.move(width * 0.67, 300);
+  await page.mouse.move(width * 0.47, 300);
   await expect
     .poll(() =>
       video.evaluate((element) => (element as HTMLVideoElement).currentTime),
@@ -435,14 +476,14 @@ test("la mirada lenta atraviesa el frente con poses intermedias", async ({
   // Just six percent of the viewport over almost six seconds: the previous
   // 24 fps clip held only five poses during this same slow central sweep.
   for (let step = 1; step <= 160; step++) {
-    await page.mouse.move(width * (0.67 + step * 0.000375), 300);
+    await page.mouse.move(width * (0.47 + step * 0.000375), 300);
     await page.waitForTimeout(35);
   }
   await expect
     .poll(() =>
       video.evaluate((element) => (element as HTMLVideoElement).currentTime),
     )
-    .toBeLessThan(1.91);
+    .toBeLessThan(1.94);
   const frames = await video.evaluate(
     (element) =>
       (element as HTMLVideoElement & { slowFrames: number[] }).slowFrames,
@@ -452,7 +493,7 @@ test("la mirada lenta atraviesa el frente con poses intermedias", async ({
     expect(frames[i]).toBeLessThanOrEqual(frames[i - 1] + 0.001);
     expect(frames[i - 1] - frames[i]).toBeLessThan(0.032);
   }
-  await page.mouse.move(width * 0.7, 300);
+  await page.mouse.move(width * 0.5, 300);
   await expect
     .poll(() =>
       video.evaluate((element) => (element as HTMLVideoElement).currentTime),

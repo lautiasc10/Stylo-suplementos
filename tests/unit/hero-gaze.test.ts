@@ -9,9 +9,9 @@ describe("seguimiento del león", () => {
   const duration = 97 / 24;
   it("mantiene la dirección y las poses laterales", () => {
     const center = 2;
-    for (const x of [0, 0.1, 0.4, 0.58]) {
+    for (const x of [0, 0.1, 0.3, 0.38]) {
       expect(gazeTime(x, duration)).toBeCloseTo(
-        duration * 0.85 + ((center - duration * 0.85) * x) / 0.7,
+        duration * 0.85 + ((center - duration * 0.85) * x) / 0.5,
         8,
       );
     }
@@ -20,12 +20,12 @@ describe("seguimiento del león", () => {
         gazeTime((i - 1) / 1000, duration),
       );
     }
-    expect(gazeTime(0.7, duration)).toBe(2);
-    expect(gazeTime(0.7, 4.041667)).toBe(2);
+    expect(gazeTime(0.5, duration)).toBe(2);
+    expect(gazeTime(0.5, 4.041667)).toBe(2);
   });
   it("cruza la pose frontal sin saltos de velocidad", () => {
     const h = 0.00001;
-    for (const x of [0.6, 0.7, 0.8]) {
+    for (const x of [0.4, 0.5, 0.6]) {
       const left = (gazeTime(x, duration) - gazeTime(x - h, duration)) / h;
       const right = (gazeTime(x + h, duration) - gazeTime(x, duration)) / h;
       expect(Math.abs(left - right)).toBeLessThan(0.002);

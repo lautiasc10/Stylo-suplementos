@@ -1,7 +1,7 @@
 // Intermediate frames are baked into the local clip, never computed on hover.
 export const HERO_VIDEO_FPS = 96;
 const SOURCE_VIDEO_FPS = 24;
-const ORIGIN = 0.7;
+const ORIGIN = 0.5;
 const CENTER_WIDTH = 0.1;
 
 function hermite(

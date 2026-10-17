@@ -2,15 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { Anton, Manrope } from "next/font/google";
 import { useEffect, useRef, useState } from "react";
-import { categories as defaultCategories } from "@/modules/catalog/categories";
-import {
-  HeroCategoryMarquee,
-  type HeroCategory,
-} from "./hero-category-marquee";
-import { HeroCursorLight } from "./hero-cursor-light";
+import { HeroCategoryMarquee } from "./hero-category-marquee";
+import { HeroAmbience } from "./hero-ambience";
+import { Icon } from "@/components/ui/icon";
 import { HERO_COPY } from "./hero-copy";
-import { HeroDust } from "./hero-dust";
 import { useHomeIntro } from "./home-intro";
 import {
   advanceGaze,
@@ -22,13 +19,21 @@ import {
 const VIDEO_URL = "/visuals/stylo-lion-motion-v3.mp4";
 const POSTER_URL = "/visuals/stylo-lion-poster-right-v1.webp";
 // Use the supplied source pose and matching poster. Never mirror or redraw it.
-const INITIAL_GAZE = 0.95;
+const INITIAL_POSE_TIME = 81 / 96;
 
-export function CinematicHero({
-  categories = defaultCategories,
-}: {
-  categories?: readonly HeroCategory[];
-}) {
+const heroDisplay = Anton({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-hero-display",
+  display: "swap",
+});
+const heroBody = Manrope({
+  subsets: ["latin"],
+  variable: "--font-hero-body",
+  display: "swap",
+});
+
+export function CinematicHero() {
   const { setWaiting, claimIntro } = useHomeIntro();
   const heroRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -41,6 +46,7 @@ export function CinematicHero({
   const mediaReady = useRef(false);
   const animationFrame = useRef<number | null>(null);
   const [videoEnabled, setVideoEnabled] = useState(false);
+  const [motionEnabled, setMotionEnabled] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
   const [videoFailed, setVideoFailed] = useState(false);
   const [presentation, setPresentation] = useState("static");
@@ -63,12 +69,12 @@ export function CinematicHero({
         }
       ).connection;
       const eligible =
-        desktop.matches &&
         !reduced.matches &&
         !connection?.saveData &&
         !["slow-2g", "2g", "3g"].includes(connection?.effectiveType ?? "");
-      setVideoEnabled(eligible);
-      if (!eligible) setVideoReady(false);
+      setMotionEnabled(eligible);
+      setVideoEnabled(eligible && desktop.matches);
+      if (!eligible || !desktop.matches) setVideoReady(false);
       if (firstPass) {
         setPresentation(
           firstVisit &&
@@ -171,7 +177,7 @@ export function CinematicHero({
     function handleMetadata() {
       if (!Number.isFinite(video.duration) || video.duration <= 0) return;
       video.pause();
-      smoothedTime.current = gazeTime(INITIAL_GAZE, video.duration);
+      smoothedTime.current = Math.min(INITIAL_POSE_TIME, video.duration - 0.1);
       gazeVelocity.current = 0;
       submittedTime.current = gazeFrameTime(smoothedTime.current);
       targetTime.current = smoothedTime.current;
@@ -243,7 +249,6 @@ export function CinematicHero({
     const observer = new IntersectionObserver(
       ([entry]) => {
         active.current = entry.intersectionRatio >= 0.35;
-        setAmbientActive(active.current && !document.hidden);
         if (active.current) scheduleFrame();
         else cancelFrame();
       },
@@ -263,7 +268,6 @@ export function CinematicHero({
     }
 
     function handleVisibility() {
-      setAmbientActive(active.current && !document.hidden);
       if (document.hidden) cancelFrame();
       else scheduleFrame();
     }
@@ -298,80 +302,104 @@ export function CinematicHero({
 
   return (
     <section
-      className="sport-hero editorial-hero"
+      className={`sport-hero editorial-hero ${heroDisplay.variable} ${heroBody.variable}`}
       ref={heroRef}
       aria-labelledby="hero-title"
       data-navigation="ready"
       data-presentation={presentation}
-      data-enhanced={videoEnabled}
+      data-enhanced={motionEnabled}
       data-ambient-paused={ambientPaused || !ambientActive}
     >
-      {videoEnabled && (
-        <HeroDust
-          containerRef={heroRef}
-          enabled
-          onPauseChange={setAmbientPaused}
-          controlLabel="animación del hero"
-        />
-      )}
-      <HeroCursorLight
+      <HeroAmbience
         containerRef={heroRef}
-        enabled={videoEnabled && !ambientPaused && ambientActive}
+        enabled={motionEnabled}
+        paused={ambientPaused}
+        onActivityChange={setAmbientActive}
       />
-      <div
-        className="sport-hero-visual"
-        aria-hidden="true"
-        data-video-ready={videoReady}
-      >
-        <div className="hero-lion-ambient">
-          <div className="sport-hero-poster">
-            <Image
-              src={POSTER_URL}
-              alt=""
-              fill
-              priority
-              unoptimized
-              sizes="(max-width: 800px) 100vw, 70vw"
-            />
-          </div>
-          {videoEnabled && !videoFailed && (
-            <video
-              ref={videoRef}
-              className={videoReady ? "is-ready" : ""}
-              muted
-              playsInline
-              preload="auto"
-              poster={POSTER_URL}
-            />
-          )}
-        </div>
-      </div>
-      <div className="container sport-hero-inner">
-        <div className="hero-content">
-          <p className="hero-eyebrow">{HERO_COPY.eyebrow}</p>
-          <h1 id="hero-title" className="hero-title">
-            <span className="hero-title-line hero-title-outline">
-              {HERO_COPY.titleLines[0]}
+      <div className="hero-stage">
+        <h1 id="hero-title" className="hero-title">
+          <span className="hero-title-parallax">
+            <span className="hero-line-clip">
+              <span className="hero-line-rise">
+                <span className="hero-title-line hero-title-outline">
+                  {HERO_COPY.titleLines[0]}
+                </span>
+              </span>
             </span>{" "}
-            <span className="hero-title-line">{HERO_COPY.titleLines[1]}</span>{" "}
-            <span className="hero-title-line hero-title-gold">
-              {HERO_COPY.titleLines[2]}
+            <span className="hero-line-clip">
+              <span className="hero-line-rise">
+                <span className="hero-title-line hero-title-gold">
+                  {HERO_COPY.titleLines.slice(1).join(" ")}
+                </span>
+              </span>
             </span>
-          </h1>
-          <div className="hero-bottom-row">
-            <p className="hero-subtitle">{HERO_COPY.subtitle}</p>
-            <div className="hero-actions">
-              <Link href="/catalogo" className="hero-pill hero-pill-primary">
-                Explorar tienda <span aria-hidden="true">↗</span>
-              </Link>
-              <a href="#destacados" className="hero-pill hero-pill-secondary">
-                Ver destacados <span aria-hidden="true">↓</span>
-              </a>
+          </span>
+        </h1>
+        <div
+          className="sport-hero-visual"
+          aria-hidden="true"
+          data-video-ready={videoReady}
+        >
+          <div className="hero-lion-tilt">
+            <div className="hero-lion-ambient">
+              <div className="sport-hero-poster">
+                <Image
+                  src={POSTER_URL}
+                  alt=""
+                  fill
+                  priority
+                  unoptimized
+                  sizes="(max-width: 800px) 150vw, 1200px"
+                />
+              </div>
+              {videoEnabled && !videoFailed && (
+                <video
+                  ref={videoRef}
+                  className={videoReady ? "is-ready" : ""}
+                  muted
+                  playsInline
+                  preload="auto"
+                  poster={POSTER_URL}
+                />
+              )}
             </div>
           </div>
         </div>
       </div>
-      <HeroCategoryMarquee categories={categories} />
+      <div className="container sport-hero-inner">
+        <div className="hero-content hero-bottom-row">
+          <p className="hero-subtitle">{HERO_COPY.subtitle}</p>
+          <div className="hero-actions">
+            <Link href="/catalogo" className="hero-pill hero-pill-primary">
+              Explorar tienda
+            </Link>
+            <a href="#destacados" className="hero-pill hero-pill-secondary">
+              Destacados
+            </a>
+          </div>
+        </div>
+      </div>
+      <HeroCategoryMarquee />
+      {motionEnabled && (
+        <button
+          type="button"
+          className="hero-dust-control"
+          aria-label={
+            ambientPaused
+              ? "Reanudar animación del hero"
+              : "Pausar animación del hero"
+          }
+          title={
+            ambientPaused
+              ? "Reanudar animación del hero"
+              : "Pausar animación del hero"
+          }
+          aria-pressed={ambientPaused}
+          onClick={() => setAmbientPaused(!ambientPaused)}
+        >
+          <Icon name={ambientPaused ? "play" : "pause"} />
+        </button>
+      )}
     </section>
   );
 }
