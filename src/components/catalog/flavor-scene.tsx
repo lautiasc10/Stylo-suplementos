@@ -2,22 +2,15 @@
 
 import { useEffect, useRef, useState } from "react";
 
-export type SceneFlavor = "banana" | "frutilla" | "vainilla";
-export function sceneFlavor(flavor: string): SceneFlavor | null {
-  const normalized = flavor
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
-  const matches = [
-    [/\bbanana\b/, "banana"],
-    [/\b(frutilla|fresa|strawberry)\b/, "frutilla"],
-    [/\b(vainilla|vanilla)\b/, "vainilla"],
-  ] as const;
-  const found = matches.filter(([pattern]) => pattern.test(normalized));
-  return found.length === 1 ? found[0][1] : null;
-}
-export const sceneIngredient = (flavor: SceneFlavor) =>
-  `/sabores/${flavor}-decor-v1.webp`;
+import {
+  sceneIngredients,
+  type SceneFlavor,
+} from "@/modules/catalog/flavor-scenes";
+export {
+  sceneFlavor,
+  sceneIngredient,
+  sceneIngredients,
+} from "@/modules/catalog/flavor-scenes";
 
 function IngredientLayer({
   flavor,
@@ -27,6 +20,7 @@ function IngredientLayer({
   outgoing: boolean;
 }) {
   const [ready, setReady] = useState(false);
+  const sources = sceneIngredients(flavor);
   return (
     <div
       className="flavor-scene-layer"
@@ -34,10 +28,10 @@ function IngredientLayer({
       data-outgoing={outgoing ? "true" : undefined}
       data-ready={ready ? "true" : undefined}
     >
-      {["hero", "left", "right", "bottom"].map((place) => (
+      {["hero", "left", "right", "bottom"].map((place, index) => (
         <div key={place} className="flavor-scene-piece" data-place={place}>
           <img
-            src={sceneIngredient(flavor)}
+            src={sources[index % sources.length]}
             alt=""
             width={768}
             height={512}

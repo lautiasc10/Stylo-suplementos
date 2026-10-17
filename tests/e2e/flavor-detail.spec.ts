@@ -46,6 +46,121 @@ async function seed(page: Page, data = fixture()) {
   return data.catalog.products[0];
 }
 
+test("todos los fondos disponibles siguen el sabor y conservan el color de las categorías", async ({
+  page,
+}) => {
+  const data = fixture();
+  const product = data.catalog.products[0];
+  const base = product.variants[0];
+  const image = Object.values(data.images)[0];
+  const flavors = [
+    "Banana",
+    "Frutilla",
+    "Vainilla",
+    "Ananá",
+    "Cereza",
+    "Choco suizo",
+    "Cookies",
+    "Dulce de leche",
+    "fru. rojos",
+    "Limón",
+    "Multifruta",
+    "Naranja",
+    "Pomelo rosado",
+    "Sandía",
+    "Uva",
+    "Citrus",
+  ];
+  const themes = [
+    "banana",
+    "frutilla",
+    "vainilla",
+    "anana",
+    "cereza",
+    "chocolate",
+    "cookies",
+    "dulce",
+    "frutos-rojos",
+    "limon",
+    "multifruta",
+    "naranja",
+    "pomelo",
+    "sandia",
+    "uva",
+    "citrus",
+  ];
+  product.variants = flavors.map((flavor, i) => ({
+    ...base,
+    flavor,
+    id: `00000000-0000-4000-8000-${String(150 + i).padStart(12, "0")}`,
+    sku: `SCENE-${i}`,
+  }));
+  product.images = [
+    {
+      id: "00000000-0000-4000-8000-000000000250",
+      variantId: null,
+      position: 0,
+      path: `${product.id}/00000000-0000-4000-8000-000000000350.webp`,
+      alt: "Envase compartido de prueba",
+    },
+  ];
+  data.images = Object.fromEntries(
+    product.images.map((photo) => [photo.path, image]),
+  );
+  await seed(page, data);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/vista-previa/producto/whey-protein");
+  for (let i = 0; i < themes.length; i++) {
+    await page.locator(".gainer-flavor-options a").nth(i).click();
+    const root = page.locator(".flavor-product-detail");
+    await expect(root).toHaveAttribute("data-flavor", themes[i]);
+    const layer = page.locator(".flavor-scene-layer:not([data-outgoing])");
+    await expect(layer).toHaveAttribute("data-flavor", themes[i]);
+    await expect
+      .poll(() =>
+        layer
+          .locator("img")
+          .evaluateAll((images) =>
+            images.every(
+              (image) =>
+                (image as HTMLImageElement).complete &&
+                (image as HTMLImageElement).naturalWidth > 0,
+            ),
+          ),
+      )
+      .toBe(true);
+    await expect
+      .poll(() =>
+        page.evaluate(() => {
+          const color = (selector: string) =>
+            getComputedStyle(document.querySelector(selector)!).backgroundColor;
+          return (
+            color(".flavor-product-detail") ===
+              color(".flavor-scene-surface:not([data-outgoing])") &&
+            color(".flavor-product-detail") === color(".category-navigation")
+          );
+        }),
+      )
+      .toBe(true);
+    if (themes[i] === "citrus") {
+      const sources = await layer
+        .locator("img")
+        .evaluateAll((images) => [
+          ...new Set(images.map((img) => img.getAttribute("src"))),
+        ]);
+      expect(sources).toEqual([
+        "/sabores/limon-decor-v1.webp",
+        "/sabores/naranja-decor-v1.webp",
+      ]);
+    }
+  }
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+});
+
 test("el menú conserva el color del sabor y excluye las partículas doradas", async ({
   page,
 }, testInfo) => {
@@ -183,7 +298,7 @@ test("la ficha no muestra miniaturas y las flechas recorren variantes sin foto",
   );
   await expect(
     page.locator(".flavor-scene-layer:not([data-outgoing])"),
-  ).toHaveCount(0);
+  ).toHaveAttribute("data-flavor", "chocolate");
   await page
     .getByRole("button", { name: "Sabor siguiente", exact: true })
     .click();

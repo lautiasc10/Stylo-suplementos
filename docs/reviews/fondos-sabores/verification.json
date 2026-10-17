@@ -1,0 +1,213 @@
+[
+  {
+    "theme": "frutos-rojos",
+    "flavor": "frutos rojos",
+    "product": "star-nutrition-amino-ramif-bcaa-mtor-x-270-grs",
+    "width": 1800,
+    "background": "rgb(232, 169, 189)",
+    "scene": "rgb(232, 169, 189)",
+    "categories": "rgb(232, 169, 189)",
+    "images": [
+      "/sabores/frutos-rojos-decor-v1.webp"
+    ],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "theme": "cereza",
+    "flavor": "cereza",
+    "product": "onefit-aminoacidos-eeaa-essential-amino-acid",
+    "width": 1800,
+    "background": "rgb(233, 162, 170)",
+    "scene": "rgb(233, 162, 170)",
+    "categories": "rgb(233, 162, 170)",
+    "images": [
+      "/sabores/cereza-decor-v1.webp"
+    ],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "theme": "naranja",
+    "flavor": "naranja",
+    "product": "onefit-aminoacidos-eeaa-essential-amino-acid",
+    "width": 1800,
+    "background": "rgb(243, 191, 140)",
+    "scene": "rgb(243, 191, 140)",
+    "categories": "rgb(243, 191, 140)",
+    "images": [
+      "/sabores/naranja-decor-v1.webp"
+    ],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "theme": "pomelo",
+    "flavor": "pomelo",
+    "product": "onefit-aminoacidos-eeaa-essential-amino-acid",
+    "width": 1800,
+    "background": "rgb(240, 178, 164)",
+    "scene": "rgb(240, 178, 164)",
+    "categories": "rgb(240, 178, 164)",
+    "images": [
+      "/sabores/pomelo-decor-v1.webp"
+    ],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "theme": "uva",
+    "flavor": "uva",
+    "product": "onefit-aminoacidos-eeaa-essential-amino-acid",
+    "width": 1800,
+    "background": "rgb(207, 192, 230)",
+    "scene": "rgb(207, 192, 230)",
+    "categories": "rgb(207, 192, 230)",
+    "images": [
+      "/sabores/uva-decor-v1.webp"
+    ],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "theme": "limon",
+    "flavor": "limón",
+    "product": "star-nutrition-aminoacidos-essential-amino-x-360-grs",
+    "width": 375,
+    "background": "rgb(235, 237, 172)",
+    "scene": "rgb(235, 237, 172)",
+    "categories": "rgb(235, 237, 172)",
+    "images": [
+      "/sabores/limon-decor-v1.webp"
+    ],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "theme": "sandia",
+    "flavor": "sandia",
+    "product": "xbody-aminoacidos-ramificados-fix-bcaa-x-300gr",
+    "width": 1800,
+    "background": "rgb(237, 175, 178)",
+    "scene": "rgb(237, 175, 178)",
+    "categories": "rgb(237, 175, 178)",
+    "images": [
+      "/sabores/sandia-decor-v1.webp"
+    ],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "theme": "anana",
+    "flavor": "anana",
+    "product": "xbody-colageno-hydroflex-x-330gr",
+    "width": 1800,
+    "background": "rgb(243, 223, 136)",
+    "scene": "rgb(243, 223, 136)",
+    "categories": "rgb(243, 223, 136)",
+    "images": [
+      "/sabores/anana-decor-v1.webp"
+    ],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "theme": "multifruta",
+    "flavor": "multifruta",
+    "product": "xbody-colageno-hydroflex-x-330gr",
+    "width": 1800,
+    "background": "rgb(238, 209, 146)",
+    "scene": "rgb(238, 209, 146)",
+    "categories": "rgb(238, 209, 146)",
+    "images": [
+      "/sabores/multifruta-decor-v1.webp"
+    ],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "theme": "frutilla",
+    "flavor": "frutilla",
+    "product": "onefit-colageno-optimus-x-240gr",
+    "width": 1800,
+    "background": "rgb(243, 165, 178)",
+    "scene": "rgb(243, 165, 178)",
+    "categories": "rgb(243, 165, 178)",
+    "images": [
+      "/sabores/frutilla-decor-v1.webp"
+    ],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "theme": "chocolate",
+    "flavor": "choco suizo",
+    "product": "star-nutrition-ganador-de-peso-mutant-mass-x-1-5-kgs",
+    "width": 1800,
+    "background": "rgb(213, 185, 157)",
+    "scene": "rgb(213, 185, 157)",
+    "categories": "rgb(213, 185, 157)",
+    "images": [
+      "/sabores/chocolate-decor-v1.webp"
+    ],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "theme": "citrus",
+    "flavor": "citrus",
+    "product": "star-nutrition-pre-entreno-tnt-x-240-grs",
+    "width": 1800,
+    "background": "rgb(228, 231, 162)",
+    "scene": "rgb(228, 231, 162)",
+    "categories": "rgb(228, 231, 162)",
+    "images": [
+      "/sabores/limon-decor-v1.webp",
+      "/sabores/naranja-decor-v1.webp"
+    ],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "theme": "cookies",
+    "flavor": "cookies",
+    "product": "star-nutrition-proteina-platinum-whey-x-2-lbs",
+    "width": 1800,
+    "background": "rgb(226, 208, 184)",
+    "scene": "rgb(226, 208, 184)",
+    "categories": "rgb(226, 208, 184)",
+    "images": [
+      "/sabores/cookies-decor-v1.webp"
+    ],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "theme": "vainilla",
+    "flavor": "vainilla",
+    "product": "star-nutrition-proteina-platinum-whey-x-2-lbs",
+    "width": 1800,
+    "background": "rgb(240, 224, 194)",
+    "scene": "rgb(240, 224, 194)",
+    "categories": "rgb(240, 224, 194)",
+    "images": [
+      "/sabores/vainilla-decor-v1.webp"
+    ],
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "theme": "dulce",
+    "flavor": "dulce de leche",
+    "product": "onefit-proteina-whey-protein-2lbs-dp",
+    "width": 1800,
+    "background": "rgb(226, 189, 141)",
+    "scene": "rgb(226, 189, 141)",
+    "categories": "rgb(226, 189, 141)",
+    "images": [
+      "/sabores/dulce-de-leche-decor-v1.webp"
+    ],
+    "overflow": false,
+    "errors": []
+  }
+]

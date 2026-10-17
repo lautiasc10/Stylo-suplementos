@@ -9,7 +9,7 @@ import { variantLabel } from "@/modules/catalog/model";
 import {
   FlavorSceneDecorations,
   sceneFlavor,
-  sceneIngredient,
+  sceneIngredients,
 } from "./flavor-scene";
 import { productFlavor } from "@/modules/catalog/product-flavor";
 import { BrandLogo } from "./brand-logo";
@@ -74,11 +74,11 @@ export function ProductDetail({
       const flavor =
         product.variants.find((item) => item.id === image.variantId)?.flavor ??
         "";
+      const scene = sceneFlavor(flavor);
       return Promise.allSettled(
-        (sceneFlavor(flavor)
-          ? [sceneIngredient(sceneFlavor(flavor)!)]
-          : []
-        ).map((src) => ingredientCache.current?.load(src, priority)),
+        (scene ? sceneIngredients(scene) : []).map((src) =>
+          ingredientCache.current?.load(src, priority),
+        ),
       );
     },
     [product.variants],

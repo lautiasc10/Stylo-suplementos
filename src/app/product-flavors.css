@@ -152,55 +152,72 @@
   outline-color: #725018;
 }
 /* Inherit the same token in the scene, category bar and open mega menu. */
-:root:has(.flavor-product-detail[data-flavor="banana"]) {
+:root:has(.flavor-product-detail[data-flavor="banana"]),
+.flavor-scene-surface[data-flavor="banana"] {
   --flavor-nav-background: #f2d34e;
 }
-:root:has(.flavor-product-detail[data-flavor="frutilla"]) {
+:root:has(.flavor-product-detail[data-flavor="frutilla"]),
+.flavor-scene-surface[data-flavor="frutilla"] {
   --flavor-nav-background: #f3a5b2;
 }
-:root:has(.flavor-product-detail[data-flavor="vainilla"]) {
+:root:has(.flavor-product-detail[data-flavor="vainilla"]),
+.flavor-scene-surface[data-flavor="vainilla"] {
   --flavor-nav-background: #f0e0c2;
 }
-:root:has(.flavor-product-detail[data-flavor="chocolate"]) {
+:root:has(.flavor-product-detail[data-flavor="chocolate"]),
+.flavor-scene-surface[data-flavor="chocolate"] {
   --flavor-nav-background: #d5b99d;
 }
-:root:has(.flavor-product-detail[data-flavor="cookies"]) {
+:root:has(.flavor-product-detail[data-flavor="cookies"]),
+.flavor-scene-surface[data-flavor="cookies"] {
   --flavor-nav-background: #e2d0b8;
 }
-:root:has(.flavor-product-detail[data-flavor="dulce"]) {
+:root:has(.flavor-product-detail[data-flavor="dulce"]),
+.flavor-scene-surface[data-flavor="dulce"] {
   --flavor-nav-background: #e2bd8d;
 }
-:root:has(.flavor-product-detail[data-flavor="frutos-rojos"]) {
+:root:has(.flavor-product-detail[data-flavor="frutos-rojos"]),
+.flavor-scene-surface[data-flavor="frutos-rojos"] {
   --flavor-nav-background: #e8a9bd;
 }
-:root:has(.flavor-product-detail[data-flavor="citrus"]) {
+:root:has(.flavor-product-detail[data-flavor="citrus"]),
+.flavor-scene-surface[data-flavor="citrus"] {
   --flavor-nav-background: #e4e7a2;
 }
-:root:has(.flavor-product-detail[data-flavor="limon"]) {
+:root:has(.flavor-product-detail[data-flavor="limon"]),
+.flavor-scene-surface[data-flavor="limon"] {
   --flavor-nav-background: #ebedac;
 }
-:root:has(.flavor-product-detail[data-flavor="uva"]) {
+:root:has(.flavor-product-detail[data-flavor="uva"]),
+.flavor-scene-surface[data-flavor="uva"] {
   --flavor-nav-background: #cfc0e6;
 }
-:root:has(.flavor-product-detail[data-flavor="sandia"]) {
+:root:has(.flavor-product-detail[data-flavor="sandia"]),
+.flavor-scene-surface[data-flavor="sandia"] {
   --flavor-nav-background: #edafb2;
 }
-:root:has(.flavor-product-detail[data-flavor="anana"]) {
+:root:has(.flavor-product-detail[data-flavor="anana"]),
+.flavor-scene-surface[data-flavor="anana"] {
   --flavor-nav-background: #f3df88;
 }
-:root:has(.flavor-product-detail[data-flavor="naranja"]) {
+:root:has(.flavor-product-detail[data-flavor="naranja"]),
+.flavor-scene-surface[data-flavor="naranja"] {
   --flavor-nav-background: #f3bf8c;
 }
-:root:has(.flavor-product-detail[data-flavor="pomelo"]) {
+:root:has(.flavor-product-detail[data-flavor="pomelo"]),
+.flavor-scene-surface[data-flavor="pomelo"] {
   --flavor-nav-background: #f0b2a4;
 }
-:root:has(.flavor-product-detail[data-flavor="cereza"]) {
+:root:has(.flavor-product-detail[data-flavor="cereza"]),
+.flavor-scene-surface[data-flavor="cereza"] {
   --flavor-nav-background: #e9a2aa;
 }
-:root:has(.flavor-product-detail[data-flavor="multifruta"]) {
+:root:has(.flavor-product-detail[data-flavor="multifruta"]),
+.flavor-scene-surface[data-flavor="multifruta"] {
   --flavor-nav-background: #eed192;
 }
-:root:has(.flavor-product-detail[data-flavor="neutral"]) {
+:root:has(.flavor-product-detail[data-flavor="neutral"]),
+.flavor-scene-surface[data-flavor="neutral"] {
   --flavor-nav-background: #ded5c5;
 }
 @media (max-width: 959px) {
@@ -217,4 +234,8 @@
   .unified-product-detail.flavor-product-detail .purchase-action {
     background: var(--flavor-background);
   }
+}
+
+.unified-product-detail .flavor-scene-surface {
+  background-color: var(--flavor-nav-background, #ded5c5);
 }

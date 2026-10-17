@@ -1,0 +1,122 @@
+[
+  {
+    "source": "anana.png",
+    "sha256": "0b979609a6bf2d7361de11466dddec8717a08351388a9983357feafb201722fb",
+    "originalBytes": 2428470,
+    "output": "anana-decor-v1.webp",
+    "bytes": 195996,
+    "width": 960,
+    "height": 640,
+    "transparent": true
+  },
+  {
+    "source": "ceresa.png",
+    "sha256": "05cbe7b8facedc04edfbe047579e46ac53a94532802b966f59c513ef1cc0beb1",
+    "originalBytes": 2435266,
+    "output": "cereza-decor-v1.webp",
+    "bytes": 194868,
+    "width": 960,
+    "height": 640,
+    "transparent": true
+  },
+  {
+    "source": "chocolate.png",
+    "sha256": "4ed53b950e830ef17ad4185e362ed535d19da3926f7504d2fb4a1b46845998ef",
+    "originalBytes": 2559160,
+    "output": "chocolate-decor-v1.webp",
+    "bytes": 196152,
+    "width": 960,
+    "height": 640,
+    "transparent": true
+  },
+  {
+    "source": "cookies-and-cream.png",
+    "sha256": "b623dde7b3481db232da4fc0a4b24b506a1ce30082e8900ee9e449b6545425f7",
+    "originalBytes": 2537540,
+    "output": "cookies-decor-v1.webp",
+    "bytes": 202858,
+    "width": 960,
+    "height": 640,
+    "transparent": true
+  },
+  {
+    "source": "dulce-de-leche.png",
+    "sha256": "5932743f91aca93febcdd1859023687dc803998c182a5386d204b35fc1064112",
+    "originalBytes": 2382084,
+    "output": "dulce-de-leche-decor-v1.webp",
+    "bytes": 189094,
+    "width": 960,
+    "height": 640,
+    "transparent": true
+  },
+  {
+    "source": "frutos-rojos.png",
+    "sha256": "6f04ddd88b4fdbb87621f2e4b7d2880dbc2cf38bdbcd83ebbe14607dc01032e5",
+    "originalBytes": 2645318,
+    "output": "frutos-rojos-decor-v1.webp",
+    "bytes": 210794,
+    "width": 960,
+    "height": 640,
+    "transparent": true
+  },
+  {
+    "source": "limon.png",
+    "sha256": "146cb5240d239974d5428a0d310bc336173127ffffdef69e7566a57244defcaf",
+    "originalBytes": 2276295,
+    "output": "limon-decor-v1.webp",
+    "bytes": 177578,
+    "width": 960,
+    "height": 640,
+    "transparent": true
+  },
+  {
+    "source": "multifruta.png",
+    "sha256": "86341bf3a4b878dc72ab801a6b7eca4e24439cae2b2f15b4eebfc19dd92ab828",
+    "originalBytes": 2441682,
+    "output": "multifruta-decor-v1.webp",
+    "bytes": 206792,
+    "width": 960,
+    "height": 640,
+    "transparent": true
+  },
+  {
+    "source": "naranja.png",
+    "sha256": "0dd0a3ca188fd0874df97b100d258e0ad372cc3a1ae87c8c2d2d6db969f67941",
+    "originalBytes": 2366010,
+    "output": "naranja-decor-v1.webp",
+    "bytes": 182886,
+    "width": 960,
+    "height": 640,
+    "transparent": true
+  },
+  {
+    "source": "pomelo.png",
+    "sha256": "e4b623c53bb879c244ce131c06093ca9654e76e938e6cfaaa560afe5c4794d87",
+    "originalBytes": 2394834,
+    "output": "pomelo-decor-v1.webp",
+    "bytes": 185108,
+    "width": 960,
+    "height": 640,
+    "transparent": true
+  },
+  {
+    "source": "sandia.png",
+    "sha256": "a782ebb88204aceeca09acfe8a7fcccd794e6da648a195e71ad3dc38afd72690",
+    "originalBytes": 2548203,
+    "output": "sandia-decor-v1.webp",
+    "bytes": 196008,
+    "width": 960,
+    "height": 640,
+    "transparent": true
+  },
+  {
+    "source": "uva.png",
+    "sha256": "33c9846196dfff280eccafe2f655c0067f5f87082227b2a9f8d8c92c55e6f6f4",
+    "originalBytes": 2615586,
+    "output": "uva-decor-v1.webp",
+    "bytes": 193122,
+    "width": 960,
+    "height": 640,
+    "transparent": true
+  }
+]
