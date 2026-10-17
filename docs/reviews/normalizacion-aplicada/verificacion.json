@@ -1,0 +1,40 @@
+{
+  "originalsIntact": 64,
+  "transparentMasters": 64,
+  "views": [
+    {
+      "width": 1800,
+      "cards": 53,
+      "photos": 43,
+      "normalized": 43,
+      "overflow": false,
+      "square": true
+    },
+    {
+      "width": 768,
+      "cards": 53,
+      "photos": 43,
+      "normalized": 43,
+      "overflow": false,
+      "square": true
+    },
+    {
+      "width": 375,
+      "cards": 53,
+      "photos": 43,
+      "normalized": 43,
+      "overflow": false,
+      "square": true
+    }
+  ],
+  "variantSelection": true,
+  "noJavaScript": true,
+  "errors": [],
+  "catalogUnchanged": true,
+  "originalBytes": 37693964,
+  "masterBytes": 4048316,
+  "qualityWarnings": {
+    "lowResolution": 21,
+    "sourceEdge": 1
+  }
+}

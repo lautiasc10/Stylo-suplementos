@@ -81,7 +81,7 @@ test("la piedra es común y las bases se alinean sin aumentar el tamaño de fras
   expect(bottle.gap).toBeLessThan(0.23);
   expect(bottle.frameWidth).toBeCloseTo(1, 2);
   expect(bottle.frameHeight).toBeCloseTo(1, 2);
-  expect(bottle.stageHeight).toBeCloseTo(1.25, 2);
+  expect(bottle.stageHeight).toBeCloseTo(1, 2);
   await page.clock.runFor(3100);
   await expect(image).toHaveAttribute("alt", "Bolsa de prueba");
   await expect(image).toHaveAttribute("data-portrait", "true");

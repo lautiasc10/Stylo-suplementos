@@ -2,7 +2,7 @@
 
 Fecha: 17 de octubre de 2026. Rama: `fase-3-imagenes-piloto`. Esta «Fase 1» corresponde al pedido de normalización; no modifica el alcance de las fases comerciales anteriores.
 
-**Se detiene aquí para revisión.** No se procesó el resto del catálogo ni se implementaron las fases 2 y 3 del pedido. No se cambió ningún registro ni archivo de Supabase, ni se integró la rama con la tienda.
+**Piloto aprobado y Fase 1 aplicada al catálogo.** Este documento conserva el resultado original de los cinco productos. La aplicación posterior a las 64 fotos existentes, sus comprobaciones y las advertencias de calidad se detallan en [Fase 1 aplicada](normalizacion-imagenes-aplicada.md). Las fases 2 y 3 del pedido siguen pendientes. No se cambió ningún registro ni archivo de Supabase.
 
 ## Stack y ubicación de los originales
 
@@ -92,4 +92,4 @@ Se pueden revisar desde el desplegable del comparador. Para mejorar su nitidez h
 - Verificación SHA-256 de los dieciocho originales tras procesarlos: intactos. Dieciocho masters con alfa real y dimensiones 1000 × 1000; total 1.230.954 bytes, frente a 8.827.074 bytes de las fotos de origen del piloto. No es una medición del peso total del sitio.
 - Se corrigieron claves React duplicadas entre etiquetas de promoción/stock detectadas al mostrar productos agotados. El recorrido final del comparador no produjo errores de consola. La auditoría general del panel Issues queda para la fase 2.
 
-Quedan pendientes de aprobación: aplicar el encuadre al resto del catálogo, decidir los originales de baja resolución y comenzar los cambios de interfaz y selector de las fases 2 y 3.
+El usuario aprobó aplicar esta Fase 1 al catálogo completo. Quedan pendientes los originales de mayor resolución y la autorización de los cambios de interfaz y selector de las fases 2 y 3.

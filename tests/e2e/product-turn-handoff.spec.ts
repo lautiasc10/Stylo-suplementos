@@ -58,8 +58,12 @@ for (const mode of ["card", "detail"] as const) {
     await gallery
       .locator(".product-frame-current")
       .evaluate((image: HTMLImageElement) => image.decode());
-    if (mode === "card") await page.clock.runFor(3100);
-    else
+    if (mode === "card") {
+      // Wait for the visibility observer to start autoplay before advancing
+      // the fake clock; image.decode alone does not start that timer.
+      await expect(gallery).toHaveAttribute("data-auto-playing", "true");
+      await page.clock.runFor(3100);
+    } else
       await page
         .getByRole("button", { name: "Sabor siguiente", exact: true })
         .click();

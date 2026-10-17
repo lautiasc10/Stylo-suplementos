@@ -229,7 +229,11 @@ async function writeNew(file, bytes) {
   }
 }
 
-export async function runNormalization({ manifestPath, outputDir }) {
+export async function runNormalization({
+  manifestPath,
+  outputDir,
+  quiet = false,
+}) {
   const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
   if (!Array.isArray(manifest.images) || !manifest.images.length)
     throw new Error("El manifiesto necesita una lista images.");
@@ -289,17 +293,18 @@ export async function runNormalization({ manifestPath, outputDir }) {
     path.join(outputDir, "report.json"),
     JSON.stringify(report, null, 2) + "\n",
   );
-  console.log(
-    JSON.stringify(
-      {
-        images: records.length,
-        exported: records.filter((r) => r.outputs).length,
-        review: report.review,
-      },
-      null,
-      2,
-    ),
-  );
+  if (!quiet)
+    console.log(
+      JSON.stringify(
+        {
+          images: records.length,
+          exported: records.filter((r) => r.outputs).length,
+          review: report.review,
+        },
+        null,
+        2,
+      ),
+    );
   return report;
 }
 

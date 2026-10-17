@@ -1,4 +1,16 @@
-/* Phase 1 is deliberately opt-in. No public catalog styles change before review. */
+/* The original pilot keeps a historical before/after comparison after rollout. */
+.image-normalization-trial--before .product-card {
+  height: auto;
+}
+.image-normalization-trial--before .product-card-media,
+.image-normalization-trial--before
+  .product-image-gallery-card
+  .product-image-stage {
+  aspect-ratio: 4 / 5;
+}
+.image-normalization-trial--before .product-card h2 {
+  min-height: 0;
+}
 .image-normalization-trial .image-trial-intro {
   margin-block: var(--space-4) var(--space-6);
   color: var(--muted);

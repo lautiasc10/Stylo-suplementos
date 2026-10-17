@@ -16,7 +16,8 @@
     "check": "npm run lint && npm run typecheck && npm run test && npm run build",
     "lint": "eslint src next.config.ts",
     "media:normalize": "node scripts/normalize-products.mjs",
-    "test:media": "node --test scripts/normalize-products.test.mjs"
+    "test:media": "node --test scripts/normalize-products.test.mjs",
+    "media:catalog": "node scripts/normalize-catalog.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.7",

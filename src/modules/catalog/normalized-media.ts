@@ -1,7 +1,21 @@
-/** Opt-in pilot assets. Existing Storage paths never change. */
-export function normalizedPhotoProps(source: string, kind: "card" | "detail") {
+import normalizedImages from "./normalized-images.json";
+
+/** Derivatives are selected only for the exact original Storage path. Replacing
+ * a photo keeps working immediately; an unprocessed new path uses its original. */
+export function normalizedPhotoProps(
+  source: string,
+  kind: "card" | "detail",
+  original?: { path: string; imageBase: string },
+) {
+  const registered =
+    original?.imageBase && source === `${original.imageBase}/${original.path}`
+      ? (normalizedImages as Record<string, string>)[original.path]
+      : undefined;
+  if (registered) source = registered;
   if (
-    !source.startsWith("/media/normalization-trial-v1/") ||
+    !/^\/media\/(?:normalization-trial|products-normalized)-v1\//.test(
+      source,
+    ) ||
     !source.endsWith("-1000.webp")
   )
     return {};
@@ -14,7 +28,7 @@ export function normalizedPhotoProps(source: string, kind: "card" | "detail") {
     sizes:
       kind === "detail"
         ? "(min-width: 960px) 640px, 100vw"
-        : "(min-width: 1280px) 24vw, (min-width: 640px) 32vw, 50vw",
+        : "(min-width: 1280px) 24vw, (min-width: 960px) 32vw, (min-width: 541px) 50vw, 100vw",
     thumbnailSrc: file(320),
   };
 }

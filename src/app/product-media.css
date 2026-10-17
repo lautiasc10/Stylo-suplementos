@@ -1,0 +1,62 @@
+/* Approved phase 1: a common canvas and rock, independent of package rotation. */
+.product-grid {
+  align-items: stretch;
+}
+.product-card {
+  height: 100%;
+}
+.product-card-media,
+.product-image-gallery-card .product-image-stage {
+  aspect-ratio: 1;
+}
+.product-card h2 {
+  min-height: 3.75em;
+}
+.product-card-copy {
+  flex: 1;
+}
+.product-card .product-prices {
+  margin-top: auto;
+}
+.product-image-gallery[data-normalized="true"] .product-image-stage {
+  aspect-ratio: 1;
+  background:
+    url("/media/normalization-trial-v1/rock-square-v1.webp") center / cover
+      no-repeat,
+    var(--commercial-background);
+}
+.product-image-gallery[data-normalized="true"]
+  .product-image-stage
+  .product-frame {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  padding: 0;
+  object-fit: contain;
+  transform-origin: 50% 90%;
+}
+.product-image-gallery[data-normalized="true"] .product-frame-link {
+  perspective-origin: 50% 90%;
+}
+.product-image-gallery[data-normalized="true"] .product-image-stage::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  left: 21%;
+  right: 21%;
+  top: 87%;
+  height: 5%;
+  background: radial-gradient(ellipse, #000c, #0000 72%);
+}
+.product-image-gallery[data-normalized="true"]
+  .product-inspected-image:not([data-information="true"])
+  img {
+  padding: 0;
+}
+@media (max-width: 959px) {
+  .product-card h2 {
+    min-height: 6.25em;
+  }
+}

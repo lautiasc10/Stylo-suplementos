@@ -10,7 +10,7 @@ Barlow Condensed e Inter siguen en el resto de la tienda y la administración. E
 
 ## Guía aplicada
 
-La [prueba de normalización de cinco productos](normalizacion-imagenes-fase-1.md) está aislada en `/vista-previa/imagenes`: canvas transparente de 1000 × 1000, envase al 80 % del alto, base común al 90 %, escenario cuadrado y roca CSS independiente. Las rutas reales de Storage y el diseño público se conservan hasta revisar este piloto. Las fases siguientes de esta revisión todavía no se aplican.
+Tras aprobar la [prueba de cinco productos](normalizacion-imagenes-fase-1.md), la [Fase 1 de normalización](normalizacion-imagenes-aplicada.md) se aplica a las 64 fotos existentes del catálogo: canvas transparente de 1000 × 1000, envase al 80 % del alto, base común al 90 %, escenario cuadrado y roca CSS independiente. Las rutas originales de Storage, SKU, precios y stock se conservan. El comparador local mantiene el antes y el después; las fases 2 y 3 de esta revisión todavía no se aplican.
 
 Las galerías incorporan [vistas reales del envase durante el giro](giro-envases-2026-10-17.md): los datos del nuevo sabor se confirman al volver al frente. Costados y dorsos se cargan separados de las portadas y de las fichas informativas. La ficha usa una columna de miniaturas en escritorio y una tira horizontal en celular, con acceso al original sin JavaScript y movimiento reducido en vivo.
 
