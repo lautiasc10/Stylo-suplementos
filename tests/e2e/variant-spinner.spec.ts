@@ -86,9 +86,12 @@ test("giro de 200 + 280 ms, sentido reversible y roca fija; solo dos capas", asy
   page,
 }) => {
   const { product } = await seed(page);
-  await page.goto(detail);
+  await page.goto("/vista-previa");
   const spinner = page.locator(".variant-spinner");
   await spinner.scrollIntoViewIfNeeded();
+  await spinner
+    .getByRole("button", { name: "Sabor siguiente", exact: true })
+    .focus();
   const stage = spinner.locator(".product-image-stage");
   const before = await stage.evaluate((e) => ({
     width: e.clientWidth,
@@ -337,7 +340,7 @@ test("solo se conserva la última elección encolada y reduced-motion elimina la
   await spinner
     .getByRole("button", { name: "Sabor siguiente", exact: true })
     .click();
-  await expect(spinner).toHaveAttribute("data-spinner-phase", "outgoing");
+  await expect(spinner).toHaveAttribute("data-spinner-phase", "incoming");
   await spinner.evaluate((e) =>
     e
       .querySelectorAll(".variant-spinner-frame")
@@ -378,35 +381,56 @@ test("solo se conserva la última elección encolada y reduced-motion elimina la
   await expect(spinner).toHaveAttribute("data-spinner-phase", "idle");
 });
 
-test("miniaturas usan fundido, conservan el sabor y una sola variante recorre fotos sin flechas de sabor", async ({
+test("detalle responde al inicio del giro, solapa sus mitades y conserva la información sin miniaturas", async ({
   page,
 }) => {
   const { product } = await seed(page);
   await page.goto(detail);
   const spinner = page.locator(".variant-spinner");
+  await expect(spinner.locator(".product-thumbnail-rail")).toHaveCount(0);
   await spinner
-    .getByRole("link", { name: "Ver Dorso del envase", exact: true })
+    .getByRole("button", { name: "Sabor siguiente", exact: true })
     .click();
   await expect(spinner).toHaveAttribute("data-spinner-phase", "incoming");
-  const transforms = await spinner.evaluate((e) =>
-    [...e.querySelectorAll(".variant-spinner-frame")].flatMap((f) =>
-      f
-        .getAnimations()
-        .flatMap((a) =>
-          (a.effect as KeyframeEffect).getKeyframes().map((k) => k.transform),
-        ),
+  const timing = await spinner.evaluate((e) =>
+    [...e.querySelectorAll(".variant-spinner-frame")].flatMap((frame) =>
+      frame.getAnimations().map((animation) => {
+        animation.pause();
+        const timing = animation.effect!.getTiming();
+        return { duration: timing.duration, delay: timing.delay };
+      }),
     ),
   );
-  expect(transforms.every((value) => !value)).toBe(true);
+  expect(timing).toEqual([
+    { duration: 140, delay: 0 },
+    { duration: 260, delay: 100 },
+  ]);
   await expect(spinner).toHaveAttribute(
     "data-active-variant",
-    product.variants[0].id,
+    product.variants[1].id,
+  );
+  await expect(page.locator('#contenido input[name="variantId"]')).toHaveValue(
+    product.variants[1].id,
+  );
+  await expect(page).toHaveURL(
+    new RegExp(`variante=${product.variants[1].id}`),
   );
   await expect(spinner.locator(".product-frame-current")).toHaveAttribute(
     "alt",
-    "Dorso del envase",
+    "Frente Frutilla",
   );
-  await expect(page.locator(".variant-spinner-caption")).toHaveText("Banana");
+  await spinner.evaluate((e) =>
+    e
+      .querySelectorAll(".variant-spinner-frame")
+      .forEach((frame) =>
+        frame.getAnimations().forEach((animation) => animation.finish()),
+      ),
+  );
+  await expect(spinner).toHaveAttribute("data-spinner-phase", "idle");
+  await page.locator(".product-information summary").click();
+  await expect(page.locator(".product-information-grid")).toContainText(
+    "Información nutricional",
+  );
 });
 
 test("producto con una variante: flechas recorren las fotografías, sin controles de sabor", async ({

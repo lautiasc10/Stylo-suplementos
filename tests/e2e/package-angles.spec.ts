@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { demoCatalog } from "../../src/modules/catalog/demo";
 
 for (const mode of ["card", "detail"] as const) {
-  test(`dorsos reales conservados en miniaturas y nuevo giro de variante en ${mode}`, async ({
+  test(`frentes por variante y fichas informativas sin tira de miniaturas en ${mode}`, async ({
     page,
   }) => {
     const catalog = demoCatalog();
@@ -82,19 +82,11 @@ for (const mode of ["card", "detail"] as const) {
         new RegExp(next.id),
       );
     else {
-      await gallery
-        .getByRole("link", { name: "Ver Dorso real", exact: true })
-        .click();
-      await expect(
-        gallery.locator(".product-inspected-image img"),
-      ).toHaveAttribute("alt", "Dorso real");
+      await expect(gallery.locator(".product-thumbnail-rail")).toHaveCount(0);
       await expect(gallery).toHaveAttribute("data-active-variant", next.id);
-      await gallery
-        .getByRole("link", { name: "Ver Tabla informativa", exact: true })
-        .click();
-      await expect(gallery.locator(".product-inspected-image")).toHaveAttribute(
-        "data-information",
-        "true",
+      await page.locator(".product-information summary").click();
+      await expect(page.locator(".product-information-grid a")).toContainText(
+        "Tabla informativa",
       );
       await page.emulateMedia({ reducedMotion: "reduce" });
       await gallery

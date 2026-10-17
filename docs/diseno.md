@@ -2,6 +2,8 @@
 
 ## Fichas de producto: dirección vigente del 17 de octubre
 
+La revisión posterior de [fluidez y selección](cambio-sabor-fluido.md) toma el video `2026-10-16 16-02-41.mkv` solo como referencia de respuesta: los datos se confirman al iniciar el giro con la foto decodificada, el movimiento dura 360 ms y no hay pausa entre sus mitades. Los sabores agotados permanecen tachados también cuando están seleccionados. Se retira la tira de miniaturas de todas las fichas, conservando los archivos y el desplegable informativo. Las tarjetas mantienen su giro anterior.
+
 Por pedido del usuario, se retiran las fases 3C y 3D (anillo y tilt) y se recupera el giro anterior. Todas las fichas comparten la jerarquía de información de Ganadores de masa: Barlow Condensed 700, transferencia principal, lista secundaria, ahorro real, chips y compra. Los productos con sabor usan una escena de color a todo el ancho, incluida la navegación de categorías y su desplegable; Banana, Frutilla y Vainilla reutilizan sus decoraciones disponibles. Los demás sabores reciben un color, sin fabricar recursos. Los fondos de productos sin sabor quedan pendientes y conservan la presentación oscura. Esta decisión reemplaza el alcance experimental limitado a una categoría o a Whey Protein descrito más abajo. Implementación y validación: [fichas compartidas por sabor](fichas-sabores.md).
 
 Dirección actual: composición editorial sobre negro, dorado y blanco cálido, portada alineada a la izquierda, titular compacto y categorías abiertas con líneas finas. La referencia visual enviada por el usuario el 13 de octubre reemplaza la portada centrada y las tarjetas ilustradas de las primeras fases. La portada ofrece acceso directo a productos y categorías.

@@ -115,6 +115,7 @@ function frameLoaded(event: SyntheticEvent<HTMLImageElement>) {
 }
 
 export type ProductGalleryProps = {
+  showThumbnails?: boolean;
   variants?: Variant[];
   images: GalleryImage[];
   href?: string;
@@ -155,6 +156,7 @@ export function ProductGallery(props: ProductGalleryProps) {
         onChange={props.onImageChange}
         selectionRequest={props.selectionRequest}
         informationImages={props.informationImages}
+        showThumbnails={props.showThumbnails}
         onPrepareImage={props.onPrepareImage}
         prepareImage={props.prepareImage}
       />
@@ -169,6 +171,7 @@ export function ProductGallery(props: ProductGalleryProps) {
 }
 
 function LegacyProductGallery({
+  showThumbnails = true,
   images,
   href,
   linkLabel,
@@ -703,7 +706,7 @@ function LegacyProductGallery({
   return (
     <div
       ref={root}
-      className={`product-image-gallery product-image-gallery-${mode}${packageTurn ? " product-gallery-turning" : ""}${mode === "detail" && visiblePhotos.length + (current.turnImages?.length ?? 0) + informationImages.length > 1 ? " product-gallery-with-rail" : ""}`}
+      className={`product-image-gallery product-image-gallery-${mode}${packageTurn ? " product-gallery-turning" : ""}${showThumbnails && mode === "detail" && visiblePhotos.length + (current.turnImages?.length ?? 0) + informationImages.length > 1 ? " product-gallery-with-rail" : ""}`}
       data-package-turn={packageTurn ? "true" : undefined}
       data-normalized={current.normalized ? "true" : undefined}
       data-inspecting={inspected ? "true" : undefined}
@@ -841,7 +844,7 @@ function LegacyProductGallery({
           {loading && <span>Cargando sabor…</span>}
         </p>
       )}
-      {mode === "detail" && (
+      {mode === "detail" && showThumbnails && (
         <ProductThumbnailRail
           images={[
             ...visiblePhotos.map(({ image }) => image),

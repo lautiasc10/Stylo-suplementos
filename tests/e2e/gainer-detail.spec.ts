@@ -87,6 +87,12 @@ test("la ficha compartida une color de sabor e información de ganadores sin ani
     .click();
   await expect(scene).toHaveAttribute("data-variant", product.variants[1].id);
   await expect(scene).toHaveAttribute("data-flavor", "frutilla");
+  const unavailable = scene.locator('.variant-chip[data-unavailable="true"]');
+  await expect(unavailable).toHaveAttribute("aria-current", "true");
+  await expect(unavailable.locator(".gainer-flavor-name")).toHaveCSS(
+    "text-decoration-line",
+    "line-through",
+  );
   await expect(scene).toHaveCSS("background-color", "rgb(243, 165, 178)");
   await expect(
     scene.locator(".flavor-scene-layer:not([data-outgoing])"),
@@ -106,6 +112,18 @@ test("la ficha compartida une color de sabor e información de ganadores sin ani
     ),
   ).toBe(true);
   expect(errors).toEqual([]);
+  await scene.getByRole("link", { name: /Vainilla/ }).click();
+  await expect(scene).toHaveAttribute("data-flavor", "vainilla");
+  await expect(unavailable.locator(".gainer-flavor-name")).toHaveCSS(
+    "text-decoration-line",
+    "line-through",
+  );
+  await unavailable.click();
+  await expect(unavailable).toHaveAttribute("aria-current", "true");
+  await expect(unavailable.locator(".gainer-flavor-name")).toHaveCSS(
+    "text-decoration-line",
+    "line-through",
+  );
 });
 
 test("chips, flechas, URL y carrito comparten la misma selección y recarga", async ({

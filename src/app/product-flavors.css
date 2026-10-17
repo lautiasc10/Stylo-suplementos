@@ -39,8 +39,10 @@
 .unified-product-detail
   .gainer-flavor-options
   a[data-unavailable="true"]
-  > span:last-child {
-  text-decoration: none;
+  .gainer-flavor-name {
+  color: var(--muted);
+  text-decoration-line: line-through;
+  text-decoration-thickness: 1px;
 }
 .unified-product-detail.flavor-product-detail {
   --flavor-background: var(--flavor-nav-background, #ded5c5);

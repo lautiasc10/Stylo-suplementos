@@ -20,6 +20,7 @@ type Transition = { from: Choice; to: Request; token: number };
 type Phase = "idle" | "loading" | "outgoing" | "incoming";
 
 export type VariantSpinnerProps = {
+  showThumbnails?: boolean;
   variants: SpinnerVariant[];
   activeId?: string;
   mode?: "card" | "detail";
@@ -54,6 +55,7 @@ export function VariantSpinner(props: VariantSpinnerProps) {
     mode = "card",
     eager = false,
     informationImages = [],
+    showThumbnails = true,
   } = props;
   const latest = useRef(props);
   latest.current = props;
@@ -283,6 +285,48 @@ export function VariantSpinner(props: VariantSpinnerProps) {
         }
         changePhase("outgoing");
         if (spin) {
+          if (latest.current.mode === "detail") {
+            // Start both halves on the same clock. A warm choice commits its
+            // flavor, price and stock immediately, rather than after the exit.
+            // Decode above still protects cold/broken photographs from flashes.
+            commit();
+            changePhase("incoming");
+            const exit = from.animate(
+              [
+                { transform: "rotateY(0deg) scale(1)", opacity: 1 },
+                {
+                  transform: `rotateY(${-90 * sign}deg) scale(.96)`,
+                  opacity: 0,
+                },
+              ],
+              {
+                duration: 140,
+                easing: "cubic-bezier(.42,0,1,1)",
+                fill: "both",
+              },
+            );
+            const enter = to.animate(
+              [
+                {
+                  transform: `rotateY(${90 * sign}deg) scale(.96)`,
+                  opacity: 0,
+                },
+                { transform: "rotateY(0deg) scale(1)", opacity: 1 },
+              ],
+              {
+                duration: 260,
+                delay: 100,
+                easing: "cubic-bezier(.16,1,.3,1)",
+                fill: "both",
+              },
+            );
+            animations.push(exit, enter);
+            await Promise.all(
+              animations.map((animation) => animation.finished.catch(() => {})),
+            );
+            settle();
+            return;
+          }
           const exit = from.animate(
             [
               { transform: "rotateY(0deg) scale(1)", opacity: 1 },
@@ -443,7 +487,7 @@ export function VariantSpinner(props: VariantSpinnerProps) {
     ...(main.turnImages ?? []),
     ...informationImages,
   ];
-  const rail = mode === "detail" && thumbnails.length > 1;
+  const rail = mode === "detail" && showThumbnails && thumbnails.length > 1;
   const photos = transition
     ? [transition.from.photo, transition.to.photo]
     : [current.photo];
@@ -619,13 +663,15 @@ export function VariantSpinner(props: VariantSpinnerProps) {
           <p className="variant-spinner-caption">
             {variant.flavor || variantLabel(variant)}
           </p>
-          <ProductThumbnailRail
-            images={thumbnails}
-            selectedId={current.photo.id}
-            onSelect={(photo) =>
-              requestChoice(currentRef.current.index, 1, true, photo)
-            }
-          />
+          {showThumbnails && (
+            <ProductThumbnailRail
+              images={thumbnails}
+              selectedId={current.photo.id}
+              onSelect={(photo) =>
+                requestChoice(currentRef.current.index, 1, true, photo)
+              }
+            />
+          )}
         </>
       )}
       <span className="sr-only" aria-live="polite" aria-atomic="true">

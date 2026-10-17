@@ -71,7 +71,7 @@ test("piloto de cinco productos: encuadre cuadrado, alineación y responsive sin
   expect(errors).toEqual([]);
 });
 
-test("detalle del piloto conserva variantes, miniaturas y roca independiente", async ({
+test("detalle del piloto conserva variantes normalizadas y comparador sin miniaturas", async ({
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -85,16 +85,17 @@ test("detalle del piloto conserva variantes, miniaturas y roca independiente", a
     .locator(".product-frame-current")
     .evaluate((img: HTMLImageElement) => img.decode());
   const before = await page
-    .locator(".variant-picker")
+    .locator(".gainer-flavor-picker")
     .getAttribute("data-selected-variant");
   const background = await gallery
     .locator(".product-image-stage")
     .evaluate((el) => getComputedStyle(el).backgroundImage);
+  // The normalization comparator deliberately retains its independent rock.
   expect(background).toContain("rock-square-v1.webp");
   await gallery
     .getByRole("button", { name: "Sabor siguiente", exact: true })
     .click();
-  await expect(page.locator(".variant-picker")).not.toHaveAttribute(
+  await expect(page.locator(".gainer-flavor-picker")).not.toHaveAttribute(
     "data-selected-variant",
     before!,
   );
@@ -104,7 +105,7 @@ test("detalle del piloto conserva variantes, miniaturas y roca independiente", a
       .locator(".product-image-stage")
       .evaluate((el) => getComputedStyle(el).backgroundImage),
   ).toBe(background);
-  await expect(gallery.locator(".product-thumbnail-viewport a")).toHaveCount(3);
+  await expect(gallery.locator(".product-thumbnail-rail")).toHaveCount(0);
   await page.goto("/vista-previa?q=proteina");
   await expect(page.locator('[data-normalized="true"]')).toHaveCount(0);
 });

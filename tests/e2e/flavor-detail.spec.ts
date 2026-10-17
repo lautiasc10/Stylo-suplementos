@@ -151,17 +151,15 @@ test("las flechas sincronizan fondo, foto, stock, precio y carrito sin navegar",
   ).toBe(true);
 });
 
-test("fotos adicionales conservan el sabor y las flechas recorren variantes sin foto", async ({
+test("la ficha no muestra miniaturas y las flechas recorren variantes sin foto", async ({
   page,
 }) => {
   await seed(page);
   await page.goto("/vista-previa/producto/whey-protein");
-  await page
-    .getByRole("link", { name: "Ver Foto Banana 1", exact: true })
-    .click();
+  await expect(page.locator(".product-thumbnail-rail")).toHaveCount(0);
   await expect(page.locator(".product-frame-current")).toHaveAttribute(
     "alt",
-    "Foto Banana 1",
+    "Foto Banana 0",
   );
   await expect(page.locator(".flavor-product-detail")).toHaveAttribute(
     "data-flavor",

@@ -40,7 +40,7 @@ async function seed(page: Page) {
   return product;
 }
 
-test("galería de 560–640 px, columnas próximas y miniaturas oscuras con ficha al final", async ({
+test("galería de 560–640 px, columnas próximas y ficha informativa sin miniaturas", async ({
   page,
 }) => {
   await seed(page);
@@ -57,14 +57,11 @@ test("galería de 560–640 px, columnas próximas y miniaturas oscuras con fich
     "position",
     "sticky",
   );
-  await expect(page.locator(".product-thumbnail-rail")).toHaveCSS(
-    "background-color",
-    "rgba(255, 255, 255, 0.14)",
+  await expect(page.locator(".product-thumbnail-rail")).toHaveCount(0);
+  await page.locator(".product-information summary").click();
+  await expect(page.locator(".product-information-grid a")).toContainText(
+    "Ficha nutricional",
   );
-  const thumbs = page.locator(".product-thumbnail-viewport a");
-  await expect(thumbs.first()).toHaveAccessibleName("Ver Envase Chocolate");
-  await expect(thumbs.last()).toHaveAccessibleName("Ver Ficha nutricional");
-  await expect(thumbs.first()).toHaveAttribute("aria-current", "true");
 });
 
 test("chips accesibles sincronizan precio, stock, foto y URL sin duplicar el estado visible", async ({
@@ -155,10 +152,7 @@ test("375 y 768 px: dos columnas, swipe y acción de compra dentro de la pantall
         () => document.documentElement.scrollWidth <= innerWidth,
       ),
     ).toBe(true);
-    await expect(page.locator(".product-thumbnail-viewport")).toHaveCSS(
-      "display",
-      "flex",
-    );
+    await expect(page.locator(".product-thumbnail-rail")).toHaveCount(0);
   }
 });
 

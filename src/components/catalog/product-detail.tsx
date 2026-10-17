@@ -171,6 +171,7 @@ export function ProductDetail({
           variants={product.variants}
           mode="detail"
           transition="turn"
+          showThumbnails={false}
           flavorNavigation
           initialVariantId={variant.id}
           onImageChange={selectImage}
@@ -258,7 +259,7 @@ export function ProductDetail({
                   }}
                 >
                   <span aria-hidden="true" className="gainer-flavor-dot" />
-                  <span>
+                  <span className="gainer-flavor-name">
                     {repeatedFlavor
                       ? variantLabel(item)
                       : item.flavor || variantLabel(item)}
