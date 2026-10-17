@@ -1,11 +1,14 @@
 -- Ejecutar una sola vez en Supabase SQL Editor, antes de importar el CSV completo.
--- Solo elimina los cuatro productos iniciales identificados abajo. Conserva
--- marcas, categorías, pedidos y archivos de Storage. La copia queda sin acceso
+-- Solo elimina los cuatro productos iniciales y, si existe, un único retiro
+-- pendiente de prueba que use sus variantes. Conserva los pedidos finalizados,
+-- marcas, categorías y archivos de Storage. La copia queda sin acceso
 -- para anon/authenticated en public.catalog_reset_backups.
 begin;
 
 do $$
-declare product_slugs text[];
+declare
+  product_slugs text[];
+  pending_count integer;
 begin
   select array_agg(slug order by slug) into product_slugs
   from public.catalog_products;
@@ -13,14 +16,15 @@ begin
     or (select count(*) from public.catalog_variants) <> 9 then
     raise exception 'El catálogo inicial cambió; no se borró nada.';
   end if;
-  if exists (
-    select 1
-    from public.commerce_orders o,
-         lateral jsonb_array_elements(o.snapshot->'lines') line
-    where o.fulfillment_status = 'pending_pickup'
-      and (line->>'variantId')::uuid in (select id from public.catalog_variants)
-  ) then
-    raise exception 'Hay retiros pendientes de estos productos; no se borró nada.';
+  select count(*) into pending_count
+  from public.commerce_orders o
+  where o.fulfillment_status = 'pending_pickup'
+    and exists (
+      select 1 from jsonb_array_elements(o.snapshot->'lines') line
+      where (line->>'variantId')::uuid in (select id from public.catalog_variants)
+    );
+  if pending_count > 1 then
+    raise exception 'Hay más de un retiro pendiente; no se borró nada. Revisá los pedidos antes de continuar.';
   end if;
 end $$;
 
@@ -39,12 +43,28 @@ select jsonb_build_object(
   'images', (select coalesce(jsonb_agg(to_jsonb(t)), '[]'::jsonb) from public.catalog_images t),
   'inventoryMovements', (select coalesce(jsonb_agg(to_jsonb(t)), '[]'::jsonb) from public.inventory_movements t),
   'priceChanges', (select coalesce(jsonb_agg(to_jsonb(t)), '[]'::jsonb) from public.catalog_price_changes t),
+  'testOrders', (
+    select coalesce(jsonb_agg(to_jsonb(o)), '[]'::jsonb)
+    from public.commerce_orders o
+    where o.fulfillment_status = 'pending_pickup'
+      and exists (
+        select 1 from jsonb_array_elements(o.snapshot->'lines') line
+        where (line->>'variantId')::uuid in (select id from public.catalog_variants)
+      )
+  ),
   'promotions', (select promotions from public.commerce_state where id),
   'catalogRevision', (select revision from public.catalog_state where id),
   'commerceRevision', (select revision from public.commerce_state where id)
 );
 
--- Las promociones dependen de variantes que van a dejar de existir.
+-- El único retiro de prueba y las promociones dependen de variantes que van
+-- a dejar de existir. Ambos ya están incluidos en la copia.
+delete from public.commerce_orders o
+where o.fulfillment_status = 'pending_pickup'
+  and exists (
+    select 1 from jsonb_array_elements(o.snapshot->'lines') line
+    where (line->>'variantId')::uuid in (select id from public.catalog_variants)
+  );
 update public.commerce_state set promotions = '[]'::jsonb, revision = revision + 1 where id;
 delete from public.catalog_images;
 delete from public.inventory_movements;

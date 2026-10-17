@@ -3,6 +3,49 @@ import { importColumns } from "../../src/modules/catalog/import";
 import { demoCatalog } from "../../src/modules/catalog/demo";
 import { readFileSync } from "node:fs";
 
+test("productos se agrupan por marca y se buscan por nombre, sabor o SKU", async ({
+  page,
+}) => {
+  const catalog = demoCatalog();
+  catalog.brands[0].name = "ONE FIT";
+  catalog.brands[0].slug = "marca-one-fit";
+  catalog.brands[1].name = "STAR NUTRITION";
+  catalog.brands[1].slug = "marca-star";
+  catalog.brands.push({
+    ...catalog.brands[0],
+    id: "00000000-0000-4000-8000-000000000099",
+    name: "XBODY",
+    slug: "marca-xbody",
+  });
+  catalog.products[3].brandId = catalog.brands[2].id;
+  await page.addInitScript(
+    (state) => {
+      localStorage.setItem("stylo.catalog-preview.v1", JSON.stringify(state));
+    },
+    { catalog, images: {} },
+  );
+  await page.goto("/vista-previa/gestion");
+  const brands = page.locator(".admin-product-brand-heading h3");
+  await expect(brands).toHaveText(["STAR NUTRITION", "ONE FIT", "XBODY"]);
+  const search = page.getByRole("searchbox", { name: "Buscar productos" });
+  await search.fill("demo-4-a");
+  await expect(page.locator(".admin-product-card")).toHaveCount(1);
+  await expect(page.locator(".admin-product-brand-heading h3")).toHaveText(
+    "XBODY",
+  );
+  await search.fill("proteina vainilla");
+  await expect(page.locator(".admin-product-card")).toHaveCount(1);
+  await page.locator(".admin-product-card").click();
+  await expect(
+    page.getByRole("button", { name: "Guardar producto" }),
+  ).toBeVisible();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+});
+
 function galleryFixture() {
   const catalog = demoCatalog();
   const product = catalog.products[0];
@@ -209,7 +252,7 @@ test("edición de precio, stock e imágenes persiste sin tocar la tienda real", 
     "51.000",
   );
   await page.goto("/catalogo");
-  await expect(page.locator(".product-card")).toHaveCount(0);
+  await expect(page.getByText("Proteína de prueba", { exact: true })).toHaveCount(0);
 });
 
 test("una variante nueva vacía se descarta y permite guardar sin completarla", async ({

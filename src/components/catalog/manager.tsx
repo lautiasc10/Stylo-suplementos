@@ -7,6 +7,7 @@ import { Icon } from "@/components/ui/icon";
 import { IconAction } from "@/components/admin/icon-action";
 import { AdminTable } from "@/components/admin/data-table";
 import { ProductImagesEditor } from "./product-images-editor";
+import { normalizeSearch } from "@/modules/catalog/search";
 import {
   importColumns,
   planImport,
@@ -51,6 +52,7 @@ export function CatalogManager({
   const [draft, setDraft] = useState<Product | null>(null),
     [plan, setPlan] = useState<ImportPlan | null>(null);
   const [approvedCategories, setApprovedCategories] = useState<string[]>([]);
+  const [productQuery, setProductQuery] = useState("");
   const [busy, setBusy] = useState(false),
     [message, setMessage] = useState("");
   const [group, setGroup] = useState<CatalogGroup | null>(null),
@@ -312,6 +314,47 @@ export function CatalogManager({
     }
   }
   const groups = tab === "brands" ? catalog.brands : catalog.categories;
+  const brandOrder = ["star nutrition", "one fit", "xbody"];
+  const queryTerms = normalizeSearch(productQuery.trim())
+    .split(/\s+/)
+    .filter(Boolean);
+  const productGroups = catalog.brands
+    .map((brand) => ({
+      brand,
+      products: catalog.products
+        .filter((product) => product.brandId === brand.id)
+        .filter((product) => {
+          const searchable = normalizeSearch(
+            [
+              product.name,
+              product.slug,
+              brand.name,
+              ...product.variants.flatMap((variant) => [
+                variant.sku,
+                variant.flavor,
+                variant.size,
+                variant.presentation,
+              ]),
+            ].join(" "),
+          );
+          return queryTerms.every((term) => searchable.includes(term));
+        })
+        .sort((a, b) => a.name.localeCompare(b.name, "es")),
+    }))
+    .filter(({ products }) => products.length > 0)
+    .sort((a, b) => {
+      const rank = (name: string) => {
+        const normalized = normalizeSearch(name)
+          .replace(/[^a-z0-9]+/g, " ")
+          .trim();
+        const index = brandOrder.indexOf(normalized);
+        return index === -1 ? brandOrder.length : index;
+      };
+      return (
+        rank(a.brand.name) - rank(b.brand.name) ||
+        a.brand.name.localeCompare(b.brand.name, "es")
+      );
+    });
   const lowStock = publicCatalog(catalog).products.flatMap((product) =>
     product.variants
       .filter(
@@ -343,44 +386,87 @@ export function CatalogManager({
                 <Icon name="plus" /> Nuevo producto
               </button>
             </div>
-            <ul
-              className="admin-product-grid"
-              aria-label="Productos del catálogo"
-            >
-              {catalog.products.map((product) => {
-                const image =
-                  variantImages(product, product.variants[0]?.id ?? "")[0] ??
-                  [...product.images].sort(
-                    (a, b) => a.position - b.position,
-                  )[0];
-                const src = image
-                  ? imageUrls[image.path] ||
-                    (imageBase ? `${imageBase}/${image.path}` : undefined)
-                  : undefined;
-                return (
-                  <li key={product.id}>
-                    <button
-                      type="button"
-                      className="admin-product-card"
-                      id={`edit-product-${product.id}`}
-                      aria-label={`Editar ${product.name}`}
-                      onClick={() => {
-                        productTriggerId.current = `edit-product-${product.id}`;
-                        setDraft(structuredClone(product));
-                        setMessage("");
-                      }}
-                    >
-                      <ProductThumbnail
-                        src={src}
-                        alt={`Foto de ${product.name}`}
-                        size={320}
-                      />
-                      <span className="admin-product-name">{product.name}</span>
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
+            <div className="admin-product-search">
+              <label htmlFor="admin-product-query">Buscar productos</label>
+              <input
+                id="admin-product-query"
+                type="search"
+                value={productQuery}
+                onChange={(event) => setProductQuery(event.target.value)}
+                placeholder="Nombre, marca, sabor o SKU"
+                autoComplete="off"
+              />
+              <span aria-live="polite">
+                {productGroups.reduce(
+                  (total, group) => total + group.products.length,
+                  0,
+                )}{" "}
+                de {catalog.products.length} productos
+              </span>
+            </div>
+            {productGroups.map(({ brand, products }) => (
+              <section
+                className="admin-product-brand"
+                key={brand.id}
+                aria-labelledby={`product-brand-${brand.id}`}
+              >
+                <div className="admin-product-brand-heading">
+                  <h3 id={`product-brand-${brand.id}`}>{brand.name}</h3>
+                  <span>
+                    {products.length}{" "}
+                    {products.length === 1 ? "producto" : "productos"}
+                  </span>
+                </div>
+                <ul
+                  className="admin-product-grid"
+                  aria-label={`Productos de ${brand.name}`}
+                >
+                  {products.map((product) => {
+                    const image =
+                      variantImages(
+                        product,
+                        product.variants[0]?.id ?? "",
+                      )[0] ??
+                      [...product.images].sort(
+                        (a, b) => a.position - b.position,
+                      )[0];
+                    const src = image
+                      ? imageUrls[image.path] ||
+                        (imageBase ? `${imageBase}/${image.path}` : undefined)
+                      : undefined;
+                    return (
+                      <li key={product.id}>
+                        <button
+                          type="button"
+                          className="admin-product-card"
+                          id={`edit-product-${product.id}`}
+                          aria-label={`Editar ${product.name}`}
+                          onClick={() => {
+                            productTriggerId.current = `edit-product-${product.id}`;
+                            setDraft(structuredClone(product));
+                            setMessage("");
+                          }}
+                        >
+                          <ProductThumbnail
+                            src={src}
+                            alt={`Foto de ${product.name}`}
+                            size={320}
+                          />
+                          <span className="admin-product-name">
+                            {product.name}
+                          </span>
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </section>
+            ))}
+            {catalog.products.length > 0 && productGroups.length === 0 && (
+              <p className="management-empty" role="status">
+                No encontramos productos con esa búsqueda.
+              </p>
+            )}
             {!catalog.products.length && (
               <p className="management-empty">
                 Todavía no hay productos. Cargá el primero o importá un archivo.

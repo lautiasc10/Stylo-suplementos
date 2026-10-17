@@ -8,7 +8,7 @@ const resetSql = readFileSync(
 );
 
 describe("limpieza controlada del catálogo inicial", () => {
-  it("rechaza retiros pendientes y luego conserva una copia antes de borrar los cuatro productos", async () => {
+  it("respalda y elimina un pedido de prueba, pero rechaza varios retiros pendientes", async () => {
     const db = new PGlite();
     try {
       await db.exec(`
@@ -66,13 +66,24 @@ describe("limpieza controlada del catálogo inicial", () => {
         "insert into public.commerce_orders(id,request_id,source,payment_status,fulfillment_status,customer,request_payload,snapshot,admin_id) values(gen_random_uuid(),gen_random_uuid(),'manual','pending','pending_pickup','{}'::jsonb,'{}'::jsonb,$1::jsonb,$2)",
         [JSON.stringify({ lines: [{ variantId }] }), admin],
       );
-      await expect(db.exec(resetSql)).rejects.toThrow(/retiros pendientes/);
+      await db.query(
+        "insert into public.commerce_orders(id,request_id,source,payment_status,fulfillment_status,customer,request_payload,snapshot,admin_id) values(gen_random_uuid(),gen_random_uuid(),'manual','pending','pending_pickup','{}'::jsonb,'{}'::jsonb,$1::jsonb,$2)",
+        [JSON.stringify({ lines: [{ variantId }] }), admin],
+      );
+      await expect(db.exec(resetSql)).rejects.toThrow(
+        /más de un retiro pendiente/,
+      );
       await db.exec("rollback");
       expect(
         (await db.query("select id from public.catalog_products")).rows,
       ).toHaveLength(4);
-      await db.exec("delete from public.commerce_orders");
+      await db.exec(
+        "delete from public.commerce_orders where id in (select id from public.commerce_orders limit 1)",
+      );
       await db.exec(resetSql);
+      expect(
+        (await db.query("select id from public.commerce_orders")).rows,
+      ).toHaveLength(0);
       expect(
         (await db.query("select id from public.catalog_products")).rows,
       ).toHaveLength(0);
@@ -80,10 +91,15 @@ describe("limpieza controlada del catálogo inicial", () => {
         (await db.query("select id from public.catalog_variants")).rows,
       ).toHaveLength(0);
       const backups = await db.query<{
-        snapshot: { products: unknown[]; variants: unknown[] };
+        snapshot: {
+          products: unknown[];
+          variants: unknown[];
+          testOrders: unknown[];
+        };
       }>("select snapshot from public.catalog_reset_backups");
       expect(backups.rows[0].snapshot.products).toHaveLength(4);
       expect(backups.rows[0].snapshot.variants).toHaveLength(9);
+      expect(backups.rows[0].snapshot.testOrders).toHaveLength(1);
     } finally {
       await db.close();
     }
