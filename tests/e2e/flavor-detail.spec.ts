@@ -211,11 +211,11 @@ test("cambios rápidos conservan solo dos capas y movimiento reducido cancela el
   );
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(page.locator(".flavor-scene-layer")).toHaveCount(1);
-  await expect(page.locator(".variant-spinner")).toHaveAttribute(
-    "data-spinner-phase",
+  await expect(page.locator(".variant-ring")).toHaveAttribute(
+    "data-ring-phase",
     "idle",
   );
-  await expect(page.locator(".variant-spinner-frame")).toHaveCount(1);
+  await expect(page.locator(".variant-ring-item")).toHaveCount(1);
   await expect(page.locator(".flavor-product-detail")).toHaveCSS(
     "transition-duration",
     "0s",

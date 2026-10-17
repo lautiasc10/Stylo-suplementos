@@ -865,11 +865,26 @@ test("el giro automático cambia de variante y la ficha conserva sus fotografía
   ).toBeVisible();
   await expect(card.locator(".product-gallery-controls")).toHaveCount(0);
   await expect(card.locator(".product-image-count")).toHaveCount(0);
-  await expect(card.locator(".variant-spinner")).toHaveAttribute(
+  await card
+    .locator(".variant-ring")
+    .dispatchEvent("pointerover", { pointerType: "mouse" });
+  await expect(card.locator(".variant-ring")).toHaveAttribute(
     "data-auto-playing",
     "true",
   );
-  await page.clock.runFor(3100);
+  await page.clock.runFor(3800);
+  // Native Motion timelines use real compositor time; finish their visual pass
+  // after advancing the mocked autoplay timer, without changing application state.
+  await page.waitForTimeout(50);
+  await page
+    .locator(".variant-ring")
+    .evaluateAll((roots) =>
+      roots.forEach((root) =>
+        root
+          .querySelectorAll("*")
+          .forEach((node) => node.getAnimations().forEach((a) => a.finish())),
+      ),
+    );
   await expect(
     card.getByAltText("Vainilla frente", { exact: true }),
   ).toBeVisible();
@@ -879,15 +894,27 @@ test("el giro automático cambia de variante y la ficha conserva sus fotografía
   await expect(
     card.getByRole("link", { name: "Ver variantes", exact: true }),
   ).toHaveAttribute("href", /variante=00000000-0000-4000-8000-000000000051$/);
-  await expect(card.locator(".variant-spinner")).toHaveAttribute(
-    "data-spinner-phase",
+  await expect(card.locator(".variant-ring")).toHaveAttribute(
+    "data-ring-phase",
     "idle",
   );
-  await expect(card.locator(".variant-spinner")).toHaveAttribute(
+  await expect(card.locator(".variant-ring")).toHaveAttribute(
     "data-auto-playing",
     "true",
   );
-  await page.clock.runFor(3100);
+  await page.clock.runFor(3800);
+  // Native Motion timelines use real compositor time; finish their visual pass
+  // after advancing the mocked autoplay timer, without changing application state.
+  await page.waitForTimeout(50);
+  await page
+    .locator(".variant-ring")
+    .evaluateAll((roots) =>
+      roots.forEach((root) =>
+        root
+          .querySelectorAll("*")
+          .forEach((node) => node.getAnimations().forEach((a) => a.finish())),
+      ),
+    );
   await expect(
     card.getByAltText("Chocolate frente", { exact: true }),
   ).toBeVisible();
@@ -895,6 +922,17 @@ test("el giro automático cambia de variante y la ficha conserva sus fotografía
   await page
     .getByRole("link", { name: "Ver Chocolate dorso", exact: true })
     .click();
+  await expect(page.locator(".variant-ring")).not.toHaveAttribute(
+    "data-ring-phase",
+    "loading",
+  );
+  await page
+    .locator(".variant-ring")
+    .evaluate((root) =>
+      root
+        .querySelectorAll("*")
+        .forEach((node) => node.getAnimations().forEach((a) => a.finish())),
+    );
   await expect(
     page.getByAltText("Chocolate dorso", { exact: true }),
   ).toBeVisible();
@@ -905,6 +943,17 @@ test("el giro automático cambia de variante y la ficha conserva sus fotografía
       exact: true,
     })
     .click();
+  await expect(page.locator(".variant-ring")).not.toHaveAttribute(
+    "data-ring-phase",
+    "loading",
+  );
+  await page
+    .locator(".variant-ring")
+    .evaluate((root) =>
+      root
+        .querySelectorAll("*")
+        .forEach((node) => node.getAnimations().forEach((a) => a.finish())),
+    );
   await expect(
     page.getByAltText("Vainilla frente", { exact: true }),
   ).toBeVisible();
@@ -1002,14 +1051,27 @@ test("la galería pausa con foco y respeta movimiento reducido en vivo", async (
     galleryFixture(),
   );
   await page.goto("/vista-previa?q=proteina");
-  const gallery = page.locator(".variant-spinner");
+  const gallery = page.locator(".variant-ring");
   await gallery.scrollIntoViewIfNeeded();
+  await gallery.dispatchEvent("pointerover", { pointerType: "mouse" });
   await expect(gallery).toHaveAttribute("data-auto-playing", "true");
-  await page.clock.runFor(3100);
+  await page.clock.runFor(3800);
+  // Native Motion timelines use real compositor time; finish their visual pass
+  // after advancing the mocked autoplay timer, without changing application state.
+  await page.waitForTimeout(50);
+  await page
+    .locator(".variant-ring")
+    .evaluateAll((roots) =>
+      roots.forEach((root) =>
+        root
+          .querySelectorAll("*")
+          .forEach((node) => node.getAnimations().forEach((a) => a.finish())),
+      ),
+    );
   await expect(
     page.getByAltText("Vainilla frente", { exact: true }),
   ).toBeVisible();
-  await expect(gallery).toHaveAttribute("data-spinner-phase", "idle");
+  await expect(gallery).toHaveAttribute("data-ring-phase", "idle");
   await gallery.locator(".product-frame-link").focus();
   await expect(gallery).not.toHaveAttribute("data-auto-playing", "true");
   await page.clock.runFor(11000);
@@ -1019,14 +1081,27 @@ test("la galería pausa con foco y respeta movimiento reducido en vivo", async (
   await gallery
     .locator(".product-frame-link")
     .evaluate((element) => element.blur());
+  await gallery.dispatchEvent("pointerover", { pointerType: "mouse" });
   await expect(gallery).toHaveAttribute("data-auto-playing", "true");
-  await page.clock.runFor(3100);
+  await page.clock.runFor(3800);
+  // Native Motion timelines use real compositor time; finish their visual pass
+  // after advancing the mocked autoplay timer, without changing application state.
+  await page.waitForTimeout(50);
+  await page
+    .locator(".variant-ring")
+    .evaluateAll((roots) =>
+      roots.forEach((root) =>
+        root
+          .querySelectorAll("*")
+          .forEach((node) => node.getAnimations().forEach((a) => a.finish())),
+      ),
+    );
   await expect(
     page.getByAltText("Chocolate frente", { exact: true }),
   ).toBeVisible();
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(gallery).not.toHaveAttribute("data-auto-playing", "true");
-  await expect(gallery).toHaveAttribute("data-spinner-phase", "idle");
+  await expect(gallery).toHaveAttribute("data-ring-phase", "idle");
   await page.clock.runFor(11000);
   await expect(
     page.getByAltText("Chocolate frente", { exact: true }),
@@ -1048,8 +1123,26 @@ test("una foto por variante alterna sus datos y respeta sabor, precio y disponib
   await page.goto("/vista-previa?q=proteina");
   const card = page.locator(".product-card");
   await card.locator(".product-image-gallery").scrollIntoViewIfNeeded();
-  await page.mouse.move(0, 0);
-  await page.clock.runFor(3100);
+  await card
+    .locator(".variant-ring")
+    .dispatchEvent("pointerover", { pointerType: "mouse" });
+  await expect(card.locator(".variant-ring")).toHaveAttribute(
+    "data-auto-playing",
+    "true",
+  );
+  await page.clock.runFor(3800);
+  // Native Motion timelines use real compositor time; finish their visual pass
+  // after advancing the mocked autoplay timer, without changing application state.
+  await page.waitForTimeout(50);
+  await page
+    .locator(".variant-ring")
+    .evaluateAll((roots) =>
+      roots.forEach((root) =>
+        root
+          .querySelectorAll("*")
+          .forEach((node) => node.getAnimations().forEach((a) => a.finish())),
+      ),
+    );
   await expect(
     card.getByRole("img", { name: "Vainilla frente", exact: true }),
   ).toBeVisible();
@@ -1095,8 +1188,9 @@ test("el giro automático conserva el tamaño, evita fragmentos y se cancela con
     galleryFixture(),
   );
   await page.goto("/vista-previa?q=proteina");
-  const gallery = page.locator(".variant-spinner");
+  const gallery = page.locator(".variant-ring");
   await gallery.scrollIntoViewIfNeeded();
+  await gallery.dispatchEvent("pointerover", { pointerType: "mouse" });
   await expect(gallery).toHaveAttribute("data-auto-playing", "true");
   const before = await gallery.evaluate((e) => [e.clientWidth, e.clientHeight]);
   await page.clock.runFor(2900);
@@ -1104,14 +1198,14 @@ test("el giro automático conserva el tamaño, evita fragmentos y se cancela con
     page.getByAltText("Chocolate frente", { exact: true }),
   ).toBeVisible();
   await page.clock.runFor(200);
-  await expect(gallery).toHaveAttribute("data-spinner-phase", "outgoing");
+  await expect(gallery).toHaveAttribute("data-ring-phase", "rotating");
   await expect(gallery.locator(".product-image-fragments")).toHaveCount(0);
   expect(
     await gallery.evaluate((e) => [e.clientWidth, e.clientHeight]),
   ).toEqual(before);
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await expect(gallery).toHaveAttribute("data-spinner-phase", "idle");
-  await expect(gallery.locator(".variant-spinner-frame")).toHaveCount(1);
+  await expect(gallery).toHaveAttribute("data-ring-phase", "idle");
+  await expect(gallery.locator(".variant-ring-item")).toHaveCount(1);
   await page.clock.runFor(10000);
   await expect(
     page.getByAltText("Vainilla frente", { exact: true }),
@@ -1162,14 +1256,41 @@ test("las tarjetas escalonan el inicio y suspenden los cambios fuera de pantalla
   await expect(
     proteinCard.getByAltText("Chocolate frente", { exact: true }),
   ).toBeVisible();
-  await page.clock.runFor(3100);
+  await page.clock.runFor(3800);
+  // Native Motion timelines use real compositor time; finish their visual pass
+  // after advancing the mocked autoplay timer, without changing application state.
+  await page.waitForTimeout(50);
+  await page
+    .locator(".variant-ring")
+    .evaluateAll((roots) =>
+      roots.forEach((root) =>
+        root
+          .querySelectorAll("*")
+          .forEach((node) => node.getAnimations().forEach((a) => a.finish())),
+      ),
+    );
   await expect(
-    creatineCard.getByAltText("Creatina foto 2", { exact: true }),
+    creatineCard.getByAltText("Creatina foto 1", { exact: true }),
   ).toBeVisible();
   await expect(
     proteinCard.getByAltText("Chocolate frente", { exact: true }),
   ).toBeVisible();
-  await page.clock.runFor(320);
+  await proteinCard
+    .locator(".variant-ring")
+    .dispatchEvent("pointerover", { pointerType: "mouse" });
+  await page.clock.runFor(3800);
+  // Native Motion timelines use real compositor time; finish their visual pass
+  // after advancing the mocked autoplay timer, without changing application state.
+  await page.waitForTimeout(50);
+  await page
+    .locator(".variant-ring")
+    .evaluateAll((roots) =>
+      roots.forEach((root) =>
+        root
+          .querySelectorAll("*")
+          .forEach((node) => node.getAnimations().forEach((a) => a.finish())),
+      ),
+    );
   await expect(
     proteinCard.getByAltText("Vainilla frente", { exact: true }),
   ).toBeVisible();
@@ -1187,7 +1308,7 @@ test("las tarjetas escalonan el inicio y suspenden los cambios fuera de pantalla
   ).not.toHaveAttribute("data-animated", "true");
   await page.clock.runFor(3600);
   await expect(
-    creatineCard.getByAltText("Creatina foto 2", { exact: true }),
+    creatineCard.getByAltText("Creatina foto 1", { exact: true }),
   ).toHaveCount(1);
   await expect(
     proteinCard.getByAltText("Vainilla frente", { exact: true }),

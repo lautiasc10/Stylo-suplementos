@@ -31,7 +31,7 @@ test("la roca permanece fija y los envases normalizados comparten tamaño y lín
   }, demoCatalog());
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/vista-previa?q=proteina");
-  const gallery = page.locator(".variant-spinner");
+  const gallery = page.locator(".variant-ring");
   await gallery.scrollIntoViewIfNeeded();
   await page.locator(".product-card").hover();
   const measure = () =>
@@ -58,7 +58,7 @@ test("la roca permanece fija y los envases normalizados comparten tamaño y lín
     "alt",
     "Bolsa normalizada",
   );
-  await expect(gallery).toHaveAttribute("data-spinner-phase", "idle");
+  await expect(gallery).toHaveAttribute("data-ring-phase", "idle");
   const next = await measure();
   expect(next.gap).toBeCloseTo(0.1, 2);
   expect(next.width).toBeCloseTo(1, 2);

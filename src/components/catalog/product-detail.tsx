@@ -170,9 +170,7 @@ function StandardProductDetail({
               images={flavorImages}
               variants={product.variants}
               mode="detail"
-              transition={product.turnImages?.length ? "turn" : "fade"}
               informationImages={informationImages}
-              flavorNavigation
               initialVariantId={variant.id}
               onImageChange={selectFlavorImage}
               onPrepareImage={flavorExperiment ? prepareFlavorImage : undefined}
@@ -184,9 +182,10 @@ function StandardProductDetail({
             <ProductGallery
               key={`${variant.id}:${images.map((image) => image.id).join(":")}`}
               images={images}
+              variants={product.variants}
+              initialVariantId={variant.id}
               informationImages={informationImages}
               mode="detail"
-              transition="fade"
             />
           </Crossfade>
         ) : (

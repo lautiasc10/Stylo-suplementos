@@ -51,20 +51,20 @@ for (const mode of ["card", "detail"] as const) {
     await page.goto(
       mode === "card" ? "/vista-previa" : "/vista-previa/producto/whey-protein",
     );
-    const gallery = page.locator(".variant-spinner");
+    const gallery = page.locator(".variant-ring");
     await gallery.scrollIntoViewIfNeeded();
     if (mode === "card") await page.locator(".product-card").hover();
     await gallery
       .getByRole("button", { name: "Sabor siguiente", exact: true })
       .click();
-    await expect(gallery).toHaveAttribute("data-spinner-phase", "incoming");
+    await expect(gallery).toHaveAttribute("data-ring-phase", "rotating");
     await gallery.evaluate((e) =>
       e
-        .querySelectorAll(".variant-spinner-frame")
+        .querySelectorAll(".variant-ring-item")
         .forEach((f) => f.getAnimations().forEach((a) => a.pause())),
     );
-    const photo = gallery.locator(".product-frame-current");
-    await expect(photo).toHaveAttribute("alt", "Envase Frutilla");
+    let photo = gallery.locator(".variant-ring-item[data-arriving=true] img");
+
     const src = await photo.evaluate((img: HTMLImageElement) => {
       (window as Window & { spinnerFrame?: HTMLImageElement }).spinnerFrame =
         img;
@@ -77,10 +77,12 @@ for (const mode of ["card", "detail"] as const) {
     ).toBe(true);
     await gallery.evaluate((e) =>
       e
-        .querySelectorAll(".variant-spinner-frame")
+        .querySelectorAll(".variant-ring-item")
         .forEach((f) => f.getAnimations().forEach((a) => a.finish())),
     );
-    await expect(gallery).toHaveAttribute("data-spinner-phase", "idle");
+    await expect(gallery).toHaveAttribute("data-ring-phase", "idle");
+    photo = gallery.locator(".product-frame-current");
+    await expect(photo).toHaveAttribute("alt", "Envase Frutilla");
     expect(
       await photo.evaluate(
         (img: HTMLImageElement) =>

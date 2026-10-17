@@ -64,14 +64,14 @@ for (const mode of ["card", "detail"] as const) {
         ? "/vista-previa?q=proteina"
         : `/vista-previa/producto/${product.slug}?variante=${first.id}`,
     );
-    const gallery = page.locator(".variant-spinner");
+    const gallery = page.locator(".variant-ring");
     await gallery.scrollIntoViewIfNeeded();
     if (mode === "card") await page.locator(".product-card").hover();
     await gallery
       .getByRole("button", { name: "Sabor siguiente", exact: true })
       .click();
     await expect(gallery).toHaveAttribute("data-active-variant", next.id);
-    await expect(gallery).toHaveAttribute("data-spinner-phase", "idle");
+    await expect(gallery).toHaveAttribute("data-ring-phase", "idle");
     await expect(gallery.locator(".product-frame-current")).toHaveAttribute(
       "alt",
       "Frente Vainilla",

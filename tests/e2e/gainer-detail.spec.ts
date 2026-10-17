@@ -128,7 +128,7 @@ test("etiquetas y flechas comparten selección, carrito y enlace recargable", as
   );
   await expect(page.locator(".product-image-gallery")).toHaveAttribute(
     "data-transition",
-    "turn",
+    "ring",
   );
   await page
     .getByRole("button", { name: "Agregar al carrito", exact: true })

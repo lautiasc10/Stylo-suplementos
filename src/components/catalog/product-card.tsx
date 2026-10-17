@@ -91,13 +91,6 @@ export function ProductCard({
   const router = useRouter();
   const [variantId, setVariantId] = useState(initialVariantId);
   const variant = variants.find((item) => item.id === variantId) ?? variants[0];
-  const differentFlavors =
-    new Set(
-      product.variants
-        .filter((item) => item.active)
-        .map((item) => item.flavor.trim().toLocaleLowerCase())
-        .filter(Boolean),
-    ).size > 1;
   const brandLogo =
     brand.logo &&
     catalogMediaSource(
@@ -197,7 +190,6 @@ export function ProductCard({
             startDelay={(index % 5) * 180}
             eager={index < 2 && photos[0]?.normalized}
             onImageChange={selectPhoto}
-            transition={differentFlavors ? "turn" : "fragments"}
           />
         ) : (
           <Link

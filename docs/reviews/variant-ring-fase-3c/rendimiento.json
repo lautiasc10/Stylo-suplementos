@@ -1,0 +1,18 @@
+{
+  "samples": 142,
+  "p95": 16.799999999999727,
+  "max": 33.40000000000009,
+  "above50ms": 0,
+  "variantChanged": true,
+  "cpuThrottle": 4,
+  "viewport": 375,
+  "tilt": {
+    "samples": 121,
+    "p95": 16.700000000000273,
+    "max": 16.800000000000182,
+    "above50ms": 0,
+    "childListMutations": 0,
+    "cpuThrottle": 4,
+    "viewport": 375
+  }
+}

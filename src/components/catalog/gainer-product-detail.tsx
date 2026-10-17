@@ -147,8 +147,6 @@ export function GainerProductDetail({
           images={images}
           variants={product.variants}
           mode="detail"
-          transition="turn"
-          flavorNavigation
           initialVariantId={variant.id}
           onImageChange={selectImage}
           onPrepareImage={warmIngredients}

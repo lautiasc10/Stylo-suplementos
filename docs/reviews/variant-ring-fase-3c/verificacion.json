@@ -1,0 +1,210 @@
+{
+  "views": [
+    {
+      "kind": "catalog",
+      "width": 1800,
+      "cards": 53,
+      "columns": 4,
+      "overflow": false,
+      "firstImageOpacity": "1"
+    },
+    {
+      "kind": "detail",
+      "sku": "STAR-0013",
+      "width": 1800,
+      "stage": [
+        640,
+        640
+      ],
+      "overflow": false,
+      "firstImage": "CAFEINA 200 x 30 CAPS",
+      "opacity": "1",
+      "variantArrows": 0
+    },
+    {
+      "kind": "detail",
+      "sku": "STAR-0023",
+      "width": 1800,
+      "stage": [
+        640,
+        640
+      ],
+      "overflow": false,
+      "firstImage": "PROTEÍNA \"WHEY PROTEIN\" x 2 LBS DP · cookies · DP · Vista frontal",
+      "opacity": "1",
+      "variantArrows": 2
+    },
+    {
+      "kind": "detail",
+      "sku": "ONE-0010",
+      "width": 1800,
+      "stage": [
+        640,
+        640
+      ],
+      "overflow": false,
+      "firstImage": "GANADOR DE PESO \"THE BEST GAINER\" 1.5KG · chocolate · Vista frontal",
+      "opacity": "1",
+      "variantArrows": 0
+    },
+    {
+      "kind": "catalog",
+      "width": 768,
+      "cards": 53,
+      "columns": 2,
+      "overflow": false,
+      "firstImageOpacity": "1"
+    },
+    {
+      "kind": "detail",
+      "sku": "STAR-0013",
+      "width": 768,
+      "stage": [
+        640,
+        640
+      ],
+      "overflow": false,
+      "firstImage": "CAFEINA 200 x 30 CAPS",
+      "opacity": "1",
+      "variantArrows": 0
+    },
+    {
+      "kind": "detail",
+      "sku": "STAR-0023",
+      "width": 768,
+      "stage": [
+        640,
+        640
+      ],
+      "overflow": false,
+      "firstImage": "PROTEÍNA \"WHEY PROTEIN\" x 2 LBS DP · cookies · DP · Vista frontal",
+      "opacity": "1",
+      "variantArrows": 2
+    },
+    {
+      "kind": "detail",
+      "sku": "ONE-0010",
+      "width": 768,
+      "stage": [
+        640,
+        640
+      ],
+      "overflow": false,
+      "firstImage": "GANADOR DE PESO \"THE BEST GAINER\" 1.5KG · chocolate · Vista frontal",
+      "opacity": "1",
+      "variantArrows": 0
+    },
+    {
+      "kind": "catalog",
+      "width": 375,
+      "cards": 53,
+      "columns": 2,
+      "overflow": false,
+      "firstImageOpacity": "1"
+    },
+    {
+      "kind": "detail",
+      "sku": "STAR-0013",
+      "width": 375,
+      "stage": [
+        343,
+        343
+      ],
+      "overflow": false,
+      "firstImage": "CAFEINA 200 x 30 CAPS",
+      "opacity": "1",
+      "variantArrows": 0
+    },
+    {
+      "kind": "detail",
+      "sku": "STAR-0023",
+      "width": 375,
+      "stage": [
+        343,
+        343
+      ],
+      "overflow": false,
+      "firstImage": "PROTEÍNA \"WHEY PROTEIN\" x 2 LBS DP · cookies · DP · Vista frontal",
+      "opacity": "1",
+      "variantArrows": 2
+    },
+    {
+      "kind": "detail",
+      "sku": "ONE-0010",
+      "width": 375,
+      "stage": [
+        343,
+        343
+      ],
+      "overflow": false,
+      "firstImage": "GANADOR DE PESO \"THE BEST GAINER\" 1.5KG · chocolate · Vista frontal",
+      "opacity": "1",
+      "variantArrows": 0
+    }
+  ],
+  "interactions": [
+    {
+      "width": 1800,
+      "sku": "STAR-0023",
+      "variantChanged": true,
+      "urlMatches": true,
+      "cartMatches": true,
+      "rockFixed": true,
+      "frames": 1,
+      "opacity": "1"
+    },
+    {
+      "width": 768,
+      "sku": "STAR-0023",
+      "variantChanged": true,
+      "urlMatches": true,
+      "cartMatches": true,
+      "rockFixed": true,
+      "frames": 1,
+      "opacity": "1"
+    },
+    {
+      "width": 375,
+      "sku": "STAR-0023",
+      "variantChanged": true,
+      "urlMatches": true,
+      "cartMatches": true,
+      "rockFixed": true,
+      "frames": 1,
+      "opacity": "1"
+    }
+  ],
+  "errors": [],
+  "ringViews": [
+    {
+      "size": "compact",
+      "width": 1800,
+      "items": 3,
+      "overflow": false
+    },
+    {
+      "size": "full",
+      "width": 1800,
+      "items": 3,
+      "rx": "4deg",
+      "ry": "5.6deg",
+      "mask": true,
+      "overflow": false
+    },
+    {
+      "size": "compact",
+      "width": 375,
+      "items": 3,
+      "overflow": false
+    },
+    {
+      "size": "full",
+      "width": 375,
+      "items": 3,
+      "rx": "4deg",
+      "ry": "5.6deg",
+      "mask": true,
+      "overflow": false
+    }
+  ]
+}

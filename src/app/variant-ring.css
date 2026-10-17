@@ -1,10 +1,18 @@
-.variant-spinner .product-image-stage {
+.variant-ring .product-image-stage {
+  --rx: 0deg;
+  --ry: 0deg;
+  --mx: 0%;
+  --my: 0%;
+  --sx: 0px;
+  --sy: 0px;
   aspect-ratio: 1;
+  overflow: hidden;
+  isolation: isolate;
   background: url("/media/normalization-trial-v1/rock-square-v1.webp") center /
     cover no-repeat var(--commercial-background);
   touch-action: pan-y pinch-zoom;
 }
-.variant-spinner .product-image-stage::after {
+.variant-ring .product-image-stage::after {
   content: "";
   position: absolute;
   z-index: 0;
@@ -12,27 +20,49 @@
   inset: 87% 21% auto;
   height: 5%;
   background: radial-gradient(ellipse, #000c, #0000 72%);
+  transform: translate3d(var(--sx), var(--sy), 0);
+  transition: transform 300ms ease-out;
 }
-.variant-spinner-frames {
+.product-image-gallery.variant-ring .product-frame-link {
+  perspective: none;
+}
+.variant-ring-frames {
+  position: absolute;
+  inset: 0;
+  perspective: 1000px;
+  perspective-origin: 50% 75%;
+  transform-style: preserve-3d;
+}
+.variant-ring-item {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transform-origin: 50% 90%;
+  transform-style: preserve-3d;
+}
+.variant-ring[data-ring-phase="rotating"] .variant-ring-item,
+.variant-ring[data-ring-phase="fading"] .variant-ring-item {
+  will-change: transform, opacity;
+}
+.variant-ring-tilt {
   position: absolute;
   inset: 0;
   perspective: 900px;
-  perspective-origin: 50% 90%;
+  transform-origin: 50% 70%;
+  transform-style: preserve-3d;
 }
-.product-image-gallery.variant-spinner .product-frame-link {
-  perspective: none;
+.variant-ring-item[data-current="true"] .variant-ring-tilt {
+  transform: rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform 300ms ease-out;
 }
-.variant-spinner-frame {
-  position: absolute;
-  inset: 0;
-  transform-origin: 50% 90%;
-  backface-visibility: hidden;
+.variant-ring
+  .product-image-stage[data-tilting="true"]
+  .variant-ring-item[data-current="true"]
+  .variant-ring-tilt {
+  will-change: transform;
+  transition-duration: 90ms;
 }
-.variant-spinner[data-spinner-phase="outgoing"] .variant-spinner-frame,
-.variant-spinner[data-spinner-phase="incoming"] .variant-spinner-frame {
-  will-change: transform, opacity;
-}
-.variant-spinner .variant-spinner-frame .product-frame {
+.variant-ring .variant-ring-item .product-frame {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -44,8 +74,40 @@
   animation: none;
   opacity: 1;
 }
-.variant-spinner-frame[data-information="true"] {
+.variant-ring-item[data-information="true"] {
   background: var(--image-background);
+}
+.variant-ring-light {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  mask-image: var(--pack-mask, linear-gradient(transparent, transparent));
+  mask-size: contain;
+  mask-position: center;
+  mask-repeat: no-repeat;
+  mix-blend-mode: soft-light;
+  overflow: hidden;
+}
+.variant-ring-glow,
+.variant-ring-shimmer {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.variant-ring-glow {
+  background: radial-gradient(ellipse at center, #fff 0%, #fff8 22%, #fff0 65%);
+  transform: translate3d(var(--mx), var(--my), 0);
+  transition: opacity 180ms ease-out;
+}
+.variant-ring
+  .product-image-stage[data-tilting="true"]
+  .variant-ring-item[data-current="true"]
+  .variant-ring-glow {
+  opacity: 0.15;
+}
+.variant-ring-shimmer {
+  background: linear-gradient(110deg, #fff0 30%, #fff 49%, #fff0 68%);
 }
 .variant-navigation {
   position: absolute;
@@ -86,7 +148,7 @@
 .product-card:is(:hover, :focus-within) .variant-navigation button {
   pointer-events: auto;
 }
-.variant-spinner-count {
+.variant-ring-count {
   position: absolute;
   z-index: 4;
   bottom: var(--space-2);
@@ -100,7 +162,7 @@
   font-variant-numeric: tabular-nums;
   pointer-events: none;
 }
-.variant-spinner-status {
+.variant-ring-status {
   position: absolute;
   z-index: 5;
   bottom: var(--space-10);
@@ -113,23 +175,23 @@
   text-align: center;
   pointer-events: none;
 }
-.variant-spinner-status:empty {
+.variant-ring-status:empty {
   display: none;
 }
-.variant-spinner-caption {
+.variant-ring-caption {
   margin: var(--space-3) 0 0;
   min-height: 24px;
   color: var(--foreground);
   font-size: var(--text-sm);
   text-align: center;
 }
-.product-image-gallery-card.variant-spinner .product-static-images {
+.product-image-gallery-card.variant-ring .product-static-images {
   display: none;
 }
-.variant-spinner > noscript {
+.variant-ring > noscript {
   grid-column: 1 / -1;
 }
-.product-gallery-with-rail > .variant-spinner-caption {
+.product-gallery-with-rail > .variant-ring-caption {
   grid-column: 2;
   grid-row: 2;
 }
@@ -142,7 +204,7 @@
   }
 }
 @media (max-width: 959px) {
-  .product-gallery-with-rail > .variant-spinner-caption {
+  .product-gallery-with-rail > .variant-ring-caption {
     grid-column: 1;
     grid-row: 3;
   }
@@ -157,8 +219,17 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .variant-spinner-frames {
+  .variant-ring-frames,
+  .variant-ring-tilt {
     perspective: none;
+  }
+  .variant-ring-tilt,
+  .variant-ring .product-image-stage::after {
+    transform: none !important;
+    transition: none !important;
+  }
+  .variant-ring-light {
+    display: none;
   }
   .variant-navigation {
     transition: none !important;
