@@ -12,6 +12,8 @@ export type GalleryImage = {
   thumbnailSrc?: string;
   information?: boolean;
   normalized?: boolean;
+  /** Documents and images with uncertain segmentation stay in a bounded dark card. */
+  framed?: boolean;
   srcSet?: string;
   sizes?: string;
   turnImages?: (GalleryImage & { view: "left" | "back" | "right" })[];

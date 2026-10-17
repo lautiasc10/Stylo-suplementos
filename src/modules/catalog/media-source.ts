@@ -7,6 +7,13 @@ export function catalogMediaSource(
 ) {
   if (!imageBase.startsWith("https://") || !source.startsWith(`${imageBase}/`))
     return source;
-  const width = kind === "detail" ? 1920 : kind === "thumbnail" ? 384 : 1200;
+  const width =
+    kind === "detail"
+      ? 1080
+      : kind === "thumbnail"
+        ? 256
+        : kind === "card"
+          ? 640
+          : 1200;
   return `/_next/image?url=${encodeURIComponent(source)}&w=${width}&q=85`;
 }

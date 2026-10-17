@@ -1,0 +1,411 @@
+{
+  "label": "after",
+  "method": "Chromium CDP Performance/Tracing; production next build --profile + next start; CPU 4x; 1440x1000 DPR1. Fresh browser context. React DevTools profiling hook. Timings are local lab measurements.",
+  "at": "2026-10-17T21:08:56.480Z",
+  "measurements": [
+    {
+      "name": "scroll",
+      "samples": 146,
+      "framesOver16ms": 146,
+      "framesOver20ms": 21,
+      "framesOver50ms": 2,
+      "frameP95": 33.4,
+      "frameMax": 66.6,
+      "scriptingMs": 384.04,
+      "taskMs": 1789.12,
+      "paintMs": 109.58,
+      "scriptingEventsOver16ms": 0,
+      "paintEventsOver16ms": 0,
+      "newImageRequests": 18,
+      "reactCommits": 38,
+      "reactDurationMs": 35,
+      "renderedComponents": {
+        "l": 38,
+        "v": 2495,
+        "u": 76,
+        "b": 38,
+        "VariantRing": 899,
+        "f": 342
+      }
+    },
+    {
+      "name": "hover",
+      "samples": 121,
+      "framesOver16ms": 121,
+      "framesOver20ms": 24,
+      "framesOver50ms": 0,
+      "frameP95": 33.4,
+      "frameMax": 33.4,
+      "scriptingMs": 101.59,
+      "taskMs": 2104.43,
+      "paintMs": 75.18,
+      "scriptingEventsOver16ms": 0,
+      "paintEventsOver16ms": 0,
+      "newImageRequests": 0,
+      "reactCommits": 0,
+      "reactDurationMs": 0,
+      "renderedComponents": {}
+    },
+    {
+      "name": "card-change",
+      "samples": 87,
+      "framesOver16ms": 87,
+      "framesOver20ms": 6,
+      "framesOver50ms": 2,
+      "frameP95": 33.4,
+      "frameMax": 66.6,
+      "scriptingMs": 128.66,
+      "taskMs": 934.03,
+      "paintMs": 63.69,
+      "scriptingEventsOver16ms": 0,
+      "paintEventsOver16ms": 0,
+      "newImageRequests": 1,
+      "reactCommits": 10,
+      "reactDurationMs": 9,
+      "renderedComponents": {
+        "l": 10,
+        "v": 659,
+        "u": 20,
+        "b": 10,
+        "VariantRing": 259,
+        "f": 89,
+        "ProductCard": 1
+      }
+    },
+    {
+      "name": "detail-change",
+      "samples": 88,
+      "framesOver16ms": 88,
+      "framesOver20ms": 2,
+      "framesOver50ms": 0,
+      "frameP95": 16.8,
+      "frameMax": 33.4,
+      "scriptingMs": 132.25,
+      "taskMs": 526.35,
+      "paintMs": 40.26,
+      "scriptingEventsOver16ms": 2,
+      "paintEventsOver16ms": 0,
+      "newImageRequests": 3,
+      "reactCommits": 11,
+      "reactDurationMs": 19.7,
+      "renderedComponents": {
+        "l": 11,
+        "v": 121,
+        "u": 11,
+        "b": 11,
+        "VariantRing": 7,
+        "ex": 11,
+        "O": 11,
+        "d": 11,
+        "L": 1,
+        "N": 1
+      }
+    }
+  ],
+  "firstLoadImageBytes": 562050,
+  "firstLoadImageRequests": 23,
+  "imageBytesTotal": 1295041,
+  "images": [
+    {
+      "url": "/branding/stylo-suplementos.svg",
+      "bytes": 4123,
+      "mime": "image/svg+xml"
+    },
+    {
+      "url": "/branding/logo-principal.webp",
+      "bytes": 19199,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/88634341-8629-4490-a70a-ae1629120a9e-00f7aa8b23eb-v2-600.webp",
+      "bytes": 16007,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/3a256086-b6c9-47bb-aa83-948d52ac00c4-2e1b296e4a2e-v2-600.webp",
+      "bytes": 33569,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/9af8ea20-2342-426c-8c17-c5fc70794578-c2af06e91315-v2-600.webp",
+      "bytes": 20249,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/67fb877e-ade5-419a-b024-7a24ccad0494-3bc78e4409c3-v2-600.webp",
+      "bytes": 36261,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/normalization-trial-v1/rock-square-v1.webp",
+      "bytes": 103239,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/_next/image?url=https%3A%2F%2Frwtstkwmtcrliwkoscjr.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproduct-media%2F6fb85c35-fb77-4e9a-89cf-00d2ea6b27b5%2Fd39b3419-4e94-4b15-aaa1-0e627b7b8991.png&w=1200&q=85",
+      "bytes": 26174,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/_next/image?url=https%3A%2F%2Frwtstkwmtcrliwkoscjr.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproduct-media%2F9993c069-a710-427d-8642-5ca0ad0511d9%2Faedf45ee-5889-4dc5-aec2-82a089a617a6.png&w=1200&q=85",
+      "bytes": 16716,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/01933689-75f8-4b9f-8d41-7632a962000c-834b42ae9012-v2-600.webp",
+      "bytes": 22489,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/_next/image?url=https%3A%2F%2Frwtstkwmtcrliwkoscjr.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproduct-media%2Fa4ae77d2-9d63-4fab-a526-26c5e3c9edc7%2F5aa414a2-08d2-4e0c-88dd-36f3a556642c.png&w=1200&q=85",
+      "bytes": 28768,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/3fd15de2-d1b5-4067-95c7-a6651aea841a-5b38468a90de-v2-600.webp",
+      "bytes": 21345,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/7ad32230-268c-41ab-a887-29b8a32b7063-f7b35ff3481d-v2-600.webp",
+      "bytes": 20899,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/f474df82-797e-4099-a93d-463abcfc8564-45c2fceca634-v2-600.webp",
+      "bytes": 18379,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/c2b3db5c-9802-488e-90bb-e24955e40c2c-00307a45b26e-v2-600.webp",
+      "bytes": 17853,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/1e8c474c-0897-4451-97c2-038faf9259b6-ba539b39f4d6-v2-600.webp",
+      "bytes": 24037,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/a23ffd8a-f1e7-469e-81f6-4dd7dbad5cb2-6ed4ce92150d-v2-600.webp",
+      "bytes": 34475,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/25d0232d-f3b9-4469-b19e-4f4db92dca0e-29a9f1842575-v2-600.webp",
+      "bytes": 21365,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/b1aa54e3-ff2b-4bf9-93db-cad90e03e6e1-fcbbd2a9b17c-v2-600.webp",
+      "bytes": 27055,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/067384fc-7f1f-4020-ae89-7de8d69af563-703a27ff18df-v2-600.webp",
+      "bytes": 29169,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/_next/image?url=https%3A%2F%2Frwtstkwmtcrliwkoscjr.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproduct-media%2F17a2a00d-acf8-4b58-b4f0-6f96087f5dbf%2F73d4852f-2f16-4df5-ae14-742324ec8310.webp&w=256&q=85",
+      "bytes": 9892,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/_next/image?url=https%3A%2F%2Frwtstkwmtcrliwkoscjr.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproduct-media%2F5a8eefe5-32d9-4119-b1c2-0ca65eb916c5%2F28f1a159-1e29-477f-9b87-cf215d50552b.webp&w=256&q=85",
+      "bytes": 10761,
+      "mime": "image/webp"
+    },
+    {
+      "url": "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=",
+      "bytes": 26,
+      "mime": "image/gif"
+    },
+    {
+      "url": "/media/products-normalized-v2/d47a1e23-51c8-4e0a-b871-a4cc3000b417-5cb6f83f8196-v2-600.webp",
+      "bytes": 29055,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/991ca3ca-f782-4fc3-a06b-13ef59a273cf-1b0178eaa1f2-v2-600.webp",
+      "bytes": 20433,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/465e0dd2-ad98-4f95-91fe-2d09428398d0-4c6714e5f789-v2-600.webp",
+      "bytes": 28137,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/4120d737-d864-4c05-9951-171e93becdf6-876379a355f4-v2-600.webp",
+      "bytes": 29503,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/067698a7-6a32-4116-8bbd-1bea4241aa68-919b141a52ed-v2-600.webp",
+      "bytes": 29243,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/821ba08b-299e-45c1-9837-82e376827c67-d0f729757304-v2-600.webp",
+      "bytes": 25119,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/51e45bb1-7335-4073-b7f5-0c1dc4cf7de7-b8d489d1329d-v2-600.webp",
+      "bytes": 25513,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/8f3dc953-0177-4b42-ae53-459e184c4726-f368c90cfdc9-v2-600.webp",
+      "bytes": 23159,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/6775b64e-9738-4b0c-b22c-29da6582bb83-312392b573e6-v2-600.webp",
+      "bytes": 21695,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/130a9de7-e730-493a-8b94-42007952ae99-fcc2f924cebb-v2-600.webp",
+      "bytes": 20911,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/47d1f632-c3c7-43c9-b879-9e48c2ab6bc8-1c13f3fbd0b7-v2-600.webp",
+      "bytes": 19103,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/d9d0a67a-d5b5-4171-950d-2431df1108d1-ceaf9fb5e83a-v2-600.webp",
+      "bytes": 22983,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/c9210e3c-68dd-4812-b926-9ed031ad9edc-85d5453eeab6-v2-600.webp",
+      "bytes": 27605,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/6f0a6c02-d9d6-436a-8aec-2e8a74349f56-bbc81d4beaf7-v2-600.webp",
+      "bytes": 16577,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/0277bcbb-c691-422c-9b12-9de22e4efacf-07dda39606d5-v2-600.webp",
+      "bytes": 20715,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/dd42be5d-74c6-4fcd-a32a-a4fa1107a111-b214f31e8d5c-v2-600.webp",
+      "bytes": 25793,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/bdc56b4f-78b4-4c16-8768-d3fccc7589bc-30e888924877-v2-600.webp",
+      "bytes": 31861,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/d37b32bb-f601-4c9c-b92a-e89bc3ead376-d7b79e9c933b-v2-600.webp",
+      "bytes": 26101,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/93fea4ad-10a5-4e34-8998-089d75669574-5d8287f0df81-v2-600.webp",
+      "bytes": 26211,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/6204f1cb-e4ac-41de-943c-205416b14ef5-86ddbe3d9824-v2-600.webp",
+      "bytes": 20693,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/593a75f0-57fe-47c8-90e9-88453a8725a7-f8ad859d963c-v2-600.webp",
+      "bytes": 19271,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/_next/image?url=https%3A%2F%2Frwtstkwmtcrliwkoscjr.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproduct-media%2F6fb85c35-fb77-4e9a-89cf-00d2ea6b27b5%2Fd39b3419-4e94-4b15-aaa1-0e627b7b8991.png&w=1200&q=85",
+      "bytes": 0,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/branding/stylo-suplementos.svg",
+      "bytes": 516,
+      "mime": "image/svg+xml"
+    },
+    {
+      "url": "/branding/logo-principal.webp",
+      "bytes": 516,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/_next/image?url=https%3A%2F%2Frwtstkwmtcrliwkoscjr.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproduct-media%2F17a2a00d-acf8-4b58-b4f0-6f96087f5dbf%2F73d4852f-2f16-4df5-ae14-742324ec8310.webp&w=256&q=85",
+      "bytes": 0,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/_next/image?url=https%3A%2F%2Frwtstkwmtcrliwkoscjr.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fproduct-media%2F5a8eefe5-32d9-4119-b1c2-0ca65eb916c5%2F28f1a159-1e29-477f-9b87-cf215d50552b.webp&w=256&q=85",
+      "bytes": 0,
+      "mime": "image/webp"
+    },
+    {
+      "url": "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=",
+      "bytes": 0,
+      "mime": "image/gif"
+    },
+    {
+      "url": "/media/normalization-trial-v1/rock-square-v1.webp",
+      "bytes": 517,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/6204f1cb-e4ac-41de-943c-205416b14ef5-86ddbe3d9824-v2-1000.webp",
+      "bytes": 40393,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/6204f1cb-e4ac-41de-943c-205416b14ef5-86ddbe3d9824-v2-320.webp",
+      "bytes": 10528,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/37777e97-a5fb-41bf-94f3-de56be2d7f92-9a5b5e53e6c4-v2-320.webp",
+      "bytes": 8068,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/8b3976ac-71c8-417c-aa5e-eb60bd9febd5-579752795329-v2-320.webp",
+      "bytes": 9184,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/9af8ea20-2342-426c-8c17-c5fc70794578-c2af06e91315-v2-1000.webp",
+      "bytes": 39639,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/593a75f0-57fe-47c8-90e9-88453a8725a7-f8ad859d963c-v2-1000.webp",
+      "bytes": 37745,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/593a75f0-57fe-47c8-90e9-88453a8725a7-f8ad859d963c-v2-320.webp",
+      "bytes": 9888,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/a1e5aace-8c07-4a6f-b9a0-526d72f5bd3a-b55d331def90-v2-320.webp",
+      "bytes": 12881,
+      "mime": "image/webp"
+    },
+    {
+      "url": "/media/products-normalized-v2/93fea4ad-10a5-4e34-8998-089d75669574-5d8287f0df81-v2-1000.webp",
+      "bytes": 53435,
+      "mime": "image/webp"
+    }
+  ],
+  "errors": []
+}

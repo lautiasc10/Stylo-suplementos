@@ -1,0 +1,150 @@
+{
+  "imageCount": 115,
+  "originalsUnchanged": true,
+  "errors": [],
+  "views": [
+    {
+      "kind": "catalog",
+      "width": 1800,
+      "cards": 53,
+      "overflow": false,
+      "columns": 4,
+      "placeholderBackground": "url(\"http://127.0.0.1:3200/media/normalization-trial-v1/rock-square-v1.webp\")",
+      "placeholderColor": "rgb(216, 180, 116)"
+    },
+    {
+      "kind": "detail",
+      "width": 1800,
+      "overflow": false,
+      "stageWidth": 640,
+      "stageHeight": 640,
+      "imageWidth": 166,
+      "imageSource": "/media/products-normalized-v2/bf65107e-70b2-4bf1-a171-8ead6a5529d5-904d998796a9-v2-1000.webp",
+      "sku": "STAR-0023"
+    },
+    {
+      "kind": "detail",
+      "width": 1800,
+      "overflow": false,
+      "stageWidth": 640,
+      "stageHeight": 640,
+      "imageWidth": 166,
+      "imageSource": "/media/products-normalized-v2/9af8ea20-2342-426c-8c17-c5fc70794578-c2af06e91315-v2-1000.webp",
+      "sku": "ONE-0001"
+    },
+    {
+      "kind": "catalog",
+      "width": 768,
+      "cards": 53,
+      "overflow": false,
+      "columns": 2,
+      "placeholderBackground": "url(\"http://127.0.0.1:3200/media/normalization-trial-v1/rock-square-v1.webp\")",
+      "placeholderColor": "rgb(216, 180, 116)"
+    },
+    {
+      "kind": "detail",
+      "width": 768,
+      "overflow": false,
+      "stageWidth": 640,
+      "stageHeight": 640,
+      "imageWidth": 191,
+      "imageSource": "/media/products-normalized-v2/bf65107e-70b2-4bf1-a171-8ead6a5529d5-904d998796a9-v2-1000.webp",
+      "sku": "STAR-0023"
+    },
+    {
+      "kind": "detail",
+      "width": 768,
+      "overflow": false,
+      "stageWidth": 640,
+      "stageHeight": 640,
+      "imageWidth": 191,
+      "imageSource": "/media/products-normalized-v2/9af8ea20-2342-426c-8c17-c5fc70794578-c2af06e91315-v2-1000.webp",
+      "sku": "ONE-0001"
+    },
+    {
+      "kind": "catalog",
+      "width": 375,
+      "cards": 53,
+      "overflow": false,
+      "columns": 2,
+      "placeholderBackground": "url(\"http://127.0.0.1:3200/media/normalization-trial-v1/rock-square-v1.webp\")",
+      "placeholderColor": "rgb(216, 180, 116)"
+    },
+    {
+      "kind": "detail",
+      "width": 375,
+      "overflow": false,
+      "stageWidth": 343,
+      "stageHeight": 343,
+      "imageWidth": 535,
+      "imageSource": "/media/products-normalized-v2/bf65107e-70b2-4bf1-a171-8ead6a5529d5-904d998796a9-v2-600.webp",
+      "sku": "STAR-0023"
+    },
+    {
+      "kind": "detail",
+      "width": 375,
+      "overflow": false,
+      "stageWidth": 343,
+      "stageHeight": 343,
+      "imageWidth": 535,
+      "imageSource": "/media/products-normalized-v2/9af8ea20-2342-426c-8c17-c5fc70794578-c2af06e91315-v2-600.webp",
+      "sku": "ONE-0001"
+    }
+  ],
+  "thumbnails": [
+    {
+      "width": 1800,
+      "framed": true,
+      "alt": "Información nutricional · PROTEÍNA \"WHEY PROTEIN\" x 2 LBS DP",
+      "background": "rgb(8, 8, 8)",
+      "border": "rgb(216, 180, 116)",
+      "opacity": "1",
+      "sku": "STAR-0023"
+    },
+    {
+      "width": 1800,
+      "framed": true,
+      "alt": "Etiqueta e información nutricional · AMINOÁCIDOS \"EEAA + ESSENTIAL AMINO ACID\" · cereza",
+      "background": "rgb(8, 8, 8)",
+      "border": "rgb(216, 180, 116)",
+      "opacity": "1",
+      "sku": "ONE-0001"
+    },
+    {
+      "width": 768,
+      "framed": true,
+      "alt": "Información nutricional · PROTEÍNA \"WHEY PROTEIN\" x 2 LBS DP",
+      "background": "rgb(8, 8, 8)",
+      "border": "rgb(216, 180, 116)",
+      "opacity": "1",
+      "sku": "STAR-0023"
+    },
+    {
+      "width": 768,
+      "framed": true,
+      "alt": "Etiqueta e información nutricional · AMINOÁCIDOS \"EEAA + ESSENTIAL AMINO ACID\" · cereza",
+      "background": "rgb(8, 8, 8)",
+      "border": "rgb(216, 180, 116)",
+      "opacity": "1",
+      "sku": "ONE-0001"
+    },
+    {
+      "width": 375,
+      "framed": true,
+      "alt": "Información nutricional · PROTEÍNA \"WHEY PROTEIN\" x 2 LBS DP",
+      "background": "rgb(8, 8, 8)",
+      "border": "rgb(216, 180, 116)",
+      "opacity": "1",
+      "sku": "STAR-0023"
+    },
+    {
+      "width": 375,
+      "framed": true,
+      "alt": "Etiqueta e información nutricional · AMINOÁCIDOS \"EEAA + ESSENTIAL AMINO ACID\" · cereza",
+      "background": "rgb(8, 8, 8)",
+      "border": "rgb(216, 180, 116)",
+      "opacity": "1",
+      "sku": "ONE-0001"
+    }
+  ]
+}

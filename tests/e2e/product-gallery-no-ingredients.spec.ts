@@ -123,7 +123,9 @@ test("el autoplay cambia solo frentes de variantes, limpia capas y pausa con foc
   );
   await expect(gallery).toHaveAttribute("data-ring-phase", "idle");
   await page.clock.runFor(200);
-  await expect(gallery.locator(".variant-ring-item")).toHaveCount(3);
+  await expect(
+    gallery.locator(".variant-ring-item[data-visible=true]"),
+  ).toHaveCount(3);
   await gallery.locator(".product-frame-link").focus();
   await expect(gallery).not.toHaveAttribute("data-auto-playing", "true");
   await page.clock.runFor(6000);

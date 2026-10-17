@@ -10,7 +10,7 @@ async function finish(ring: Locator) {
   await expect(ring).toHaveAttribute("data-ring-phase", "idle");
 }
 
-test("anillo completo: vecinas, rotación de 560 ms y roca fija; sin giro de carta", async ({
+test("anillo completo: vecinas, rotación de 550 ms y roca fija; sin giro de carta", async ({
   page,
 }) => {
   const { product } = await seed(page);
@@ -18,19 +18,21 @@ test("anillo completo: vecinas, rotación de 560 ms y roca fija; sin giro de car
   const ring = page.locator(".variant-ring-full"),
     stage = ring.locator(".product-image-stage");
   await ring.scrollIntoViewIfNeeded();
-  await expect(ring.locator(".variant-ring-item")).toHaveCount(3);
+  await expect(
+    ring.locator(".variant-ring-item[data-visible=true]"),
+  ).toHaveCount(3);
   const before = await stage.evaluate((e) => ({
     w: e.clientWidth,
     h: e.clientHeight,
     bg: getComputedStyle(e).backgroundImage,
   }));
   for (const neighbor of await ring
-    .locator('.variant-ring-item:not([data-current="true"])')
+    .locator('.variant-ring-item[data-visible=true]:not([data-current="true"])')
     .all()) {
-    await expect(neighbor).toHaveCSS("opacity", "0.4");
+    await expect(neighbor).toHaveCSS("opacity", "0.3");
     await expect(neighbor).toHaveCSS("pointer-events", "none");
     expect(await neighbor.evaluate((e) => e.style.transform)).toContain(
-      "scale(0.7)",
+      "scale(0.55)",
     );
   }
   await ring
@@ -49,7 +51,7 @@ test("anillo completo: vecinas, rotación de 560 ms y roca fija; sin giro de car
     ),
   );
   expect(animations.length).toBeGreaterThan(0);
-  expect(animations.every((a) => a.duration === 560)).toBe(true);
+  expect(animations.every((a) => a.duration === 550)).toBe(true);
   expect(
     animations
       .flatMap((a) => a.frames)
@@ -103,7 +105,9 @@ test("ocho sabores: solo dos vecinas; chips lejanos y cola conservan la última 
   const { product } = await seed(page, false, false, 8);
   await page.goto(detail);
   const ring = page.locator(".variant-ring");
-  await expect(ring.locator(".variant-ring-item")).toHaveCount(3);
+  await expect(
+    ring.locator(".variant-ring-item[data-visible=true]"),
+  ).toHaveCount(3);
   await ring
     .getByRole("button", { name: "Sabor siguiente", exact: true })
     .click();
@@ -127,7 +131,9 @@ test("ocho sabores: solo dos vecinas; chips lejanos y cola conservan la última 
   );
   await expect(ring).toHaveAttribute("data-ring-phase", "idle");
   await ring.scrollIntoViewIfNeeded();
-  await expect(ring.locator(".variant-ring-item")).toHaveCount(3);
+  await expect(
+    ring.locator(".variant-ring-item[data-visible=true]"),
+  ).toHaveCount(3);
   await expect(ring.locator(".variant-ring-count")).toHaveText("8/8");
   await expect(page).toHaveURL(new RegExp(product.variants[7].id));
 });
@@ -164,13 +170,19 @@ test("card: no precarga sin intención; vecinas compactas, teclado, swipe y clic
           .length,
     ),
   ).toBe(0);
-  await expect(ring.locator(".variant-ring-item")).toHaveCount(1);
+  await expect(
+    ring.locator(".variant-ring-item[data-visible=true]"),
+  ).toHaveCount(1);
   if (info.project.name === "desktop") await ring.hover();
   else await ring.dispatchEvent("pointerover", { pointerType: "mouse" });
-  await expect(ring.locator(".variant-ring-item")).toHaveCount(3);
+  await expect(
+    ring.locator(".variant-ring-item[data-visible=true]"),
+  ).toHaveCount(3);
   expect(
     await ring
-      .locator('.variant-ring-item:not([data-current="true"])')
+      .locator(
+        '.variant-ring-item[data-visible=true]:not([data-current="true"])',
+      )
       .first()
       .evaluate((e) => e.style.transform),
   ).toContain("scale(0.55)");
@@ -224,9 +236,21 @@ test("tilt acotado, sin renders por movimiento, vuelve a cero y pausa durante el
   });
   await expect(stage).toHaveAttribute("data-tilting", "true");
   const values = await stage.evaluate((e) => [
-    parseFloat(e.style.getPropertyValue("--rx")),
-    parseFloat(e.style.getPropertyValue("--ry")),
-    parseFloat(e.style.getPropertyValue("--sx")),
+    parseFloat(
+      e
+        .querySelector<HTMLElement>('[data-current="true"] .variant-ring-tilt')!
+        .style.getPropertyValue("--rx"),
+    ),
+    parseFloat(
+      e
+        .querySelector<HTMLElement>('[data-current="true"] .variant-ring-tilt')!
+        .style.getPropertyValue("--ry"),
+    ),
+    parseFloat(
+      e
+        .querySelector<HTMLElement>('[data-current="true"] .variant-ring-tilt')!
+        .style.getPropertyValue("--sx"),
+    ),
   ]);
   expect(values[0]).toBeGreaterThan(0);
   expect(values[0]).toBeLessThanOrEqual(8);
@@ -238,9 +262,13 @@ test("tilt acotado, sin renders por movimiento, vuelve a cero y pausa durante el
     relatedTarget: null,
   });
   await expect(stage).toHaveAttribute("data-tilting", "false");
-  expect(await stage.evaluate((e) => e.style.getPropertyValue("--rx"))).toBe(
-    "0deg",
-  );
+  expect(
+    await stage.evaluate((e) =>
+      e
+        .querySelector<HTMLElement>('[data-current="true"] .variant-ring-tilt')!
+        .style.getPropertyValue("--rx"),
+    ),
+  ).toBe("0deg");
   await ring
     .getByRole("button", { name: "Sabor siguiente", exact: true })
     .click();
@@ -250,9 +278,13 @@ test("tilt acotado, sin renders por movimiento, vuelve a cero y pausa durante el
     clientX: box.x + box.width,
     clientY: box.y,
   });
-  expect(await stage.evaluate((e) => e.style.getPropertyValue("--ry"))).toBe(
-    "0deg",
-  );
+  expect(
+    await stage.evaluate((e) =>
+      e
+        .querySelector<HTMLElement>('[data-current="true"] .variant-ring-tilt')!
+        .style.getPropertyValue("--ry"),
+    ),
+  ).toBe("0deg");
   await expect(ring).toHaveAttribute("data-ring-phase", "idle");
 });
 
@@ -272,11 +304,12 @@ test("movimiento reducido: fundido sin tilt ni brillo, incluso al cambiar la pre
     product.variants[1].id,
   );
   await expect(ring).toHaveAttribute("data-ring-phase", "idle");
-  await expect(ring.locator(".variant-ring-item")).toHaveCount(1);
-  await expect(ring.locator(".variant-ring-light")).toHaveCSS(
-    "display",
-    "none",
-  );
+  await expect(
+    ring.locator(".variant-ring-item[data-visible=true]"),
+  ).toHaveCount(1);
+  await expect(
+    ring.locator(".variant-ring-item[data-current=true] .variant-ring-light"),
+  ).toHaveCSS("display", "none");
   await ring
     .getByRole("button", { name: "Sabor siguiente", exact: true })
     .click();
@@ -301,7 +334,9 @@ test("una variante: solo tilt, sin flechas ni contador; miniaturas funden sin ca
   const { product } = await seed(page, false, true);
   await page.goto(detail);
   const ring = page.locator(".variant-ring");
-  await expect(ring.locator(".variant-ring-item")).toHaveCount(1);
+  await expect(
+    ring.locator(".variant-ring-item[data-visible=true]"),
+  ).toHaveCount(1);
   await expect(ring.locator(".variant-navigation")).toHaveCount(0);
   await expect(ring.locator(".variant-ring-count")).toHaveCount(0);
   await ring.getByRole("link", { name: "Ver Frente 1", exact: true }).click();
@@ -362,7 +397,9 @@ test("dos variantes: solo una vecina, intercambio sin salto y vuelta por flecha 
   const { product } = await seed(page, false, false, 2);
   await page.goto(detail);
   const ring = page.locator(".variant-ring");
-  await expect(ring.locator(".variant-ring-item")).toHaveCount(2);
+  await expect(
+    ring.locator(".variant-ring-item[data-visible=true]"),
+  ).toHaveCount(2);
   await ring
     .getByRole("button", { name: "Sabor siguiente", exact: true })
     .click();
@@ -372,10 +409,10 @@ test("dos variantes: solo una vecina, intercambio sin salto y vuelta por flecha 
     product.variants[1].id,
   );
   const neighbor = ring.locator(
-    '.variant-ring-item:not([data-current="true"])',
+    '.variant-ring-item[data-visible=true]:not([data-current="true"])',
   );
   expect(await neighbor.evaluate((e) => e.style.transform)).toContain(
-    "translate3d(-40%",
+    "translate3d(-60%",
   );
   await ring
     .getByRole("button", { name: "Sabor anterior", exact: true })
@@ -386,7 +423,7 @@ test("dos variantes: solo una vecina, intercambio sin salto y vuelta por flecha 
     product.variants[0].id,
   );
   expect(await neighbor.evaluate((e) => e.style.transform)).toContain(
-    "translate3d(40%",
+    "translate3d(60%",
   );
 });
 

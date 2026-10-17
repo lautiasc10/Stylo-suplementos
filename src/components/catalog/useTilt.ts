@@ -20,14 +20,24 @@ export function useTilt(
   const bounds = useRef<DOMRect | null>(null);
   const touch = useRef<{ x: number; y: number } | null>(null);
   const latest = useRef({ x: 0, y: 0 });
+  const pack = useRef<HTMLElement | null>(null);
+  const shadow = useRef<HTMLElement | null>(null);
+  const idle = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const reset = useCallback(() => {
     cancelAnimationFrame(frame.current);
     frame.current = 0;
+    clearTimeout(idle.current);
     bounds.current = null;
     touch.current = null;
     const node = container.current;
     if (!node) return;
     node.dataset.tilting = "false";
+    const activePack =
+      pack.current ??
+      node.querySelector<HTMLElement>(
+        '[data-current="true"] .variant-ring-tilt',
+      );
+    activePack?.style.removeProperty("will-change");
     for (const [key, value] of Object.entries({
       "--rx": "0deg",
       "--ry": "0deg",
@@ -36,7 +46,12 @@ export function useTilt(
       "--sx": "0px",
       "--sy": "0px",
     }))
-      node.style.setProperty(key, value);
+      activePack?.style.setProperty(key, value);
+    (
+      shadow.current ?? node.querySelector<HTMLElement>(".variant-ring-shadow")
+    )?.style.setProperty("transform", "translate3d(0px,0px,0)");
+    pack.current = null;
+    shadow.current = null;
   }, [container]);
   const move = (event: PointerEvent) => {
     if (
@@ -59,6 +74,12 @@ export function useTilt(
     )
       return;
     bounds.current ??= container.current.getBoundingClientRect();
+    pack.current ??= container.current.querySelector<HTMLElement>(
+      '[data-current="true"] .variant-ring-tilt',
+    );
+    shadow.current ??= container.current.querySelector<HTMLElement>(
+      ".variant-ring-shadow",
+    );
     latest.current = { x: event.clientX, y: event.clientY };
     if (frame.current) return;
     frame.current = requestAnimationFrame(() => {
@@ -74,7 +95,14 @@ export function useTilt(
         -1,
         Math.min(1, ((latest.current.y - box.top) / box.height) * 2 - 1),
       );
-      node.dataset.tilting = "true";
+      if (node.dataset.tilting !== "true") node.dataset.tilting = "true";
+      pack.current?.style.setProperty("will-change", "transform");
+      clearTimeout(idle.current);
+      const movingPack = pack.current;
+      idle.current = setTimeout(
+        () => movingPack?.style.removeProperty("will-change"),
+        160,
+      );
       for (const [key, value] of Object.entries({
         "--rx": `${-y * maxAngle}deg`,
         "--ry": `${x * maxAngle}deg`,
@@ -83,7 +111,11 @@ export function useTilt(
         "--sx": `${-x * 4}px`,
         "--sy": `${-y * 2}px`,
       }))
-        node.style.setProperty(key, value);
+        pack.current?.style.setProperty(key, value);
+      shadow.current?.style.setProperty(
+        "transform",
+        `translate3d(${-x * 4}px,${-y * 2}px,0)`,
+      );
     });
   };
   useEffect(() => {

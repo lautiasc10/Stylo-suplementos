@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   ringPose,
   ringSlot,
+  ringDirection,
 } from "../../src/components/catalog/variant-ring-poses";
 
 describe("anillo de variantes", () => {
@@ -22,7 +23,7 @@ describe("anillo de variantes", () => {
     expect(ringPose(0, "compact")).toEqual(ringPose(0, "full"));
     expect(ringPose(0, "full").opacity).toBe(1);
     expect(ringPose(1, "compact").transform).toContain("scale(0.55)");
-    expect(ringPose(-1, "full").transform).toContain("scale(0.7)");
+    expect(ringPose(-1, "full").transform).toContain("scale(0.55)");
     for (const slot of [-2, -1, -0.5, 0, 0.5, 1, 2]) {
       const pose = ringPose(slot, "full");
       expect(pose.opacity).toBeGreaterThanOrEqual(0);
@@ -31,5 +32,14 @@ describe("anillo de variantes", () => {
     }
     expect(ringPose(2, "compact").opacity).toBe(0);
     expect(ringPose(-2, "full").opacity).toBe(0);
+  });
+  it("elige el camino circular más corto para chips y mantiene los empates direccionales", () => {
+    expect(ringDirection(7, 0, 8)).toBe(1);
+    expect(ringDirection(0, 7, 8)).toBe(-1);
+    expect(ringDirection(0, 6, 8)).toBe(-1);
+    expect(ringDirection(4, 0, 8, -1)).toBe(-1);
+    expect(ringDirection(0, 1, 2, -1)).toBe(-1);
+    expect(ringSlot(0, 7, 8)).toBe(1);
+    expect(ringSlot(7, 0, 8)).toBe(-1);
   });
 });

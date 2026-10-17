@@ -54,7 +54,9 @@
   border-color: var(--gold);
 }
 .product-information-thumbnail {
-  background: var(--image-background);
+  background: var(--commercial-background);
+  border: 1px solid var(--action-border);
+  border-radius: 8px;
   padding: var(--space-4);
 }
 .product-information-thumbnail img {
@@ -113,13 +115,16 @@
 }
 .product-information-full {
   padding: var(--space-4);
-  background: var(--image-background);
+  background: var(--commercial-background);
+  border: 1px solid var(--action-border);
+  border-radius: 8px;
   margin-bottom: var(--space-6);
 }
 .product-information-full img {
   display: block;
   max-width: 100%;
-  height: auto;
+  height: min(68dvh, 760px);
+  object-fit: contain;
   margin-inline: auto;
 }
 @media (max-width: 600px) {
@@ -569,18 +574,10 @@
   position: absolute;
   inset: 0;
   z-index: 4;
-  padding: 2px;
+  border: 2px solid transparent;
+  border-image: var(--brand-gold-gradient) 1;
   border-radius: inherit;
   pointer-events: none;
-  background: var(--brand-gold-gradient);
-  -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
   opacity: 0;
   transition: opacity 200ms var(--motion-ease);
 }
@@ -670,7 +667,8 @@
   }
 }
 .product-placeholder {
-  background: var(--image-background);
+  background: url("/media/normalization-trial-v1/rock-square-v1.webp") center /
+    cover no-repeat var(--commercial-background);
   position: absolute;
   inset: 0;
   display: flex;
@@ -680,7 +678,7 @@
   width: 100%;
   text-align: center;
   padding: var(--space-4);
-  color: var(--background);
+  color: var(--gold);
 }
 .product-placeholder .category-illustration {
   width: 100%;
@@ -689,11 +687,12 @@
   max-height: 176px;
   flex: 1;
   margin: 0;
+  opacity: 0.24;
 }
 .product-placeholder span {
   flex-shrink: 0;
   font-size: var(--text-xs);
-  color: #555;
+  color: var(--foreground);
 }
 .product-card-copy {
   padding: var(--space-4);
@@ -2393,7 +2392,7 @@ textarea:focus-visible {
   pointer-events: none;
 }
 .product-inspected-image[data-information="true"] {
-  background: #fff;
+  background: transparent;
 }
 .product-inspected-image img {
   width: 100%;

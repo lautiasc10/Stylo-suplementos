@@ -7,6 +7,8 @@ import {
   type ProductImage,
 } from "@/modules/catalog/model";
 import { Icon } from "@/components/ui/icon";
+import Image from "next/image";
+import { normalizedPhotoProps } from "@/modules/catalog/normalized-media";
 
 export function ProductInformation({
   product,
@@ -24,8 +26,15 @@ export function ProductInformation({
   const opener = useRef<HTMLAnchorElement | null>(null);
   const [selected, setSelected] = useState<ProductImage | null>(null);
   const titleId = useId();
-  const source = (image: ProductImage) =>
+  const original = (image: ProductImage) =>
     imageUrls[image.path] || `${imageBase}/${image.path}`;
+  const delivery = (image: ProductImage) =>
+    normalizedPhotoProps(original(image), "detail", {
+      path: image.path,
+      imageBase,
+    });
+  const source = (image: ProductImage) =>
+    delivery(image).src || original(image);
   useEffect(() => {
     if (!selected) return;
     const previous = document.body.style.overflow;
@@ -82,8 +91,9 @@ export function ProductInformation({
                 }}
               >
                 <div className="product-information-thumbnail">
-                  <img
-                    src={source(image)}
+                  <Image
+                    unoptimized
+                    src={delivery(image).thumbnailSrc || source(image)}
                     alt=""
                     width={480}
                     height={320}
@@ -124,13 +134,20 @@ export function ProductInformation({
           </div>
           {selected && (
             <div className="product-information-full">
-              <img src={source(selected)} alt={selected.alt} decoding="async" />
+              <Image
+                unoptimized
+                src={source(selected)}
+                alt={selected.alt}
+                width={1000}
+                height={1000}
+                decoding="async"
+              />
             </div>
           )}
           {selected && (
             <a
               className="text-link"
-              href={source(selected)}
+              href={original(selected)}
               target="_blank"
               rel="noopener noreferrer"
             >

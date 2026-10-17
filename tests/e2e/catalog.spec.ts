@@ -1205,7 +1205,9 @@ test("el giro automático conserva el tamaño, evita fragmentos y se cancela con
   ).toEqual(before);
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(gallery).toHaveAttribute("data-ring-phase", "idle");
-  await expect(gallery.locator(".variant-ring-item")).toHaveCount(1);
+  await expect(
+    gallery.locator(".variant-ring-item[data-visible=true]"),
+  ).toHaveCount(1);
   await page.clock.runFor(10000);
   await expect(
     page.getByAltText("Vainilla frente", { exact: true }),

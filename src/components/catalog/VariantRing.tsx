@@ -9,7 +9,13 @@ import { variantLabel, type Variant } from "@/modules/catalog/model";
 import { createGalleryPhotoCache } from "./gallery-photo-cache";
 import { ProductThumbnailRail } from "./product-thumbnail-rail";
 import { useTilt } from "./useTilt";
-import { ringPose, ringSlot, type RingSize } from "./variant-ring-poses";
+import {
+  ringPose,
+  ringSlot,
+  ringDirection,
+  type RingSize,
+} from "./variant-ring-poses";
+import { ProductPhoto, photoDelivery } from "./product-photo";
 import type { GalleryImage } from "./product-gallery";
 
 export type RingVariant = Variant & { images: GalleryImage[] };
@@ -111,6 +117,7 @@ export function VariantRing(props: VariantRingProps) {
       documentVisible &&
       reduced === false &&
       phase === "idle" &&
+      (!compact || hovered) &&
       !current.photo.information,
     compact ? 5 : 8,
   );
@@ -135,7 +142,11 @@ export function VariantRing(props: VariantRingProps) {
         if (decoration) void decoration.catch(() => {});
         if (request.photo.src)
           await Promise.race([
-            cache.current?.load(request.photo.src, "high", request.photo),
+            cache.current?.load(
+              request.photo.src,
+              "high",
+              photoDelivery(request.photo, size),
+            ),
             new Promise<never>((_, reject) => {
               timeout = setTimeout(
                 () => reject(new Error("Image timeout")),
@@ -147,7 +158,15 @@ export function VariantRing(props: VariantRingProps) {
         rememberReady(request.photo.id);
         setTransition({
           from: currentRef.current,
-          to: request,
+          to: {
+            ...request,
+            direction: ringDirection(
+              currentRef.current.index,
+              request.index,
+              latest.current.variants.length,
+              request.direction,
+            ),
+          },
           token: sequence,
           side: neighborSide.current,
           crossfade:
@@ -166,7 +185,7 @@ export function VariantRing(props: VariantRingProps) {
         clearTimeout(timeout);
       }
     },
-    [changePhase, rememberReady],
+    [changePhase, rememberReady, size],
   );
   pump.current = (request) => {
     void execute(request);
@@ -236,10 +255,6 @@ export function VariantRing(props: VariantRingProps) {
         .decode()
         .then(() => {
           if (mounted.current) {
-            image.parentElement?.style.setProperty(
-              "--pack-mask",
-              `url(${JSON.stringify(image.currentSrc)})`,
-            );
             cache.current?.remember(currentRef.current.photo.src, image);
             setReadyPhoto(currentRef.current.photo.src);
             rememberReady(currentRef.current.photo.id);
@@ -264,12 +279,17 @@ export function VariantRing(props: VariantRingProps) {
     if (!transition) return;
     let done = false;
     const animations: AnimationPlaybackControlsWithThen[] = [];
+    const nativeAnimations: Animation[] = [];
     const valid = () =>
       mounted.current && token.current === transition.token && !done;
     const settle = () => {
       if (!valid()) return;
       done = true;
       for (const a of animations) a.stop();
+      for (const a of nativeAnimations) a.cancel();
+      root.current
+        ?.querySelectorAll<HTMLElement>(".variant-ring-item")
+        .forEach((item) => item.style.removeProperty("will-change"));
       neighborSide.current =
         count === 2 && !transition.crossfade
           ? -transition.side
@@ -297,10 +317,6 @@ export function VariantRing(props: VariantRingProps) {
         const image = arriving.querySelector("img");
         if (image) {
           await image.decode();
-          image.parentElement?.style.setProperty(
-            "--pack-mask",
-            `url(${JSON.stringify(image.currentSrc)})`,
-          );
         }
         if (!valid()) return;
         finish.current = settle;
@@ -324,19 +340,46 @@ export function VariantRing(props: VariantRingProps) {
               ".variant-ring-item",
             );
           for (const item of items) {
+            if (!item.dataset.loaded) continue;
             const from = Number(item.dataset.from),
               to = Number(item.dataset.to);
             const a = ringPose(from, size),
-              b = ringPose((from + to) / 2, size),
               c = ringPose(to, size);
+            if (a.opacity === 0 && c.opacity === 0) continue;
+            const wraps =
+              Math.sign(from) !== Math.sign(to) && from !== 0 && to !== 0;
+            item.style.willChange = "transform";
+            if (wraps) {
+              // Native offsets keep the wrap completely invisible while crossing.
+              // This also avoids a JS-driven opacity track alongside the compositor.
+              nativeAnimations.push(
+                item.animate(
+                  [0, 0.08, 0.92, 1].map((offset, i) => ({
+                    transform: ringPose(from + (to - from) * offset, size)
+                      .transform,
+                    opacity: [a.opacity, 0, 0, c.opacity][i],
+                    offset,
+                  })),
+                  {
+                    duration: 550,
+                    easing: "cubic-bezier(.22,.8,.3,1)",
+                    fill: "both",
+                  },
+                ),
+              );
+              continue;
+            }
             animations.push(
               animate(
                 item,
                 {
-                  transform: [a.transform, b.transform, c.transform],
-                  opacity: [a.opacity, b.opacity, c.opacity],
+                  transform: [a.transform, c.transform],
+                  opacity: [a.opacity, c.opacity],
                 },
-                { duration: 0.56, ease: [0.22, 1, 0.36, 1] },
+                {
+                  duration: 0.55,
+                  ease: [0.22, 0.8, 0.3, 1],
+                },
               ),
             );
           }
@@ -351,16 +394,20 @@ export function VariantRing(props: VariantRingProps) {
                   transform: ["translateX(-100%)", "translateX(100%)"],
                   opacity: [0, 0.18, 0],
                 },
-                { duration: 0.56, ease: "easeOut" },
+                { duration: 0.55, ease: "easeOut" },
               ),
             );
         }
-        await Promise.all(animations);
+        await Promise.all([
+          ...animations,
+          ...nativeAnimations.map((a) => a.finished),
+        ]);
         settle();
       } catch {
         if (!valid()) return;
         done = true;
         for (const a of animations) a.stop();
+        for (const a of nativeAnimations) a.cancel();
         desired.current = currentRef.current.index;
         queued.current = null;
         finish.current = null;
@@ -374,6 +421,7 @@ export function VariantRing(props: VariantRingProps) {
     return () => {
       done = true;
       for (const a of animations) a.stop();
+      for (const a of nativeAnimations) a.cancel();
     };
   }, [transition, changePhase, count, size]);
 
@@ -435,7 +483,7 @@ export function VariantRing(props: VariantRingProps) {
           if (next.id === currentRef.current.photo.id) continue;
           if (next.src)
             void cache.current
-              ?.load(next.src, "low", next)
+              ?.load(next.src, "low", photoDelivery(next, size))
               .then(() => {
                 if (mounted.current && !cancelled) rememberReady(next.id);
               })
@@ -462,6 +510,7 @@ export function VariantRing(props: VariantRingProps) {
     readyPhoto,
     count,
     rememberReady,
+    size,
   ]);
   const playing =
     compact &&
@@ -504,129 +553,123 @@ export function VariantRing(props: VariantRingProps) {
     ...informationImages,
   ];
   const rail = !compact && thumbnails.length > 1;
-  const items = new Map<
-    string,
-    { photo: GalleryImage; from: number; to: number }
-  >();
-  const windowFor = (choice: Choice, side: number) => {
-    const list = [{ photo: choice.photo, index: choice.index, slot: 0 }];
+  // Variant nodes are permanent and keyed by variant ID. Sources are enabled only
+  // on intent or explicit selection, before animation; hidden variants fetch nothing.
+  const fronts = variants.map(primary);
+  const extras = compact
+    ? []
+    : [
+        ...variants.flatMap((v) =>
+          v.images.slice(1).concat(primary(v).turnImages ?? []),
+        ),
+        ...informationImages,
+      ];
+  const allPhotos = fronts.map((photo, index) => ({
+    key: variants[index].id,
+    photo,
+    index,
+    front: true,
+  }));
+  for (const photo of extras)
+    if (!allPhotos.some((item) => item.photo.id === photo.id))
+      allPhotos.push({
+        key: "photo:" + photo.id,
+        photo,
+        index: variants.findIndex((v) => v.id === photo.variantId),
+        front: false,
+      });
+  const offsetFor = (
+    index: number,
+    photo: GalleryImage,
+    choice: Choice,
+    side: number,
+  ) => {
+    if (photo.id === choice.photo.id) return 0;
     if (
+      !fronts.some((p) => p.id === photo.id) ||
       choice.photo.id !== primary(variants[choice.index]).id ||
-      choice.photo.information ||
       reduced !== false ||
       !enhanced
     )
-      return list;
-    for (const index of [
-      ...new Set([
-        (choice.index - 1 + count) % count,
-        (choice.index + 1) % count,
-      ]),
-    ]) {
-      if (index === choice.index) continue;
-      const photo = primary(variants[index]);
-      if (photo.src && ready.has(photo.id))
-        list.push({
-          photo,
-          index,
-          slot: ringSlot(index, choice.index, count) * (count === 2 ? side : 1),
-        });
-    }
-    return list;
+      return 3;
+    return ringSlot(index, choice.index, count) * (count === 2 ? side : 1);
   };
-  if (transition) {
-    if (transition.crossfade) {
-      items.set(transition.from.photo.id, {
-        photo: transition.from.photo,
-        from: 0,
-        to: 0,
-      });
-      items.set(transition.to.photo.id, {
-        photo: transition.to.photo,
-        from: 0,
-        to: 0,
-      });
-    } else {
-      const from = windowFor(transition.from, transition.side),
-        to = windowFor(
-          transition.to,
-          count === 2 ? -transition.side : transition.side,
-        );
-      for (const item of from)
-        items.set(item.photo.id, {
-          photo: item.photo,
-          from: item.slot,
-          to:
-            to.find((f) => f.photo.id === item.photo.id)?.slot ??
-            -transition.to.direction * 2,
-        });
-      for (const item of to)
-        items.set(item.photo.id, {
-          photo: item.photo,
-          from:
-            from.find((f) => f.photo.id === item.photo.id)?.slot ??
-            transition.to.direction * (item.slot ? 2 : 1),
-          to: item.slot,
-        });
-    }
-  } else
-    for (const item of windowFor(current, neighborSide.current))
-      items.set(item.photo.id, {
-        photo: item.photo,
-        from: item.slot,
-        to: item.slot,
-      });
+  const items = allPhotos.map((item) => {
+    const { index, photo } = item;
+    if (
+      transition?.crossfade &&
+      [transition.from.photo.id, transition.to.photo.id].includes(photo.id)
+    )
+      return { ...item, from: 0, to: 0 };
+    return {
+      ...item,
+      from: offsetFor(
+        index,
+        photo,
+        transition?.from ?? current,
+        transition?.side ?? neighborSide.current,
+      ),
+      to: transition
+        ? offsetFor(
+            index,
+            photo,
+            transition.to,
+            count === 2 && !transition.crossfade
+              ? -transition.side
+              : transition.side,
+          )
+        : offsetFor(index, photo, current, neighborSide.current),
+    };
+  });
 
   const frames = (
     <div className="variant-ring-frames">
-      {[...items.values()].map(({ photo, from, to }) => {
+      {items.map(({ key, photo, from, to }) => {
         const active = photo.id === current.photo.id,
           target = photo.id === transition?.to.photo.id;
+        const enabled = photo.id === current.photo.id || ready.has(photo.id);
         const pose = ringPose(from, size);
         return (
           <div
-            key={photo.id}
+            key={key}
             className={`variant-ring-item${active && inspected ? " product-inspected-image" : ""}`}
             data-current={active || undefined}
             data-arriving={target || undefined}
             data-from={from}
             data-to={to}
             data-information={photo.information || undefined}
+            data-framed={photo.framed || photo.information || undefined}
+            data-slot={from}
+            data-loaded={enabled || undefined}
+            data-visible={(enabled && pose.opacity > 0) || undefined}
             aria-hidden={active ? undefined : true}
             style={{
               transform: pose.transform,
-              opacity: target && transition?.crossfade ? 0 : pose.opacity,
+              opacity:
+                !enabled || (target && transition?.crossfade)
+                  ? 0
+                  : pose.opacity,
+              zIndex: active ? 3 : target ? 2 : 1,
             }}
           >
             <div className="variant-ring-tilt">
               {photo.src ? (
-                <img
-                  className={`product-frame${active ? " product-frame-current" : ""}`}
-                  src={photo.src}
-                  srcSet={photo.srcSet}
-                  sizes={photo.sizes}
-                  alt={active ? photo.alt : ""}
-                  width={1000}
-                  height={1000}
-                  crossOrigin="anonymous"
-                  decoding="async"
-                  draggable={false}
-                  loading={
-                    !compact || eager || transition || !active
-                      ? "eager"
-                      : "lazy"
-                  }
-                  fetchPriority={active && eager ? "high" : "auto"}
+                <ProductPhoto
+                  photo={photo}
+                  size={size}
+                  enabled={enabled}
+                  active={active}
+                  eager={eager}
                   onLoad={(event) => {
                     cache.current?.remember(photo.src, event.currentTarget);
-                    event.currentTarget.parentElement?.style.setProperty(
-                      "--pack-mask",
-                      `url(${JSON.stringify(event.currentTarget.currentSrc)})`,
-                    );
-                    if (active) setReadyPhoto(photo.src);
+                    if (currentRef.current.photo.id === photo.id)
+                      setReadyPhoto(photo.src);
                   }}
                   onError={() => {
-                    if (!transition && active)
+                    if (
+                      phaseRef.current === "idle" &&
+                      currentRef.current.photo.id === photo.id
+                    )
                       setMessage(
                         "No pudimos cargar esta imagen. Podés intentar otra vez.",
                       );
@@ -659,6 +702,7 @@ export function VariantRing(props: VariantRingProps) {
       className={`product-image-gallery product-image-gallery-${compact ? "card" : "detail"} variant-ring variant-ring-${size}${rail ? " product-gallery-with-rail" : ""}`}
       data-normalized={current.photo.normalized || undefined}
       data-enhanced={enhanced || undefined}
+      data-engaged={!compact || hovered || focused || undefined}
       data-ring-phase={phase}
       data-transition="ring"
       data-animated={(transition && reduced === false) || undefined}
@@ -702,7 +746,7 @@ export function VariantRing(props: VariantRingProps) {
       <div
         ref={stage}
         className="product-image-stage"
-        onPointerMove={tilt.onPointerMove}
+        onPointerMove={!compact || hovered ? tilt.onPointerMove : undefined}
         onPointerEnter={tilt.onPointerEnter}
         onPointerLeave={tilt.onPointerLeave}
         onPointerDown={(event) => {
@@ -732,6 +776,7 @@ export function VariantRing(props: VariantRingProps) {
           step(x < 0 ? 1 : -1);
         }}
       >
+        <span className="variant-ring-shadow" aria-hidden="true" />
         {props.href ? (
           <Link
             className="product-frame-link"

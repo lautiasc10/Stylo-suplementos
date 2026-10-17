@@ -57,9 +57,9 @@ test("piloto de cinco productos: encuadre cuadrado, alineación y responsive sin
   }
   const images = page.locator(".product-frame-current");
   await expect(images.first()).toHaveAttribute("loading", "eager");
-  await expect(images.nth(2)).toHaveAttribute("loading", "lazy");
-  await expect(images.first()).toHaveAttribute("srcset", /320w.*640w.*1000w/);
-  await expect(images.first()).toHaveAttribute("sizes", /50vw/);
+  await expect(images.nth(4)).toHaveAttribute("loading", "lazy");
+  await expect(images.first()).toHaveAttribute("srcset", /-640.webp/);
+  await expect(images.first()).toHaveAttribute("sizes", /100vw/);
   await page
     .getByRole("link", { name: "Antes · Originales", exact: true })
     .click();
@@ -119,7 +119,7 @@ test("las imágenes del piloto y sus originales permanecen accesibles sin JavaSc
   await expect(page.locator(".product-card")).toHaveCount(5);
   await expect(page.locator(".product-frame-current").first()).toHaveAttribute(
     "srcset",
-    /1000w/,
+    /-640.webp/,
   );
   await page
     .getByRole("link", { name: "Antes · Originales", exact: true })

@@ -6,7 +6,7 @@ import {
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Icon } from "@/components/ui/icon";
 import { CategoryIllustration } from "@/components/storefront/category-illustration";
 import { ProductGallery, type GalleryImage } from "./product-gallery";
@@ -65,7 +65,7 @@ function FlavorBadge({ flavor }: { flavor: string }) {
   );
 }
 
-export function ProductCard({
+export const ProductCard = memo(function ProductCard({
   product,
   variants,
   initialVariantId,
@@ -188,7 +188,7 @@ export function ProductCard({
             href={href}
             linkLabel={`Ver ${product.name}`}
             startDelay={(index % 5) * 180}
-            eager={index < 2 && photos[0]?.normalized}
+            eager={index < 4 && photos[0]?.normalized}
             onImageChange={selectPhoto}
           />
         ) : (
@@ -222,4 +222,4 @@ export function ProductCard({
       </div>
     </article>
   );
-}
+});
