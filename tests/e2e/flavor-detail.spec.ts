@@ -211,10 +211,11 @@ test("cambios rápidos conservan solo dos capas y movimiento reducido cancela el
   );
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(page.locator(".flavor-scene-layer")).toHaveCount(1);
-  await expect(page.locator(".product-frame-pair")).toHaveCSS(
-    "animation-name",
-    "none",
+  await expect(page.locator(".variant-spinner")).toHaveAttribute(
+    "data-spinner-phase",
+    "idle",
   );
+  await expect(page.locator(".variant-spinner-frame")).toHaveCount(1);
   await expect(page.locator(".flavor-product-detail")).toHaveCSS(
     "transition-duration",
     "0s",
@@ -335,7 +336,10 @@ test("las fotos vecinas se preparan antes del clic y se reutilizan al recorrer s
     const decode = HTMLImageElement.prototype.decode;
     (window as unknown as { decodes: string[] }).decodes = [];
     HTMLImageElement.prototype.decode = function () {
-      (window as unknown as { decodes: string[] }).decodes.push(this.src);
+      // Count detached preload decodes, separately from the rendered frame's
+      // own decode before a spin (which prevents a resolution handoff flash).
+      if (!this.isConnected)
+        (window as unknown as { decodes: string[] }).decodes.push(this.src);
       return decode.call(this);
     };
   });

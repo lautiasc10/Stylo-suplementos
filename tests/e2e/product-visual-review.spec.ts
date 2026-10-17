@@ -181,6 +181,13 @@ test("las variantes del detalle conservan enlaces y compra sin JavaScript", asyn
     next.id,
   );
   await expect(page.locator(".product-frame-current")).toBeVisible();
+  await expect(page.locator(".product-frame-current")).toHaveCSS(
+    "opacity",
+    "1",
+  );
+  await expect(
+    page.getByRole("button", { name: "Sabor siguiente" }),
+  ).toHaveCount(0);
   await expect(page.locator(".purchase-action")).toHaveCSS("position", "fixed");
   await context.close();
 });

@@ -15,6 +15,8 @@ import { positionProductPhoto } from "./product-photo-position";
 import { createGalleryPhotoCache } from "./gallery-photo-cache";
 import { PackageTurn, type PackageTurnState } from "./package-turn";
 import { ProductThumbnailRail } from "./product-thumbnail-rail";
+import { VariantSpinner } from "./VariantSpinner";
+import type { Variant } from "@/modules/catalog/model";
 
 export type GalleryImage = {
   id: string;
@@ -112,23 +114,8 @@ function frameLoaded(event: SyntheticEvent<HTMLImageElement>) {
   fitFrame(event.currentTarget);
 }
 
-export function ProductGallery({
-  images,
-  href,
-  linkLabel,
-  mode = "card",
-  delay = 3000,
-  startDelay = 0,
-  onImageChange,
-  transition = "fragments",
-  flavorNavigation = false,
-  initialVariantId,
-  onPrepareImage,
-  prepareImage,
-  selectionRequest,
-  informationImages = [],
-  eager = false,
-}: {
+export type ProductGalleryProps = {
+  variants?: Variant[];
   images: GalleryImage[];
   href?: string;
   linkLabel?: string;
@@ -146,7 +133,58 @@ export function ProductGallery({
   selectionRequest?: { variantId: string; nonce: number } | null;
   informationImages?: GalleryImage[];
   eager?: boolean;
-}) {
+};
+
+export function ProductGallery(props: ProductGalleryProps) {
+  if (props.variants && props.variants.length > 1)
+    return (
+      <VariantSpinner
+        variants={props.variants.map((variant) => ({
+          ...variant,
+          images: props.images.filter(
+            (image) => image.variantId === variant.id,
+          ),
+        }))}
+        activeId={props.initialVariantId}
+        mode={props.mode}
+        href={props.href}
+        linkLabel={props.linkLabel}
+        eager={props.eager}
+        delay={props.delay}
+        startDelay={props.startDelay}
+        onChange={props.onImageChange}
+        selectionRequest={props.selectionRequest}
+        informationImages={props.informationImages}
+        onPrepareImage={props.onPrepareImage}
+        prepareImage={props.prepareImage}
+      />
+    );
+  return (
+    <LegacyProductGallery
+      {...props}
+      flavorNavigation={false}
+      transition={props.mode === "detail" ? "fade" : props.transition}
+    />
+  );
+}
+
+function LegacyProductGallery({
+  images,
+  href,
+  linkLabel,
+  mode = "card",
+  delay = 3000,
+  startDelay = 0,
+  onImageChange,
+  transition = "fragments",
+  flavorNavigation = false,
+  initialVariantId,
+  onPrepareImage,
+  prepareImage,
+  selectionRequest,
+  informationImages = [],
+  eager = false,
+}: ProductGalleryProps) {
   const root = useRef<HTMLDivElement>(null);
   const framePair = useRef<HTMLSpanElement>(null);
   const request = useRef(0);

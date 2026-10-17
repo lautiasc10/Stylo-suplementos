@@ -1,0 +1,166 @@
+.variant-spinner .product-image-stage {
+  aspect-ratio: 1;
+  background: url("/media/normalization-trial-v1/rock-square-v1.webp") center /
+    cover no-repeat var(--commercial-background);
+  touch-action: pan-y pinch-zoom;
+}
+.variant-spinner .product-image-stage::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  inset: 87% 21% auto;
+  height: 5%;
+  background: radial-gradient(ellipse, #000c, #0000 72%);
+}
+.variant-spinner-frames {
+  position: absolute;
+  inset: 0;
+  perspective: 900px;
+  perspective-origin: 50% 90%;
+}
+.product-image-gallery.variant-spinner .product-frame-link {
+  perspective: none;
+}
+.variant-spinner-frame {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 90%;
+  backface-visibility: hidden;
+}
+.variant-spinner[data-spinner-phase="outgoing"] .variant-spinner-frame,
+.variant-spinner[data-spinner-phase="incoming"] .variant-spinner-frame {
+  will-change: transform, opacity;
+}
+.variant-spinner .variant-spinner-frame .product-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  padding: 0;
+  object-fit: contain;
+  transform: none;
+  animation: none;
+  opacity: 1;
+}
+.variant-spinner-frame[data-information="true"] {
+  background: var(--image-background);
+}
+.variant-navigation {
+  position: absolute;
+  z-index: 4;
+  inset: 50% var(--space-3) auto;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+.variant-navigation button {
+  pointer-events: auto;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: var(--space-3);
+  border: 1px solid var(--gold);
+  border-radius: var(--radius-pill);
+  background: #080808e6;
+  color: #ece9e1;
+}
+.variant-navigation button:is(:hover, :focus-visible) {
+  background: var(--gold);
+  color: var(--background);
+}
+.product-image-gallery-card .variant-navigation {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--motion-control);
+}
+.product-image-gallery-card .variant-navigation button {
+  pointer-events: none;
+}
+.product-card:is(:hover, :focus-within) .variant-navigation {
+  opacity: 1;
+}
+.product-card:is(:hover, :focus-within) .variant-navigation button {
+  pointer-events: auto;
+}
+.variant-spinner-count {
+  position: absolute;
+  z-index: 4;
+  bottom: var(--space-2);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  background: #080808e6;
+  color: #ece9e1;
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+.variant-spinner-status {
+  position: absolute;
+  z-index: 5;
+  bottom: var(--space-10);
+  inset-inline: var(--space-3);
+  margin: 0;
+  padding: var(--space-2);
+  background: #080808ed;
+  color: #ece9e1;
+  font-size: var(--text-sm);
+  text-align: center;
+  pointer-events: none;
+}
+.variant-spinner-status:empty {
+  display: none;
+}
+.variant-spinner-caption {
+  margin: var(--space-3) 0 0;
+  min-height: 24px;
+  color: var(--foreground);
+  font-size: var(--text-sm);
+  text-align: center;
+}
+.product-image-gallery-card.variant-spinner .product-static-images {
+  display: none;
+}
+.variant-spinner > noscript {
+  grid-column: 1 / -1;
+}
+.product-gallery-with-rail > .variant-spinner-caption {
+  grid-column: 2;
+  grid-row: 2;
+}
+@media (hover: none), (pointer: coarse) {
+  .product-image-gallery-card .variant-navigation {
+    opacity: 1;
+  }
+  .product-image-gallery-card .variant-navigation button {
+    pointer-events: auto;
+  }
+}
+@media (max-width: 959px) {
+  .product-gallery-with-rail > .variant-spinner-caption {
+    grid-column: 1;
+    grid-row: 3;
+  }
+}
+@media (max-width: 540px) {
+  .product-image-gallery-card .variant-navigation {
+    inset-inline: var(--space-1);
+  }
+  .product-image-gallery-card .variant-navigation button {
+    width: 44px;
+    height: 44px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .variant-spinner-frames {
+    perspective: none;
+  }
+  .variant-navigation {
+    transition: none !important;
+  }
+}

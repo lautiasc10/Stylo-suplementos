@@ -74,6 +74,10 @@ export function createGalleryPhotoCache() {
     has: (src: string) => ready.has(src),
     remember,
     cancelPending,
+    release: () => {
+      ready.clear();
+      cancelPending();
+    },
     dispose: () => {
       disposed = true;
       ready.clear();

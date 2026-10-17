@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { demoCatalog } from "../../src/modules/catalog/demo";
 
 for (const mode of ["card", "detail"] as const) {
-  test(`vistas reales y cambio de SKU al volver al frente en ${mode}`, async ({
+  test(`dorsos reales conservados en miniaturas y nuevo giro de variante en ${mode}`, async ({
     page,
   }) => {
     const catalog = demoCatalog();
@@ -59,57 +59,19 @@ for (const mode of ["card", "detail"] as const) {
         localStorage.setItem("stylo.catalog-preview.v1", JSON.stringify(state)),
       { catalog, images },
     );
-    await page.clock.install();
-    await page.clock.pauseAt(new Date());
     await page.goto(
       mode === "card"
         ? "/vista-previa?q=proteina"
         : `/vista-previa/producto/${product.slug}?variante=${first.id}`,
     );
-    const gallery = page.locator(".product-image-gallery").first();
+    const gallery = page.locator(".variant-spinner");
     await gallery.scrollIntoViewIfNeeded();
+    if (mode === "card") await page.locator(".product-card").hover();
     await gallery
-      .locator(".product-frame-current")
-      .evaluate((el: HTMLImageElement) => el.decode());
-    if (mode === "card") {
-      await expect(gallery).toHaveAttribute("data-auto-playing", "true");
-      await page.clock.runFor(3100);
-    } else
-      await gallery
-        .getByRole("button", { name: "Sabor siguiente", exact: true })
-        .click();
-    await expect(gallery).toHaveAttribute("data-package-turn", "true");
-    await expect(gallery.locator(".product-frame-current")).toHaveAttribute(
-      "alt",
-      "Frente Chocolate",
-    );
-    const poses = gallery.locator(".package-turn img");
-    await expect(poses).toHaveCount(3);
-    expect(
-      await poses.evaluateAll((nodes) =>
-        nodes.every(
-          (node) =>
-            (node as HTMLImageElement).complete &&
-            (node as HTMLImageElement).naturalWidth > 0,
-        ),
-      ),
-    ).toBe(true);
-    if (mode === "card")
-      await expect(page.locator(".product-card-action")).toHaveAttribute(
-        "href",
-        new RegExp(first.id),
-      );
-    else
-      await expect(page.locator(".variant-picker")).toHaveAttribute(
-        "data-selected-variant",
-        first.id,
-      );
-    await poses.evaluateAll((nodes) =>
-      nodes.forEach((node) =>
-        node.getAnimations().forEach((animation) => animation.finish()),
-      ),
-    );
-    await expect(gallery).not.toHaveAttribute("data-package-turn", "true");
+      .getByRole("button", { name: "Sabor siguiente", exact: true })
+      .click();
+    await expect(gallery).toHaveAttribute("data-active-variant", next.id);
+    await expect(gallery).toHaveAttribute("data-spinner-phase", "idle");
     await expect(gallery.locator(".product-frame-current")).toHaveAttribute(
       "alt",
       "Frente Vainilla",
@@ -120,41 +82,26 @@ for (const mode of ["card", "detail"] as const) {
         new RegExp(next.id),
       );
     else {
-      await expect(page.locator(".variant-picker")).toHaveAttribute(
-        "data-selected-variant",
-        next.id,
-      );
-      const rail = gallery.getByRole("group", {
-        name: "Galería del producto",
-        exact: true,
-      });
-      await rail
+      await gallery
         .getByRole("link", { name: "Ver Dorso real", exact: true })
         .click();
       await expect(
         gallery.locator(".product-inspected-image img"),
       ).toHaveAttribute("alt", "Dorso real");
-      await rail
+      await expect(gallery).toHaveAttribute("data-active-variant", next.id);
+      await gallery
         .getByRole("link", { name: "Ver Tabla informativa", exact: true })
         .click();
       await expect(gallery.locator(".product-inspected-image")).toHaveAttribute(
         "data-information",
         "true",
       );
-      await expect(page.locator(".variant-picker")).toHaveAttribute(
-        "data-selected-variant",
-        next.id,
-      );
       await page.emulateMedia({ reducedMotion: "reduce" });
       await gallery
         .getByRole("button", { name: "Sabor anterior", exact: true })
         .click();
-      await expect(gallery).not.toHaveAttribute("data-package-turn", "true");
+      await expect(gallery).toHaveAttribute("data-active-variant", first.id);
       await expect(gallery).not.toHaveAttribute("data-inspecting", "true");
-      await expect(page.locator(".variant-picker")).toHaveAttribute(
-        "data-selected-variant",
-        first.id,
-      );
     }
     expect(
       await page.evaluate(

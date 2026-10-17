@@ -145,6 +145,7 @@ export function GainerProductDetail({
       <div className="product-gallery">
         <ProductGallery
           images={images}
+          variants={product.variants}
           mode="detail"
           transition="turn"
           flavorNavigation

@@ -38,4 +38,4 @@ Revisión real: [medidas y consola](reviews/revision-visual-fase-2/verificacion.
 
 La comprobación de fluidez usa producción local, recursos preparados y Chromium a 375 px con CPU ralentizada 4×: 143 muestras de `requestAnimationFrame`, percentil 95 de 16,8 ms, máximo 33,3 ms y ninguna pausa superior a 50 ms durante el cambio de variante. [Medición](reviews/revision-visual-fase-2/rendimiento.json). Es una comprobación de laboratorio; no acredita un teléfono físico ni todas las conexiones. La medición se hizo sin compilaciones ni pruebas concurrentes.
 
-La Fase 3 del nuevo giro reutilizable queda pendiente de autorización. El giro existente se conserva.
+La Fase 3 fue autorizada posteriormente por el usuario y se desarrolla en su propia rama: [giro de variantes](variant-spinner-fase-3.md). Esta entrega conserva el registro de la revisión visual de Fase 2.

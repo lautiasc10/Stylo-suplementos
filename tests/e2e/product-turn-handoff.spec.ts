@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { demoCatalog } from "../../src/modules/catalog/demo";
 
 for (const mode of ["card", "detail"] as const) {
-  test(`la etiqueta permanece opaca al cerrar ${mode === "card" ? "el giro" : "el fundido"} en ${mode}`, async ({
+  test(`el pack conserva el mismo nodo, resolución y etiqueta opaca al cerrar ${mode === "card" ? "el giro" : "el fundido"} en ${mode}`, async ({
     page,
   }) => {
     // A transparent pack with an opaque white label exposes background bleed
@@ -48,83 +48,79 @@ for (const mode of ["card", "detail"] as const) {
         localStorage.setItem("stylo.catalog-preview.v1", JSON.stringify(data)),
       data,
     );
-    await page.clock.install();
-    await page.clock.pauseAt(new Date());
     await page.goto(
       mode === "card" ? "/vista-previa" : "/vista-previa/producto/whey-protein",
     );
-    const gallery = page.locator(".product-image-gallery").first();
+    const gallery = page.locator(".variant-spinner");
     await gallery.scrollIntoViewIfNeeded();
+    if (mode === "card") await page.locator(".product-card").hover();
     await gallery
-      .locator(".product-frame-current")
-      .evaluate((image: HTMLImageElement) => image.decode());
-    if (mode === "card") {
-      // Wait for the visibility observer to start autoplay before advancing
-      // the fake clock; image.decode alone does not start that timer.
-      await expect(gallery).toHaveAttribute("data-auto-playing", "true");
-      await page.clock.runFor(3100);
-    } else
-      await page
-        .getByRole("button", { name: "Sabor siguiente", exact: true })
-        .click();
-    await expect(gallery).toHaveAttribute("data-animated", "true");
-    await expect(gallery.locator(".product-frame-current")).toHaveAttribute(
-      "alt",
-      "Envase Frutilla",
+      .getByRole("button", { name: "Sabor siguiente", exact: true })
+      .click();
+    await expect(gallery).toHaveAttribute("data-spinner-phase", "incoming");
+    await gallery.evaluate((e) =>
+      e
+        .querySelectorAll(".variant-spinner-frame")
+        .forEach((f) => f.getAnimations().forEach((a) => a.pause())),
     );
-    await expect(gallery.locator(".product-frame-current")).toHaveAttribute(
-      "data-portrait",
-      "true",
+    const photo = gallery.locator(".product-frame-current");
+    await expect(photo).toHaveAttribute("alt", "Envase Frutilla");
+    const src = await photo.evaluate((img: HTMLImageElement) => {
+      (window as Window & { spinnerFrame?: HTMLImageElement }).spinnerFrame =
+        img;
+      return img.currentSrc;
+    });
+    expect(
+      await photo.evaluate(
+        (img: HTMLImageElement) => img.complete && img.naturalWidth > 0,
+      ),
+    ).toBe(true);
+    await gallery.evaluate((e) =>
+      e
+        .querySelectorAll(".variant-spinner-frame")
+        .forEach((f) => f.getAnimations().forEach((a) => a.finish())),
     );
-    const finalFrame = gallery.locator(
-      mode === "card" ? ".product-frame-settled" : ".product-frame-current",
-    );
-    await expect(finalFrame).toHaveAttribute("data-portrait", "true");
+    await expect(gallery).toHaveAttribute("data-spinner-phase", "idle");
+    expect(
+      await photo.evaluate(
+        (img: HTMLImageElement) =>
+          img ===
+          (window as Window & { spinnerFrame?: HTMLImageElement }).spinnerFrame,
+      ),
+    ).toBe(true);
+    expect(
+      await photo.evaluate((img: HTMLImageElement) => img.currentSrc),
+    ).toBe(src);
+    const stage = gallery.locator(".product-image-stage");
 
-    for (const fraction of [0.8, 0.9, 0.99]) {
-      await gallery.evaluate(
-        (element, time) => {
-          element.querySelectorAll("*").forEach((node) => {
-            for (const animation of node.getAnimations()) {
-              animation.pause();
-              animation.currentTime = time;
-            }
-          });
-        },
-        (mode === "card" ? 900 : 250) * fraction,
-      );
-      const frame = await finalFrame.boundingBox();
-      const stage = gallery.locator(".product-image-stage");
-      const bounds = await stage.boundingBox();
-      const screenshot = await stage.screenshot({ scale: "css" });
-      const pixel = await page.evaluate(
-        async ({ photo, x, y }) => {
-          const image = new Image();
-          image.src = `data:image/png;base64,${photo}`;
-          await image.decode();
-          const canvas = document.createElement("canvas");
-          canvas.width = image.width;
-          canvas.height = image.height;
-          const context = canvas.getContext("2d")!;
-          context.drawImage(image, 0, 0);
-          return [...context.getImageData(x, y, 1, 1).data].slice(0, 3);
-        },
-        {
-          photo: screenshot.toString("base64"),
-          x: Math.round(frame!.x + frame!.width / 2 - bounds!.x),
-          y: Math.round(frame!.y + frame!.height / 2 - bounds!.y),
-        },
-      );
-      expect(
-        pixel.every((channel) => channel >= 250),
-        `Etiqueta transparente en ${fraction * 100}%: ${pixel}`,
-      ).toBe(true);
-    }
-    await page.emulateMedia({ reducedMotion: "reduce" });
-    await expect(gallery).not.toHaveAttribute("data-animated", "true");
-    await expect(gallery.locator(".product-frame-current")).toHaveAttribute(
-      "alt",
-      "Envase Frutilla",
+    await stage.scrollIntoViewIfNeeded();
+    const frame = (await photo.boundingBox())!,
+      bounds = (await stage.boundingBox())!;
+    const screenshot = await stage.screenshot({
+      scale: "css",
+      path: test.info().outputPath("settled.png"),
+    });
+    const pixel = await page.evaluate(
+      async ({ photo, x, y }) => {
+        const img = new Image();
+        img.src = `data:image/png;base64,${photo}`;
+        await img.decode();
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext("2d")!;
+        ctx.drawImage(img, 0, 0);
+        return [...ctx.getImageData(x, y, 1, 1).data].slice(0, 3);
+      },
+      {
+        photo: screenshot.toString("base64"),
+        x: Math.round(frame.x + frame.width / 2 - bounds.x),
+        y: Math.round(frame.y + frame.height / 2 - bounds.y),
+      },
     );
+    expect(
+      pixel.every((channel) => channel >= 250),
+      `La etiqueta debe quedar opaca y nítida: ${pixel}`,
+    ).toBe(true);
   });
 }

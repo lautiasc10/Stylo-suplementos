@@ -28,7 +28,7 @@ export function normalizedPhotoProps(
     sizes:
       kind === "detail"
         ? "(min-width: 960px) 640px, 100vw"
-        : "(min-width: 1280px) 24vw, (min-width: 960px) 32vw, (min-width: 541px) 50vw, 100vw",
+        : "(min-width: 1280px) 24vw, (min-width: 960px) 32vw, 50vw",
     thumbnailSrc: file(320),
   };
 }

@@ -843,7 +843,7 @@ test("el panel lateral conserva selección con teclado y al cambiar a celular", 
   ).toBe(true);
 });
 
-test("la galería automática sincroniza variantes y la ficha conserva sus fotos", async ({
+test("el giro automático cambia de variante y la ficha conserva sus fotografías", async ({
   page,
 }) => {
   await page.clock.install();
@@ -865,11 +865,10 @@ test("la galería automática sincroniza variantes y la ficha conserva sus fotos
   ).toBeVisible();
   await expect(card.locator(".product-gallery-controls")).toHaveCount(0);
   await expect(card.locator(".product-image-count")).toHaveCount(0);
-  await page.clock.runFor(3100);
-  await expect(
-    card.getByAltText("Chocolate dorso", { exact: true }),
-  ).toBeVisible();
-  await expect(card.locator(".product-prices")).toContainText("45.000");
+  await expect(card.locator(".variant-spinner")).toHaveAttribute(
+    "data-auto-playing",
+    "true",
+  );
   await page.clock.runFor(3100);
   await expect(
     card.getByAltText("Vainilla frente", { exact: true }),
@@ -880,6 +879,14 @@ test("la galería automática sincroniza variantes y la ficha conserva sus fotos
   await expect(
     card.getByRole("link", { name: "Ver variantes", exact: true }),
   ).toHaveAttribute("href", /variante=00000000-0000-4000-8000-000000000051$/);
+  await expect(card.locator(".variant-spinner")).toHaveAttribute(
+    "data-spinner-phase",
+    "idle",
+  );
+  await expect(card.locator(".variant-spinner")).toHaveAttribute(
+    "data-auto-playing",
+    "true",
+  );
   await page.clock.runFor(3100);
   await expect(
     card.getByAltText("Chocolate frente", { exact: true }),
@@ -995,20 +1002,19 @@ test("la galería pausa con foco y respeta movimiento reducido en vivo", async (
     galleryFixture(),
   );
   await page.goto("/vista-previa?q=proteina");
-  const gallery = page.locator(".product-image-gallery");
-  await gallery.evaluate((element) =>
-    element.scrollIntoView({ behavior: "instant", block: "center" }),
-  );
+  const gallery = page.locator(".variant-spinner");
+  await gallery.scrollIntoViewIfNeeded();
   await expect(gallery).toHaveAttribute("data-auto-playing", "true");
   await page.clock.runFor(3100);
   await expect(
-    page.getByAltText("Chocolate dorso", { exact: true }),
+    page.getByAltText("Vainilla frente", { exact: true }),
   ).toBeVisible();
+  await expect(gallery).toHaveAttribute("data-spinner-phase", "idle");
   await gallery.locator(".product-frame-link").focus();
   await expect(gallery).not.toHaveAttribute("data-auto-playing", "true");
   await page.clock.runFor(11000);
   await expect(
-    page.getByAltText("Chocolate dorso", { exact: true }),
+    page.getByAltText("Vainilla frente", { exact: true }),
   ).toBeVisible();
   await gallery
     .locator(".product-frame-link")
@@ -1016,17 +1022,16 @@ test("la galería pausa con foco y respeta movimiento reducido en vivo", async (
   await expect(gallery).toHaveAttribute("data-auto-playing", "true");
   await page.clock.runFor(3100);
   await expect(
-    page.getByAltText("Vainilla frente", { exact: true }),
+    page.getByAltText("Chocolate frente", { exact: true }),
   ).toBeVisible();
   await page.emulateMedia({ reducedMotion: "reduce" });
-  // Wait for the media-query change before advancing the mocked timers.
   await expect(gallery).not.toHaveAttribute("data-auto-playing", "true");
+  await expect(gallery).toHaveAttribute("data-spinner-phase", "idle");
   await page.clock.runFor(11000);
   await expect(
-    page.getByAltText("Vainilla frente", { exact: true }),
+    page.getByAltText("Chocolate frente", { exact: true }),
   ).toBeVisible();
-  await expect(gallery).not.toHaveAttribute("data-animated", "true");
-  await expect(gallery.getByRole("button")).toHaveCount(0);
+  await expect(gallery.getByRole("button")).toHaveCount(2);
 });
 
 test("una foto por variante alterna sus datos y respeta sabor, precio y disponibilidad", async ({
@@ -1079,64 +1084,34 @@ test("una foto por variante alterna sus datos y respeta sabor, precio y disponib
   await expect(card.locator(".product-prices")).toContainText("47.000");
 });
 
-test("los fragmentos cambian solos, desaparecen y se cancelan con movimiento reducido", async ({
+test("el giro automático conserva el tamaño, evita fragmentos y se cancela con movimiento reducido", async ({
   page,
 }) => {
   await page.clock.install();
   await page.clock.pauseAt(new Date());
-  const sameFlavor = galleryFixture();
-  sameFlavor.catalog.products[0].variants.forEach((variant) => {
-    variant.flavor = "Chocolate";
-  });
   await page.addInitScript(
     (fixture) =>
       localStorage.setItem("stylo.catalog-preview.v1", JSON.stringify(fixture)),
-    sameFlavor,
+    galleryFixture(),
   );
   await page.goto("/vista-previa?q=proteina");
-  const gallery = page.locator(".product-image-gallery");
-  await gallery.evaluate((element) =>
-    element.scrollIntoView({ behavior: "instant", block: "center" }),
-  );
-  await gallery.hover({ force: true });
-  const before = await gallery.evaluate((element) => ({
-    width: element.clientWidth,
-    height: element.clientHeight,
-  }));
-  await expect(
-    page.getByAltText("Chocolate frente", { exact: true }),
-  ).toBeVisible();
+  const gallery = page.locator(".variant-spinner");
+  await gallery.scrollIntoViewIfNeeded();
+  await expect(gallery).toHaveAttribute("data-auto-playing", "true");
+  const before = await gallery.evaluate((e) => [e.clientWidth, e.clientHeight]);
   await page.clock.runFor(2900);
   await expect(
     page.getByAltText("Chocolate frente", { exact: true }),
   ).toBeVisible();
   await page.clock.runFor(200);
-  await expect(
-    page.getByAltText("Chocolate dorso", { exact: true }),
-  ).toBeVisible();
-  await expect(gallery).toHaveAttribute("data-animated", "true");
-  await expect(gallery.locator(".product-image-fragments")).toHaveAttribute(
-    "aria-hidden",
-    "true",
-  );
-  await expect(gallery.getByRole("button")).toHaveCount(0);
-  const after = await gallery.evaluate((element) => ({
-    width: element.clientWidth,
-    height: element.clientHeight,
-  }));
-  expect(after?.width).toBe(before?.width);
-  expect(after?.height).toBe(before?.height);
-  await page.clock.runFor(900);
+  await expect(gallery).toHaveAttribute("data-spinner-phase", "outgoing");
   await expect(gallery.locator(".product-image-fragments")).toHaveCount(0);
-  await expect(gallery.locator(".product-frame-outgoing")).toHaveCount(0);
-  await expect(gallery).not.toHaveAttribute("data-animated", "true");
-  await page.clock.runFor(2200);
-  await expect(
-    page.getByAltText("Vainilla frente", { exact: true }),
-  ).toBeVisible();
+  expect(
+    await gallery.evaluate((e) => [e.clientWidth, e.clientHeight]),
+  ).toEqual(before);
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await expect(gallery.locator(".product-image-fragments")).toHaveCount(0);
-  await expect(gallery).not.toHaveAttribute("data-animated", "true");
+  await expect(gallery).toHaveAttribute("data-spinner-phase", "idle");
+  await expect(gallery.locator(".variant-spinner-frame")).toHaveCount(1);
   await page.clock.runFor(10000);
   await expect(
     page.getByAltText("Vainilla frente", { exact: true }),

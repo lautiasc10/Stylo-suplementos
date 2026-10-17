@@ -168,6 +168,7 @@ function StandardProductDetail({
             )}
             <ProductGallery
               images={flavorImages}
+              variants={product.variants}
               mode="detail"
               transition={product.turnImages?.length ? "turn" : "fade"}
               informationImages={informationImages}

@@ -5,6 +5,7 @@ import {
 } from "@/components/commerce/product-pricing";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Icon } from "@/components/ui/icon";
 import { CategoryIllustration } from "@/components/storefront/category-illustration";
@@ -87,6 +88,7 @@ export function ProductCard({
   imageUrls: Record<string, string>;
   preview: boolean;
 }) {
+  const router = useRouter();
   const [variantId, setVariantId] = useState(initialVariantId);
   const variant = variants.find((item) => item.id === variantId) ?? variants[0];
   const differentFlavors =
@@ -109,16 +111,32 @@ export function ProductCard({
       (a, b) =>
         Number(b.id === initialVariantId) - Number(a.id === initialVariantId),
     );
-    const entries = ordered.flatMap((item) =>
-      galleryPhotos(product, item.id, imageBase, imageUrls, "card").map(
-        (image) => ({
-          ...image,
-          href: `${productPrefix}/${product.slug}?variante=${item.id}`,
-        }),
-      ),
-    );
-    // A missing initial photo must not show a different SKU with the initial price.
-    return entries[0]?.variantId === initialVariantId ? entries : [];
+    const entries = ordered.flatMap((item) => {
+      const images = galleryPhotos(
+        product,
+        item.id,
+        imageBase,
+        imageUrls,
+        "card",
+      );
+      return images.length
+        ? images.map((image) => ({
+            ...image,
+            href: `${productPrefix}/${product.slug}?variante=${item.id}`,
+          }))
+        : variants.length > 1
+          ? [
+              {
+                id: item.id,
+                variantId: item.id,
+                src: "",
+                alt: product.name,
+                href: `${productPrefix}/${product.slug}?variante=${item.id}`,
+              },
+            ]
+          : [];
+    });
+    return entries;
   }, [
     product,
     variants,
@@ -135,6 +153,22 @@ export function ProductCard({
     <article
       className="product-card"
       data-out-of-stock={variant.stock === 0 || undefined}
+      onClick={(event) => {
+        if (
+          event.defaultPrevented ||
+          event.button !== 0 ||
+          event.metaKey ||
+          event.ctrlKey ||
+          event.shiftKey ||
+          event.altKey ||
+          (event.target as Element).closest(
+            "a, button, input, select, textarea",
+          ) ||
+          window.getSelection()?.toString()
+        )
+          return;
+        router.push(href);
+      }}
     >
       <div className="product-card-media">
         <div className="product-card-labels">
@@ -156,6 +190,8 @@ export function ProductCard({
         {photos.length ? (
           <ProductGallery
             images={photos}
+            variants={variants}
+            initialVariantId={variant.id}
             href={href}
             linkLabel={`Ver ${product.name}`}
             startDelay={(index % 5) * 180}

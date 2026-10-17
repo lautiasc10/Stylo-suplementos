@@ -58,7 +58,7 @@ async function seed(page: Page, brokenPhoto = false) {
   return product;
 }
 
-test("ganadores usa partículas, ingredientes por sabor y precios reales sin panel ni piedra", async ({
+test("ganadores conserva partículas, ingredientes y precios con piedra independiente", async ({
   page,
 }) => {
   const product = await seed(page);
@@ -74,10 +74,11 @@ test("ganadores usa partículas, ingredientes por sabor y precios reales sin pan
     "data-ingredient",
     "cookies",
   );
-  await expect(page.locator(".product-image-stage")).toHaveCSS(
-    "background-image",
-    "none",
-  );
+  expect(
+    await page
+      .locator(".product-image-stage")
+      .evaluate((e) => getComputedStyle(e).backgroundImage),
+  ).toContain("rock-square-v1.webp");
   await expect(page.locator(".gainer-product-copy")).toHaveCSS(
     "background-color",
     "rgba(0, 0, 0, 0)",
