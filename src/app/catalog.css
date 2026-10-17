@@ -1332,6 +1332,25 @@ label.editor-check {
 .import-panel li {
   overflow-wrap: anywhere;
 }
+.import-new-categories {
+  display: grid;
+  gap: var(--space-3);
+  margin-block: var(--space-6);
+  padding: var(--space-4);
+  border: 1px solid var(--gold);
+  background: color-mix(in srgb, var(--gold) 6%, transparent);
+}
+.import-new-categories h4,
+.import-new-categories p {
+  margin: 0;
+}
+.import-new-categories label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 48px;
+}
 .catalog-skeleton-title {
   width: 60%;
   height: 48px;

@@ -42,7 +42,7 @@ La [secuencia de fragmentos](previews/gallery-fragments.png) muestra seis estado
 
 ## Operación e importación
 
-1. Crear las marcas y categorías antes de productos o importaciones. Sus URL identifican los grupos dentro del archivo.
+1. Crear las marcas antes de importar. El archivo acepta el slug o el nombre de marcas y categorías; ignora mayúsculas, tildes y espacios al comparar nombres. Las categorías faltantes se proponen en la vista previa y requieren confirmación individual antes de aplicar el lote.
 2. Crear un producto, asignarle marca/categorías y cargar al menos una variante con SKU y precios positivos. Los atributos irrelevantes pueden dejarse vacíos. Activar “Visible en la tienda” para publicarlo.
 3. Subir fotografías autorizadas, escribir su descripción y seleccionar la variante si corresponde. “Usar primero” adelanta la imagen una posición; la primera foto aplicable es la portada.
 4. Descargar la plantilla CSV desde Carga masiva. Guardarla como CSV UTF-8 separado por coma o punto y coma, o como Excel `.xlsx` con la misma cabecera en la primera hoja.
@@ -52,14 +52,14 @@ La [secuencia de fragmentos](previews/gallery-fragments.png) muestra seis estado
 | --------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | `producto_slug`                   | URL del producto padre, minúsculas y guiones; un SKU existente permanece en su producto.             |
 | `nombre`, `descripcion`           | Datos compartidos por todas las filas del mismo producto; deben coincidir.                           |
-| `marca`, `categorias`             | URL de grupos existentes. Separar varias categorías con `\|`.                                        |
+| `marca`, `categorias`             | Slug o nombre normalizado. La marca debe existir; una categoría nueva se confirma en la vista previa. Separar varias categorías con `\|`. |
 | `sku`                             | Único en todo el catálogo y en el archivo. Se normaliza a mayúsculas.                                |
 | `sabor`, `tamano`, `presentacion` | Opcionales; describen la variante.                                                                   |
 | `precio_lista`, `precio_efectivo` | ARS, positivos, hasta dos decimales, coma o punto decimal, sin separadores de miles.                 |
 | `stock`                           | Entero de 0 a 1000000.                                                                               |
 | `visible`                         | `true` / `false`, corresponde al producto padre. La visibilidad de variantes existentes se conserva. |
 
-Límites: 2 MB por archivo, 1000 filas de datos, 100 variantes y 12 fotos por producto. El catálogo completo enviado a guardar también debe caber en 2 MB; las imágenes viajan por separado. Excel tiene límites adicionales de entradas ZIP y tamaño declarado descomprimido. El lector no ejecuta fórmulas ni macros; no se admiten `.xls` o `.xlsm`. La plantilla no crea marcas/categorías implícitas ni baja variantes omitidas. SEO, etiquetas y fotos existentes se conservan al importar.
+Límites: 2 MB por archivo, 1000 filas de datos, 100 variantes y 12 fotos por producto. El catálogo completo enviado a guardar también debe caber en 2 MB; las imágenes viajan por separado. Excel tiene límites adicionales de entradas ZIP y tamaño declarado descomprimido. El lector no ejecuta fórmulas ni macros; no se admiten `.xls` o `.xlsm`. La importación no crea marcas ni baja variantes omitidas. Reutiliza productos por SKU, URL o nombre normalizado dentro de la misma marca y bloquea variantes equivalentes con SKU distintos o identidades ambiguas. SEO, etiquetas y fotos existentes se conservan al importar. Los grupos nuevos y los productos se guardan en una sola transacción.
 
 Las fotos se suben antes de guardar su asociación. Cancelar una edición o quitar una foto no elimina físicamente el archivo. Revisar limpieza de archivos huérfanos al conectar Storage. En la vista previa, imágenes grandes pueden agotar la cuota local; el error se informa y no se confirma el guardado.
 

@@ -545,6 +545,44 @@ test("Excel real se lee en el navegador y un lote duplicado queda bloqueado", as
   ).toBe(before);
 });
 
+test("una categoría nueva requiere confirmación y se guarda con el lote", async ({
+  page,
+}) => {
+  await page.goto("/vista-previa/gestion?seccion=import");
+  const newRow = [...importRow];
+  newRow[2] = "MARCA DE PRUEBA Á";
+  newRow[3] = "Proteínas|Otros suplementos";
+  await page.getByLabel("Archivo de catálogo").setInputFiles({
+    name: "con-categoria.csv",
+    mimeType: "text/csv",
+    buffer: csv(newRow),
+  });
+  await expect(page.locator(".import-table")).toContainText(
+    "Otros suplementos",
+  );
+  const apply = page.getByRole("button", { name: "Aplicar importación" });
+  await expect(apply).toBeDisabled();
+  await page
+    .getByRole("checkbox", { name: /Confirmo crear «Otros suplementos»/ })
+    .check();
+  await expect(apply).toBeEnabled();
+  await apply.click();
+  await expect(page.getByRole("status")).toContainText("Cambios guardados.");
+  const stored = await page.evaluate(() =>
+    JSON.parse(localStorage.getItem("stylo.catalog-preview.v1") || "null"),
+  );
+  expect(
+    stored.catalog.categories.some(
+      (category: { slug: string }) => category.slug === "otros-suplementos",
+    ),
+  ).toBe(true);
+  expect(
+    stored.catalog.products.find(
+      (product: { slug: string }) => product.slug === "proteina-de-prueba",
+    ).categoryIds,
+  ).toHaveLength(2);
+});
+
 test("gestión real permanece protegida y la vista previa rechaza hosts externos", async ({
   page,
   request,

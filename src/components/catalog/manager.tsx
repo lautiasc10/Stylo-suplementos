@@ -50,6 +50,7 @@ export function CatalogManager({
   const productTriggerId = useRef("new-product");
   const [draft, setDraft] = useState<Product | null>(null),
     [plan, setPlan] = useState<ImportPlan | null>(null);
+  const [approvedCategories, setApprovedCategories] = useState<string[]>([]);
   const [busy, setBusy] = useState(false),
     [message, setMessage] = useState("");
   const [group, setGroup] = useState<CatalogGroup | null>(null),
@@ -90,6 +91,7 @@ export function CatalogManager({
       setGroup(null);
       setMessage("");
       setPlan(null);
+      setApprovedCategories([]);
       setFileName("");
     }
   }, [tab]);
@@ -294,6 +296,7 @@ export function CatalogManager({
   }
   async function prepare(file?: File) {
     setPlan(null);
+    setApprovedCategories([]);
     setMessage("");
     if (!file) return;
     setBusy(true);
@@ -1109,6 +1112,16 @@ export function CatalogManager({
                   {plan.rows} filas · {plan.created} variantes nuevas ·{" "}
                   {plan.updated} actualizaciones
                 </p>
+                {plan.changes.length > 0 &&
+                  plan.changes.every(
+                    ({ product, after }) =>
+                      !product.active && after.stock === 0,
+                  ) && (
+                    <p>
+                      Todos los productos de este archivo quedarán ocultos y sin
+                      stock, según los valores del CSV.
+                    </p>
+                  )}
                 {plan.errors.length ? (
                   <div role="alert">
                     <p>No se puede aplicar el lote:</p>
@@ -1120,6 +1133,34 @@ export function CatalogManager({
                   </div>
                 ) : (
                   <>
+                    {plan.createdCategories.length > 0 && (
+                      <div className="import-new-categories">
+                        <h4>Categorías nuevas</h4>
+                        <p>
+                          Estos registros se crearán junto con los productos
+                          solo si confirmás la importación:
+                        </p>
+                        {plan.createdCategories.map((category) => (
+                          <label key={category.id}>
+                            <input
+                              type="checkbox"
+                              checked={approvedCategories.includes(category.id)}
+                              disabled={busy}
+                              onChange={(event) =>
+                                setApprovedCategories((previous) =>
+                                  event.target.checked
+                                    ? [...previous, category.id]
+                                    : previous.filter(
+                                        (id) => id !== category.id,
+                                      ),
+                                )
+                              }
+                            />
+                            Confirmo crear «{category.name}» ({category.slug})
+                          </label>
+                        ))}
+                      </div>
+                    )}
                     <div className="manager-table-wrap">
                       <table className="manager-table import-table">
                         <thead>
@@ -1144,7 +1185,7 @@ export function CatalogManager({
                                 <small>
                                   Marca:{" "}
                                   {
-                                    catalog.brands.find(
+                                    plan.catalog.brands.find(
                                       (item) => item.id === product.brandId,
                                     )?.name
                                   }
@@ -1154,7 +1195,7 @@ export function CatalogManager({
                                   {product.categoryIds
                                     .map(
                                       (id) =>
-                                        catalog.categories.find(
+                                        plan.catalog.categories.find(
                                           (item) => item.id === id,
                                         )?.name,
                                     )
@@ -1208,6 +1249,9 @@ export function CatalogManager({
                   disabled={
                     busy ||
                     plan.errors.length > 0 ||
+                    plan.createdCategories.some(
+                      (category) => !approvedCategories.includes(category.id),
+                    ) ||
                     catalog.revision !== plan.catalog.revision
                   }
                   onClick={async () => {

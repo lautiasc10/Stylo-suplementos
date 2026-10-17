@@ -176,7 +176,7 @@ describe("importación sin pérdida de datos", () => {
   });
   it("impide mover SKU de producto y crear marcas implícitas", () => {
     const moved = [...row];
-    moved[0] = "otro-producto";
+    moved[0] = "creatina-de-prueba";
     expect(
       planImport([Array.from(importColumns), moved], demoCatalog()).errors.join(
         " ",
@@ -189,6 +189,71 @@ describe("importación sin pérdida de datos", () => {
         " ",
       ),
     ).toMatch(/no existe/);
+  });
+  it("reconoce nombres normalizados y prepara categorías nuevas sin tocar el catálogo", () => {
+    const current = demoCatalog();
+    const input = [...row];
+    input[2] = "MARCA  DE PRUEBA Á";
+    input[3] = "Prótéínas|Otros suplementos";
+    const plan = planImport([Array.from(importColumns), input], current);
+    expect(plan.errors).toEqual([]);
+    expect(plan.createdCategories.map((item) => item.slug)).toEqual([
+      "otros-suplementos",
+    ]);
+    expect(plan.catalog.products[0].categoryIds).toEqual([
+      current.categories[0].id,
+      plan.createdCategories[0].id,
+    ]);
+    expect(current.categories).toHaveLength(plan.catalog.categories.length - 1);
+    expect(
+      planImport([Array.from(importColumns), input], plan.catalog)
+        .createdCategories,
+    ).toEqual([]);
+  });
+  it("reutiliza productos por SKU o nombre y bloquea variantes repetidas con otro SKU", () => {
+    const current = demoCatalog();
+    const alias = [...row];
+    alias[0] = "otra-url-de-proteina";
+    const update = planImport([Array.from(importColumns), alias], current);
+    expect(update.errors).toEqual([]);
+    expect(update.updated).toBe(1);
+    expect(update.catalog.products).toHaveLength(current.products.length);
+    expect(update.catalog.products[0].slug).toBe(current.products[0].slug);
+    const newSku = [...alias];
+    newSku[5] = "NUEVO-1";
+    newSku[6] = "Frutilla";
+    const matchedName = planImport(
+      [Array.from(importColumns), newSku],
+      current,
+    );
+    expect(matchedName.errors).toEqual([]);
+    expect(matchedName.created).toBe(1);
+    expect(matchedName.catalog.products).toHaveLength(current.products.length);
+    const repeatedVariant = [...alias];
+    repeatedVariant[5] = "NUEVO-2";
+    expect(
+      planImport(
+        [Array.from(importColumns), repeatedVariant],
+        current,
+      ).errors.join(" "),
+    ).toMatch(/variante ya existe/);
+  });
+  it("detecta productos repetidos por nombre con distintas URL dentro del archivo", () => {
+    const first = [...row];
+    first[0] = "nombre-compartido-a";
+    first[5] = "PRUEBA-A";
+    first[6] = "Chocolate";
+    const second = [...first];
+    second[0] = "nombre-compartido-b";
+    second[5] = "PRUEBA-B";
+    second[6] = "Vainilla";
+    const current = { ...demoCatalog(), products: [] };
+    const plan = planImport(
+      [Array.from(importColumns), first, second],
+      current,
+    );
+    expect(plan.errors.join(" ")).toMatch(/dos URL distintas/);
+    expect(plan.catalog).toEqual(current);
   });
   it("rechaza archivos que no son Excel antes de descomprimir", () => {
     expect(() => validateXlsxArchive(new Uint8Array(100))).toThrow();

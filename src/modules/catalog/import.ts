@@ -2,8 +2,10 @@ import {
   parseMoney,
   validateCatalog,
   type Catalog,
+  type CatalogGroup,
   type Product,
   type Variant,
+  slugify,
 } from "./model";
 export const importColumns = [
   "producto_slug",
@@ -28,10 +30,43 @@ export type ImportChange = {
 export type ImportPlan = {
   catalog: Catalog;
   errors: string[];
+  createdCategories: CatalogGroup[];
   created: number;
   updated: number;
   rows: number;
   changes: ImportChange[];
+};
+
+const normalizedName = (value: string) =>
+  value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLocaleLowerCase("es")
+    .replace(/\s+/g, "");
+
+function findGroup(groups: CatalogGroup[], value: string) {
+  const slug = slugify(value);
+  const direct = groups.find(
+    (group) => group.slug === value || group.slug === slug,
+  );
+  if (direct) return direct;
+  const matches = groups.filter(
+    (group) => normalizedName(group.name) === normalizedName(value),
+  );
+  if (matches.length > 1)
+    throw new Error(
+      `«${value}» coincide con varios registros; elegí un slug exacto.`,
+    );
+  return matches[0];
+}
+
+const variantSignature = (
+  variant: Pick<Variant, "flavor" | "size" | "presentation">,
+) => {
+  const values = [variant.flavor, variant.size, variant.presentation].map(
+    normalizedName,
+  );
+  return values.some(Boolean) ? JSON.stringify(values) : "";
 };
 
 export function parseCsv(source: string): string[][] {
@@ -87,6 +122,7 @@ export function planImport(data: unknown[][], current: Catalog): ImportPlan {
   const result: ImportPlan = {
     catalog,
     errors: [],
+    createdCategories: [],
     created: 0,
     updated: 0,
     rows: Math.max(0, data.length - 1),
@@ -107,7 +143,9 @@ export function planImport(data: unknown[][], current: Catalog): ImportPlan {
       errors: ["Las columnas no coinciden con la plantilla."],
     };
   const seen = new Set<string>(),
-    definitions = new Map<string, string>();
+    definitions = new Map<string, string>(),
+    sourceProducts = new Map<string, string>(),
+    productSources = new Map<string, string>();
   data.slice(1).forEach((cells, index) => {
     try {
       if (
@@ -127,16 +165,39 @@ export function planImport(data: unknown[][], current: Catalog): ImportPlan {
       const sku = row.sku.toUpperCase();
       if (seen.has(sku)) throw new Error(`SKU ${sku} duplicado en el archivo.`);
       seen.add(sku);
-      const brand = catalog.brands.find((item) => item.slug === row.marca);
-      const categories = row.categorias
+      const brand = findGroup(catalog.brands, row.marca);
+      if (!brand)
+        throw new Error(`La marca «${row.marca}» no existe; cargala primero.`);
+      const categoryNames = row.categorias
         .split("|")
-        .map((slug) => catalog.categories.find((item) => item.slug === slug));
-      if (!brand || !categories.length || categories.some((item) => !item))
-        throw new Error("La marca o categoría no existe; cargala primero.");
+        .map((value) => value.trim());
+      if (categoryNames.some((value) => !value))
+        throw new Error("Indicá al menos una categoría válida.");
+      const categories = categoryNames.map((value) => {
+        const existing = findGroup(catalog.categories, value);
+        if (existing) return existing;
+        const slug = slugify(value);
+        if (!slug)
+          throw new Error(`La categoría «${value}» no tiene un nombre válido.`);
+        const category: CatalogGroup = {
+          id: crypto.randomUUID(),
+          slug,
+          name: value,
+          active: true,
+          sortOrder: catalog.categories.length,
+          detail: "",
+        };
+        catalog.categories.push(category);
+        result.createdCategories.push(category);
+        return category;
+      });
+      const categoryIds = categories.map((item) => item.id);
+      if (new Set(categoryIds).size !== categoryIds.length)
+        throw new Error("Hay categorías repetidas en la misma fila.");
       const definition = JSON.stringify([
         row.nombre,
-        row.marca,
-        row.categorias,
+        brand.id,
+        categoryIds,
         row.descripcion,
         row.visible,
       ]);
@@ -152,21 +213,68 @@ export function planImport(data: unknown[][], current: Catalog): ImportPlan {
         throw new Error(
           "visible debe ser true/false y stock un entero no negativo.",
         );
-      let product = catalog.products.find(
+      const listPrice = parseMoney(row.precio_lista);
+      const cashPrice = parseMoney(row.precio_efectivo);
+      const bySlug = catalog.products.find(
         (item) => item.slug === row.producto_slug,
       );
-      const owner = catalog.products.find((item) =>
+      const bySku = catalog.products.find((item) =>
         item.variants.some((variant) => variant.sku === sku),
       );
-      if (owner && owner.id !== product?.id)
-        throw new Error("No se puede mover un SKU a otro producto.");
+      const byName = catalog.products.filter(
+        (item) =>
+          item.brandId === brand.id &&
+          normalizedName(item.name) === normalizedName(row.nombre),
+      );
+      if (bySlug && bySku && bySlug.id !== bySku.id)
+        throw new Error(
+          `El SKU ${sku} pertenece a otro producto; no se puede mover.`,
+        );
+      if (!bySlug && !bySku && byName.length > 1)
+        throw new Error(
+          `El nombre «${row.nombre}» coincide con varios productos de esta marca.`,
+        );
+      let product = bySku ?? bySlug ?? byName[0];
+      if (product && product.brandId !== brand.id)
+        throw new Error(
+          `El producto «${product.name}» pertenece a otra marca.`,
+        );
+      if (product && byName.some((item) => item.id !== product.id))
+        throw new Error(
+          `Ya existe otro producto con el nombre «${row.nombre}» en esta marca.`,
+        );
+      const sourceId = sourceProducts.get(row.producto_slug);
+      if (sourceId && sourceId !== product?.id)
+        throw new Error(
+          "Las filas del mismo producto apuntan a productos distintos.",
+        );
+      const previousSource = product && productSources.get(product.id);
+      if (previousSource && previousSource !== row.producto_slug)
+        throw new Error(
+          `El producto «${product.name}» aparece con dos URL distintas en el archivo.`,
+        );
+      const signature = variantSignature({
+        flavor: row.sabor,
+        size: row.tamano,
+        presentation: row.presentacion,
+      });
+      if (product && signature) {
+        const sameVariant = product.variants.find(
+          (variant) =>
+            variantSignature(variant) === signature && variant.sku !== sku,
+        );
+        if (sameVariant)
+          throw new Error(
+            `La variante ya existe con SKU ${sameVariant.sku}; revisá el SKU ${sku}.`,
+          );
+      }
       if (!product) {
         product = {
           id: crypto.randomUUID(),
           slug: row.producto_slug,
           name: row.nombre,
           brandId: brand.id,
-          categoryIds: categories.map((item) => item!.id),
+          categoryIds,
           description: row.descripcion,
           active: row.visible === "true",
           featured: false,
@@ -181,10 +289,12 @@ export function planImport(data: unknown[][], current: Catalog): ImportPlan {
       } else {
         product.name = row.nombre;
         product.brandId = brand.id;
-        product.categoryIds = categories.map((item) => item!.id);
+        product.categoryIds = categoryIds;
         product.description = row.descripcion;
         product.active = row.visible === "true";
       }
+      sourceProducts.set(row.producto_slug, product.id);
+      productSources.set(product.id, row.producto_slug);
       const existing = product.variants.find((item) => item.sku === sku);
       const variant = {
         id: existing?.id ?? crypto.randomUUID(),
@@ -192,8 +302,8 @@ export function planImport(data: unknown[][], current: Catalog): ImportPlan {
         flavor: row.sabor,
         size: row.tamano,
         presentation: row.presentacion,
-        listPrice: parseMoney(row.precio_lista),
-        cashPrice: parseMoney(row.precio_efectivo),
+        listPrice,
+        cashPrice,
         stock: Number(row.stock),
         active: existing?.active ?? true,
       };
