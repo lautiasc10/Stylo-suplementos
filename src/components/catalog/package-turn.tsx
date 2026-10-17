@@ -87,6 +87,8 @@ export function PackageTurn({
           key={`${pose.id}:${i}`}
           className="product-frame"
           src={pose.src}
+          srcSet={pose.srcSet}
+          sizes={pose.sizes}
           crossOrigin="anonymous"
           alt=""
           width={720}

@@ -24,6 +24,9 @@ export type GalleryImage = {
   href?: string;
   thumbnailSrc?: string;
   information?: boolean;
+  normalized?: boolean;
+  srcSet?: string;
+  sizes?: string;
   turnImages?: (GalleryImage & { view: "left" | "back" | "right" })[];
 };
 
@@ -124,6 +127,7 @@ export function ProductGallery({
   prepareImage,
   selectionRequest,
   informationImages = [],
+  eager = false,
 }: {
   images: GalleryImage[];
   href?: string;
@@ -141,6 +145,7 @@ export function ProductGallery({
   prepareImage?: (image: GalleryImage) => Promise<unknown>;
   selectionRequest?: { variantId: string; nonce: number } | null;
   informationImages?: GalleryImage[];
+  eager?: boolean;
 }) {
   const root = useRef<HTMLDivElement>(null);
   const framePair = useRef<HTMLSpanElement>(null);
@@ -286,10 +291,14 @@ export function ProductGallery({
     ).connection;
     if (connection?.saveData) return;
     void photoCache.current
-      ?.load(images[(active + 1) % images.length].src, "low")
+      ?.load(
+        images[(active + 1) % images.length].src,
+        "low",
+        images[(active + 1) % images.length],
+      )
       .catch(() => {});
     for (const image of images[active].turnImages ?? []) {
-      void photoCache.current?.load(image.src, "low").catch(() => {});
+      void photoCache.current?.load(image.src, "low", image).catch(() => {});
     }
   }, [
     automatic,
@@ -318,7 +327,9 @@ export function ProductGallery({
     const timer = window.setTimeout(() => {
       if (!reduced)
         for (const angle of images[active].turnImages ?? []) {
-          void photoCache.current?.load(angle.src, "low").catch(() => {});
+          void photoCache.current
+            ?.load(angle.src, "low", angle)
+            .catch(() => {});
         }
       const ids = [...new Set(images.map((image) => image.variantId))];
       const index = ids.indexOf(images[active].variantId);
@@ -326,7 +337,7 @@ export function ProductGallery({
         const id = ids[(index + direction + ids.length) % ids.length];
         const next = images.find((image) => image.variantId === id);
         if (next?.src)
-          void photoCache.current?.load(next.src, "low").catch(() => {});
+          void photoCache.current?.load(next.src, "low", next).catch(() => {});
         if (next) onPrepareImage?.(next);
       }
     }, 200);
@@ -410,7 +421,9 @@ export function ProductGallery({
         let timer: ReturnType<typeof setTimeout> | undefined;
         await Promise.race([
           Promise.all(
-            angles.map((image) => photoCache.current?.load(image.src)),
+            angles.map((image) =>
+              photoCache.current?.load(image.src, "high", image),
+            ),
           ).catch(() => {}),
           new Promise<void>((resolve) => {
             timer = setTimeout(resolve, 450);
@@ -421,7 +434,7 @@ export function ProductGallery({
       if (prepareImage) {
         void Promise.all([
           images[index].src && !photoCache.current?.has(images[index].src)
-            ? photoCache.current?.load(images[index].src)
+            ? photoCache.current?.load(images[index].src, "high", images[index])
             : undefined,
           prepareImage(images[index]),
           prepareAngles(),
@@ -451,7 +464,7 @@ export function ProductGallery({
         return;
       }
       void Promise.all([
-        photoCache.current?.load(images[index].src),
+        photoCache.current?.load(images[index].src, "high", images[index]),
         prepareAngles(),
       ])
         .then(commitImage)
@@ -552,6 +565,8 @@ export function ProductGallery({
             className="product-frame product-frame-outgoing"
             crossOrigin="anonymous"
             src={images[previous].src}
+            srcSet={images[previous].srcSet}
+            sizes={images[previous].sizes}
             alt=""
             aria-hidden="true"
             width={720}
@@ -566,11 +581,13 @@ export function ProductGallery({
             className="product-frame product-frame-current"
             crossOrigin="anonymous"
             src={current.src}
+            srcSet={current.srcSet}
+            sizes={current.sizes}
             alt={current.alt}
             width={720}
             height={720}
-            loading={mode === "card" ? "lazy" : "eager"}
-            fetchPriority={mode === "detail" ? "high" : "auto"}
+            loading={mode === "card" && !eager ? "lazy" : "eager"}
+            fetchPriority={mode === "detail" || eager ? "high" : "auto"}
             decoding="async"
             onLoad={(event) => {
               frameLoaded(event);
@@ -595,6 +612,8 @@ export function ProductGallery({
           className="product-frame product-frame-settled"
           crossOrigin="anonymous"
           src={current.src}
+          srcSet={current.srcSet}
+          sizes={current.sizes}
           alt=""
           aria-hidden="true"
           width={720}
@@ -625,6 +644,8 @@ export function ProductGallery({
                   className="product-frame"
                   crossOrigin="anonymous"
                   src={index % 2 ? current.src : images[previous].src}
+                  srcSet={index % 2 ? current.srcSet : images[previous].srcSet}
+                  sizes={index % 2 ? current.sizes : images[previous].sizes}
                   alt=""
                   width={720}
                   height={720}
@@ -642,6 +663,7 @@ export function ProductGallery({
       ref={root}
       className={`product-image-gallery product-image-gallery-${mode}${packageTurn ? " product-gallery-turning" : ""}${mode === "detail" && visiblePhotos.length + (current.turnImages?.length ?? 0) + informationImages.length > 1 ? " product-gallery-with-rail" : ""}`}
       data-package-turn={packageTurn ? "true" : undefined}
+      data-normalized={current.normalized ? "true" : undefined}
       data-inspecting={inspected ? "true" : undefined}
       data-auto-playing={playing ? "true" : undefined}
       data-transition={
@@ -767,7 +789,7 @@ export function ProductGallery({
               const sequence = ++request.current;
               setLoading(true);
               void photoCache.current
-                ?.load(image.src)
+                ?.load(image.src, "high", image)
                 .then(() => {
                   if (request.current !== sequence) return;
                   setInspected(image);

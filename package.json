@@ -14,7 +14,9 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "check": "npm run lint && npm run typecheck && npm run test && npm run build",
-    "lint": "eslint src next.config.ts"
+    "lint": "eslint src next.config.ts",
+    "media:normalize": "node scripts/normalize-products.mjs",
+    "test:media": "node --test scripts/normalize-products.test.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.7",
@@ -37,6 +39,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "globals": "^17.13.0",
     "prettier": "3.9.10",
+    "sharp": "0.35.5",
     "tailwindcss": "4.3.3",
     "typescript": "5.9.3",
     "typescript-eslint": "^8.71.2",

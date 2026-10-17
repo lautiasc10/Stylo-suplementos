@@ -24,6 +24,7 @@ export function createGalleryPhotoCache() {
   const load = (
     src: string,
     priority: "high" | "low" = "high",
+    responsive?: { srcSet?: string; sizes?: string },
   ): Promise<HTMLImageElement> => {
     if (disposed)
       return Promise.reject(new DOMException("Gallery disposed", "AbortError"));
@@ -41,6 +42,8 @@ export function createGalleryPhotoCache() {
     const promise = new Promise<HTMLImageElement>((resolve, reject) => {
       image.crossOrigin = "anonymous";
       image.decoding = "async";
+      if (responsive?.sizes) image.sizes = responsive.sizes;
+      if (responsive?.srcSet) image.srcset = responsive.srcSet;
       cancel = () => {
         cancelled = true;
         image.onload = null;

@@ -1,0 +1,233 @@
+{
+  "results": [
+    {
+      "width": 1800,
+      "overflow": false,
+      "cards": [
+        {
+          "height": 621.609375,
+          "stage": {
+            "x": 49,
+            "y": 379.1875,
+            "width": 319.59375,
+            "height": 319.59375,
+            "top": 379.1875,
+            "right": 368.59375,
+            "bottom": 698.78125,
+            "left": 49
+          },
+          "candidate": "9af8ea20-2342-426c-8c17-c5fc70794578-c2af06e91315-v1-640.webp"
+        },
+        {
+          "height": 621.609375,
+          "stage": {
+            "x": 394.59375,
+            "y": 379.1875,
+            "width": 319.59375,
+            "height": 319.59375,
+            "top": 379.1875,
+            "right": 714.1875,
+            "bottom": 698.78125,
+            "left": 394.59375
+          },
+          "candidate": "b1aa54e3-ff2b-4bf9-93db-cad90e03e6e1-fcbbd2a9b17c-v1-640.webp"
+        },
+        {
+          "height": 621.609375,
+          "stage": {
+            "x": 740.1875,
+            "y": 379.1875,
+            "width": 319.609375,
+            "height": 319.609375,
+            "top": 379.1875,
+            "right": 1059.796875,
+            "bottom": 698.796875,
+            "left": 740.1875
+          },
+          "candidate": "d37b32bb-f601-4c9c-b92a-e89bc3ead376-d7b79e9c933b-v1-640.webp"
+        },
+        {
+          "height": 621.609375,
+          "stage": {
+            "x": 1085.796875,
+            "y": 379.1875,
+            "width": 319.59375,
+            "height": 319.59375,
+            "top": 379.1875,
+            "right": 1405.390625,
+            "bottom": 698.78125,
+            "left": 1085.796875
+          },
+          "candidate": "bf65107e-70b2-4bf1-a171-8ead6a5529d5-904d998796a9-v1-640.webp"
+        },
+        {
+          "height": 621.609375,
+          "stage": {
+            "x": 1431.390625,
+            "y": 379.1875,
+            "width": 319.609375,
+            "height": 319.609375,
+            "top": 379.1875,
+            "right": 1751,
+            "bottom": 698.796875,
+            "left": 1431.390625
+          },
+          "candidate": "054b2cef-71ad-4d1f-b80c-3eddfacfcb36-90d41567d1c1-v1-640.webp"
+        }
+      ]
+    },
+    {
+      "width": 768,
+      "overflow": false,
+      "cards": [
+        {
+          "height": 704,
+          "stage": {
+            "x": 17,
+            "y": 33.1875,
+            "width": 360,
+            "height": 360,
+            "top": 33.1875,
+            "right": 377,
+            "bottom": 393.1875,
+            "left": 17
+          },
+          "candidate": "9af8ea20-2342-426c-8c17-c5fc70794578-c2af06e91315-v1-640.webp"
+        },
+        {
+          "height": 704,
+          "stage": {
+            "x": 391,
+            "y": 33.1875,
+            "width": 360,
+            "height": 360,
+            "top": 33.1875,
+            "right": 751,
+            "bottom": 393.1875,
+            "left": 391
+          },
+          "candidate": "b1aa54e3-ff2b-4bf9-93db-cad90e03e6e1-fcbbd2a9b17c-v1-640.webp"
+        },
+        {
+          "height": 704,
+          "stage": {
+            "x": 17,
+            "y": 749.1875,
+            "width": 360,
+            "height": 360,
+            "top": 749.1875,
+            "right": 377,
+            "bottom": 1109.1875,
+            "left": 17
+          },
+          "candidate": "d37b32bb-f601-4c9c-b92a-e89bc3ead376-d7b79e9c933b-v1-640.webp"
+        },
+        {
+          "height": 704,
+          "stage": {
+            "x": 391,
+            "y": 749.1875,
+            "width": 360,
+            "height": 360,
+            "top": 749.1875,
+            "right": 751,
+            "bottom": 1109.1875,
+            "left": 391
+          },
+          "candidate": "bf65107e-70b2-4bf1-a171-8ead6a5529d5-904d998796a9-v1-640.webp"
+        },
+        {
+          "height": 704,
+          "stage": {
+            "x": 17,
+            "y": 1465.1875,
+            "width": 360,
+            "height": 360,
+            "top": 1465.1875,
+            "right": 377,
+            "bottom": 1825.1875,
+            "left": 17
+          },
+          "candidate": "054b2cef-71ad-4d1f-b80c-3eddfacfcb36-90d41567d1c1-v1-640.webp"
+        }
+      ]
+    },
+    {
+      "width": 375,
+      "overflow": false,
+      "cards": [
+        {
+          "height": 552.5,
+          "stage": {
+            "x": 17,
+            "y": 33.1875,
+            "width": 163.5,
+            "height": 163.5,
+            "top": 33.1875,
+            "right": 180.5,
+            "bottom": 196.6875,
+            "left": 17
+          },
+          "candidate": "9af8ea20-2342-426c-8c17-c5fc70794578-c2af06e91315-v1-640.webp"
+        },
+        {
+          "height": 552.5,
+          "stage": {
+            "x": 194.5,
+            "y": 33.1875,
+            "width": 163.5,
+            "height": 163.5,
+            "top": 33.1875,
+            "right": 358,
+            "bottom": 196.6875,
+            "left": 194.5
+          },
+          "candidate": "b1aa54e3-ff2b-4bf9-93db-cad90e03e6e1-fcbbd2a9b17c-v1-640.webp"
+        },
+        {
+          "height": 552.5,
+          "stage": {
+            "x": 17,
+            "y": 597.6875,
+            "width": 163.5,
+            "height": 163.5,
+            "top": 597.6875,
+            "right": 180.5,
+            "bottom": 761.1875,
+            "left": 17
+          },
+          "candidate": "d37b32bb-f601-4c9c-b92a-e89bc3ead376-d7b79e9c933b-v1-640.webp"
+        },
+        {
+          "height": 552.5,
+          "stage": {
+            "x": 194.5,
+            "y": 597.6875,
+            "width": 163.5,
+            "height": 163.5,
+            "top": 597.6875,
+            "right": 358,
+            "bottom": 761.1875,
+            "left": 194.5
+          },
+          "candidate": "bf65107e-70b2-4bf1-a171-8ead6a5529d5-904d998796a9-v1-640.webp"
+        },
+        {
+          "height": 552.5,
+          "stage": {
+            "x": 17,
+            "y": 1162.1875,
+            "width": 163.5,
+            "height": 163.5,
+            "top": 1162.1875,
+            "right": 180.5,
+            "bottom": 1325.6875,
+            "left": 17
+          },
+          "candidate": "054b2cef-71ad-4d1f-b80c-3eddfacfcb36-90d41567d1c1-v1-640.webp"
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

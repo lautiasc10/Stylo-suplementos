@@ -43,6 +43,8 @@ function visibleBase(image: HTMLImageElement): number | null {
 }
 
 export function positionProductPhoto(image: HTMLImageElement) {
+  // Opt-in normalized canvases already carry their common 90% baseline.
+  if (image.closest('[data-normalized="true"]')) return;
   if (!image.closest(".product-image-gallery-card") || !image.naturalWidth)
     return;
   const aspect = image.naturalHeight / image.naturalWidth;

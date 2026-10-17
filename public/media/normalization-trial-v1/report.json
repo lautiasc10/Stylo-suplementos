@@ -1,0 +1,850 @@
+{
+  "version": 1,
+  "canvas": [
+    1000,
+    1000
+  ],
+  "targetHeight": 800,
+  "baseline": 900,
+  "records": [
+    {
+      "id": "9af8ea20-2342-426c-8c17-c5fc70794578",
+      "productId": "d242dd6b-989a-49a4-9b20-e852cddb5561",
+      "variantId": "c6cc7d76-fa23-4a6a-9831-9d9509235ab2",
+      "kind": "front",
+      "label": "AMINOÁCIDOS \"EEAA + ESSENTIAL AMINO ACID\" · cereza · Vista frontal",
+      "sourcePath": "d242dd6b-989a-49a4-9b20-e852cddb5561/151e5605-75c3-484d-b6f9-1aa87a887864.webp",
+      "status": "review",
+      "sourceHash": "c2af06e913156381b0bdfb3bcf5629e1a9fcb96fd1e1adcd105e2916f2ec1dc6",
+      "source": {
+        "width": 659,
+        "height": 439,
+        "alreadyTransparent": true
+      },
+      "bounds": {
+        "left": 254,
+        "top": 79,
+        "width": 157,
+        "height": 279
+      },
+      "placement": {
+        "width": 450,
+        "height": 800,
+        "left": 275,
+        "top": 100,
+        "baseline": 900
+      },
+      "warnings": [
+        "Original pequeño: ampliación 2.87×; el procesamiento no recupera detalle inexistente."
+      ],
+      "outputs": {
+        "320": {
+          "filename": "9af8ea20-2342-426c-8c17-c5fc70794578-c2af06e91315-v1-320.webp",
+          "bytes": 12542
+        },
+        "640": {
+          "filename": "9af8ea20-2342-426c-8c17-c5fc70794578-c2af06e91315-v1-640.webp",
+          "bytes": 26242
+        },
+        "1000": {
+          "filename": "9af8ea20-2342-426c-8c17-c5fc70794578-c2af06e91315-v1-1000.webp",
+          "bytes": 40240
+        }
+      }
+    },
+    {
+      "id": "6204f1cb-e4ac-41de-943c-205416b14ef5",
+      "productId": "d242dd6b-989a-49a4-9b20-e852cddb5561",
+      "variantId": "58165b1d-4ff2-464e-aae3-cb2a09608a0d",
+      "kind": "front",
+      "label": "AMINOÁCIDOS \"EEAA + ESSENTIAL AMINO ACID\" · naranja · Vista frontal",
+      "sourcePath": "d242dd6b-989a-49a4-9b20-e852cddb5561/9cd91781-18c9-4cb9-99dd-db473a4e0fc9.webp",
+      "status": "review",
+      "sourceHash": "86ddbe3d982407374d7f3696fb188a1ccd387cdfc669b77b9c3413f973b2126b",
+      "source": {
+        "width": 659,
+        "height": 439,
+        "alreadyTransparent": true
+      },
+      "bounds": {
+        "left": 254,
+        "top": 79,
+        "width": 157,
+        "height": 279
+      },
+      "placement": {
+        "width": 450,
+        "height": 800,
+        "left": 275,
+        "top": 100,
+        "baseline": 900
+      },
+      "warnings": [
+        "Original pequeño: ampliación 2.87×; el procesamiento no recupera detalle inexistente."
+      ],
+      "outputs": {
+        "320": {
+          "filename": "6204f1cb-e4ac-41de-943c-205416b14ef5-86ddbe3d9824-v1-320.webp",
+          "bytes": 12730
+        },
+        "640": {
+          "filename": "6204f1cb-e4ac-41de-943c-205416b14ef5-86ddbe3d9824-v1-640.webp",
+          "bytes": 26748
+        },
+        "1000": {
+          "filename": "6204f1cb-e4ac-41de-943c-205416b14ef5-86ddbe3d9824-v1-1000.webp",
+          "bytes": 40744
+        }
+      }
+    },
+    {
+      "id": "593a75f0-57fe-47c8-90e9-88453a8725a7",
+      "productId": "d242dd6b-989a-49a4-9b20-e852cddb5561",
+      "variantId": "f2c98286-db57-414c-bbaa-9967088d1f9b",
+      "kind": "front",
+      "label": "AMINOÁCIDOS \"EEAA + ESSENTIAL AMINO ACID\" · pomelo · Vista frontal",
+      "sourcePath": "d242dd6b-989a-49a4-9b20-e852cddb5561/d791d684-b064-45c3-bbd1-4f59bfd86d31.webp",
+      "status": "review",
+      "sourceHash": "f8ad859d963c54f37b229da9feee5598617af8bf5a66831525d1035bd6bed92d",
+      "source": {
+        "width": 659,
+        "height": 439,
+        "alreadyTransparent": true
+      },
+      "bounds": {
+        "left": 254,
+        "top": 79,
+        "width": 157,
+        "height": 279
+      },
+      "placement": {
+        "width": 450,
+        "height": 800,
+        "left": 275,
+        "top": 100,
+        "baseline": 900
+      },
+      "warnings": [
+        "Original pequeño: ampliación 2.87×; el procesamiento no recupera detalle inexistente."
+      ],
+      "outputs": {
+        "320": {
+          "filename": "593a75f0-57fe-47c8-90e9-88453a8725a7-f8ad859d963c-v1-320.webp",
+          "bytes": 12086
+        },
+        "640": {
+          "filename": "593a75f0-57fe-47c8-90e9-88453a8725a7-f8ad859d963c-v1-640.webp",
+          "bytes": 24738
+        },
+        "1000": {
+          "filename": "593a75f0-57fe-47c8-90e9-88453a8725a7-f8ad859d963c-v1-1000.webp",
+          "bytes": 38448
+        }
+      }
+    },
+    {
+      "id": "93fea4ad-10a5-4e34-8998-089d75669574",
+      "productId": "d242dd6b-989a-49a4-9b20-e852cddb5561",
+      "variantId": "a958a828-50d5-4059-ad64-c1fba456354c",
+      "kind": "front",
+      "label": "AMINOÁCIDOS \"EEAA + ESSENTIAL AMINO ACID\" · uva · Vista frontal",
+      "sourcePath": "d242dd6b-989a-49a4-9b20-e852cddb5561/4c45f913-7ce1-467f-8735-b05cc1bfa497.webp",
+      "status": "review",
+      "sourceHash": "5d8287f0df8155e7cb7896f6e51848f41cae0bdd2e5618eb8780291e727b1afa",
+      "source": {
+        "width": 1318,
+        "height": 878,
+        "alreadyTransparent": true
+      },
+      "bounds": {
+        "left": 508,
+        "top": 158,
+        "width": 311,
+        "height": 555
+      },
+      "placement": {
+        "width": 448,
+        "height": 800,
+        "left": 276,
+        "top": 100,
+        "baseline": 900
+      },
+      "warnings": [
+        "Original pequeño: ampliación 1.44×; el procesamiento no recupera detalle inexistente."
+      ],
+      "outputs": {
+        "320": {
+          "filename": "93fea4ad-10a5-4e34-8998-089d75669574-5d8287f0df81-v1-320.webp",
+          "bytes": 12452
+        },
+        "640": {
+          "filename": "93fea4ad-10a5-4e34-8998-089d75669574-5d8287f0df81-v1-640.webp",
+          "bytes": 34198
+        },
+        "1000": {
+          "filename": "93fea4ad-10a5-4e34-8998-089d75669574-5d8287f0df81-v1-1000.webp",
+          "bytes": 55976
+        }
+      }
+    },
+    {
+      "id": "37777e97-a5fb-41bf-94f3-de56be2d7f92",
+      "productId": "d242dd6b-989a-49a4-9b20-e852cddb5561",
+      "variantId": null,
+      "kind": "turn",
+      "label": "AMINOÁCIDOS \"EEAA + ESSENTIAL AMINO ACID\" · Vista posterior",
+      "sourcePath": "d242dd6b-989a-49a4-9b20-e852cddb5561/bdb4e2f9-c080-4f65-b4e6-ea20e34866e3.webp",
+      "status": "review",
+      "sourceHash": "9a5b5e53e6c4a0f375df98e88713825703cd52c1d848810c19bf6b7269002d6d",
+      "source": {
+        "width": 659,
+        "height": 439,
+        "alreadyTransparent": true
+      },
+      "bounds": {
+        "left": 254,
+        "top": 79,
+        "width": 158,
+        "height": 279
+      },
+      "placement": {
+        "width": 453,
+        "height": 800,
+        "left": 274,
+        "top": 100,
+        "baseline": 900
+      },
+      "warnings": [
+        "Original pequeño: ampliación 2.87×; el procesamiento no recupera detalle inexistente."
+      ],
+      "outputs": {
+        "320": {
+          "filename": "37777e97-a5fb-41bf-94f3-de56be2d7f92-9a5b5e53e6c4-v1-320.webp",
+          "bytes": 9904
+        },
+        "640": {
+          "filename": "37777e97-a5fb-41bf-94f3-de56be2d7f92-9a5b5e53e6c4-v1-640.webp",
+          "bytes": 20836
+        },
+        "1000": {
+          "filename": "37777e97-a5fb-41bf-94f3-de56be2d7f92-9a5b5e53e6c4-v1-1000.webp",
+          "bytes": 31828
+        }
+      }
+    },
+    {
+      "id": "b1aa54e3-ff2b-4bf9-93db-cad90e03e6e1",
+      "productId": "046813bb-44c3-4df3-9d21-ac1adc9032df",
+      "variantId": "18753271-2994-4ceb-b691-c43a17b84324",
+      "kind": "front",
+      "label": "CREATINA MICRONIZADA POWERADED x 200GR · Vista frontal",
+      "sourcePath": "046813bb-44c3-4df3-9d21-ac1adc9032df/1271832e-9fbd-42b5-a662-056059785842.webp",
+      "status": "review",
+      "sourceHash": "fcbbd2a9b17cf1709ea5c7d767fa0dc8bbe39457dddd525931e6c2c7da96f5ef",
+      "source": {
+        "width": 1098,
+        "height": 878,
+        "alreadyTransparent": true
+      },
+      "bounds": {
+        "left": 337,
+        "top": 151,
+        "width": 401,
+        "height": 608
+      },
+      "placement": {
+        "width": 528,
+        "height": 800,
+        "left": 236,
+        "top": 100,
+        "baseline": 900
+      },
+      "warnings": [
+        "Original pequeño: ampliación 1.32×; el procesamiento no recupera detalle inexistente."
+      ],
+      "outputs": {
+        "320": {
+          "filename": "b1aa54e3-ff2b-4bf9-93db-cad90e03e6e1-fcbbd2a9b17c-v1-320.webp",
+          "bytes": 14296
+        },
+        "640": {
+          "filename": "b1aa54e3-ff2b-4bf9-93db-cad90e03e6e1-fcbbd2a9b17c-v1-640.webp",
+          "bytes": 37582
+        },
+        "1000": {
+          "filename": "b1aa54e3-ff2b-4bf9-93db-cad90e03e6e1-fcbbd2a9b17c-v1-1000.webp",
+          "bytes": 68272
+        }
+      }
+    },
+    {
+      "id": "d37b32bb-f601-4c9c-b92a-e89bc3ead376",
+      "productId": "5a8eefe5-32d9-4119-b1c2-0ca65eb916c5",
+      "variantId": "1e5a1daf-f4f7-4cfe-ac12-e989617177d0",
+      "kind": "front",
+      "label": "PROTEÍNA \"PLATINUM WHEY\" x 2 LBS · cookies · Vista frontal",
+      "sourcePath": "5a8eefe5-32d9-4119-b1c2-0ca65eb916c5/28f1a159-1e29-477f-9b87-cf215d50552b.webp",
+      "status": "ready",
+      "sourceHash": "d7b79e9c933b06b27315757e156673dae4b9f25529c9efcf57c546d41940ed84",
+      "source": {
+        "width": 1113,
+        "height": 1669,
+        "alreadyTransparent": true
+      },
+      "bounds": {
+        "left": 270,
+        "top": 324,
+        "width": 597,
+        "height": 1051
+      },
+      "placement": {
+        "width": 454,
+        "height": 800,
+        "left": 273,
+        "top": 100,
+        "baseline": 900
+      },
+      "warnings": [],
+      "outputs": {
+        "320": {
+          "filename": "d37b32bb-f601-4c9c-b92a-e89bc3ead376-d7b79e9c933b-v1-320.webp",
+          "bytes": 14340
+        },
+        "640": {
+          "filename": "d37b32bb-f601-4c9c-b92a-e89bc3ead376-d7b79e9c933b-v1-640.webp",
+          "bytes": 36148
+        },
+        "1000": {
+          "filename": "d37b32bb-f601-4c9c-b92a-e89bc3ead376-d7b79e9c933b-v1-1000.webp",
+          "bytes": 64628
+        }
+      }
+    },
+    {
+      "id": "1f58cf73-5004-4435-b9a3-242db92017cf",
+      "productId": "5a8eefe5-32d9-4119-b1c2-0ca65eb916c5",
+      "variantId": "27d1046c-6487-4258-b9bd-598de359f231",
+      "kind": "front",
+      "label": "PROTEÍNA \"PLATINUM WHEY\" x 2 LBS · chocolate · Vista frontal",
+      "sourcePath": "5a8eefe5-32d9-4119-b1c2-0ca65eb916c5/253f1fdb-ea75-4eb0-810e-7ad33ea07fea.webp",
+      "status": "ready",
+      "sourceHash": "9274ac1f9d46905d8642005723f9d3bce75029d1dcecae0514c5348ea17c3124",
+      "source": {
+        "width": 1113,
+        "height": 1669,
+        "alreadyTransparent": true
+      },
+      "bounds": {
+        "left": 270,
+        "top": 324,
+        "width": 597,
+        "height": 1051
+      },
+      "placement": {
+        "width": 454,
+        "height": 800,
+        "left": 273,
+        "top": 100,
+        "baseline": 900
+      },
+      "warnings": [],
+      "outputs": {
+        "320": {
+          "filename": "1f58cf73-5004-4435-b9a3-242db92017cf-9274ac1f9d46-v1-320.webp",
+          "bytes": 14348
+        },
+        "640": {
+          "filename": "1f58cf73-5004-4435-b9a3-242db92017cf-9274ac1f9d46-v1-640.webp",
+          "bytes": 36384
+        },
+        "1000": {
+          "filename": "1f58cf73-5004-4435-b9a3-242db92017cf-9274ac1f9d46-v1-1000.webp",
+          "bytes": 64934
+        }
+      }
+    },
+    {
+      "id": "fe6f936a-6f0d-4afc-bf10-2930d53a3691",
+      "productId": "5a8eefe5-32d9-4119-b1c2-0ca65eb916c5",
+      "variantId": "f1b82fb0-af02-476c-9cfa-4b695f692c32",
+      "kind": "front",
+      "label": "PROTEÍNA \"PLATINUM WHEY\" x 2 LBS · vainilla · Vista frontal",
+      "sourcePath": "5a8eefe5-32d9-4119-b1c2-0ca65eb916c5/7a55401f-1a50-44be-b4bd-03f2e7da5441.webp",
+      "status": "ready",
+      "sourceHash": "e71359c596e0c9409d4e70e7950e71c1bc565e4cf6461165aefc602e570053b9",
+      "source": {
+        "width": 1113,
+        "height": 1669,
+        "alreadyTransparent": true
+      },
+      "bounds": {
+        "left": 270,
+        "top": 324,
+        "width": 597,
+        "height": 1051
+      },
+      "placement": {
+        "width": 454,
+        "height": 800,
+        "left": 273,
+        "top": 100,
+        "baseline": 900
+      },
+      "warnings": [],
+      "outputs": {
+        "320": {
+          "filename": "fe6f936a-6f0d-4afc-bf10-2930d53a3691-e71359c596e0-v1-320.webp",
+          "bytes": 14326
+        },
+        "640": {
+          "filename": "fe6f936a-6f0d-4afc-bf10-2930d53a3691-e71359c596e0-v1-640.webp",
+          "bytes": 36152
+        },
+        "1000": {
+          "filename": "fe6f936a-6f0d-4afc-bf10-2930d53a3691-e71359c596e0-v1-1000.webp",
+          "bytes": 64340
+        }
+      }
+    },
+    {
+      "id": "bf65107e-70b2-4bf1-a171-8ead6a5529d5",
+      "productId": "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87",
+      "variantId": "ea6246b0-defb-41a8-9b7a-0600ccc3954e",
+      "kind": "front",
+      "label": "PROTEÍNA \"WHEY PROTEIN\" x 2 LBS DP · chocolate · DP · Vista frontal",
+      "sourcePath": "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87/30f60d61-84cc-4d5c-83df-64b2bd928ed2.webp",
+      "status": "ready",
+      "sourceHash": "904d998796a9c129762db684ad0c0b9085269774e5988974954cd920ca20af82",
+      "source": {
+        "width": 1113,
+        "height": 1669,
+        "alreadyTransparent": true
+      },
+      "bounds": {
+        "left": 120,
+        "top": 319,
+        "width": 862,
+        "height": 1062
+      },
+      "placement": {
+        "width": 649,
+        "height": 800,
+        "left": 176,
+        "top": 100,
+        "baseline": 900
+      },
+      "warnings": [],
+      "outputs": {
+        "320": {
+          "filename": "bf65107e-70b2-4bf1-a171-8ead6a5529d5-904d998796a9-v1-320.webp",
+          "bytes": 14830
+        },
+        "640": {
+          "filename": "bf65107e-70b2-4bf1-a171-8ead6a5529d5-904d998796a9-v1-640.webp",
+          "bytes": 38704
+        },
+        "1000": {
+          "filename": "bf65107e-70b2-4bf1-a171-8ead6a5529d5-904d998796a9-v1-1000.webp",
+          "bytes": 69178
+        }
+      }
+    },
+    {
+      "id": "08fa17f9-7562-4070-b0cf-65a19eea668e",
+      "productId": "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87",
+      "variantId": "38493d03-2f37-4957-943d-0bc769997362",
+      "kind": "front",
+      "label": "PROTEÍNA \"WHEY PROTEIN\" x 2 LBS DP · cookies · DP · Vista frontal",
+      "sourcePath": "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87/fedadb18-5f1a-4aa1-9fc2-1162a2199a4b.webp",
+      "status": "ready",
+      "sourceHash": "8065783cded59e6dad5f023033dcab24511989618a070e4985e81e146014a238",
+      "source": {
+        "width": 1113,
+        "height": 1669,
+        "alreadyTransparent": true
+      },
+      "bounds": {
+        "left": 120,
+        "top": 319,
+        "width": 862,
+        "height": 1062
+      },
+      "placement": {
+        "width": 649,
+        "height": 800,
+        "left": 176,
+        "top": 100,
+        "baseline": 900
+      },
+      "warnings": [],
+      "outputs": {
+        "320": {
+          "filename": "08fa17f9-7562-4070-b0cf-65a19eea668e-8065783cded5-v1-320.webp",
+          "bytes": 15008
+        },
+        "640": {
+          "filename": "08fa17f9-7562-4070-b0cf-65a19eea668e-8065783cded5-v1-640.webp",
+          "bytes": 38728
+        },
+        "1000": {
+          "filename": "08fa17f9-7562-4070-b0cf-65a19eea668e-8065783cded5-v1-1000.webp",
+          "bytes": 69506
+        }
+      }
+    },
+    {
+      "id": "4997dd2c-1ee9-40ee-93b4-351b0e870a03",
+      "productId": "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87",
+      "variantId": "e1d45db2-39d6-450b-8e31-f7af3b206df5",
+      "kind": "front",
+      "label": "PROTEÍNA \"WHEY PROTEIN\" x 2 LBS DP · frutilla · DP · Vista frontal",
+      "sourcePath": "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87/060a9e9b-ba7a-4765-87c1-ac012981f872.webp",
+      "status": "ready",
+      "sourceHash": "03f61a7c013d4b29b8dc0a4bb060ac65a6e271a86f37b5e968fdfcfb1defdc5e",
+      "source": {
+        "width": 1113,
+        "height": 1669,
+        "alreadyTransparent": true
+      },
+      "bounds": {
+        "left": 120,
+        "top": 319,
+        "width": 862,
+        "height": 1062
+      },
+      "placement": {
+        "width": 649,
+        "height": 800,
+        "left": 176,
+        "top": 100,
+        "baseline": 900
+      },
+      "warnings": [],
+      "outputs": {
+        "320": {
+          "filename": "4997dd2c-1ee9-40ee-93b4-351b0e870a03-03f61a7c013d-v1-320.webp",
+          "bytes": 14946
+        },
+        "640": {
+          "filename": "4997dd2c-1ee9-40ee-93b4-351b0e870a03-03f61a7c013d-v1-640.webp",
+          "bytes": 38972
+        },
+        "1000": {
+          "filename": "4997dd2c-1ee9-40ee-93b4-351b0e870a03-03f61a7c013d-v1-1000.webp",
+          "bytes": 69576
+        }
+      }
+    },
+    {
+      "id": "f4c72f23-fe3b-4be8-968b-fc71f900e84a",
+      "productId": "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87",
+      "variantId": "c9546f14-5ff9-42b8-b183-140acb6e7157",
+      "kind": "front",
+      "label": "PROTEÍNA \"WHEY PROTEIN\" x 2 LBS DP · vainilla · DP · Vista frontal",
+      "sourcePath": "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87/80fc644b-408f-4a03-9143-c12ec34b7761.webp",
+      "status": "ready",
+      "sourceHash": "a32db589d16bc8d9d04777964b3972b14778d8288507ca5c74e745a93879c3cd",
+      "source": {
+        "width": 1113,
+        "height": 1669,
+        "alreadyTransparent": true
+      },
+      "bounds": {
+        "left": 120,
+        "top": 319,
+        "width": 862,
+        "height": 1062
+      },
+      "placement": {
+        "width": 649,
+        "height": 800,
+        "left": 176,
+        "top": 100,
+        "baseline": 900
+      },
+      "warnings": [],
+      "outputs": {
+        "320": {
+          "filename": "f4c72f23-fe3b-4be8-968b-fc71f900e84a-a32db589d16b-v1-320.webp",
+          "bytes": 14890
+        },
+        "640": {
+          "filename": "f4c72f23-fe3b-4be8-968b-fc71f900e84a-a32db589d16b-v1-640.webp",
+          "bytes": 38602
+        },
+        "1000": {
+          "filename": "f4c72f23-fe3b-4be8-968b-fc71f900e84a-a32db589d16b-v1-1000.webp",
+          "bytes": 68298
+        }
+      }
+    },
+    {
+      "id": "fd0d5083-cb58-4858-95a1-9f61df51f445",
+      "productId": "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87",
+      "variantId": "ea6246b0-defb-41a8-9b7a-0600ccc3954e",
+      "kind": "turn",
+      "label": "PROTEÍNA \"WHEY PROTEIN\" x 2 LBS DP · chocolate · Vista posterior",
+      "sourcePath": "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87/9ef32780-d1dc-4101-80a6-8df299565f87.webp",
+      "status": "ready",
+      "sourceHash": "3b52ce4167c2ac1009d537c715c76ad262e5256e4719a0ee17302ea8efd2356b",
+      "source": {
+        "width": 1113,
+        "height": 1669,
+        "alreadyTransparent": true
+      },
+      "bounds": {
+        "left": 127,
+        "top": 319,
+        "width": 851,
+        "height": 1053
+      },
+      "placement": {
+        "width": 647,
+        "height": 800,
+        "left": 177,
+        "top": 100,
+        "baseline": 900
+      },
+      "warnings": [],
+      "outputs": {
+        "320": {
+          "filename": "fd0d5083-cb58-4858-95a1-9f61df51f445-3b52ce4167c2-v1-320.webp",
+          "bytes": 17702
+        },
+        "640": {
+          "filename": "fd0d5083-cb58-4858-95a1-9f61df51f445-3b52ce4167c2-v1-640.webp",
+          "bytes": 56314
+        },
+        "1000": {
+          "filename": "fd0d5083-cb58-4858-95a1-9f61df51f445-3b52ce4167c2-v1-1000.webp",
+          "bytes": 108264
+        }
+      }
+    },
+    {
+      "id": "9a222244-def2-4421-a259-0de8c8c1f5c7",
+      "productId": "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87",
+      "variantId": "38493d03-2f37-4957-943d-0bc769997362",
+      "kind": "turn",
+      "label": "PROTEÍNA \"WHEY PROTEIN\" x 2 LBS DP · cookies · Vista posterior",
+      "sourcePath": "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87/6dfc29e6-a1ef-48b4-9e0a-9af60c23b659.webp",
+      "status": "ready",
+      "sourceHash": "c927bce6979888fbbbb23852fc6860423c6ec03fd270c3b0e15765776fcd22e8",
+      "source": {
+        "width": 1113,
+        "height": 1669,
+        "alreadyTransparent": true
+      },
+      "bounds": {
+        "left": 127,
+        "top": 319,
+        "width": 851,
+        "height": 1053
+      },
+      "placement": {
+        "width": 647,
+        "height": 800,
+        "left": 177,
+        "top": 100,
+        "baseline": 900
+      },
+      "warnings": [],
+      "outputs": {
+        "320": {
+          "filename": "9a222244-def2-4421-a259-0de8c8c1f5c7-c927bce69798-v1-320.webp",
+          "bytes": 17636
+        },
+        "640": {
+          "filename": "9a222244-def2-4421-a259-0de8c8c1f5c7-c927bce69798-v1-640.webp",
+          "bytes": 56382
+        },
+        "1000": {
+          "filename": "9a222244-def2-4421-a259-0de8c8c1f5c7-c927bce69798-v1-1000.webp",
+          "bytes": 108356
+        }
+      }
+    },
+    {
+      "id": "d56abf41-8d98-4c46-b5cc-ebadc6b1228b",
+      "productId": "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87",
+      "variantId": "e1d45db2-39d6-450b-8e31-f7af3b206df5",
+      "kind": "turn",
+      "label": "PROTEÍNA \"WHEY PROTEIN\" x 2 LBS DP · frutilla · Vista posterior",
+      "sourcePath": "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87/84e0a684-3395-4bcb-a0f8-d511cc11c53e.webp",
+      "status": "ready",
+      "sourceHash": "162002c57b4c703d10e9b5de93ba3d6c44133bd87ba6814ae91ec7b1592cb2be",
+      "source": {
+        "width": 1113,
+        "height": 1669,
+        "alreadyTransparent": true
+      },
+      "bounds": {
+        "left": 127,
+        "top": 319,
+        "width": 851,
+        "height": 1053
+      },
+      "placement": {
+        "width": 647,
+        "height": 800,
+        "left": 177,
+        "top": 100,
+        "baseline": 900
+      },
+      "warnings": [],
+      "outputs": {
+        "320": {
+          "filename": "d56abf41-8d98-4c46-b5cc-ebadc6b1228b-162002c57b4c-v1-320.webp",
+          "bytes": 17432
+        },
+        "640": {
+          "filename": "d56abf41-8d98-4c46-b5cc-ebadc6b1228b-162002c57b4c-v1-640.webp",
+          "bytes": 56210
+        },
+        "1000": {
+          "filename": "d56abf41-8d98-4c46-b5cc-ebadc6b1228b-162002c57b4c-v1-1000.webp",
+          "bytes": 107560
+        }
+      }
+    },
+    {
+      "id": "b8d79364-2cd4-4df7-aecb-96b4175d4f85",
+      "productId": "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87",
+      "variantId": "c9546f14-5ff9-42b8-b183-140acb6e7157",
+      "kind": "turn",
+      "label": "PROTEÍNA \"WHEY PROTEIN\" x 2 LBS DP · vainilla · Vista posterior",
+      "sourcePath": "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87/f334d757-9861-41e4-9a94-92e8c2529b3e.webp",
+      "status": "ready",
+      "sourceHash": "caecd0e10ddaef32ed04f61a4693d0f51ee688cbac60214c7ddbb2adb8da9496",
+      "source": {
+        "width": 1113,
+        "height": 1669,
+        "alreadyTransparent": true
+      },
+      "bounds": {
+        "left": 127,
+        "top": 319,
+        "width": 851,
+        "height": 1053
+      },
+      "placement": {
+        "width": 647,
+        "height": 800,
+        "left": 177,
+        "top": 100,
+        "baseline": 900
+      },
+      "warnings": [],
+      "outputs": {
+        "320": {
+          "filename": "b8d79364-2cd4-4df7-aecb-96b4175d4f85-caecd0e10dda-v1-320.webp",
+          "bytes": 17668
+        },
+        "640": {
+          "filename": "b8d79364-2cd4-4df7-aecb-96b4175d4f85-caecd0e10dda-v1-640.webp",
+          "bytes": 56074
+        },
+        "1000": {
+          "filename": "b8d79364-2cd4-4df7-aecb-96b4175d4f85-caecd0e10dda-v1-1000.webp",
+          "bytes": 107792
+        }
+      }
+    },
+    {
+      "id": "054b2cef-71ad-4d1f-b80c-3eddfacfcb36",
+      "productId": "ab0d013a-fad2-497d-a230-23a2659ecf24",
+      "variantId": "0f86c223-c822-4a61-8c52-b026719ff07d",
+      "kind": "front",
+      "label": "ZINC+MAGNESIO+VITAMINA B6 \"ZMA\" - 90 CAPSULAS · Vista frontal",
+      "sourcePath": "ab0d013a-fad2-497d-a230-23a2659ecf24/d8b84c14-9f42-479f-b8ab-5a569cf58899.webp",
+      "status": "review",
+      "sourceHash": "90d41567d1c13ce53331b8bd4bbae311854cb2d4dbf98e1bcd0114ff697017f3",
+      "source": {
+        "width": 810,
+        "height": 878,
+        "alreadyTransparent": true
+      },
+      "bounds": {
+        "left": 233,
+        "top": 149,
+        "width": 308,
+        "height": 585
+      },
+      "placement": {
+        "width": 421,
+        "height": 800,
+        "left": 290,
+        "top": 100,
+        "baseline": 900
+      },
+      "warnings": [
+        "Original pequeño: ampliación 1.37×; el procesamiento no recupera detalle inexistente."
+      ],
+      "outputs": {
+        "320": {
+          "filename": "054b2cef-71ad-4d1f-b80c-3eddfacfcb36-90d41567d1c1-v1-320.webp",
+          "bytes": 10058
+        },
+        "640": {
+          "filename": "054b2cef-71ad-4d1f-b80c-3eddfacfcb36-90d41567d1c1-v1-640.webp",
+          "bytes": 29928
+        },
+        "1000": {
+          "filename": "054b2cef-71ad-4d1f-b80c-3eddfacfcb36-90d41567d1c1-v1-1000.webp",
+          "bytes": 53014
+        }
+      }
+    }
+  ],
+  "review": [
+    {
+      "id": "9af8ea20-2342-426c-8c17-c5fc70794578",
+      "label": "AMINOÁCIDOS \"EEAA + ESSENTIAL AMINO ACID\" · cereza · Vista frontal",
+      "warnings": [
+        "Original pequeño: ampliación 2.87×; el procesamiento no recupera detalle inexistente."
+      ]
+    },
+    {
+      "id": "6204f1cb-e4ac-41de-943c-205416b14ef5",
+      "label": "AMINOÁCIDOS \"EEAA + ESSENTIAL AMINO ACID\" · naranja · Vista frontal",
+      "warnings": [
+        "Original pequeño: ampliación 2.87×; el procesamiento no recupera detalle inexistente."
+      ]
+    },
+    {
+      "id": "593a75f0-57fe-47c8-90e9-88453a8725a7",
+      "label": "AMINOÁCIDOS \"EEAA + ESSENTIAL AMINO ACID\" · pomelo · Vista frontal",
+      "warnings": [
+        "Original pequeño: ampliación 2.87×; el procesamiento no recupera detalle inexistente."
+      ]
+    },
+    {
+      "id": "93fea4ad-10a5-4e34-8998-089d75669574",
+      "label": "AMINOÁCIDOS \"EEAA + ESSENTIAL AMINO ACID\" · uva · Vista frontal",
+      "warnings": [
+        "Original pequeño: ampliación 1.44×; el procesamiento no recupera detalle inexistente."
+      ]
+    },
+    {
+      "id": "37777e97-a5fb-41bf-94f3-de56be2d7f92",
+      "label": "AMINOÁCIDOS \"EEAA + ESSENTIAL AMINO ACID\" · Vista posterior",
+      "warnings": [
+        "Original pequeño: ampliación 2.87×; el procesamiento no recupera detalle inexistente."
+      ]
+    },
+    {
+      "id": "b1aa54e3-ff2b-4bf9-93db-cad90e03e6e1",
+      "label": "CREATINA MICRONIZADA POWERADED x 200GR · Vista frontal",
+      "warnings": [
+        "Original pequeño: ampliación 1.32×; el procesamiento no recupera detalle inexistente."
+      ]
+    },
+    {
+      "id": "054b2cef-71ad-4d1f-b80c-3eddfacfcb36",
+      "label": "ZINC+MAGNESIO+VITAMINA B6 \"ZMA\" - 90 CAPSULAS · Vista frontal",
+      "warnings": [
+        "Original pequeño: ampliación 1.37×; el procesamiento no recupera detalle inexistente."
+      ]
+    }
+  ]
+}

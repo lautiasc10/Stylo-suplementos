@@ -6,6 +6,7 @@ import {
 } from "@/modules/catalog/model";
 import { catalogMediaSource } from "@/modules/catalog/media-source";
 import type { GalleryImage } from "./product-gallery";
+import { normalizedPhotoProps } from "@/modules/catalog/normalized-media";
 
 export function galleryPhotos(
   product: Product,
@@ -28,6 +29,7 @@ export function galleryPhotos(
         imageBase,
         "thumbnail",
       ),
+      ...normalizedPhotoProps(source(image.path), kind),
     }));
   return variantImages(product, variantId)
     .filter((image) => source(image.path))
@@ -42,6 +44,7 @@ export function galleryPhotos(
         "thumbnail",
       ),
       turnImages: turns,
+      ...normalizedPhotoProps(source(image.path), kind),
     }));
 }
 

@@ -1,0 +1,604 @@
+{
+  "catalog": {
+    "brands": [
+      {
+        "id": "9993c069-a710-427d-8642-5ca0ad0511d9",
+        "logo": "9993c069-a710-427d-8642-5ca0ad0511d9/aedf45ee-5889-4dc5-aec2-82a089a617a6.png",
+        "name": "STAR NUTRITION",
+        "slug": "marca-star",
+        "active": true,
+        "sortOrder": 0
+      },
+      {
+        "id": "6fb85c35-fb77-4e9a-89cf-00d2ea6b27b5",
+        "logo": "6fb85c35-fb77-4e9a-89cf-00d2ea6b27b5/d39b3419-4e94-4b15-aaa1-0e627b7b8991.png",
+        "name": "ONE FIT",
+        "slug": "marca-one-fit",
+        "active": true,
+        "sortOrder": 1
+      },
+      {
+        "id": "a4ae77d2-9d63-4fab-a526-26c5e3c9edc7",
+        "logo": "a4ae77d2-9d63-4fab-a526-26c5e3c9edc7/5aa414a2-08d2-4e0c-88dd-36f3a556642c.png",
+        "name": "XBODY",
+        "slug": "marca-xbody",
+        "active": true,
+        "sortOrder": 2
+      }
+    ],
+    "products": [
+      {
+        "id": "d242dd6b-989a-49a4-9b20-e852cddb5561",
+        "name": "AMINOÁCIDOS \"EEAA + ESSENTIAL AMINO ACID\"",
+        "slug": "onefit-aminoacidos-eeaa-essential-amino-acid",
+        "tags": [],
+        "active": true,
+        "images": [
+          {
+            "id": "9af8ea20-2342-426c-8c17-c5fc70794578",
+            "alt": "AMINOÁCIDOS \"EEAA + ESSENTIAL AMINO ACID\" · cereza · Vista frontal",
+            "path": "d242dd6b-989a-49a4-9b20-e852cddb5561/151e5605-75c3-484d-b6f9-1aa87a887864.webp",
+            "position": 0,
+            "variantId": "c6cc7d76-fa23-4a6a-9831-9d9509235ab2"
+          },
+          {
+            "id": "6204f1cb-e4ac-41de-943c-205416b14ef5",
+            "alt": "AMINOÁCIDOS \"EEAA + ESSENTIAL AMINO ACID\" · naranja · Vista frontal",
+            "path": "d242dd6b-989a-49a4-9b20-e852cddb5561/9cd91781-18c9-4cb9-99dd-db473a4e0fc9.webp",
+            "position": 1,
+            "variantId": "58165b1d-4ff2-464e-aae3-cb2a09608a0d"
+          },
+          {
+            "id": "593a75f0-57fe-47c8-90e9-88453a8725a7",
+            "alt": "AMINOÁCIDOS \"EEAA + ESSENTIAL AMINO ACID\" · pomelo · Vista frontal",
+            "path": "d242dd6b-989a-49a4-9b20-e852cddb5561/d791d684-b064-45c3-bbd1-4f59bfd86d31.webp",
+            "position": 2,
+            "variantId": "f2c98286-db57-414c-bbaa-9967088d1f9b"
+          },
+          {
+            "id": "93fea4ad-10a5-4e34-8998-089d75669574",
+            "alt": "AMINOÁCIDOS \"EEAA + ESSENTIAL AMINO ACID\" · uva · Vista frontal",
+            "path": "d242dd6b-989a-49a4-9b20-e852cddb5561/4c45f913-7ce1-467f-8735-b05cc1bfa497.webp",
+            "position": 3,
+            "variantId": "a958a828-50d5-4059-ad64-c1fba456354c"
+          }
+        ],
+        "brandId": "6fb85c35-fb77-4e9a-89cf-00d2ea6b27b5",
+        "version": 5,
+        "featured": false,
+        "seoTitle": "AMINOÁCIDOS \"EEAA + ESSENTIAL AMINO ACID\"",
+        "variants": [
+          {
+            "id": "c6cc7d76-fa23-4a6a-9831-9d9509235ab2",
+            "sku": "ONE-0001",
+            "size": "",
+            "stock": 0,
+            "active": true,
+            "flavor": "cereza",
+            "cashPrice": 2300000,
+            "listPrice": 2788073,
+            "presentation": ""
+          },
+          {
+            "id": "58165b1d-4ff2-464e-aae3-cb2a09608a0d",
+            "sku": "ONE-0002",
+            "size": "",
+            "stock": 0,
+            "active": true,
+            "flavor": "naranja",
+            "cashPrice": 2300000,
+            "listPrice": 2788073,
+            "presentation": ""
+          },
+          {
+            "id": "f2c98286-db57-414c-bbaa-9967088d1f9b",
+            "sku": "ONE-0003",
+            "size": "",
+            "stock": 0,
+            "active": true,
+            "flavor": "pomelo",
+            "cashPrice": 2300000,
+            "listPrice": 2788073,
+            "presentation": ""
+          },
+          {
+            "id": "a958a828-50d5-4059-ad64-c1fba456354c",
+            "sku": "ONE-0004",
+            "size": "",
+            "stock": 0,
+            "active": true,
+            "flavor": "uva",
+            "cashPrice": 2300000,
+            "listPrice": 2788073,
+            "presentation": ""
+          }
+        ],
+        "turnImages": [
+          {
+            "id": "37777e97-a5fb-41bf-94f3-de56be2d7f92",
+            "alt": "AMINOÁCIDOS \"EEAA + ESSENTIAL AMINO ACID\" · Vista posterior",
+            "path": "d242dd6b-989a-49a4-9b20-e852cddb5561/bdb4e2f9-c080-4f65-b4e6-ea20e34866e3.webp",
+            "view": "back",
+            "position": 0,
+            "variantId": null
+          }
+        ],
+        "categoryIds": [
+          "00000000-0000-4000-8000-000000000006"
+        ],
+        "description": "",
+        "seoDescription": "",
+        "informationImages": [
+          {
+            "id": "240884d3-ceaa-4186-82f0-c7c47baab035",
+            "alt": "Etiqueta e información nutricional · AMINOÁCIDOS \"EEAA + ESSENTIAL AMINO ACID\" · cereza",
+            "path": "d242dd6b-989a-49a4-9b20-e852cddb5561/0f1f73af-c2c7-4c0c-9b9e-c282e606ff83.webp",
+            "position": 0,
+            "variantId": "c6cc7d76-fa23-4a6a-9831-9d9509235ab2"
+          },
+          {
+            "id": "8b3976ac-71c8-417c-aa5e-eb60bd9febd5",
+            "alt": "Etiqueta e información nutricional · AMINOÁCIDOS \"EEAA + ESSENTIAL AMINO ACID\" · naranja",
+            "path": "d242dd6b-989a-49a4-9b20-e852cddb5561/6b7f3eba-e2ae-43ce-a42e-0f1eb96e00ef.webp",
+            "position": 1,
+            "variantId": "58165b1d-4ff2-464e-aae3-cb2a09608a0d"
+          },
+          {
+            "id": "a1e5aace-8c07-4a6f-b9a0-526d72f5bd3a",
+            "alt": "Etiqueta e información nutricional · AMINOÁCIDOS \"EEAA + ESSENTIAL AMINO ACID\" · pomelo",
+            "path": "d242dd6b-989a-49a4-9b20-e852cddb5561/9a17009f-abb3-441d-8cdf-ce457fbc6b04.webp",
+            "position": 2,
+            "variantId": "f2c98286-db57-414c-bbaa-9967088d1f9b"
+          },
+          {
+            "id": "ab951779-b542-4ed8-a42d-ce0e29253c61",
+            "alt": "Etiqueta e información nutricional · AMINOÁCIDOS \"EEAA + ESSENTIAL AMINO ACID\" · uva",
+            "path": "d242dd6b-989a-49a4-9b20-e852cddb5561/f20d7d85-a38e-41af-8732-b16a510e6f8f.webp",
+            "position": 3,
+            "variantId": "a958a828-50d5-4059-ad64-c1fba456354c"
+          }
+        ]
+      },
+      {
+        "id": "046813bb-44c3-4df3-9d21-ac1adc9032df",
+        "name": "CREATINA MICRONIZADA POWERADED x 200GR",
+        "slug": "onefit-creatina-micronizada-poweraded-x-200gr",
+        "tags": [],
+        "active": true,
+        "images": [
+          {
+            "id": "b1aa54e3-ff2b-4bf9-93db-cad90e03e6e1",
+            "alt": "CREATINA MICRONIZADA POWERADED x 200GR · Vista frontal",
+            "path": "046813bb-44c3-4df3-9d21-ac1adc9032df/1271832e-9fbd-42b5-a662-056059785842.webp",
+            "position": 0,
+            "variantId": "18753271-2994-4ceb-b691-c43a17b84324"
+          }
+        ],
+        "brandId": "6fb85c35-fb77-4e9a-89cf-00d2ea6b27b5",
+        "version": 3,
+        "featured": false,
+        "seoTitle": "CREATINA MICRONIZADA POWERADED x 200GR",
+        "variants": [
+          {
+            "id": "18753271-2994-4ceb-b691-c43a17b84324",
+            "sku": "ONE-0008",
+            "size": "200GR",
+            "stock": 0,
+            "active": true,
+            "flavor": "",
+            "cashPrice": 1300000,
+            "listPrice": 1595796,
+            "presentation": ""
+          }
+        ],
+        "categoryIds": [
+          "00000000-0000-4000-8000-000000000002"
+        ],
+        "description": "",
+        "seoDescription": "",
+        "informationImages": [
+          {
+            "id": "17cba453-c3d3-41d4-a3a6-719b6e2d5b7b",
+            "alt": "Etiqueta e información nutricional · CREATINA MICRONIZADA POWERADED x 200GR",
+            "path": "046813bb-44c3-4df3-9d21-ac1adc9032df/32dcd745-c641-4491-b68e-24c57c2a5e8d.webp",
+            "position": 0,
+            "variantId": null
+          }
+        ]
+      },
+      {
+        "id": "5a8eefe5-32d9-4119-b1c2-0ca65eb916c5",
+        "name": "PROTEÍNA \"PLATINUM WHEY\" x 2 LBS",
+        "slug": "star-nutrition-proteina-platinum-whey-x-2-lbs",
+        "tags": [],
+        "active": true,
+        "images": [
+          {
+            "id": "d37b32bb-f601-4c9c-b92a-e89bc3ead376",
+            "alt": "PROTEÍNA \"PLATINUM WHEY\" x 2 LBS · cookies · Vista frontal",
+            "path": "5a8eefe5-32d9-4119-b1c2-0ca65eb916c5/28f1a159-1e29-477f-9b87-cf215d50552b.webp",
+            "position": 0,
+            "variantId": "1e5a1daf-f4f7-4cfe-ac12-e989617177d0"
+          },
+          {
+            "id": "1f58cf73-5004-4435-b9a3-242db92017cf",
+            "alt": "PROTEÍNA \"PLATINUM WHEY\" x 2 LBS · chocolate · Vista frontal",
+            "path": "5a8eefe5-32d9-4119-b1c2-0ca65eb916c5/253f1fdb-ea75-4eb0-810e-7ad33ea07fea.webp",
+            "position": 1,
+            "variantId": "27d1046c-6487-4258-b9bd-598de359f231"
+          },
+          {
+            "id": "fe6f936a-6f0d-4afc-bf10-2930d53a3691",
+            "alt": "PROTEÍNA \"PLATINUM WHEY\" x 2 LBS · vainilla · Vista frontal",
+            "path": "5a8eefe5-32d9-4119-b1c2-0ca65eb916c5/7a55401f-1a50-44be-b4bd-03f2e7da5441.webp",
+            "position": 2,
+            "variantId": "f1b82fb0-af02-476c-9cfa-4b695f692c32"
+          }
+        ],
+        "brandId": "9993c069-a710-427d-8642-5ca0ad0511d9",
+        "version": 3,
+        "featured": false,
+        "seoTitle": "PROTEÍNA \"PLATINUM WHEY\" x 2 LBS",
+        "variants": [
+          {
+            "id": "1e5a1daf-f4f7-4cfe-ac12-e989617177d0",
+            "sku": "STAR-0020",
+            "size": "2 LBS",
+            "stock": 0,
+            "active": true,
+            "flavor": "cookies",
+            "cashPrice": 8550000,
+            "listPrice": 10000000,
+            "presentation": ""
+          },
+          {
+            "id": "27d1046c-6487-4258-b9bd-598de359f231",
+            "sku": "STAR-0021",
+            "size": "2 LBS",
+            "stock": 0,
+            "active": true,
+            "flavor": "chocolate",
+            "cashPrice": 8550000,
+            "listPrice": 10000000,
+            "presentation": ""
+          },
+          {
+            "id": "f1b82fb0-af02-476c-9cfa-4b695f692c32",
+            "sku": "STAR-0022",
+            "size": "2 LBS",
+            "stock": 0,
+            "active": true,
+            "flavor": "vainilla",
+            "cashPrice": 8550000,
+            "listPrice": 10000000,
+            "presentation": ""
+          }
+        ],
+        "categoryIds": [
+          "00000000-0000-4000-8000-000000000001"
+        ],
+        "description": "",
+        "seoDescription": "",
+        "informationImages": [
+          {
+            "id": "16de6db8-7270-4efe-9ffe-aa6a63786692",
+            "alt": "Información nutricional · PROTEÍNA \"PLATINUM WHEY\" x 2 LBS",
+            "path": "5a8eefe5-32d9-4119-b1c2-0ca65eb916c5/d4978e14-658a-4415-bd86-e58bd81e64a4.webp",
+            "position": 0,
+            "variantId": null
+          }
+        ]
+      },
+      {
+        "id": "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87",
+        "name": "PROTEÍNA \"WHEY PROTEIN\" x 2 LBS DP",
+        "slug": "star-nutrition-proteina-whey-protein-x-2-lbs-dp",
+        "tags": [],
+        "active": true,
+        "images": [
+          {
+            "id": "bf65107e-70b2-4bf1-a171-8ead6a5529d5",
+            "alt": "PROTEÍNA \"WHEY PROTEIN\" x 2 LBS DP · chocolate · DP · Vista frontal",
+            "path": "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87/30f60d61-84cc-4d5c-83df-64b2bd928ed2.webp",
+            "position": 0,
+            "variantId": "ea6246b0-defb-41a8-9b7a-0600ccc3954e"
+          },
+          {
+            "id": "08fa17f9-7562-4070-b0cf-65a19eea668e",
+            "alt": "PROTEÍNA \"WHEY PROTEIN\" x 2 LBS DP · cookies · DP · Vista frontal",
+            "path": "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87/fedadb18-5f1a-4aa1-9fc2-1162a2199a4b.webp",
+            "position": 1,
+            "variantId": "38493d03-2f37-4957-943d-0bc769997362"
+          },
+          {
+            "id": "4997dd2c-1ee9-40ee-93b4-351b0e870a03",
+            "alt": "PROTEÍNA \"WHEY PROTEIN\" x 2 LBS DP · frutilla · DP · Vista frontal",
+            "path": "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87/060a9e9b-ba7a-4765-87c1-ac012981f872.webp",
+            "position": 2,
+            "variantId": "e1d45db2-39d6-450b-8e31-f7af3b206df5"
+          },
+          {
+            "id": "f4c72f23-fe3b-4be8-968b-fc71f900e84a",
+            "alt": "PROTEÍNA \"WHEY PROTEIN\" x 2 LBS DP · vainilla · DP · Vista frontal",
+            "path": "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87/80fc644b-408f-4a03-9143-c12ec34b7761.webp",
+            "position": 3,
+            "variantId": "c9546f14-5ff9-42b8-b183-140acb6e7157"
+          }
+        ],
+        "brandId": "9993c069-a710-427d-8642-5ca0ad0511d9",
+        "version": 5,
+        "featured": false,
+        "seoTitle": "PROTEÍNA \"WHEY PROTEIN\" x 2 LBS DP",
+        "variants": [
+          {
+            "id": "ea6246b0-defb-41a8-9b7a-0600ccc3954e",
+            "sku": "STAR-0023",
+            "size": "2 LBS",
+            "stock": 0,
+            "active": true,
+            "flavor": "chocolate",
+            "cashPrice": 7750000,
+            "listPrice": 9500000,
+            "presentation": "DP"
+          },
+          {
+            "id": "38493d03-2f37-4957-943d-0bc769997362",
+            "sku": "STAR-0024",
+            "size": "2 LBS",
+            "stock": 0,
+            "active": true,
+            "flavor": "cookies",
+            "cashPrice": 7750000,
+            "listPrice": 9500000,
+            "presentation": "DP"
+          },
+          {
+            "id": "e1d45db2-39d6-450b-8e31-f7af3b206df5",
+            "sku": "STAR-0025",
+            "size": "2 LBS",
+            "stock": 0,
+            "active": true,
+            "flavor": "frutilla",
+            "cashPrice": 7750000,
+            "listPrice": 9500000,
+            "presentation": "DP"
+          },
+          {
+            "id": "c9546f14-5ff9-42b8-b183-140acb6e7157",
+            "sku": "STAR-0026",
+            "size": "2 LBS",
+            "stock": 0,
+            "active": true,
+            "flavor": "vainilla",
+            "cashPrice": 7750000,
+            "listPrice": 9500000,
+            "presentation": "DP"
+          }
+        ],
+        "turnImages": [
+          {
+            "id": "fd0d5083-cb58-4858-95a1-9f61df51f445",
+            "alt": "PROTEÍNA \"WHEY PROTEIN\" x 2 LBS DP · chocolate · Vista posterior",
+            "path": "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87/9ef32780-d1dc-4101-80a6-8df299565f87.webp",
+            "view": "back",
+            "position": 0,
+            "variantId": "ea6246b0-defb-41a8-9b7a-0600ccc3954e"
+          },
+          {
+            "id": "9a222244-def2-4421-a259-0de8c8c1f5c7",
+            "alt": "PROTEÍNA \"WHEY PROTEIN\" x 2 LBS DP · cookies · Vista posterior",
+            "path": "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87/6dfc29e6-a1ef-48b4-9e0a-9af60c23b659.webp",
+            "view": "back",
+            "position": 1,
+            "variantId": "38493d03-2f37-4957-943d-0bc769997362"
+          },
+          {
+            "id": "d56abf41-8d98-4c46-b5cc-ebadc6b1228b",
+            "alt": "PROTEÍNA \"WHEY PROTEIN\" x 2 LBS DP · frutilla · Vista posterior",
+            "path": "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87/84e0a684-3395-4bcb-a0f8-d511cc11c53e.webp",
+            "view": "back",
+            "position": 2,
+            "variantId": "e1d45db2-39d6-450b-8e31-f7af3b206df5"
+          },
+          {
+            "id": "b8d79364-2cd4-4df7-aecb-96b4175d4f85",
+            "alt": "PROTEÍNA \"WHEY PROTEIN\" x 2 LBS DP · vainilla · Vista posterior",
+            "path": "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87/f334d757-9861-41e4-9a94-92e8c2529b3e.webp",
+            "view": "back",
+            "position": 3,
+            "variantId": "c9546f14-5ff9-42b8-b183-140acb6e7157"
+          }
+        ],
+        "categoryIds": [
+          "00000000-0000-4000-8000-000000000001"
+        ],
+        "description": "",
+        "seoDescription": "",
+        "informationImages": [
+          {
+            "id": "20c77b08-9eba-49d3-85df-c9953ee40a70",
+            "alt": "Información nutricional · PROTEÍNA \"WHEY PROTEIN\" x 2 LBS DP",
+            "path": "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87/65387934-8085-47a5-8392-8a746a37d43c.webp",
+            "position": 0,
+            "variantId": null
+          }
+        ]
+      },
+      {
+        "id": "ab0d013a-fad2-497d-a230-23a2659ecf24",
+        "name": "ZINC+MAGNESIO+VITAMINA B6 \"ZMA\" - 90 CAPSULAS",
+        "slug": "xbody-zinc-magnesio-vitamina-b6-zma-90-capsulas",
+        "tags": [],
+        "active": true,
+        "images": [
+          {
+            "id": "054b2cef-71ad-4d1f-b80c-3eddfacfcb36",
+            "alt": "ZINC+MAGNESIO+VITAMINA B6 \"ZMA\" - 90 CAPSULAS · Vista frontal",
+            "path": "ab0d013a-fad2-497d-a230-23a2659ecf24/d8b84c14-9f42-479f-b8ab-5a569cf58899.webp",
+            "position": 0,
+            "variantId": "0f86c223-c822-4a61-8c52-b026719ff07d"
+          }
+        ],
+        "brandId": "a4ae77d2-9d63-4fab-a526-26c5e3c9edc7",
+        "version": 2,
+        "featured": false,
+        "seoTitle": "ZINC+MAGNESIO+VITAMINA B6 \"ZMA\" - 90 CAPSULAS",
+        "variants": [
+          {
+            "id": "0f86c223-c822-4a61-8c52-b026719ff07d",
+            "sku": "XBO-0019",
+            "size": "90 CAPSULAS",
+            "stock": 0,
+            "active": true,
+            "flavor": "",
+            "cashPrice": 1400000,
+            "listPrice": 1604318,
+            "presentation": ""
+          }
+        ],
+        "categoryIds": [
+          "00000000-0000-4000-8000-000000000004"
+        ],
+        "description": "",
+        "seoDescription": ""
+      }
+    ],
+    "revision": 0,
+    "categories": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001",
+        "name": "Proteínas",
+        "slug": "proteinas",
+        "active": true,
+        "detail": "",
+        "sortOrder": 0
+      },
+      {
+        "id": "00000000-0000-4000-8000-000000000002",
+        "name": "Creatinas",
+        "slug": "creatinas",
+        "active": true,
+        "detail": "",
+        "sortOrder": 1
+      },
+      {
+        "id": "00000000-0000-4000-8000-000000000004",
+        "name": "Vitaminas y minerales",
+        "slug": "vitaminas-y-minerales",
+        "active": true,
+        "detail": "",
+        "sortOrder": 3
+      },
+      {
+        "id": "00000000-0000-4000-8000-000000000006",
+        "name": "Aminoácidos",
+        "slug": "aminoacidos",
+        "active": true,
+        "detail": "",
+        "sortOrder": 5
+      }
+    ]
+  },
+  "imageBase": "https://rwtstkwmtcrliwkoscjr.supabase.co/storage/v1/object/public/product-media",
+  "normalizedUrls": {
+    "d242dd6b-989a-49a4-9b20-e852cddb5561/151e5605-75c3-484d-b6f9-1aa87a887864.webp": "/media/normalization-trial-v1/9af8ea20-2342-426c-8c17-c5fc70794578-c2af06e91315-v1-1000.webp",
+    "d242dd6b-989a-49a4-9b20-e852cddb5561/9cd91781-18c9-4cb9-99dd-db473a4e0fc9.webp": "/media/normalization-trial-v1/6204f1cb-e4ac-41de-943c-205416b14ef5-86ddbe3d9824-v1-1000.webp",
+    "d242dd6b-989a-49a4-9b20-e852cddb5561/d791d684-b064-45c3-bbd1-4f59bfd86d31.webp": "/media/normalization-trial-v1/593a75f0-57fe-47c8-90e9-88453a8725a7-f8ad859d963c-v1-1000.webp",
+    "d242dd6b-989a-49a4-9b20-e852cddb5561/4c45f913-7ce1-467f-8735-b05cc1bfa497.webp": "/media/normalization-trial-v1/93fea4ad-10a5-4e34-8998-089d75669574-5d8287f0df81-v1-1000.webp",
+    "d242dd6b-989a-49a4-9b20-e852cddb5561/bdb4e2f9-c080-4f65-b4e6-ea20e34866e3.webp": "/media/normalization-trial-v1/37777e97-a5fb-41bf-94f3-de56be2d7f92-9a5b5e53e6c4-v1-1000.webp",
+    "046813bb-44c3-4df3-9d21-ac1adc9032df/1271832e-9fbd-42b5-a662-056059785842.webp": "/media/normalization-trial-v1/b1aa54e3-ff2b-4bf9-93db-cad90e03e6e1-fcbbd2a9b17c-v1-1000.webp",
+    "5a8eefe5-32d9-4119-b1c2-0ca65eb916c5/28f1a159-1e29-477f-9b87-cf215d50552b.webp": "/media/normalization-trial-v1/d37b32bb-f601-4c9c-b92a-e89bc3ead376-d7b79e9c933b-v1-1000.webp",
+    "5a8eefe5-32d9-4119-b1c2-0ca65eb916c5/253f1fdb-ea75-4eb0-810e-7ad33ea07fea.webp": "/media/normalization-trial-v1/1f58cf73-5004-4435-b9a3-242db92017cf-9274ac1f9d46-v1-1000.webp",
+    "5a8eefe5-32d9-4119-b1c2-0ca65eb916c5/7a55401f-1a50-44be-b4bd-03f2e7da5441.webp": "/media/normalization-trial-v1/fe6f936a-6f0d-4afc-bf10-2930d53a3691-e71359c596e0-v1-1000.webp",
+    "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87/30f60d61-84cc-4d5c-83df-64b2bd928ed2.webp": "/media/normalization-trial-v1/bf65107e-70b2-4bf1-a171-8ead6a5529d5-904d998796a9-v1-1000.webp",
+    "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87/fedadb18-5f1a-4aa1-9fc2-1162a2199a4b.webp": "/media/normalization-trial-v1/08fa17f9-7562-4070-b0cf-65a19eea668e-8065783cded5-v1-1000.webp",
+    "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87/060a9e9b-ba7a-4765-87c1-ac012981f872.webp": "/media/normalization-trial-v1/4997dd2c-1ee9-40ee-93b4-351b0e870a03-03f61a7c013d-v1-1000.webp",
+    "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87/80fc644b-408f-4a03-9143-c12ec34b7761.webp": "/media/normalization-trial-v1/f4c72f23-fe3b-4be8-968b-fc71f900e84a-a32db589d16b-v1-1000.webp",
+    "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87/9ef32780-d1dc-4101-80a6-8df299565f87.webp": "/media/normalization-trial-v1/fd0d5083-cb58-4858-95a1-9f61df51f445-3b52ce4167c2-v1-1000.webp",
+    "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87/6dfc29e6-a1ef-48b4-9e0a-9af60c23b659.webp": "/media/normalization-trial-v1/9a222244-def2-4421-a259-0de8c8c1f5c7-c927bce69798-v1-1000.webp",
+    "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87/84e0a684-3395-4bcb-a0f8-d511cc11c53e.webp": "/media/normalization-trial-v1/d56abf41-8d98-4c46-b5cc-ebadc6b1228b-162002c57b4c-v1-1000.webp",
+    "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87/f334d757-9861-41e4-9a94-92e8c2529b3e.webp": "/media/normalization-trial-v1/b8d79364-2cd4-4df7-aecb-96b4175d4f85-caecd0e10dda-v1-1000.webp",
+    "ab0d013a-fad2-497d-a230-23a2659ecf24/d8b84c14-9f42-479f-b8ab-5a569cf58899.webp": "/media/normalization-trial-v1/054b2cef-71ad-4d1f-b80c-3eddfacfcb36-90d41567d1c1-v1-1000.webp"
+  },
+  "review": [
+    {
+      "id": "9af8ea20-2342-426c-8c17-c5fc70794578",
+      "label": "AMINOÁCIDOS \"EEAA + ESSENTIAL AMINO ACID\" · cereza · Vista frontal",
+      "warnings": [
+        "Original pequeño: ampliación 2.87×; el procesamiento no recupera detalle inexistente."
+      ]
+    },
+    {
+      "id": "6204f1cb-e4ac-41de-943c-205416b14ef5",
+      "label": "AMINOÁCIDOS \"EEAA + ESSENTIAL AMINO ACID\" · naranja · Vista frontal",
+      "warnings": [
+        "Original pequeño: ampliación 2.87×; el procesamiento no recupera detalle inexistente."
+      ]
+    },
+    {
+      "id": "593a75f0-57fe-47c8-90e9-88453a8725a7",
+      "label": "AMINOÁCIDOS \"EEAA + ESSENTIAL AMINO ACID\" · pomelo · Vista frontal",
+      "warnings": [
+        "Original pequeño: ampliación 2.87×; el procesamiento no recupera detalle inexistente."
+      ]
+    },
+    {
+      "id": "93fea4ad-10a5-4e34-8998-089d75669574",
+      "label": "AMINOÁCIDOS \"EEAA + ESSENTIAL AMINO ACID\" · uva · Vista frontal",
+      "warnings": [
+        "Original pequeño: ampliación 1.44×; el procesamiento no recupera detalle inexistente."
+      ]
+    },
+    {
+      "id": "37777e97-a5fb-41bf-94f3-de56be2d7f92",
+      "label": "AMINOÁCIDOS \"EEAA + ESSENTIAL AMINO ACID\" · Vista posterior",
+      "warnings": [
+        "Original pequeño: ampliación 2.87×; el procesamiento no recupera detalle inexistente."
+      ]
+    },
+    {
+      "id": "b1aa54e3-ff2b-4bf9-93db-cad90e03e6e1",
+      "label": "CREATINA MICRONIZADA POWERADED x 200GR · Vista frontal",
+      "warnings": [
+        "Original pequeño: ampliación 1.32×; el procesamiento no recupera detalle inexistente."
+      ]
+    },
+    {
+      "id": "054b2cef-71ad-4d1f-b80c-3eddfacfcb36",
+      "label": "ZINC+MAGNESIO+VITAMINA B6 \"ZMA\" - 90 CAPSULAS · Vista frontal",
+      "warnings": [
+        "Original pequeño: ampliación 1.37×; el procesamiento no recupera detalle inexistente."
+      ]
+    }
+  ],
+  "beforeUrls": {
+    "d242dd6b-989a-49a4-9b20-e852cddb5561/151e5605-75c3-484d-b6f9-1aa87a887864.webp": "/media/normalization-trial-v1/before/151e5605-75c3-484d-b6f9-1aa87a887864-c2af06e91315.webp",
+    "d242dd6b-989a-49a4-9b20-e852cddb5561/9cd91781-18c9-4cb9-99dd-db473a4e0fc9.webp": "/media/normalization-trial-v1/before/9cd91781-18c9-4cb9-99dd-db473a4e0fc9-86ddbe3d9824.webp",
+    "d242dd6b-989a-49a4-9b20-e852cddb5561/d791d684-b064-45c3-bbd1-4f59bfd86d31.webp": "/media/normalization-trial-v1/before/d791d684-b064-45c3-bbd1-4f59bfd86d31-f8ad859d963c.webp",
+    "d242dd6b-989a-49a4-9b20-e852cddb5561/4c45f913-7ce1-467f-8735-b05cc1bfa497.webp": "/media/normalization-trial-v1/before/4c45f913-7ce1-467f-8735-b05cc1bfa497-5d8287f0df81.webp",
+    "d242dd6b-989a-49a4-9b20-e852cddb5561/bdb4e2f9-c080-4f65-b4e6-ea20e34866e3.webp": "/media/normalization-trial-v1/before/bdb4e2f9-c080-4f65-b4e6-ea20e34866e3-9a5b5e53e6c4.webp",
+    "d242dd6b-989a-49a4-9b20-e852cddb5561/0f1f73af-c2c7-4c0c-9b9e-c282e606ff83.webp": "/media/normalization-trial-v1/before/0f1f73af-c2c7-4c0c-9b9e-c282e606ff83-0935e0b7dd7a.webp",
+    "d242dd6b-989a-49a4-9b20-e852cddb5561/6b7f3eba-e2ae-43ce-a42e-0f1eb96e00ef.webp": "/media/normalization-trial-v1/before/6b7f3eba-e2ae-43ce-a42e-0f1eb96e00ef-579752795329.webp",
+    "d242dd6b-989a-49a4-9b20-e852cddb5561/9a17009f-abb3-441d-8cdf-ce457fbc6b04.webp": "/media/normalization-trial-v1/before/9a17009f-abb3-441d-8cdf-ce457fbc6b04-b55d331def90.webp",
+    "d242dd6b-989a-49a4-9b20-e852cddb5561/f20d7d85-a38e-41af-8732-b16a510e6f8f.webp": "/media/normalization-trial-v1/before/f20d7d85-a38e-41af-8732-b16a510e6f8f-170335688791.webp",
+    "046813bb-44c3-4df3-9d21-ac1adc9032df/1271832e-9fbd-42b5-a662-056059785842.webp": "/media/normalization-trial-v1/before/1271832e-9fbd-42b5-a662-056059785842-fcbbd2a9b17c.webp",
+    "046813bb-44c3-4df3-9d21-ac1adc9032df/32dcd745-c641-4491-b68e-24c57c2a5e8d.webp": "/media/normalization-trial-v1/before/32dcd745-c641-4491-b68e-24c57c2a5e8d-213c6d82d861.webp",
+    "5a8eefe5-32d9-4119-b1c2-0ca65eb916c5/28f1a159-1e29-477f-9b87-cf215d50552b.webp": "/media/normalization-trial-v1/before/28f1a159-1e29-477f-9b87-cf215d50552b-d7b79e9c933b.webp",
+    "5a8eefe5-32d9-4119-b1c2-0ca65eb916c5/253f1fdb-ea75-4eb0-810e-7ad33ea07fea.webp": "/media/normalization-trial-v1/before/253f1fdb-ea75-4eb0-810e-7ad33ea07fea-9274ac1f9d46.webp",
+    "5a8eefe5-32d9-4119-b1c2-0ca65eb916c5/7a55401f-1a50-44be-b4bd-03f2e7da5441.webp": "/media/normalization-trial-v1/before/7a55401f-1a50-44be-b4bd-03f2e7da5441-e71359c596e0.webp",
+    "5a8eefe5-32d9-4119-b1c2-0ca65eb916c5/d4978e14-658a-4415-bd86-e58bd81e64a4.webp": "/media/normalization-trial-v1/before/d4978e14-658a-4415-bd86-e58bd81e64a4-c3287a2b1783.webp",
+    "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87/30f60d61-84cc-4d5c-83df-64b2bd928ed2.webp": "/media/normalization-trial-v1/before/30f60d61-84cc-4d5c-83df-64b2bd928ed2-904d998796a9.webp",
+    "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87/fedadb18-5f1a-4aa1-9fc2-1162a2199a4b.webp": "/media/normalization-trial-v1/before/fedadb18-5f1a-4aa1-9fc2-1162a2199a4b-8065783cded5.webp",
+    "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87/060a9e9b-ba7a-4765-87c1-ac012981f872.webp": "/media/normalization-trial-v1/before/060a9e9b-ba7a-4765-87c1-ac012981f872-03f61a7c013d.webp",
+    "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87/80fc644b-408f-4a03-9143-c12ec34b7761.webp": "/media/normalization-trial-v1/before/80fc644b-408f-4a03-9143-c12ec34b7761-a32db589d16b.webp",
+    "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87/9ef32780-d1dc-4101-80a6-8df299565f87.webp": "/media/normalization-trial-v1/before/9ef32780-d1dc-4101-80a6-8df299565f87-3b52ce4167c2.webp",
+    "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87/6dfc29e6-a1ef-48b4-9e0a-9af60c23b659.webp": "/media/normalization-trial-v1/before/6dfc29e6-a1ef-48b4-9e0a-9af60c23b659-c927bce69798.webp",
+    "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87/84e0a684-3395-4bcb-a0f8-d511cc11c53e.webp": "/media/normalization-trial-v1/before/84e0a684-3395-4bcb-a0f8-d511cc11c53e-162002c57b4c.webp",
+    "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87/f334d757-9861-41e4-9a94-92e8c2529b3e.webp": "/media/normalization-trial-v1/before/f334d757-9861-41e4-9a94-92e8c2529b3e-caecd0e10dda.webp",
+    "6d7d2d83-c67f-4999-bab7-bdbec4bb8e87/65387934-8085-47a5-8392-8a746a37d43c.webp": "/media/normalization-trial-v1/before/65387934-8085-47a5-8392-8a746a37d43c-f4152098f26b.webp",
+    "ab0d013a-fad2-497d-a230-23a2659ecf24/d8b84c14-9f42-479f-b8ab-5a569cf58899.webp": "/media/normalization-trial-v1/before/d8b84c14-9f42-479f-b8ab-5a569cf58899-90d41567d1c1.webp",
+    "9993c069-a710-427d-8642-5ca0ad0511d9/aedf45ee-5889-4dc5-aec2-82a089a617a6.png": "/media/normalization-trial-v1/before/aedf45ee-5889-4dc5-aec2-82a089a617a6-8d4842755bbe.png",
+    "6fb85c35-fb77-4e9a-89cf-00d2ea6b27b5/d39b3419-4e94-4b15-aaa1-0e627b7b8991.png": "/media/normalization-trial-v1/before/d39b3419-4e94-4b15-aaa1-0e627b7b8991-6ad15477cb7b.png",
+    "a4ae77d2-9d63-4fab-a526-26c5e3c9edc7/5aa414a2-08d2-4e0c-88dd-36f3a556642c.png": "/media/normalization-trial-v1/before/5aa414a2-08d2-4e0c-88dd-36f3a556642c-c72b0578fdc1.png"
+  }
+}

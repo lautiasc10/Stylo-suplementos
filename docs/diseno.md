@@ -10,6 +10,8 @@ Barlow Condensed e Inter siguen en el resto de la tienda y la administración. E
 
 ## Guía aplicada
 
+La [prueba de normalización de cinco productos](normalizacion-imagenes-fase-1.md) está aislada en `/vista-previa/imagenes`: canvas transparente de 1000 × 1000, envase al 80 % del alto, base común al 90 %, escenario cuadrado y roca CSS independiente. Las rutas reales de Storage y el diseño público se conservan hasta revisar este piloto. Las fases siguientes de esta revisión todavía no se aplican.
+
 Las galerías incorporan [vistas reales del envase durante el giro](giro-envases-2026-10-17.md): los datos del nuevo sabor se confirman al volver al frente. Costados y dorsos se cargan separados de las portadas y de las fichas informativas. La ficha usa una columna de miniaturas en escritorio y una tira horizontal en celular, con acceso al original sin JavaScript y movimiento reducido en vivo.
 
 La ficha de producto muestra las tablas e imágenes informativas del fabricante en un desplegable «Información del producto», separado de las fotos del envase. La ampliación usa un diálogo nativo, con cierre por teclado y retorno del foco; sin JavaScript se conserva el acceso al original. Administración permite mantener una sola ficha común a todas las variantes o asociar una ficha al SKU cuando cambia la información. No se incorporan estas tablas a las animaciones de las tarjetas. Carga y verificación: [fichas informativas](fichas-informativas-2026-10-17.md).

@@ -135,10 +135,17 @@ export function ProductCard({
     <article className="product-card">
       <div className="product-card-media">
         <div className="product-card-labels">
-          <ProductPromotionBadge key={variant.id} variant={variant} />
+          <ProductPromotionBadge
+            key={`promotion:${variant.id}`}
+            variant={variant}
+          />
           {variant.flavor && <FlavorBadge flavor={variant.flavor} />}
           {variant.stock === 0 && (
-            <span key={variant.id} className="stock-badge" data-stock="empty">
+            <span
+              key={`stock:${variant.id}`}
+              className="stock-badge"
+              data-stock="empty"
+            >
               Sin stock
             </span>
           )}
@@ -149,6 +156,7 @@ export function ProductCard({
             href={href}
             linkLabel={`Ver ${product.name}`}
             startDelay={(index % 5) * 180}
+            eager={index < 2 && photos[0]?.normalized}
             onImageChange={selectPhoto}
             transition={differentFlavors ? "turn" : "fragments"}
           />
