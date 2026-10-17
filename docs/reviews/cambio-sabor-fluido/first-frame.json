@@ -1,0 +1,42 @@
+[
+  {
+    "width": 1800,
+    "responseMs": 8.300000011920929,
+    "opacity": "1",
+    "imageTransform": "none",
+    "photo": "http://127.0.0.1:3200/media/normalization-trial-v1/4997dd2c-1ee9-40ee-93b4-351b0e870a03-03f61a7c013d-v1-640.webp",
+    "projectedScale": 0.414166,
+    "zIndex": "1",
+    "timings": [
+      {
+        "duration": 160,
+        "delay": 0
+      },
+      {
+        "duration": 260,
+        "delay": 0
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 375,
+    "responseMs": 9.699999988079071,
+    "opacity": "1",
+    "imageTransform": "none",
+    "photo": "http://127.0.0.1:3200/media/normalization-trial-v1/4997dd2c-1ee9-40ee-93b4-351b0e870a03-03f61a7c013d-v1-640.webp",
+    "projectedScale": 0.414166,
+    "zIndex": "1",
+    "timings": [
+      {
+        "duration": 160,
+        "delay": 0
+      },
+      {
+        "duration": 260,
+        "delay": 0
+      }
+    ],
+    "errors": []
+  }
+]

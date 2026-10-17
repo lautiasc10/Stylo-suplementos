@@ -32,7 +32,11 @@
 .variant-spinner[data-spinner-phase="incoming"] .variant-spinner-frame {
   will-change: transform, opacity;
 }
-.variant-spinner .variant-spinner-frame .product-frame {
+.product-image-gallery.variant-spinner[data-transition="turn"]
+  .variant-spinner-frame
+  .product-frame {
+  /* Only the outer frame rotates. Legacy gallery selectors otherwise rotate
+     the active img another 180deg and hide its backface until the spin ends. */
   position: absolute;
   inset: 0;
   width: 100%;

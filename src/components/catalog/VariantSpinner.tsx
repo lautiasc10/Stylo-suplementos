@@ -286,21 +286,21 @@ export function VariantSpinner(props: VariantSpinnerProps) {
         changePhase("outgoing");
         if (spin) {
           if (latest.current.mode === "detail") {
-            // Start both halves on the same clock. A warm choice commits its
-            // flavor, price and stock immediately, rather than after the exit.
-            // Decode above still protects cold/broken photographs from flashes.
+            // The decoded incoming pack is visible on the very first frame.
+            // Never delay it or start edge-on/transparent: that exposes a gap
+            // even when the selected flavor and price already changed.
             commit();
             changePhase("incoming");
             const exit = from.animate(
               [
                 { transform: "rotateY(0deg) scale(1)", opacity: 1 },
                 {
-                  transform: `rotateY(${-90 * sign}deg) scale(.96)`,
+                  transform: `rotateY(${-65 * sign}deg) scale(.98)`,
                   opacity: 0,
                 },
               ],
               {
-                duration: 140,
+                duration: 160,
                 easing: "cubic-bezier(.42,0,1,1)",
                 fill: "both",
               },
@@ -308,14 +308,13 @@ export function VariantSpinner(props: VariantSpinnerProps) {
             const enter = to.animate(
               [
                 {
-                  transform: `rotateY(${90 * sign}deg) scale(.96)`,
-                  opacity: 0,
+                  transform: `rotateY(${65 * sign}deg) scale(.98)`,
+                  opacity: 1,
                 },
                 { transform: "rotateY(0deg) scale(1)", opacity: 1 },
               ],
               {
                 duration: 260,
-                delay: 100,
                 easing: "cubic-bezier(.16,1,.3,1)",
                 fill: "both",
               },
@@ -507,7 +506,10 @@ export function VariantSpinner(props: VariantSpinnerProps) {
             className={`variant-spinner-frame${active && inspected ? " product-inspected-image" : ""}`}
             data-information={photo.information || undefined}
             aria-hidden={active ? undefined : true}
-            style={{ opacity: target && phase !== "incoming" ? 0 : 1 }}
+            style={{
+              opacity: target && phase !== "incoming" ? 0 : 1,
+              zIndex: target ? 1 : 0,
+            }}
           >
             {photo.src ? (
               <img

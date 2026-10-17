@@ -396,15 +396,36 @@ test("detalle responde al inicio del giro, solapa sus mitades y conserva la info
     [...e.querySelectorAll(".variant-spinner-frame")].flatMap((frame) =>
       frame.getAnimations().map((animation) => {
         animation.pause();
+        animation.currentTime = 0;
         const timing = animation.effect!.getTiming();
         return { duration: timing.duration, delay: timing.delay };
       }),
     ),
   );
   expect(timing).toEqual([
-    { duration: 140, delay: 0 },
-    { duration: 260, delay: 100 },
+    { duration: 160, delay: 0 },
+    { duration: 260, delay: 0 },
   ]);
+  // Metadata alone is not enough: the new photograph must actually be visible
+  // at time zero, without a transparent or edge-on waiting interval.
+  const firstFrame = await spinner
+    .locator(".variant-spinner-frame")
+    .filter({ has: page.locator(".product-frame-current") })
+    .evaluate((frame) => {
+      const style = getComputedStyle(frame);
+      return {
+        opacity: style.opacity,
+        projectedScale: new DOMMatrixReadOnly(style.transform).m11,
+        zIndex: style.zIndex,
+        imageTransform: getComputedStyle(
+          frame.querySelector(".product-frame-current")!,
+        ).transform,
+      };
+    });
+  expect(firstFrame.opacity).toBe("1");
+  expect(firstFrame.projectedScale).toBeGreaterThan(0.4);
+  expect(firstFrame.zIndex).toBe("1");
+  expect(firstFrame.imageTransform).toBe("none");
   await expect(spinner).toHaveAttribute(
     "data-active-variant",
     product.variants[1].id,
