@@ -37,7 +37,9 @@ test("fichas compartidas, cambio de variante y ampliación accesible", async ({
   );
   await page.locator(".product-information summary").click();
   await expect(page.locator(".product-information-grid li")).toHaveCount(1);
-  const shared = page.getByRole("link", { name: /Ficha común de prueba/ });
+  const shared = page
+    .locator(".product-information-grid")
+    .getByRole("link", { name: /Ficha común de prueba/ });
   await shared.click();
   await expect(
     page.getByRole("dialog", { name: "Ficha común de prueba" }),
@@ -74,7 +76,9 @@ test("fichas compartidas, cambio de variante y ampliación accesible", async ({
   await page.goto(`/vista-previa/producto/${product.slug}`);
   await page.locator(".product-information summary").click();
   await expect(
-    page.getByRole("link", { name: /Ficha común editada/ }),
+    page
+      .locator(".product-information-grid")
+      .getByRole("link", { name: /Ficha común editada/ }),
   ).toBeVisible();
 });
 
@@ -880,7 +884,7 @@ test("la galería automática sincroniza variantes y la ficha conserva sus fotos
   ).toBeVisible();
   await card.getByRole("link", { name: "Ver variantes", exact: true }).click();
   await page
-    .getByRole("button", { name: "Ver Chocolate dorso", exact: true })
+    .getByRole("link", { name: "Ver Chocolate dorso", exact: true })
     .click();
   await expect(
     page.getByAltText("Chocolate dorso", { exact: true }),

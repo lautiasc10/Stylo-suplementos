@@ -8,6 +8,7 @@ import {
   validateCatalog,
   variantImages,
   variantInformationImages,
+  variantTurnImages,
 } from "../../src/modules/catalog/model";
 import {
   importColumns,
@@ -33,6 +34,41 @@ const row = [
   "true",
 ];
 describe("catálogo y precios", () => {
+  it("conserva los ángulos por SKU y prioriza la vista específica sobre la compartida", () => {
+    const catalog = demoCatalog();
+    const product = catalog.products[0];
+    const [first, second] = product.variants;
+    product.turnImages = [
+      {
+        id: "00000000-0000-4000-8000-000000000501",
+        path: `${product.id}/00000000-0000-4000-8000-000000000601.webp`,
+        alt: "Dorso común",
+        variantId: null,
+        position: 0,
+        view: "back",
+      },
+      {
+        id: "00000000-0000-4000-8000-000000000502",
+        path: `${product.id}/00000000-0000-4000-8000-000000000602.webp`,
+        alt: "Dorso específico",
+        variantId: first.id,
+        position: 1,
+        view: "back",
+      },
+    ];
+    expect(
+      variantTurnImages(product, first.id).map((image) => image.alt),
+    ).toEqual(["Dorso específico"]);
+    expect(
+      variantTurnImages(product, second.id).map((image) => image.alt),
+    ).toEqual(["Dorso común"]);
+    expect(validateCatalog(catalog)).toEqual([]);
+    product.turnImages[0].variantId = "00000000-0000-4000-8000-000000000999";
+    expect(validateCatalog(catalog)).not.toEqual([]);
+    product.turnImages[0].variantId = null;
+    product.turnImages[0].path = "otro-producto/archivo.webp";
+    expect(validateCatalog(catalog)).not.toEqual([]);
+  });
   it("comparte fichas informativas sin mezclarlas con las fotos del envase", () => {
     const catalog = demoCatalog();
     const product = catalog.products[0];

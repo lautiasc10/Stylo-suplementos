@@ -72,11 +72,22 @@ describe("migración de catálogo, transacciones y permisos", () => {
           variantId: null,
         },
       ];
+      product.turnImages = [
+        {
+          id: "00000000-0000-4000-8000-000000000501",
+          path: `${product.id}/00000000-0000-4000-8000-000000000601.webp`,
+          alt: "Dorso",
+          position: 0,
+          variantId: product.variants[0].id,
+          view: "back",
+        },
+      ];
       await save(data);
       const stored = (await snapshot()).products.find(
         (p) => p.id === product.id,
       )!;
       expect(stored.informationImages).toEqual(product.informationImages);
+      expect(stored.turnImages).toEqual(product.turnImages);
       expect(stored.images).toEqual(photos);
     });
   });

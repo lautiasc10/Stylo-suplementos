@@ -5,14 +5,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AddToCart } from "@/components/commerce/add-to-cart";
 import { ProductPricing } from "@/components/commerce/product-pricing";
 import { RevealGroup, RevealItem } from "@/components/ui/Reveal";
-import { catalogMediaSource } from "@/modules/catalog/media-source";
-import { variantImages, variantLabel } from "@/modules/catalog/model";
+import { variantLabel } from "@/modules/catalog/model";
 import { GainerBackdrop } from "./gainer-backdrop";
 import {
   gainerIngredientKey,
   gainerIngredientSources,
 } from "./gainer-ingredients";
 import { createGalleryPhotoCache } from "./gallery-photo-cache";
+import { galleryPhotos, galleryInformation } from "./gallery-images";
 import { ProductGallery, type GalleryImage } from "./product-gallery";
 import type { ProductDetailProps } from "./product-detail";
 import { ProductInformation } from "./product-information";
@@ -97,22 +97,10 @@ export function GainerProductDetail({
   const images = useMemo(
     () =>
       product.variants.flatMap((item) => {
-        const photos = variantImages(product, item.id).filter(
-          (image) => imageBase || imageUrls[image.path],
-        );
+        const photos = galleryPhotos(product, item.id, imageBase, imageUrls);
         const href = `${prefix}/producto/${product.slug}?variante=${item.id}`;
         return photos.length
-          ? photos.map((image) => ({
-              id: `${item.id}:${image.id}`,
-              variantId: item.id,
-              href,
-              src: catalogMediaSource(
-                imageUrls[image.path] || `${imageBase}/${image.path}`,
-                imageBase,
-                "detail",
-              ),
-              alt: image.alt,
-            }))
+          ? photos.map((image) => ({ ...image, href }))
           : [
               {
                 id: item.id,
@@ -165,6 +153,12 @@ export function GainerProductDetail({
           onPrepareImage={warmIngredients}
           prepareImage={prepareIngredients}
           selectionRequest={selectionRequest}
+          informationImages={galleryInformation(
+            product,
+            variant.id,
+            imageBase,
+            imageUrls,
+          )}
         />
       </div>
       <RevealGroup

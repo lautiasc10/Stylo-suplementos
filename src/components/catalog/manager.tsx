@@ -196,11 +196,14 @@ export function CatalogManager({
   async function addImages(
     files: FileList | null,
     variantId: string | null = null,
-    field: "images" | "informationImages" = "images",
+    field: "images" | "informationImages" | "turnImages" = "images",
   ) {
     if (!files?.length || !draft || busy) return;
     const currentImages = draft[field] ?? [];
-    if (currentImages.length + files.length > 12) {
+    if (
+      currentImages.length + files.length >
+      (field === "turnImages" ? 24 : 12)
+    ) {
       setMessage("Se permiten hasta 12 imágenes por producto.");
       return;
     }
@@ -221,6 +224,7 @@ export function CatalogManager({
               : draft.name || "Imagen del producto",
           variantId,
           position: currentImages.length + images.length,
+          ...(field === "turnImages" && { view: "back" as const }),
         });
       }
       updateDraft(field, [...currentImages, ...images]);
@@ -254,7 +258,7 @@ export function CatalogManager({
   async function replaceImage(
     imageId: string,
     file?: File,
-    field: "images" | "informationImages" = "images",
+    field: "images" | "informationImages" | "turnImages" = "images",
   ) {
     if (!file || !draft || busy) return;
     const productId = draft.id;
@@ -300,6 +304,11 @@ export function CatalogManager({
       images: draft.images.map((image) =>
         image.variantId === variantId ? { ...image, variantId: null } : image,
       ),
+      ...(draft.turnImages && {
+        turnImages: draft.turnImages.filter(
+          (image) => image.variantId !== variantId,
+        ),
+      }),
       ...(draft.informationImages && {
         informationImages: draft.informationImages.filter(
           (image) => image.variantId !== variantId,
@@ -866,6 +875,24 @@ export function CatalogManager({
                     onReplace={replaceImage}
                     onChange={(images) => updateDraft("images", images)}
                   />
+                  <ProductImagesEditor
+                    images={draft.turnImages ?? []}
+                    variants={draft.variants}
+                    variantId={variant.id}
+                    purpose="turn"
+                    title={`Costados y dorso · ${variant.flavor || variant.sku || `Variante ${index + 1}`}`}
+                    uploadLabel={`Subir vistas de variante ${index + 1}`}
+                    busy={busy}
+                    imageBase={imageBase}
+                    imageUrls={imageUrls}
+                    onUpload={(files, variantId) =>
+                      addImages(files, variantId, "turnImages")
+                    }
+                    onReplace={(id, file) =>
+                      replaceImage(id, file, "turnImages")
+                    }
+                    onChange={(images) => updateDraft("turnImages", images)}
+                  />
                 </fieldset>
               ))}
               <button
@@ -902,6 +929,22 @@ export function CatalogManager({
                 onUpload={addImages}
                 onReplace={replaceImage}
                 onChange={(images) => updateDraft("images", images)}
+              />
+              <ProductImagesEditor
+                images={draft.turnImages ?? []}
+                variants={draft.variants}
+                variantId={null}
+                purpose="turn"
+                title="Costados y dorso compartidos"
+                uploadLabel="Subir vistas compartidas del envase"
+                busy={busy}
+                imageBase={imageBase}
+                imageUrls={imageUrls}
+                onUpload={(files, variantId) =>
+                  addImages(files, variantId, "turnImages")
+                }
+                onReplace={(id, file) => replaceImage(id, file, "turnImages")}
+                onChange={(images) => updateDraft("turnImages", images)}
               />
             </fieldset>
             <fieldset

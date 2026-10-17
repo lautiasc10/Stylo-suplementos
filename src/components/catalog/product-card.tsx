@@ -9,10 +9,10 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Icon } from "@/components/ui/icon";
 import { CategoryIllustration } from "@/components/storefront/category-illustration";
 import { ProductGallery, type GalleryImage } from "./product-gallery";
+import { galleryPhotos } from "./gallery-images";
 import { BrandLogo } from "./brand-logo";
 import { catalogMediaSource } from "@/modules/catalog/media-source";
 import {
-  variantImages,
   type CatalogGroup,
   type Product,
   type Variant,
@@ -110,18 +110,12 @@ export function ProductCard({
         Number(b.id === initialVariantId) - Number(a.id === initialVariantId),
     );
     const entries = ordered.flatMap((item) =>
-      variantImages(product, item.id)
-        .filter((image) => imageBase || imageUrls[image.path])
-        .map((image) => ({
-          id: `${item.id}:${image.id}`,
-          variantId: item.id,
-          alt: image.alt,
-          src: catalogMediaSource(
-            imageUrls[image.path] || `${imageBase}/${image.path}`,
-            imageBase,
-          ),
+      galleryPhotos(product, item.id, imageBase, imageUrls, "card").map(
+        (image) => ({
+          ...image,
           href: `${productPrefix}/${product.slug}?variante=${item.id}`,
-        })),
+        }),
+      ),
     );
     // A missing initial photo must not show a different SKU with the initial price.
     return entries[0]?.variantId === initialVariantId ? entries : [];

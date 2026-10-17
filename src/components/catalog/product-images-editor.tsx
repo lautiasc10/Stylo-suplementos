@@ -30,13 +30,13 @@ export function ProductImagesEditor({
   onUpload: (files: FileList | null, variantId: string | null) => void;
   onReplace: (imageId: string, file?: File) => void;
   onChange: (images: ProductImage[]) => void;
-  purpose?: "product" | "information";
+  purpose?: "product" | "information" | "turn";
   showAll?: boolean;
 }) {
   const scoped = images
     .filter((image) => showAll || image.variantId === variantId)
     .sort((a, b) => a.position - b.position);
-  const uploadId = `${purpose === "information" ? "information" : "photos"}-${variantId ?? "shared"}`;
+  const uploadId = `${purpose === "information" ? "information" : purpose === "turn" ? "turn" : "photos"}-${variantId ?? "shared"}`;
   const itemName = purpose === "information" ? "ficha informativa" : "imagen";
   function patch(imageId: string, changes: Partial<ProductImage>) {
     onChange(
@@ -68,7 +68,7 @@ export function ProductImagesEditor({
           className="button button-outline"
           aria-label={`${purpose === "information" ? "Agregar fichas" : "Agregar fotos"} · ${title}`}
           id={`${uploadId}-button`}
-          disabled={busy || images.length >= 12}
+          disabled={busy || images.length >= (purpose === "turn" ? 24 : 12)}
           onClick={() => document.getElementById(uploadId)?.click()}
         >
           <Icon name="plus" />{" "}
@@ -81,7 +81,7 @@ export function ProductImagesEditor({
           multiple
           aria-label={uploadLabel}
           accept="image/jpeg,image/png,image/webp"
-          disabled={busy || images.length >= 12}
+          disabled={busy || images.length >= (purpose === "turn" ? 24 : 12)}
           onChange={(event) => {
             onUpload(event.target.files, variantId);
             event.target.value = "";
@@ -140,6 +140,25 @@ export function ProductImagesEditor({
                 ))}
               </select>
             </label>
+            {purpose === "turn" && (
+              <label>
+                Vista del envase
+                <select
+                  aria-label={`Vista de imagen ${number}`}
+                  value={image.view ?? "back"}
+                  disabled={busy}
+                  onChange={(event) =>
+                    patch(image.id, {
+                      view: event.target.value as ProductImage["view"],
+                    })
+                  }
+                >
+                  <option value="left">Costado izquierdo</option>
+                  <option value="back">Dorso</option>
+                  <option value="right">Costado derecho</option>
+                </select>
+              </label>
+            )}
             <div className="image-editor-actions">
               <IconAction
                 icon="edit"

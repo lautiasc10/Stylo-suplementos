@@ -13,6 +13,8 @@ import {
 import { Icon } from "@/components/ui/icon";
 import { positionProductPhoto } from "./product-photo-position";
 import { createGalleryPhotoCache } from "./gallery-photo-cache";
+import { PackageTurn, type PackageTurnState } from "./package-turn";
+import { ProductThumbnailRail } from "./product-thumbnail-rail";
 
 export type GalleryImage = {
   id: string;
@@ -20,6 +22,9 @@ export type GalleryImage = {
   alt: string;
   variantId?: string;
   href?: string;
+  thumbnailSrc?: string;
+  information?: boolean;
+  turnImages?: (GalleryImage & { view: "left" | "back" | "right" })[];
 };
 
 // A deterministic mesh keeps server/client markup identical. Each fragment reuses
@@ -118,6 +123,7 @@ export function ProductGallery({
   onPrepareImage,
   prepareImage,
   selectionRequest,
+  informationImages = [],
 }: {
   images: GalleryImage[];
   href?: string;
@@ -134,6 +140,7 @@ export function ProductGallery({
    * decorative failures; a failed product photograph still preserves selection. */
   prepareImage?: (image: GalleryImage) => Promise<unknown>;
   selectionRequest?: { variantId: string; nonce: number } | null;
+  informationImages?: GalleryImage[];
 }) {
   const root = useRef<HTMLDivElement>(null);
   const framePair = useRef<HTMLSpanElement>(null);
@@ -150,6 +157,9 @@ export function ProductGallery({
     ),
   );
   const [previous, setPrevious] = useState<number | null>(null);
+  const [packageTurn, setPackageTurn] = useState<PackageTurnState | null>(null);
+  const finishTurn = useRef<(() => void) | null>(null);
+  const [inspected, setInspected] = useState<GalleryImage | null>(null);
   const activeIndex = useRef(active);
   const [enhanced, setEnhanced] = useState(false);
   const [reduced, setReduced] = useState(true);
@@ -211,6 +221,8 @@ export function ProductGallery({
     const updateMotion = () => {
       setReduced(preference.matches);
       if (preference.matches) {
+        finishTurn.current?.();
+        setPackageTurn(null);
         request.current++;
         pending.current = null;
         setLoading(false);
@@ -243,6 +255,8 @@ export function ProductGallery({
   useEffect(() => {
     visibleRef.current = visible;
     if (!visible || !documentVisible) {
+      finishTurn.current?.();
+      setPackageTurn(null);
       // A mobile swatch may be below the photograph. Finish that explicit
       // choice even when scrolling to it moves the gallery offscreen.
       if (documentVisible && explicitSelectionPending.current) {
@@ -274,6 +288,9 @@ export function ProductGallery({
     void photoCache.current
       ?.load(images[(active + 1) % images.length].src, "low")
       .catch(() => {});
+    for (const image of images[active].turnImages ?? []) {
+      void photoCache.current?.load(image.src, "low").catch(() => {});
+    }
   }, [
     automatic,
     reduced,
@@ -299,6 +316,10 @@ export function ProductGallery({
     // Prepare just the front photograph of each adjacent variant after the
     // initial content. No eager traversal of all variants or gallery photos.
     const timer = window.setTimeout(() => {
+      if (!reduced)
+        for (const angle of images[active].turnImages ?? []) {
+          void photoCache.current?.load(angle.src, "low").catch(() => {});
+        }
       const ids = [...new Set(images.map((image) => image.variantId))];
       const index = ids.indexOf(images[active].variantId);
       for (const direction of [-1, 1]) {
@@ -318,11 +339,15 @@ export function ProductGallery({
     images,
     onPrepareImage,
     readyImage,
+    reduced,
   ]);
 
   const showImage = useCallback(
     (index: number, allowOffscreen = false) => {
       const sequence = ++request.current;
+      setPackageTurn(null);
+      finishTurn.current = null;
+      setInspected(null);
       explicitSelectionPending.current = allowOffscreen;
       if (index === activeIndex.current) {
         explicitSelectionPending.current = false;
@@ -332,10 +357,14 @@ export function ProductGallery({
       }
       pending.current = index;
       setLoading(true);
-      const commitImage = () => {
+      const settleImage = (withTransition = true) => {
         if (request.current !== sequence) return;
+        finishTurn.current = null;
+        setPackageTurn(null);
         setPrevious(
-          reduced || !visibleRef.current ? null : activeIndex.current,
+          !withTransition || reduced || !visibleRef.current
+            ? null
+            : activeIndex.current,
         );
         activeIndex.current = index;
         setActive(index);
@@ -345,12 +374,57 @@ export function ProductGallery({
         onImageChange?.(images[index]);
         setMessage("");
       };
+      const commitImage = () => {
+        if (request.current !== sequence) return;
+        const from = images[activeIndex.current];
+        const availableAngles =
+          from.turnImages?.filter((image) =>
+            photoCache.current?.has(image.src),
+          ) ?? [];
+        if (
+          turning &&
+          availableAngles.length &&
+          from.variantId !== images[index].variantId &&
+          !reduced &&
+          visibleRef.current &&
+          images[index].src
+        ) {
+          finishTurn.current = () => settleImage(false);
+          setPackageTurn({
+            from: {
+              ...from,
+              turnImages: availableAngles,
+            },
+            to: images[index],
+            sequence,
+          });
+        } else settleImage();
+      };
+      const angles =
+        turning && !reduced
+          ? (images[activeIndex.current].turnImages ?? [])
+          : [];
+      // Angle failures are decorative: preserve the decoded target and fall
+      // back to the existing transition instead of blocking a purchase.
+      const prepareAngles = async () => {
+        let timer: ReturnType<typeof setTimeout> | undefined;
+        await Promise.race([
+          Promise.all(
+            angles.map((image) => photoCache.current?.load(image.src)),
+          ).catch(() => {}),
+          new Promise<void>((resolve) => {
+            timer = setTimeout(resolve, 450);
+          }),
+        ]);
+        clearTimeout(timer);
+      };
       if (prepareImage) {
         void Promise.all([
           images[index].src && !photoCache.current?.has(images[index].src)
             ? photoCache.current?.load(images[index].src)
             : undefined,
           prepareImage(images[index]),
+          prepareAngles(),
         ])
           .then(commitImage)
           .catch(() => {
@@ -369,12 +443,17 @@ export function ProductGallery({
         commitImage();
         return;
       }
-      if (photoCache.current?.has(images[index].src)) {
+      if (
+        photoCache.current?.has(images[index].src) &&
+        angles.every((image) => photoCache.current?.has(image.src))
+      ) {
         commitImage();
         return;
       }
-      void photoCache.current
-        ?.load(images[index].src)
+      void Promise.all([
+        photoCache.current?.load(images[index].src),
+        prepareAngles(),
+      ])
         .then(commitImage)
         .catch(() => {
           if (request.current !== sequence) return;
@@ -385,7 +464,7 @@ export function ProductGallery({
           setMessage("No pudimos cargar esta imagen. Podés intentar otra vez.");
         });
     },
-    [images, reduced, onImageChange, prepareImage],
+    [images, reduced, onImageChange, prepareImage, turning],
   );
 
   useEffect(() => {
@@ -450,6 +529,12 @@ export function ProductGallery({
   }
   const frames = (
     <>
+      {packageTurn && (
+        <PackageTurn
+          turn={packageTurn}
+          onFinish={() => finishTurn.current?.()}
+        />
+      )}
       <span
         ref={framePair}
         className="product-frame-pair"
@@ -555,13 +640,15 @@ export function ProductGallery({
   return (
     <div
       ref={root}
-      className={`product-image-gallery product-image-gallery-${mode}`}
+      className={`product-image-gallery product-image-gallery-${mode}${packageTurn ? " product-gallery-turning" : ""}${mode === "detail" && visiblePhotos.length + (current.turnImages?.length ?? 0) + informationImages.length > 1 ? " product-gallery-with-rail" : ""}`}
+      data-package-turn={packageTurn ? "true" : undefined}
+      data-inspecting={inspected ? "true" : undefined}
       data-auto-playing={playing ? "true" : undefined}
       data-transition={
         turning ? "turn" : transition === "fade" ? "fade" : undefined
       }
       data-flavor-navigation={flavorNavigation ? "true" : undefined}
-      data-loading={loading ? "true" : undefined}
+      data-loading={loading && !packageTurn ? "true" : undefined}
       data-animated={previous !== null && !reduced ? "true" : undefined}
       onFocusCapture={() => setInteracting(true)}
       onBlurCapture={(event) => {
@@ -570,6 +657,20 @@ export function ProductGallery({
       }}
     >
       <div className="product-image-stage">
+        {inspected && (
+          <div
+            className="product-inspected-image"
+            data-information={inspected.information || undefined}
+          >
+            <img
+              src={inspected.src}
+              alt={inspected.alt}
+              width={720}
+              height={720}
+              decoding="async"
+            />
+          </div>
+        )}
         {href ? (
           <Link
             href={current.href ?? href}
@@ -648,26 +749,41 @@ export function ProductGallery({
           {loading && <span>Cargando sabor…</span>}
         </p>
       )}
-      {mode === "detail" && enhanced && visiblePhotos.length > 1 && (
-        <div className="product-thumbnails" aria-label="Galería del producto">
-          {visiblePhotos.map(({ image, index }) => (
-            <button
-              type="button"
-              key={image.id}
-              aria-label={`Ver ${image.alt}`}
-              aria-pressed={active === index}
-              onClick={() => choose(index)}
-            >
-              <img
-                src={image.src}
-                alt=""
-                width={80}
-                height={80}
-                loading="lazy"
-              />
-            </button>
-          ))}
-        </div>
+      {mode === "detail" && (
+        <ProductThumbnailRail
+          images={[
+            ...visiblePhotos.map(({ image }) => image),
+            ...(current.turnImages ?? []),
+            ...informationImages,
+          ]}
+          selectedId={inspected?.id ?? current.id}
+          onSelect={(image) => {
+            const index = images.findIndex((entry) => entry.id === image.id);
+            if (index >= 0) {
+              setInspected(null);
+              choose(index);
+            } else {
+              finishTurn.current?.();
+              const sequence = ++request.current;
+              setLoading(true);
+              void photoCache.current
+                ?.load(image.src)
+                .then(() => {
+                  if (request.current !== sequence) return;
+                  setInspected(image);
+                  setLoading(false);
+                  setMessage("");
+                })
+                .catch(() => {
+                  if (request.current !== sequence) return;
+                  setLoading(false);
+                  setMessage(
+                    "No pudimos cargar esta imagen. Podés intentar otra vez.",
+                  );
+                });
+            }
+          }}
+        />
       )}
       {message && (
         <p className="gallery-message" role="status">

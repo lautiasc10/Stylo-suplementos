@@ -24,6 +24,7 @@ export type ProductImage = {
   alt: string;
   variantId: string | null;
   position: number;
+  view?: "left" | "back" | "right";
 };
 export type Product = {
   id: string;
@@ -41,6 +42,8 @@ export type Product = {
   variants: Variant[];
   images: ProductImage[];
   informationImages?: ProductImage[];
+  /** Real package angles, separate from covers and manufacturer documents. */
+  turnImages?: ProductImage[];
 };
 export type Catalog = {
   revision: number;
@@ -110,6 +113,28 @@ export function variantInformationImages(
     )
     .slice()
     .sort((a, b) => a.position - b.position);
+}
+
+export function variantTurnImages(
+  product: Product,
+  variantId: string,
+): ProductImage[] {
+  const images = product.turnImages ?? [];
+  return (["left", "back", "right"] as const).flatMap((view) => {
+    const specific = images.filter(
+      (image) => image.variantId === variantId && image.view === view,
+    );
+    return (
+      specific.length
+        ? specific
+        : images.filter(
+            (image) => image.variantId === null && image.view === view,
+          )
+    )
+      .slice()
+      .sort((a, b) => a.position - b.position)
+      .slice(0, 1);
+  });
 }
 
 export function publicCatalog(catalog: Catalog): Catalog {
@@ -427,9 +452,21 @@ export function validateProduct(product: Product, catalog: Catalog): string[] {
   )
     return [...errors, "Se permiten hasta 12 fichas informativas."];
   const imageIds = new Set<string>();
+  if (
+    product.turnImages !== undefined &&
+    (!Array.isArray(product.turnImages) || product.turnImages.length > 24)
+  )
+    return [...errors, "Se permiten hasta 24 vistas del envase."];
+  for (const image of product.turnImages ?? []) {
+    if (!["left", "back", "right"].includes(image.view ?? ""))
+      errors.push(
+        "Elegí costado izquierdo, dorso o costado derecho para cada vista.",
+      );
+  }
   for (const image of [
     ...product.images,
     ...(product.informationImages ?? []),
+    ...(product.turnImages ?? []),
   ]) {
     if (
       !uuid.test(image.id) ||
@@ -443,7 +480,7 @@ export function validateProduct(product: Product, catalog: Catalog): string[] {
       image.alt.length > 200 ||
       !Number.isInteger(image.position) ||
       image.position < 0 ||
-      image.position > 11 ||
+      image.position > ((product.turnImages ?? []).includes(image) ? 23 : 11) ||
       (image.variantId !== null && !ids.has(image.variantId))
     )
       errors.push("Revisá el archivo, texto y variante de cada imagen.");

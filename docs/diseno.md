@@ -10,6 +10,8 @@ Barlow Condensed e Inter siguen en el resto de la tienda y la administración. E
 
 ## Guía aplicada
 
+Las galerías incorporan [vistas reales del envase durante el giro](giro-envases-2026-10-17.md): los datos del nuevo sabor se confirman al volver al frente. Costados y dorsos se cargan separados de las portadas y de las fichas informativas. La ficha usa una columna de miniaturas en escritorio y una tira horizontal en celular, con acceso al original sin JavaScript y movimiento reducido en vivo.
+
 La ficha de producto muestra las tablas e imágenes informativas del fabricante en un desplegable «Información del producto», separado de las fotos del envase. La ampliación usa un diálogo nativo, con cierre por teclado y retorno del foco; sin JavaScript se conserva el acceso al original. Administración permite mantener una sola ficha común a todas las variantes o asociar una ficha al SKU cuando cambia la información. No se incorporan estas tablas a las animaciones de las tarjetas. Carga y verificación: [fichas informativas](fichas-informativas-2026-10-17.md).
 
 En Carga masiva, la vista previa muestra las categorías faltantes en un bloque propio. Cada categoría nueva requiere una casilla de confirmación antes de habilitar la acción principal; el nombre y el slug quedan visibles para evitar altas accidentales. El lote conserva su tabla de variantes, errores por fila y guardado atómico.

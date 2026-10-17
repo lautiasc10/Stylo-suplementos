@@ -4,6 +4,7 @@ import { BrandLogo } from "./brand-logo";
 import { ProductPricing } from "@/components/commerce/product-pricing";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CategoryIllustration } from "@/components/storefront/category-illustration";
+import { galleryPhotos, galleryInformation } from "./gallery-images";
 import { ProductGallery, type GalleryImage } from "./product-gallery";
 import {
   FlavorSceneDecorations,
@@ -16,11 +17,7 @@ import { Crossfade } from "@/components/ui/Crossfade";
 import { GainerProductDetail } from "./gainer-product-detail";
 import { ProductInformation } from "./product-information";
 import { catalogMediaSource } from "@/modules/catalog/media-source";
-import {
-  variantLabel,
-  variantImages,
-  type Product,
-} from "@/modules/catalog/model";
+import { variantLabel, type Product } from "@/modules/catalog/model";
 const emptyImageUrls: Record<string, string> = {};
 export type ProductDetailProps = {
   product: Product;
@@ -59,6 +56,11 @@ function StandardProductDetail({
     product.variants[0];
   const flavorExperiment =
     product.slug === "whey-protein" && product.variants.length > 1;
+  const variantGallery = product.variants.length > 1;
+  const [selectionRequest, setSelectionRequest] = useState<{
+    variantId: string;
+    nonce: number;
+  } | null>(null);
   const [enhanced, setEnhanced] = useState(false);
   const preparedIngredients = useRef(new Map<string, HTMLImageElement>());
   useEffect(() => setEnhanced(true), []);
@@ -95,7 +97,7 @@ function StandardProductDetail({
     [product],
   );
   const flavorImages = useMemo(() => {
-    if (!flavorExperiment) return [];
+    if (!variantGallery) return [];
     const order = { banana: 0, frutilla: 1, vainilla: 2 };
     const flavorOrder = (value: string) => {
       const match = sceneFlavor(value);
@@ -104,22 +106,10 @@ function StandardProductDetail({
     return [...product.variants]
       .sort((a, b) => flavorOrder(a.flavor) - flavorOrder(b.flavor))
       .flatMap((item) => {
-        const photos = variantImages(product, item.id).filter(
-          (image) => imageBase || imageUrls[image.path],
-        );
+        const photos = galleryPhotos(product, item.id, imageBase, imageUrls);
         const href = `${preview ? "/vista-previa" : ""}/producto/${product.slug}?variante=${item.id}`;
         return photos.length
-          ? photos.map((image) => ({
-              id: `${item.id}:${image.id}`,
-              variantId: item.id,
-              href,
-              src: catalogMediaSource(
-                imageUrls[image.path] || `${imageBase}/${image.path}`,
-                imageBase,
-                "detail",
-              ),
-              alt: image.alt,
-            }))
+          ? photos.map((image) => ({ ...image, href }))
           : [
               {
                 id: item.id,
@@ -130,7 +120,7 @@ function StandardProductDetail({
               },
             ];
       });
-  }, [flavorExperiment, product, imageBase, imageUrls, preview]);
+  }, [variantGallery, product, imageBase, imageUrls, preview]);
   const selectFlavorImage = useCallback((image: GalleryImage) => {
     if (!image.variantId) return;
     setVariantId(image.variantId);
@@ -142,17 +132,13 @@ function StandardProductDetail({
       url.pathname + url.search + url.hash,
     );
   }, []);
-  const images = variantImages(product, variant.id)
-    .filter((image) => imageBase || imageUrls[image.path])
-    .map((image) => ({
-      id: image.id,
-      alt: image.alt,
-      src: catalogMediaSource(
-        imageUrls[image.path] || `${imageBase}/${image.path}`,
-        imageBase,
-        "detail",
-      ),
-    }));
+  const images = galleryPhotos(product, variant.id, imageBase, imageUrls);
+  const informationImages = galleryInformation(
+    product,
+    variant.id,
+    imageBase,
+    imageUrls,
+  );
   const logoSrc =
     brandLogo &&
     catalogMediaSource(
@@ -173,17 +159,21 @@ function StandardProductDetail({
       )}
       {flavorExperiment && <FlavorSceneDecorations flavor={flavor} />}
       <div className="product-gallery">
-        {flavorExperiment ? (
+        {variantGallery ? (
           <>
-            <p className="flavor-scene-heading">Encontrá tu sabor</p>
+            {flavorExperiment && (
+              <p className="flavor-scene-heading">Encontrá tu sabor</p>
+            )}
             <ProductGallery
               images={flavorImages}
               mode="detail"
-              transition="fade"
+              transition={product.turnImages?.length ? "turn" : "fade"}
+              informationImages={informationImages}
               flavorNavigation
               initialVariantId={variant.id}
               onImageChange={selectFlavorImage}
-              onPrepareImage={prepareFlavorImage}
+              onPrepareImage={flavorExperiment ? prepareFlavorImage : undefined}
+              selectionRequest={selectionRequest}
             />
           </>
         ) : images.length ? (
@@ -191,6 +181,7 @@ function StandardProductDetail({
             <ProductGallery
               key={`${variant.id}:${images.map((image) => image.id).join(":")}`}
               images={images}
+              informationImages={informationImages}
               mode="detail"
               transition="fade"
             />
@@ -258,7 +249,12 @@ function StandardProductDetail({
                 id="product-variant"
                 value={variant.id}
                 onChange={(event) => {
-                  setVariantId(event.target.value);
+                  if (variantGallery)
+                    setSelectionRequest({
+                      variantId: event.target.value,
+                      nonce: Date.now(),
+                    });
+                  else setVariantId(event.target.value);
                 }}
                 aria-label="Presentación"
               >
