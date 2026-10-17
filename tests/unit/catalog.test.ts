@@ -7,6 +7,7 @@ import {
   publicCatalog,
   validateCatalog,
   variantImages,
+  variantInformationImages,
 } from "../../src/modules/catalog/model";
 import {
   importColumns,
@@ -32,6 +33,39 @@ const row = [
   "true",
 ];
 describe("catálogo y precios", () => {
+  it("comparte fichas informativas sin mezclarlas con las fotos del envase", () => {
+    const catalog = demoCatalog();
+    const product = catalog.products[0];
+    const [chocolate, vanilla] = product.variants;
+    const shared = {
+      id: "00000000-0000-4000-8000-000000000301",
+      path: `${product.id}/00000000-0000-4000-8000-000000000401.webp`,
+      alt: "Ficha común",
+      variantId: null,
+      position: 0,
+    };
+    product.informationImages = [
+      shared,
+      {
+        id: "00000000-0000-4000-8000-000000000302",
+        path: `${product.id}/00000000-0000-4000-8000-000000000402.webp`,
+        alt: "Ingredientes de vainilla",
+        variantId: vanilla.id,
+        position: 1,
+      },
+    ];
+    expect(validateCatalog(catalog)).toEqual([]);
+    expect(variantInformationImages(product, chocolate.id)).toEqual([shared]);
+    expect(variantInformationImages(product, vanilla.id)).toHaveLength(2);
+    expect(variantImages(product, chocolate.id)).toEqual([]);
+    const imported = planImport([Array.from(importColumns), row], catalog);
+    expect(
+      imported.catalog.products.find((p) => p.id === product.id)
+        ?.informationImages,
+    ).toEqual(product.informationImages);
+    product.informationImages[0].path = "otra-carpeta/archivo.webp";
+    expect(validateCatalog(catalog).join(" ")).toMatch(/archivo/);
+  });
   it("la galería conserva el orden y no mezcla fotos de otras variantes", () => {
     const product = demoCatalog().products[0];
     const [chocolate, vanilla] = product.variants;

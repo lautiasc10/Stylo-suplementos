@@ -10,6 +10,8 @@ Barlow Condensed e Inter siguen en el resto de la tienda y la administración. E
 
 ## Guía aplicada
 
+La ficha de producto muestra las tablas e imágenes informativas del fabricante en un desplegable «Información del producto», separado de las fotos del envase. La ampliación usa un diálogo nativo, con cierre por teclado y retorno del foco; sin JavaScript se conserva el acceso al original. Administración permite mantener una sola ficha común a todas las variantes o asociar una ficha al SKU cuando cambia la información. No se incorporan estas tablas a las animaciones de las tarjetas. Carga y verificación: [fichas informativas](fichas-informativas-2026-10-17.md).
+
 En Carga masiva, la vista previa muestra las categorías faltantes en un bloque propio. Cada categoría nueva requiere una casilla de confirmación antes de habilitar la acción principal; el nombre y el slug quedan visibles para evitar altas accidentales. El lote conserva su tabla de variantes, errores por fila y guardado atómico.
 
 Se usa [landing-page-design de AI Design Skills](https://github.com/elayadesign/ai-design-skills/blob/main/skills/landing-page-design/SKILL.md), revisada el 10 de octubre de 2026, como guía adaptada al ecommerce. No se instaló un paquete ejecutable ni una skill global. Esta adaptación y las instrucciones del proyecto mantienen su aplicación en futuras iteraciones.

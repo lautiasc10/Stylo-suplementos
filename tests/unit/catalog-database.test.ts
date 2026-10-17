@@ -58,6 +58,28 @@ describe("migración de catálogo, transacciones y permisos", () => {
   afterAll(async () => {
     await db.close();
   });
+  it("conserva fichas compartidas en el documento sin agregarlas a la galería", async () => {
+    await asRole(admin, "aal2", async () => {
+      const data = await snapshot();
+      const product = data.products[0];
+      const photos = structuredClone(product.images);
+      product.informationImages = [
+        {
+          id: "00000000-0000-4000-8000-000000000301",
+          path: `${product.id}/00000000-0000-4000-8000-000000000401.webp`,
+          alt: "Ficha del fabricante",
+          position: 0,
+          variantId: null,
+        },
+      ];
+      await save(data);
+      const stored = (await snapshot()).products.find(
+        (p) => p.id === product.id,
+      )!;
+      expect(stored.informationImages).toEqual(product.informationImages);
+      expect(stored.images).toEqual(photos);
+    });
+  });
   it("anon consulta catálogo visible pero no tablas internas", async () => {
     await asRole(null, "", async () => {
       const data = await snapshot();

@@ -15,6 +15,7 @@ import {
 import { createGalleryPhotoCache } from "./gallery-photo-cache";
 import { ProductGallery, type GalleryImage } from "./product-gallery";
 import type { ProductDetailProps } from "./product-detail";
+import { ProductInformation } from "./product-information";
 
 const emptyImages: Record<string, string> = {};
 
@@ -265,6 +266,12 @@ export function GainerProductDetail({
           </p>
         )}
       </RevealGroup>
+      <ProductInformation
+        product={product}
+        variantId={variant.id}
+        imageBase={imageBase}
+        imageUrls={imageUrls}
+      />
     </div>
   );
 }

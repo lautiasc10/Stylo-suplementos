@@ -40,6 +40,7 @@ export type Product = {
   version: number;
   variants: Variant[];
   images: ProductImage[];
+  informationImages?: ProductImage[];
 };
 export type Catalog = {
   revision: number;
@@ -98,6 +99,18 @@ export const slugify = (value: string) =>
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
+
+export function variantInformationImages(
+  product: Product,
+  variantId: string,
+): ProductImage[] {
+  return (product.informationImages ?? [])
+    .filter(
+      (image) => image.variantId === null || image.variantId === variantId,
+    )
+    .slice()
+    .sort((a, b) => a.position - b.position);
+}
 
 export function publicCatalog(catalog: Catalog): Catalog {
   const brands = catalog.brands.filter((item) => item.active);
@@ -407,8 +420,17 @@ export function validateProduct(product: Product, catalog: Catalog): string[] {
   }
   if (!Array.isArray(product.images) || product.images.length > 12)
     return [...errors, "Se permiten hasta 12 imágenes."];
+  if (
+    product.informationImages !== undefined &&
+    (!Array.isArray(product.informationImages) ||
+      product.informationImages.length > 12)
+  )
+    return [...errors, "Se permiten hasta 12 fichas informativas."];
   const imageIds = new Set<string>();
-  for (const image of product.images) {
+  for (const image of [
+    ...product.images,
+    ...(product.informationImages ?? []),
+  ]) {
     if (
       !uuid.test(image.id) ||
       imageIds.has(image.id) ||

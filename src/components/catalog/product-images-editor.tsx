@@ -16,6 +16,8 @@ export function ProductImagesEditor({
   onUpload,
   onReplace,
   onChange,
+  purpose = "product",
+  showAll = false,
 }: {
   images: ProductImage[];
   variants: Variant[];
@@ -28,11 +30,14 @@ export function ProductImagesEditor({
   onUpload: (files: FileList | null, variantId: string | null) => void;
   onReplace: (imageId: string, file?: File) => void;
   onChange: (images: ProductImage[]) => void;
+  purpose?: "product" | "information";
+  showAll?: boolean;
 }) {
   const scoped = images
-    .filter((image) => image.variantId === variantId)
+    .filter((image) => showAll || image.variantId === variantId)
     .sort((a, b) => a.position - b.position);
-  const uploadId = `photos-${variantId ?? "shared"}`;
+  const uploadId = `${purpose === "information" ? "information" : "photos"}-${variantId ?? "shared"}`;
+  const itemName = purpose === "information" ? "ficha informativa" : "imagen";
   function patch(imageId: string, changes: Partial<ProductImage>) {
     onChange(
       images.map((image) =>
@@ -61,12 +66,13 @@ export function ProductImagesEditor({
         <button
           type="button"
           className="button button-outline"
-          aria-label={`Agregar fotos · ${title}`}
+          aria-label={`${purpose === "information" ? "Agregar fichas" : "Agregar fotos"} · ${title}`}
           id={`${uploadId}-button`}
           disabled={busy || images.length >= 12}
           onClick={() => document.getElementById(uploadId)?.click()}
         >
-          <Icon name="plus" /> Agregar fotos
+          <Icon name="plus" />{" "}
+          {purpose === "information" ? "Agregar fichas" : "Agregar fotos"}
         </button>
         <input
           hidden
@@ -84,9 +90,11 @@ export function ProductImagesEditor({
       </div>
       {!scoped.length && (
         <p className="variant-photos-empty">
-          {variantId
-            ? "Sin fotos específicas de esta variante."
-            : "Sin fotos compartidas."}
+          {purpose === "information"
+            ? "Todavía no hay fichas informativas."
+            : variantId
+              ? "Sin fotos específicas de esta variante."
+              : "Sin fotos compartidas."}
         </p>
       )}
       {scoped.map((image, localIndex) => {
@@ -102,7 +110,7 @@ export function ProductImagesEditor({
               />
             )}
             <label>
-              Descripción de imagen {number}
+              Descripción de {itemName} {number}
               <input
                 required
                 maxLength={200}
@@ -135,7 +143,7 @@ export function ProductImagesEditor({
             <div className="image-editor-actions">
               <IconAction
                 icon="edit"
-                label={`Cambiar imagen ${number}`}
+                label={`Cambiar ${itemName} ${number}`}
                 disabled={busy}
                 onClick={() =>
                   document.getElementById(`replace-image-${image.id}`)?.click()
@@ -145,7 +153,7 @@ export function ProductImagesEditor({
                 hidden
                 id={`replace-image-${image.id}`}
                 type="file"
-                aria-label={`Archivo de reemplazo de imagen ${number}`}
+                aria-label={`Archivo de reemplazo de ${itemName} ${number}`}
                 accept="image/jpeg,image/png,image/webp"
                 disabled={busy}
                 onChange={(event) => {
@@ -161,7 +169,11 @@ export function ProductImagesEditor({
               />
               <IconAction
                 icon="trash"
-                label="Quitar imagen"
+                label={
+                  purpose === "information"
+                    ? "Quitar ficha informativa"
+                    : "Quitar imagen"
+                }
                 disabled={busy}
                 onClick={() => {
                   onChange(

@@ -3,6 +3,81 @@ import { importColumns } from "../../src/modules/catalog/import";
 import { demoCatalog } from "../../src/modules/catalog/demo";
 import { readFileSync } from "node:fs";
 
+test("fichas compartidas, cambio de variante y ampliación accesible", async ({
+  page,
+}) => {
+  const fixture = galleryFixture();
+  const product = fixture.catalog.products[0];
+  const [chocolate, vanilla] = product.variants;
+  const source = Object.values(fixture.images)[0];
+  product.informationImages = [
+    {
+      id: "00000000-0000-4000-8000-000000000301",
+      path: `${product.id}/00000000-0000-4000-8000-000000000401.webp`,
+      alt: "Ficha común de prueba",
+      variantId: null,
+      position: 0,
+    },
+    {
+      id: "00000000-0000-4000-8000-000000000302",
+      path: `${product.id}/00000000-0000-4000-8000-000000000402.webp`,
+      alt: "Ficha específica vainilla",
+      variantId: vanilla.id,
+      position: 1,
+    },
+  ];
+  for (const image of product.informationImages)
+    fixture.images[image.path] = source;
+  await page.addInitScript((state) => {
+    if (!localStorage.getItem("stylo.catalog-preview.v1"))
+      localStorage.setItem("stylo.catalog-preview.v1", JSON.stringify(state));
+  }, fixture);
+  await page.goto(
+    `/vista-previa/producto/${product.slug}?variante=${chocolate.id}`,
+  );
+  await page.locator(".product-information summary").click();
+  await expect(page.locator(".product-information-grid li")).toHaveCount(1);
+  const shared = page.getByRole("link", { name: /Ficha común de prueba/ });
+  await shared.click();
+  await expect(
+    page.getByRole("dialog", { name: "Ficha común de prueba" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Cerrar ficha informativa" }),
+  ).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(page.locator(".product-information-dialog")).not.toBeVisible();
+  await expect(shared).toBeFocused();
+  await page
+    .getByRole("combobox", { name: "Presentación" })
+    .selectOption(vanilla.id);
+  await expect(page.locator(".product-information-grid li")).toHaveCount(2);
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  await page.goto("/vista-previa/gestion");
+  await page
+    .getByRole("button", { name: "Editar Proteína de prueba", exact: true })
+    .click();
+  const info = page.locator("#editor-fichas");
+  await expect(
+    info.getByLabel("Descripción de ficha informativa 1"),
+  ).toHaveValue("Ficha común de prueba");
+  await info
+    .getByLabel("Descripción de ficha informativa 1")
+    .fill("Ficha común editada");
+  await page
+    .getByRole("button", { name: "Guardar producto", exact: true })
+    .click();
+  await page.goto(`/vista-previa/producto/${product.slug}`);
+  await page.locator(".product-information summary").click();
+  await expect(
+    page.getByRole("link", { name: /Ficha común editada/ }),
+  ).toBeVisible();
+});
+
 test("productos se agrupan por marca y se buscan por nombre, sabor o SKU", async ({
   page,
 }) => {
@@ -252,7 +327,9 @@ test("edición de precio, stock e imágenes persiste sin tocar la tienda real", 
     "51.000",
   );
   await page.goto("/catalogo");
-  await expect(page.getByText("Proteína de prueba", { exact: true })).toHaveCount(0);
+  await expect(
+    page.getByText("Proteína de prueba", { exact: true }),
+  ).toHaveCount(0);
 });
 
 test("una variante nueva vacía se descarta y permite guardar sin completarla", async ({

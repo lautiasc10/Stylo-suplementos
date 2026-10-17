@@ -14,6 +14,7 @@ import { AddToCart } from "@/components/commerce/add-to-cart";
 import { RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { Crossfade } from "@/components/ui/Crossfade";
 import { GainerProductDetail } from "./gainer-product-detail";
+import { ProductInformation } from "./product-information";
 import { catalogMediaSource } from "@/modules/catalog/media-source";
 import {
   variantLabel,
@@ -303,6 +304,12 @@ function StandardProductDetail({
           />
         </RevealItem>
       </RevealGroup>
+      <ProductInformation
+        product={product}
+        variantId={variant.id}
+        imageBase={imageBase}
+        imageUrls={imageUrls}
+      />
     </div>
   );
 }

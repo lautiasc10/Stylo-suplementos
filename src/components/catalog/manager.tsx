@@ -196,9 +196,11 @@ export function CatalogManager({
   async function addImages(
     files: FileList | null,
     variantId: string | null = null,
+    field: "images" | "informationImages" = "images",
   ) {
     if (!files?.length || !draft || busy) return;
-    if (draft.images.length + files.length > 12) {
+    const currentImages = draft[field] ?? [];
+    if (currentImages.length + files.length > 12) {
       setMessage("Se permiten hasta 12 imágenes por producto.");
       return;
     }
@@ -213,12 +215,15 @@ export function CatalogManager({
         images.push({
           id: crypto.randomUUID(),
           path: result.path,
-          alt: draft.name || "Imagen del producto",
+          alt:
+            field === "informationImages"
+              ? `Ficha del fabricante · ${draft.name}`.slice(0, 200)
+              : draft.name || "Imagen del producto",
           variantId,
-          position: draft.images.length + images.length,
+          position: currentImages.length + images.length,
         });
       }
-      updateDraft("images", [...draft.images, ...images]);
+      updateDraft(field, [...currentImages, ...images]);
     } catch (error) {
       setMessage(
         error instanceof Error ? error.message : "No pudimos cargar imágenes.",
@@ -246,7 +251,11 @@ export function CatalogManager({
       setBusy(false);
     }
   }
-  async function replaceImage(imageId: string, file?: File) {
+  async function replaceImage(
+    imageId: string,
+    file?: File,
+    field: "images" | "informationImages" = "images",
+  ) {
     if (!file || !draft || busy) return;
     const productId = draft.id;
     setBusy(true);
@@ -259,7 +268,7 @@ export function CatalogManager({
         previous?.id === productId
           ? {
               ...previous,
-              images: previous.images.map((image) =>
+              [field]: (previous[field] ?? []).map((image) =>
                 image.id === imageId ? { ...image, path: result.path! } : image,
               ),
             }
@@ -291,6 +300,11 @@ export function CatalogManager({
       images: draft.images.map((image) =>
         image.variantId === variantId ? { ...image, variantId: null } : image,
       ),
+      ...(draft.informationImages && {
+        informationImages: draft.informationImages.filter(
+          (image) => image.variantId !== variantId,
+        ),
+      }),
     });
     requestAnimationFrame(() =>
       document.getElementById("add-variant")?.focus(),
@@ -567,6 +581,7 @@ export function CatalogManager({
               <a href="#editor-datos">Información</a>
               <a href="#editor-variantes">Variantes y precios</a>
               <a href="#editor-fotos">Fotografías</a>
+              <a href="#editor-fichas">Fichas del fabricante</a>
             </nav>
             <fieldset
               disabled={busy}
@@ -887,6 +902,38 @@ export function CatalogManager({
                 onUpload={addImages}
                 onReplace={replaceImage}
                 onChange={(images) => updateDraft("images", images)}
+              />
+            </fieldset>
+            <fieldset
+              disabled={busy}
+              className="editor-fields"
+              id="editor-fichas"
+            >
+              <legend>Fichas del fabricante (opcionales)</legend>
+              <p className="editor-wide">
+                Información nutricional, ingredientes o uso. Elegí «Todo el
+                producto» para compartir una única ficha entre las variantes; si
+                cambia la información, asociala al SKU correspondiente. Se
+                muestran dentro de la ficha del producto.
+              </p>
+              <ProductImagesEditor
+                images={draft.informationImages ?? []}
+                variants={draft.variants}
+                variantId={null}
+                purpose="information"
+                showAll
+                title="Fichas informativas"
+                uploadLabel="Subir fichas informativas"
+                busy={busy}
+                imageBase={imageBase}
+                imageUrls={imageUrls}
+                onUpload={(files, variantId) =>
+                  addImages(files, variantId, "informationImages")
+                }
+                onReplace={(imageId, file) =>
+                  replaceImage(imageId, file, "informationImages")
+                }
+                onChange={(images) => updateDraft("informationImages", images)}
               />
             </fieldset>
             <div className="editor-actions">
