@@ -264,9 +264,6 @@ export function ProductDetail({
                       ? variantLabel(item)
                       : item.flavor || variantLabel(item)}
                   </span>
-                  {item.stock === 0 && item.id !== variant.id && (
-                    <small>Sin stock</small>
-                  )}
                 </a>
               ))}
             </div>

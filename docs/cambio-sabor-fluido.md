@@ -6,7 +6,7 @@ Rama `fase-3f-cambio-sabor-fluido`. El usuario pidió recuperar la respuesta del
 
 - El detalle confirma sabor, foto activa, precio, stock, formulario y URL al iniciar el giro, después de preparar y decodificar la imagen. Antes esperaba los 200 ms de salida antes de confirmar los datos.
 - Las dos mitades del giro arrancan desde el mismo reloj: salida de 140 ms y entrada de 260 ms con inicio a los 100 ms. Duran 360 ms en total, frente a los 480 ms anteriores; el solapamiento evita esperar una promesa y un render entre ambas mitades. Solo se animan `transform` y `opacity`. Se conserva el giro de tarjetas de 200 + 280 ms.
-- El nombre del sabor agotado tiene un selector propio de tachado que también alcanza al chip activo. La selección mantiene su borde y el botón de compra conserva el stock real.
+- El nombre del sabor agotado tiene un selector propio de tachado que también alcanza al chip activo. Los chips muestran únicamente el nombre y su punto de color: se elimina el texto «Sin stock» que se montaba y retiraba al seleccionar, evitando cambios de ancho y redistribución de filas. El estado sigue en el nombre accesible del enlace. La selección mantiene su borde y el botón de compra conserva el stock real.
 - `showThumbnails={false}` retira el componente y sus observadores de todas las fichas. No borra fotografías ni información del fabricante. Una variante única conserva las flechas para recorrer sus fotos y el bloque «Información del producto» sigue disponible.
 - Se conservan precarga de vecinos, imágenes responsivas, caché acotada, protección ante fotos fallidas y una sola elección pendiente. No se adelanta un SKU cuya imagen no pudo cargarse. Movimiento reducido mantiene el fundido sin giro; sin JavaScript los chips continúan como enlaces GET.
 
