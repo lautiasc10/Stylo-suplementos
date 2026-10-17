@@ -227,6 +227,9 @@ export function GainerProductDetail({
                       ? variantLabel(item)
                       : item.flavor || variantLabel(item)}
                   </span>
+                  {item.stock === 0 && item.id !== variant.id && (
+                    <small>Sin stock</small>
+                  )}
                 </a>
               ))}
             </div>
@@ -238,9 +241,11 @@ export function GainerProductDetail({
             data-stock={variant.stock > 0 ? "available" : "empty"}
           >
             <span className="gainer-stock-dot" aria-hidden="true" />
-            {variant.stock > 0 ? "Disponible" : "Sin stock"}
+            <span className={variant.stock === 0 ? "sr-only" : undefined}>
+              {variant.stock > 0 ? "Disponible" : "Sin stock"}
+            </span>
             {[variant.size, variant.presentation].filter(Boolean).length > 0 &&
-              ` · ${[variant.size, variant.presentation].filter(Boolean).join(" · ")}`}
+              `${variant.stock > 0 ? " · " : ""}${[variant.size, variant.presentation].filter(Boolean).join(" · ")}`}
           </p>
         </RevealItem>
         <RevealItem aria-live="polite" aria-atomic="true">

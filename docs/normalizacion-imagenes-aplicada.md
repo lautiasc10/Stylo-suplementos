@@ -2,7 +2,7 @@
 
 Fecha: 17 de octubre de 2026. Rama: `fase-3-imagenes-piloto`.
 
-El usuario aprobó el piloto y autorizó aplicar la Fase 1 al catálogo. Las fases 2 y 3 del pedido de revisión continúan pendientes; esta entrega no modifica selectores, navegación ni la mecánica del giro.
+El usuario aprobó el piloto y autorizó aplicar la Fase 1 al catálogo. Esta entrega original no modificó selectores, navegación ni la mecánica del giro. El usuario autorizó después la [Fase 2 de revisión visual](revision-visual-fase-2.md), documentada por separado; el nuevo giro de Fase 3 sigue pendiente.
 
 ## Alcance
 

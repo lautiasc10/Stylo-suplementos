@@ -42,8 +42,10 @@ test("una variante agotada no se agrega y las cantidades no superan la existenci
     page.getByRole("button", { name: "Sin stock", exact: true }),
   ).toBeDisabled();
   await page
-    .getByLabel("Presentación", { exact: true })
-    .selectOption("00000000-0000-4000-8000-000000000050");
+    .locator(
+      '.variant-chip[href="?variante=00000000-0000-4000-8000-000000000050"]',
+    )
+    .click();
   await page
     .getByRole("button", { name: "Agregar al carrito", exact: true })
     .click();

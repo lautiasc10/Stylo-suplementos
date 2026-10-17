@@ -84,7 +84,9 @@ test("detalle del piloto conserva variantes, miniaturas y roca independiente", a
   await gallery
     .locator(".product-frame-current")
     .evaluate((img: HTMLImageElement) => img.decode());
-  const before = await page.locator("#product-variant").inputValue();
+  const before = await page
+    .locator(".variant-picker")
+    .getAttribute("data-selected-variant");
   const background = await gallery
     .locator(".product-image-stage")
     .evaluate((el) => getComputedStyle(el).backgroundImage);
@@ -92,7 +94,10 @@ test("detalle del piloto conserva variantes, miniaturas y roca independiente", a
   await gallery
     .getByRole("button", { name: "Sabor siguiente", exact: true })
     .click();
-  await expect(page.locator("#product-variant")).not.toHaveValue(before);
+  await expect(page.locator(".variant-picker")).not.toHaveAttribute(
+    "data-selected-variant",
+    before!,
+  );
   await expect(gallery).toHaveAttribute("data-normalized", "true");
   expect(
     await gallery

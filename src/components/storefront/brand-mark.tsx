@@ -5,14 +5,6 @@ export function BrandMark({ priority = false }: { priority?: boolean }) {
   const filterId = useId();
   return (
     <>
-      {priority && (
-        <link
-          rel="preload"
-          as="image"
-          href="/branding/logo-principal.webp"
-          fetchPriority="high"
-        />
-      )}
       <svg
         className="brand-isotype"
         viewBox="110 70 420 480"

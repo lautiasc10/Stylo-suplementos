@@ -61,6 +61,7 @@ test("cambiar de sabor conserva el envase animado sin cargar ingredientes", asyn
   await page.clock.install();
   await page.clock.pauseAt(new Date());
   await page.goto("/vista-previa?q=proteina");
+  await page.evaluate(() => document.fonts.ready.then(() => true));
   const card = page.locator(".product-card");
   await card.evaluate((e) =>
     e.scrollIntoView({ block: "center", behavior: "instant" }),
@@ -69,7 +70,29 @@ test("cambiar de sabor conserva el envase animado sin cargar ingredientes", asyn
     "alt",
     "Foto de prueba Banana 0",
   );
-  const before = await card.boundingBox();
+  const measureLayout = () =>
+    card.evaluate((node) => {
+      const box = node.getBoundingClientRect();
+      // Scroll and the existing reveal transform can move viewport coordinates;
+      // compare layout positions to catch a pack-induced resize or layout shift.
+      let x = 0,
+        y = 0;
+      for (
+        let element: HTMLElement | null = node;
+        element;
+        element = element.offsetParent as HTMLElement | null
+      ) {
+        x += element.offsetLeft;
+        y += element.offsetTop;
+      }
+      return {
+        width: box.width,
+        height: box.height,
+        x,
+        y,
+      };
+    });
+  const before = await measureLayout();
   await page.clock.runFor(3100);
   await expect(card.locator(".product-frame-current")).toHaveAttribute(
     "alt",
@@ -86,14 +109,14 @@ test("cambiar de sabor conserva el envase animado sin cargar ingredientes", asyn
     "product-photo-turn",
   );
   await expect(card.locator(".product-image-fragments")).toHaveCount(0);
-  expect(await card.boundingBox()).toEqual(before);
+  expect(await measureLayout()).toEqual(before);
   await expect(page.locator(".flavor-ingredients")).toHaveCount(0);
   expect(requests.some((url) => url.includes("/sabores/"))).toBe(false);
   const product = fixture().catalog.products[0];
   await page.goto("/vista-previa/producto/" + product.slug);
   await page
-    .getByLabel("Presentación", { exact: true })
-    .selectOption(product.variants[2].id);
+    .locator(`.variant-chip[href="?variante=${product.variants[2].id}"]`)
+    .click();
   await expect(page.locator(".product-frame-current")).toHaveAttribute(
     "alt",
     "Foto de prueba Vainilla Ice Cream 3",

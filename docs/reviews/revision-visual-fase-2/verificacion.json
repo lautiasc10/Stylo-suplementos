@@ -1,0 +1,204 @@
+{
+  "views": [
+    {
+      "kind": "catalog",
+      "width": 1440,
+      "cards": 53,
+      "columns": 3,
+      "overflow": false,
+      "missingDimensions": 0
+    },
+    {
+      "kind": "detail",
+      "width": 1440,
+      "stage": [
+        609.0625,
+        609.0625
+      ],
+      "copyPosition": "sticky",
+      "purchase": [
+        808.578125,
+        782.390625,
+        583.421875,
+        48
+      ],
+      "overflow": false,
+      "firstImage": "CAFEINA 200 x 30 CAPS",
+      "thumbnailBackground": "rgb(8, 8, 8)"
+    },
+    {
+      "kind": "detail",
+      "width": 1440,
+      "stage": [
+        609.0625,
+        609.0625
+      ],
+      "copyPosition": "sticky",
+      "purchase": [
+        808.578125,
+        803.390625,
+        583.421875,
+        48
+      ],
+      "overflow": false,
+      "firstImage": "PROTEÍNA \"WHEY PROTEIN\" x 2 LBS DP · chocolate · DP · Vista frontal",
+      "thumbnailBackground": "rgb(8, 8, 8)"
+    },
+    {
+      "kind": "detail",
+      "width": 1440,
+      "stage": [
+        640,
+        640
+      ],
+      "copyPosition": "sticky",
+      "purchase": [
+        808.578125,
+        608.453125,
+        583.421875,
+        60
+      ],
+      "overflow": false,
+      "firstImage": "GANADOR DE PESO \"THE BEST GAINER\" 1.5KG · chocolate · Vista frontal",
+      "thumbnailBackground": null
+    },
+    {
+      "kind": "catalog",
+      "width": 768,
+      "cards": 53,
+      "columns": 2,
+      "overflow": false,
+      "missingDimensions": 0
+    },
+    {
+      "kind": "detail",
+      "width": 768,
+      "stage": [
+        640,
+        640
+      ],
+      "copyPosition": "relative",
+      "purchase": [
+        0,
+        927,
+        768,
+        73
+      ],
+      "overflow": false,
+      "firstImage": "CAFEINA 200 x 30 CAPS",
+      "thumbnailBackground": "rgb(8, 8, 8)"
+    },
+    {
+      "kind": "detail",
+      "width": 768,
+      "stage": [
+        640,
+        640
+      ],
+      "copyPosition": "relative",
+      "purchase": [
+        0,
+        927,
+        768,
+        73
+      ],
+      "overflow": false,
+      "firstImage": "PROTEÍNA \"WHEY PROTEIN\" x 2 LBS DP · chocolate · DP · Vista frontal",
+      "thumbnailBackground": "rgb(8, 8, 8)"
+    },
+    {
+      "kind": "detail",
+      "width": 768,
+      "stage": [
+        640,
+        640
+      ],
+      "copyPosition": "relative",
+      "purchase": [
+        0,
+        915,
+        768,
+        85
+      ],
+      "overflow": false,
+      "firstImage": "GANADOR DE PESO \"THE BEST GAINER\" 1.5KG · chocolate · Vista frontal",
+      "thumbnailBackground": null
+    },
+    {
+      "kind": "catalog",
+      "width": 375,
+      "cards": 53,
+      "columns": 2,
+      "overflow": false,
+      "missingDimensions": 0
+    },
+    {
+      "kind": "detail",
+      "width": 375,
+      "stage": [
+        343,
+        343
+      ],
+      "copyPosition": "relative",
+      "purchase": [
+        0,
+        927,
+        375,
+        73
+      ],
+      "overflow": false,
+      "firstImage": "CAFEINA 200 x 30 CAPS",
+      "thumbnailBackground": "rgb(8, 8, 8)"
+    },
+    {
+      "kind": "detail",
+      "width": 375,
+      "stage": [
+        343,
+        343
+      ],
+      "copyPosition": "relative",
+      "purchase": [
+        0,
+        927,
+        375,
+        73
+      ],
+      "overflow": false,
+      "firstImage": "PROTEÍNA \"WHEY PROTEIN\" x 2 LBS DP · chocolate · DP · Vista frontal",
+      "thumbnailBackground": "rgb(8, 8, 8)"
+    },
+    {
+      "kind": "detail",
+      "width": 375,
+      "stage": [
+        343,
+        343
+      ],
+      "copyPosition": "relative",
+      "purchase": [
+        0,
+        915,
+        375,
+        85
+      ],
+      "overflow": false,
+      "firstImage": "GANADOR DE PESO \"THE BEST GAINER\" 1.5KG · chocolate · Vista frontal",
+      "thumbnailBackground": null
+    }
+  ],
+  "errors": [],
+  "catalogUnchanged": true,
+  "nextDevToolsIssues": 0,
+  "lintWarnings": 0,
+  "expectedDevelopmentNotice": "Framer Motion informa movimiento reducido al emular prefers-reduced-motion.",
+  "checks": {
+    "lint": true,
+    "typecheck": true,
+    "build": true,
+    "unitPassed": 78,
+    "unitSkipped": 2,
+    "browserPassed": 117,
+    "browserSkipped": 1
+  }
+}

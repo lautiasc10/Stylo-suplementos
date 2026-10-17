@@ -98,15 +98,18 @@ export function AdminWorkspace({
     [preview],
   );
 
+  const invalidateGeneration = useCallback(() => {
+    generation.current++;
+  }, []);
   useEffect(() => {
     mounted.current = true;
     setReady(true);
     return () => {
       mounted.current = false;
-      generation.current++;
+      invalidateGeneration();
       setReady(false);
     };
-  }, [setReady]);
+  }, [setReady, invalidateGeneration]);
   useEffect(() => {
     generation.current++;
     setData((previous) => ({

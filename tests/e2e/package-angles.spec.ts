@@ -71,8 +71,10 @@ for (const mode of ["card", "detail"] as const) {
     await gallery
       .locator(".product-frame-current")
       .evaluate((el: HTMLImageElement) => el.decode());
-    if (mode === "card") await page.clock.runFor(3100);
-    else
+    if (mode === "card") {
+      await expect(gallery).toHaveAttribute("data-auto-playing", "true");
+      await page.clock.runFor(3100);
+    } else
       await gallery
         .getByRole("button", { name: "Sabor siguiente", exact: true })
         .click();
@@ -98,9 +100,10 @@ for (const mode of ["card", "detail"] as const) {
         new RegExp(first.id),
       );
     else
-      await expect(
-        page.getByRole("combobox", { name: "Presentación" }),
-      ).toHaveValue(first.id);
+      await expect(page.locator(".variant-picker")).toHaveAttribute(
+        "data-selected-variant",
+        first.id,
+      );
     await poses.evaluateAll((nodes) =>
       nodes.forEach((node) =>
         node.getAnimations().forEach((animation) => animation.finish()),
@@ -117,9 +120,10 @@ for (const mode of ["card", "detail"] as const) {
         new RegExp(next.id),
       );
     else {
-      await expect(
-        page.getByRole("combobox", { name: "Presentación" }),
-      ).toHaveValue(next.id);
+      await expect(page.locator(".variant-picker")).toHaveAttribute(
+        "data-selected-variant",
+        next.id,
+      );
       const rail = gallery.getByRole("group", {
         name: "Galería del producto",
         exact: true,
@@ -137,18 +141,20 @@ for (const mode of ["card", "detail"] as const) {
         "data-information",
         "true",
       );
-      await expect(
-        page.getByRole("combobox", { name: "Presentación" }),
-      ).toHaveValue(next.id);
+      await expect(page.locator(".variant-picker")).toHaveAttribute(
+        "data-selected-variant",
+        next.id,
+      );
       await page.emulateMedia({ reducedMotion: "reduce" });
       await gallery
         .getByRole("button", { name: "Sabor anterior", exact: true })
         .click();
       await expect(gallery).not.toHaveAttribute("data-package-turn", "true");
       await expect(gallery).not.toHaveAttribute("data-inspecting", "true");
-      await expect(
-        page.getByRole("combobox", { name: "Presentación" }),
-      ).toHaveValue(first.id);
+      await expect(page.locator(".variant-picker")).toHaveAttribute(
+        "data-selected-variant",
+        first.id,
+      );
     }
     expect(
       await page.evaluate(

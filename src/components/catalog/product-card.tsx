@@ -132,7 +132,10 @@ export function ProductCard({
   }, []);
 
   return (
-    <article className="product-card">
+    <article
+      className="product-card"
+      data-out-of-stock={variant.stock === 0 || undefined}
+    >
       <div className="product-card-media">
         <div className="product-card-labels">
           <ProductPromotionBadge

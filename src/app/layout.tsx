@@ -5,6 +5,7 @@ import "./storefront.css";
 import "./hero.css";
 import "./catalog.css";
 import "./product-media.css";
+import "./product-detail.css";
 import { getEnvironment } from "@/lib/config/server";
 
 const display = Barlow_Condensed({

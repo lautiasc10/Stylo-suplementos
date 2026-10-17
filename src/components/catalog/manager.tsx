@@ -57,6 +57,8 @@ export function CatalogManager({
     [message, setMessage] = useState("");
   const [group, setGroup] = useState<CatalogGroup | null>(null),
     [fileName, setFileName] = useState("");
+  const draftId = draft?.id;
+  const groupId = group?.id;
   const groupEditor = useRef<HTMLFormElement>(null);
   const groupTrigger = useRef<HTMLButtonElement>(null);
   function closeProductEditor(productId?: string) {
@@ -67,11 +69,11 @@ export function CatalogManager({
     requestAnimationFrame(() => document.getElementById(triggerId)?.focus());
   }
   useEffect(() => {
-    if (draft)
+    if (draftId)
       productEditor.current
         ?.querySelector<HTMLInputElement>('input[name="name"]')
         ?.focus();
-  }, [draft?.id]);
+  }, [draftId]);
   function closeGroupEditor() {
     const triggerId = groupTrigger.current?.id;
     setGroup(null);
@@ -80,11 +82,11 @@ export function CatalogManager({
     );
   }
   useEffect(() => {
-    if (group)
+    if (groupId)
       groupEditor.current
         ?.querySelector<HTMLInputElement>('input[name="name"]')
         ?.focus();
-  }, [group?.id]);
+  }, [groupId]);
   const currentTab = useRef(tab);
   useEffect(() => {
     if (tab !== currentTab.current) {

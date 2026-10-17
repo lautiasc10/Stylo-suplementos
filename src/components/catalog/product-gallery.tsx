@@ -179,6 +179,7 @@ export function ProductGallery({
   const processedSelection = useRef<typeof selectionRequest>(null);
   const explicitSelectionPending = useRef(false);
   const visibleRef = useRef(false);
+  const swipe = useRef<{ x: number; y: number } | null>(null);
   const multiple = images.length > 1;
   const turning = transition === "turn";
   const automatic =
@@ -219,6 +220,11 @@ export function ProductGallery({
     }
   }, [active, previous, reduced, turning]);
 
+  const disposePhotos = useCallback(() => {
+    request.current++;
+    photoCache.current?.dispose();
+    photoCache.current = null;
+  }, []);
   useEffect(() => {
     setEnhanced(true);
     if (!photoCache.current) photoCache.current = createGalleryPhotoCache();
@@ -248,14 +254,12 @@ export function ProductGallery({
     if (observer && root.current) observer.observe(root.current);
     else setVisible(true);
     return () => {
-      request.current++;
+      disposePhotos();
       observer?.disconnect();
       preference.removeEventListener("change", updateMotion);
       document.removeEventListener("visibilitychange", updateVisibility);
-      photoCache.current?.dispose();
-      photoCache.current = null;
     };
-  }, []);
+  }, [disposePhotos]);
 
   useEffect(() => {
     visibleRef.current = visible;
@@ -678,7 +682,35 @@ export function ProductGallery({
           setInteracting(false);
       }}
     >
-      <div className="product-image-stage">
+      <div
+        className="product-image-stage"
+        onPointerDown={(event) => {
+          if (
+            mode !== "detail" ||
+            event.pointerType === "mouse" ||
+            !event.isPrimary ||
+            (event.target as Element).closest("a, button")
+          )
+            return;
+          swipe.current = { x: event.clientX, y: event.clientY };
+        }}
+        onPointerCancel={() => {
+          swipe.current = null;
+        }}
+        onPointerUp={(event) => {
+          const start = swipe.current;
+          swipe.current = null;
+          if (!start) return;
+          const x = event.clientX - start.x,
+            y = event.clientY - start.y;
+          if (Math.abs(x) < 40 || Math.abs(x) < Math.abs(y) * 1.4) return;
+          const direction = x < 0 ? 1 : -1;
+          if (flavorNavigation && variantIds.length > 1)
+            chooseFlavor(direction);
+          else if (multiple)
+            choose((active + direction + images.length) % images.length);
+        }}
+      >
         {inspected && (
           <div
             className="product-inspected-image"

@@ -18,7 +18,7 @@ export function ProductThumbnailRail({
   function measure() {
     const node = viewport.current;
     if (!node) return;
-    const horizontal = matchMedia("(max-width: 639px)").matches;
+    const horizontal = matchMedia("(max-width: 959px)").matches;
     const position = horizontal ? node.scrollLeft : node.scrollTop;
     const extent = horizontal
       ? node.scrollWidth - node.clientWidth
@@ -32,7 +32,7 @@ export function ProductThumbnailRail({
     return () => observer.disconnect();
   }, [images]);
   function scroll(direction: number) {
-    const horizontal = matchMedia("(max-width: 639px)").matches;
+    const horizontal = matchMedia("(max-width: 959px)").matches;
     const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
     viewport.current?.scrollBy({
       [horizontal ? "left" : "top"]: direction * 180,

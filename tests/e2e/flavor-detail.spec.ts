@@ -109,7 +109,9 @@ test("las flechas sincronizan fondo, foto, stock, precio y carrito sin navegar",
     .getByRole("button", { name: "Sabor siguiente", exact: true })
     .click();
   await expect(scene).toHaveAttribute("data-flavor", "frutilla");
-  await expect(page.locator(".flavor-selected strong")).toHaveText("Frutilla");
+  await expect(
+    page.locator('.variant-chip[aria-current="true"] > span'),
+  ).toHaveText("Frutilla");
   await expect(page.locator(".product-frame-current")).toHaveAttribute(
     "alt",
     "Foto Frutilla 2",
@@ -153,7 +155,7 @@ test("fotos adicionales conservan el sabor y las flechas recorren variantes sin 
   await seed(page);
   await page.goto("/vista-previa/producto/whey-protein");
   await page
-    .getByRole("button", { name: "Ver Foto Banana 1", exact: true })
+    .getByRole("link", { name: "Ver Foto Banana 1", exact: true })
     .click();
   await expect(page.locator(".product-frame-current")).toHaveAttribute(
     "alt",
@@ -166,7 +168,9 @@ test("fotos adicionales conservan el sabor y las flechas recorren variantes sin 
   await page
     .getByRole("button", { name: "Sabor anterior", exact: true })
     .click();
-  await expect(page.locator(".flavor-selected strong")).toHaveText("Chocolate");
+  await expect(
+    page.locator('.variant-chip[aria-current="true"] > span'),
+  ).toHaveText("Chocolate");
   await expect(page.locator(".product-no-photo")).toContainText(
     "Imagen del producto pendiente",
   );
@@ -181,7 +185,9 @@ test("fotos adicionales conservan el sabor y las flechas recorren variantes sin 
   await page
     .getByRole("button", { name: "Sabor siguiente", exact: true })
     .click();
-  await expect(page.locator(".flavor-selected strong")).toHaveText("Banana");
+  await expect(
+    page.locator('.variant-chip[aria-current="true"] > span'),
+  ).toHaveText("Banana");
 });
 
 test("cambios rápidos conservan solo dos capas y movimiento reducido cancela el giro", async ({
@@ -197,7 +203,9 @@ test("cambios rápidos conservan solo dos capas y movimiento reducido cancela el
     (button as HTMLButtonElement).click();
     (button as HTMLButtonElement).click();
   });
-  await expect(page.locator(".flavor-selected strong")).toHaveText("Vainilla");
+  await expect(
+    page.locator('.variant-chip[aria-current="true"] > span'),
+  ).toHaveText("Vainilla");
   expect(await page.locator(".flavor-scene-layer").count()).toBeLessThanOrEqual(
     2,
   );
@@ -215,7 +223,9 @@ test("cambios rápidos conservan solo dos capas y movimiento reducido cancela el
     .getByRole("button", { name: "Sabor anterior", exact: true })
     .focus();
   await page.keyboard.press("Enter");
-  await expect(page.locator(".flavor-selected strong")).toHaveText("Frutilla");
+  await expect(
+    page.locator('.variant-chip[aria-current="true"] > span'),
+  ).toHaveText("Frutilla");
   await expect(
     page.getByRole("button", { name: "Sabor anterior", exact: true }),
   ).toBeFocused();
@@ -266,13 +276,15 @@ test("la decoración fallida no bloquea el sabor y otros productos conservan el 
   await page
     .getByRole("button", { name: "Sabor siguiente", exact: true })
     .click();
-  await expect(page.locator(".flavor-selected strong")).toHaveText("Frutilla");
+  await expect(
+    page.locator('.variant-chip[aria-current="true"] > span'),
+  ).toHaveText("Frutilla");
   await expect(page.locator(".product-frame-current")).toHaveAttribute(
     "alt",
     "Foto Frutilla 2",
   );
   await page.goto("/vista-previa/producto/creatina-de-prueba");
-  await expect(page.getByLabel("Presentación", { exact: true })).toBeVisible();
+  await expect(page.locator(".variant-picker")).toBeVisible();
   await expect(page.locator(".flavor-scene-decorations")).toHaveCount(0);
   await expect(
     page.getByRole("button", { name: "Sabor siguiente", exact: true }),
@@ -345,15 +357,21 @@ test("las fotos vecinas se preparan antes del clic y se reutilizan al recorrer s
   await page
     .getByRole("button", { name: "Sabor siguiente", exact: true })
     .click();
-  await expect(page.locator(".flavor-selected strong")).toHaveText("Frutilla");
+  await expect(
+    page.locator('.variant-chip[aria-current="true"] > span'),
+  ).toHaveText("Frutilla");
   await page
     .getByRole("button", { name: "Sabor siguiente", exact: true })
     .click();
-  await expect(page.locator(".flavor-selected strong")).toHaveText("Vainilla");
+  await expect(
+    page.locator('.variant-chip[aria-current="true"] > span'),
+  ).toHaveText("Vainilla");
   await page
     .getByRole("button", { name: "Sabor anterior", exact: true })
     .click();
-  await expect(page.locator(".flavor-selected strong")).toHaveText("Frutilla");
+  await expect(
+    page.locator('.variant-chip[aria-current="true"] > span'),
+  ).toHaveText("Frutilla");
   expect(
     await page.evaluate(
       (src) =>

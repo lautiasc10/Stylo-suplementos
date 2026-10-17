@@ -16,6 +16,7 @@ import { RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { Crossfade } from "@/components/ui/Crossfade";
 import { GainerProductDetail } from "./gainer-product-detail";
 import { ProductInformation } from "./product-information";
+import { VariantPicker } from "./variant-picker";
 import { catalogMediaSource } from "@/modules/catalog/media-source";
 import { variantLabel, type Product } from "@/modules/catalog/model";
 const emptyImageUrls: Record<string, string> = {};
@@ -151,6 +152,7 @@ function StandardProductDetail({
       className={`product-detail${flavorExperiment ? " flavor-product-detail" : ""}`}
       data-flavor={flavorExperiment ? (flavor ?? "neutral") : undefined}
       data-enhanced={enhanced ? "true" : undefined}
+      data-variant={variant.id}
     >
       {flavorExperiment && !preview && (
         <Link href="/catalogo" className="text-link flavor-back-link">
@@ -221,67 +223,21 @@ function StandardProductDetail({
           <p className="product-description">{product.description}</p>
         </RevealItem>
         <RevealItem>
-          {flavorExperiment && enhanced ? (
-            <div className="flavor-selected" role="status" aria-live="polite">
-              <span>Sabor elegido</span>
-              <div className="flavor-selected-row">
-                <div>
-                  <strong>{variant.flavor || "Presentación"}</strong>
-                  <p>
-                    {[variant.size, variant.presentation]
-                      .filter(Boolean)
-                      .join(" · ")}
-                  </p>
-                </div>
-                <span
-                  className="stock-badge"
-                  data-stock={variant.stock > 0 ? "available" : "empty"}
-                >
-                  {variant.stock > 0 ? "Disponible" : "Sin stock"}
-                </span>
-              </div>
-            </div>
-          ) : (
-            <form method="get" className="variant-picker">
-              <label htmlFor="product-variant">Elegí tu presentación</label>
-              <select
-                name="variante"
-                id="product-variant"
-                value={variant.id}
-                onChange={(event) => {
-                  if (variantGallery)
-                    setSelectionRequest({
-                      variantId: event.target.value,
-                      nonce: Date.now(),
-                    });
-                  else setVariantId(event.target.value);
-                }}
-                aria-label="Presentación"
-              >
-                {product.variants.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {variantLabel(item)}
-                    {item.stock === 0 ? " · Sin stock" : ""}
-                  </option>
-                ))}
-              </select>
-              <noscript>
-                <button className="button button-outline">
-                  Ver presentación
-                </button>
-              </noscript>
-            </form>
-          )}
+          <VariantPicker
+            variants={product.variants}
+            selected={variant}
+            href={(id) => `?variante=${id}`}
+            onSelect={(id) => {
+              if (variantGallery)
+                setSelectionRequest((previous) => ({
+                  variantId: id,
+                  nonce: (previous?.nonce ?? 0) + 1,
+                }));
+              else selectFlavorImage({ id, variantId: id, src: "", alt: "" });
+            }}
+          />
         </RevealItem>
         <RevealItem aria-live="polite" aria-atomic="true">
-          {!(flavorExperiment && enhanced) && (
-            <p
-              className="stock-badge"
-              data-stock={variant.stock > 0 ? "available" : "empty"}
-            >
-              {variant.stock > 0 ? "Disponible" : "Sin stock"}
-            </p>
-          )}
           <ProductPricing variant={variant} animateChange />
         </RevealItem>
         {(preview || !flavorExperiment) && (

@@ -1,0 +1,9 @@
+{
+  "samples": 143,
+  "p95": 16.799999999999727,
+  "max": 33.299999999999955,
+  "above50ms": 0,
+  "variantChanged": true,
+  "cpuThrottle": 4,
+  "viewport": 375
+}

@@ -50,9 +50,7 @@ test("fichas compartidas, cambio de variante y ampliación accesible", async ({
   await page.keyboard.press("Escape");
   await expect(page.locator(".product-information-dialog")).not.toBeVisible();
   await expect(shared).toBeFocused();
-  await page
-    .getByRole("combobox", { name: "Presentación" })
-    .selectOption(vanilla.id);
+  await page.locator(`.variant-chip[href="?variante=${vanilla.id}"]`).click();
   await expect(page.locator(".product-information-grid li")).toHaveCount(2);
   expect(
     await page.evaluate(
@@ -270,14 +268,20 @@ test("búsqueda, orden por lista y selección de variante actualizan la ficha", 
   await expect(page.locator(".product-card")).toHaveCount(1);
   await closeMobileFilters(page);
   await page.getByRole("link", { name: "Ver variantes" }).click();
-  await expect(page.getByLabel("Presentación", { exact: true })).toHaveValue(
+  await expect(page.locator(".variant-picker")).toHaveAttribute(
+    "data-selected-variant",
     demoCatalog().products[0].variants[0].id,
   );
   await expect(page.locator(".product-sku")).toHaveCount(0);
   await page
-    .getByLabel("Presentación", { exact: true })
-    .selectOption({ label: "Vainilla · 1 kg · Envase · Sin stock" });
-  await expect(page.getByLabel("Presentación", { exact: true })).toHaveValue(
+    .locator(".variant-picker")
+    .getByRole("link", {
+      name: "Vainilla · 1 kg · Envase · Sin stock",
+      exact: true,
+    })
+    .click();
+  await expect(page.locator(".variant-picker")).toHaveAttribute(
+    "data-selected-variant",
     demoCatalog().products[0].variants[1].id,
   );
   await expect(
@@ -621,9 +625,7 @@ test("CSV previsualiza antes de aplicar y conserva variantes omitidas", async ({
   await expect(page.locator("#contenido .product-prices")).toContainText(
     "49.000",
   );
-  await expect(
-    page.getByLabel("Presentación", { exact: true }).locator("option"),
-  ).toHaveCount(2);
+  await expect(page.locator(".variant-picker .variant-chip")).toHaveCount(2);
 });
 
 test("Excel real se lee en el navegador y un lote duplicado queda bloqueado", async ({
@@ -890,8 +892,12 @@ test("la galería automática sincroniza variantes y la ficha conserva sus fotos
     page.getByAltText("Chocolate dorso", { exact: true }),
   ).toBeVisible();
   await page
-    .getByLabel("Presentación", { exact: true })
-    .selectOption({ label: "Vainilla · 1 kg · Envase · Sin stock" });
+    .locator(".variant-picker")
+    .getByRole("link", {
+      name: "Vainilla · 1 kg · Envase · Sin stock",
+      exact: true,
+    })
+    .click();
   await expect(
     page.getByAltText("Vainilla frente", { exact: true }),
   ).toBeVisible();
@@ -899,7 +905,8 @@ test("la galería automática sincroniza variantes y la ficha conserva sus fotos
   await expect(
     page.getByAltText("Chocolate dorso", { exact: true }),
   ).toHaveCount(0);
-  await expect(page.getByLabel("Presentación", { exact: true })).toHaveValue(
+  await expect(page.locator(".variant-picker")).toHaveAttribute(
+    "data-selected-variant",
     demoCatalog().products[0].variants[1].id,
   );
 });
@@ -1045,7 +1052,8 @@ test("una foto por variante alterna sus datos y respeta sabor, precio y disponib
   await expect(card.locator(".product-prices")).toContainText("47.000");
   await expect(card.locator(".stock-badge")).toHaveText("Sin stock");
   await card.getByRole("link", { name: "Ver variantes", exact: true }).click();
-  await expect(page.getByLabel("Presentación", { exact: true })).toHaveValue(
+  await expect(page.locator(".variant-picker")).toHaveAttribute(
+    "data-selected-variant",
     demoCatalog().products[0].variants[1].id,
   );
 
