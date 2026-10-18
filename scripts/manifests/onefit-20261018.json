@@ -1,0 +1,97 @@
+{
+  "images": [
+    {
+      "id": "9af8ea20-2342-426c-8c17-c5fc70794578",
+      "productId": "d242dd6b-989a-49a4-9b20-e852cddb5561",
+      "variantId": "c6cc7d76-fa23-4a6a-9831-9d9509235ab2",
+      "sourcePath": "d242dd6b-989a-49a4-9b20-e852cddb5561/7dad49c4-9732-4c60-9f64-d4e502f8c8b4.png",
+      "slug": "onefit-aminoacidos-eeaa-essential-amino-acid",
+      "flavor": "cereza",
+      "sku": "ONE-0001",
+      "input": "originals/7dad49c4-9732-4c60-9f64-d4e502f8c8b4.png",
+      "warnings": []
+    },
+    {
+      "id": "6204f1cb-e4ac-41de-943c-205416b14ef5",
+      "productId": "d242dd6b-989a-49a4-9b20-e852cddb5561",
+      "variantId": "58165b1d-4ff2-464e-aae3-cb2a09608a0d",
+      "sourcePath": "d242dd6b-989a-49a4-9b20-e852cddb5561/8b168ff0-7353-4080-900e-8f691b2a9017.png",
+      "slug": "onefit-aminoacidos-eeaa-essential-amino-acid",
+      "flavor": "naranja",
+      "sku": "ONE-0002",
+      "input": "originals/8b168ff0-7353-4080-900e-8f691b2a9017.png",
+      "warnings": [
+        "La foto original asociada a EEAA naranja muestra OPTIMUS COLLAGEN. Requiere reemplazar el original correcto; no se retocó la etiqueta."
+      ]
+    },
+    {
+      "id": "593a75f0-57fe-47c8-90e9-88453a8725a7",
+      "productId": "d242dd6b-989a-49a4-9b20-e852cddb5561",
+      "variantId": "f2c98286-db57-414c-bbaa-9967088d1f9b",
+      "sourcePath": "d242dd6b-989a-49a4-9b20-e852cddb5561/13967d10-04f1-41f2-99a0-54de5047eb32.png",
+      "slug": "onefit-aminoacidos-eeaa-essential-amino-acid",
+      "flavor": "pomelo",
+      "sku": "ONE-0003",
+      "input": "originals/13967d10-04f1-41f2-99a0-54de5047eb32.png",
+      "warnings": []
+    },
+    {
+      "id": "93fea4ad-10a5-4e34-8998-089d75669574",
+      "productId": "d242dd6b-989a-49a4-9b20-e852cddb5561",
+      "variantId": "a958a828-50d5-4059-ad64-c1fba456354c",
+      "sourcePath": "d242dd6b-989a-49a4-9b20-e852cddb5561/4957421b-30cc-4cbb-b93b-acda4350773a.png",
+      "slug": "onefit-aminoacidos-eeaa-essential-amino-acid",
+      "flavor": "uva",
+      "sku": "ONE-0004",
+      "input": "originals/4957421b-30cc-4cbb-b93b-acda4350773a.png",
+      "warnings": []
+    },
+    {
+      "id": "fff695cd-0f9a-4d63-a5a9-1e9822b15f0f",
+      "productId": "1dc35418-8d84-4b15-bc31-45dda36636cd",
+      "variantId": "c369f4b7-a0e9-472e-96db-d03db0d02a86",
+      "sourcePath": "1dc35418-8d84-4b15-bc31-45dda36636cd/2ae383f6-a42b-4a04-9bef-141d2ef3d0f1.png",
+      "slug": "onefit-colageno-optimus-x-240gr",
+      "flavor": "naranja",
+      "sku": "ONE-0007",
+      "input": "originals/2ae383f6-a42b-4a04-9bef-141d2ef3d0f1.png",
+      "warnings": []
+    },
+    {
+      "id": "821ba08b-299e-45c1-9837-82e376827c67",
+      "productId": "ea3e465f-0edc-496d-a30d-1efcd9c63a39",
+      "variantId": "e6f02255-2ef4-43cf-9bfd-79a608cb45ea",
+      "sourcePath": "ea3e465f-0edc-496d-a30d-1efcd9c63a39/19f4f431-cadd-42c5-a639-2eb3370de131.png",
+      "slug": "onefit-ganador-de-peso-the-best-gainer-1-5kg",
+      "flavor": "chocolate",
+      "sku": "ONE-0010",
+      "input": "originals/19f4f431-cadd-42c5-a639-2eb3370de131.png",
+      "warnings": []
+    },
+    {
+      "id": "0277bcbb-c691-422c-9b12-9de22e4efacf",
+      "productId": "94616ae5-d1ea-4a14-b53b-b3cd7f084218",
+      "variantId": "15960d5d-2ad1-4a11-9c0b-2aa9dd3265bc",
+      "sourcePath": "94616ae5-d1ea-4a14-b53b-b3cd7f084218/f469f36a-af6f-407c-ad68-ebea90ee6a71.png",
+      "slug": "onefit-pre-entreno-friction-3-2-x-300gr",
+      "flavor": "limón",
+      "sku": "ONE-0012",
+      "input": "originals/f469f36a-af6f-407c-ad68-ebea90ee6a71.png",
+      "warnings": []
+    },
+    {
+      "id": "9f9bdf86-6df2-48cf-90fd-e82cbc1d8d13",
+      "productId": "2908c277-201c-4d5b-87a9-169841e07f41",
+      "variantId": "3eb37c89-a023-4ab1-98e0-168940b95ddc",
+      "sourcePath": "2908c277-201c-4d5b-87a9-169841e07f41/ea949369-dbb0-4cf9-ae99-65a3c89994ac.png",
+      "slug": "onefit-proteina-whey-protein-2lbs-dp",
+      "flavor": "chocolate",
+      "sku": "ONE-0014",
+      "input": "originals/ea949369-dbb0-4cf9-ae99-65a3c89994ac.png",
+      "warnings": [],
+      "notes": [
+        "Chocolate ONE-0014 confirmado por el usuario. El UUID inicial corresponde a Dulce de leche ONE-0015, que se conserva sin cambios."
+      ]
+    }
+  ]
+}

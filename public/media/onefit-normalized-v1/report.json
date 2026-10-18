@@ -1,0 +1,394 @@
+{
+  "version": 1,
+  "pipeline": "rembg/u2net + Pillow",
+  "canvas": [
+    1000,
+    1000
+  ],
+  "targetHeight": 800,
+  "baseline": 900,
+  "records": [
+    {
+      "id": "9af8ea20-2342-426c-8c17-c5fc70794578",
+      "productId": "d242dd6b-989a-49a4-9b20-e852cddb5561",
+      "variantId": "c6cc7d76-fa23-4a6a-9831-9d9509235ab2",
+      "sourcePath": "d242dd6b-989a-49a4-9b20-e852cddb5561/7dad49c4-9732-4c60-9f64-d4e502f8c8b4.png",
+      "slug": "onefit-aminoacidos-eeaa-essential-amino-acid",
+      "flavor": "cereza",
+      "sku": "ONE-0001",
+      "source": {
+        "width": 1536,
+        "height": 1024
+      },
+      "bounds": [
+        510,
+        84,
+        1026,
+        938
+      ],
+      "placement": {
+        "left": 258,
+        "top": 100,
+        "width": 483,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [],
+      "sourceHash": "b0d55897ead4ca83c8cf0cae62541b8cdd1a9e0e310a860a4be52e328d483517",
+      "sourceBytes": 1208939,
+      "outputs": {
+        "320": {
+          "filename": "9af8ea20-2342-426c-8c17-c5fc70794578-b0d55897ead4-v1-320.webp",
+          "bytes": 17258
+        },
+        "600": {
+          "filename": "9af8ea20-2342-426c-8c17-c5fc70794578-b0d55897ead4-v1-600.webp",
+          "bytes": 42022
+        },
+        "1000": {
+          "filename": "9af8ea20-2342-426c-8c17-c5fc70794578-b0d55897ead4-v1-1000.webp",
+          "bytes": 83316
+        }
+      },
+      "status": "ready"
+    },
+    {
+      "id": "6204f1cb-e4ac-41de-943c-205416b14ef5",
+      "productId": "d242dd6b-989a-49a4-9b20-e852cddb5561",
+      "variantId": "58165b1d-4ff2-464e-aae3-cb2a09608a0d",
+      "sourcePath": "d242dd6b-989a-49a4-9b20-e852cddb5561/8b168ff0-7353-4080-900e-8f691b2a9017.png",
+      "slug": "onefit-aminoacidos-eeaa-essential-amino-acid",
+      "flavor": "naranja",
+      "sku": "ONE-0002",
+      "source": {
+        "width": 1536,
+        "height": 1024
+      },
+      "bounds": [
+        524,
+        134,
+        1012,
+        931
+      ],
+      "placement": {
+        "left": 255,
+        "top": 100,
+        "width": 490,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [
+        "Original menor de 800 px: ampliar no recupera detalle.",
+        "La foto original asociada a EEAA naranja muestra OPTIMUS COLLAGEN. Requiere reemplazar el original correcto; no se retocó la etiqueta."
+      ],
+      "sourceHash": "7219f88d9b58a600493dc0fc3b62c4e3abadf80de50e519ccf67884dd8477d49",
+      "sourceBytes": 1153333,
+      "outputs": {
+        "320": {
+          "filename": "6204f1cb-e4ac-41de-943c-205416b14ef5-7219f88d9b58-v1-320.webp",
+          "bytes": 18046
+        },
+        "600": {
+          "filename": "6204f1cb-e4ac-41de-943c-205416b14ef5-7219f88d9b58-v1-600.webp",
+          "bytes": 42598
+        },
+        "1000": {
+          "filename": "6204f1cb-e4ac-41de-943c-205416b14ef5-7219f88d9b58-v1-1000.webp",
+          "bytes": 82500
+        }
+      },
+      "status": "review"
+    },
+    {
+      "id": "593a75f0-57fe-47c8-90e9-88453a8725a7",
+      "productId": "d242dd6b-989a-49a4-9b20-e852cddb5561",
+      "variantId": "f2c98286-db57-414c-bbaa-9967088d1f9b",
+      "sourcePath": "d242dd6b-989a-49a4-9b20-e852cddb5561/13967d10-04f1-41f2-99a0-54de5047eb32.png",
+      "slug": "onefit-aminoacidos-eeaa-essential-amino-acid",
+      "flavor": "pomelo",
+      "sku": "ONE-0003",
+      "source": {
+        "width": 1536,
+        "height": 1024
+      },
+      "bounds": [
+        523,
+        102,
+        1014,
+        923
+      ],
+      "placement": {
+        "left": 261,
+        "top": 100,
+        "width": 478,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [],
+      "sourceHash": "f9236af82e8002fda3eab774b56e6b8097d7f8704996087d77f479b511edd01b",
+      "sourceBytes": 1148891,
+      "outputs": {
+        "320": {
+          "filename": "593a75f0-57fe-47c8-90e9-88453a8725a7-f9236af82e80-v1-320.webp",
+          "bytes": 15746
+        },
+        "600": {
+          "filename": "593a75f0-57fe-47c8-90e9-88453a8725a7-f9236af82e80-v1-600.webp",
+          "bytes": 39716
+        },
+        "1000": {
+          "filename": "593a75f0-57fe-47c8-90e9-88453a8725a7-f9236af82e80-v1-1000.webp",
+          "bytes": 79054
+        }
+      },
+      "status": "ready"
+    },
+    {
+      "id": "93fea4ad-10a5-4e34-8998-089d75669574",
+      "productId": "d242dd6b-989a-49a4-9b20-e852cddb5561",
+      "variantId": "a958a828-50d5-4059-ad64-c1fba456354c",
+      "sourcePath": "d242dd6b-989a-49a4-9b20-e852cddb5561/4957421b-30cc-4cbb-b93b-acda4350773a.png",
+      "slug": "onefit-aminoacidos-eeaa-essential-amino-acid",
+      "flavor": "uva",
+      "sku": "ONE-0004",
+      "source": {
+        "width": 1536,
+        "height": 1024
+      },
+      "bounds": [
+        524,
+        109,
+        1000,
+        921
+      ],
+      "placement": {
+        "left": 265,
+        "top": 100,
+        "width": 469,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [],
+      "sourceHash": "816960e261fbe3caf70fc09dd0e27d2620b98a1a7159d9a622aac3f156ef2323",
+      "sourceBytes": 1121392,
+      "outputs": {
+        "320": {
+          "filename": "93fea4ad-10a5-4e34-8998-089d75669574-816960e261fb-v1-320.webp",
+          "bytes": 17060
+        },
+        "600": {
+          "filename": "93fea4ad-10a5-4e34-8998-089d75669574-816960e261fb-v1-600.webp",
+          "bytes": 42390
+        },
+        "1000": {
+          "filename": "93fea4ad-10a5-4e34-8998-089d75669574-816960e261fb-v1-1000.webp",
+          "bytes": 82614
+        }
+      },
+      "status": "ready"
+    },
+    {
+      "id": "fff695cd-0f9a-4d63-a5a9-1e9822b15f0f",
+      "productId": "1dc35418-8d84-4b15-bc31-45dda36636cd",
+      "variantId": "c369f4b7-a0e9-472e-96db-d03db0d02a86",
+      "sourcePath": "1dc35418-8d84-4b15-bc31-45dda36636cd/2ae383f6-a42b-4a04-9bef-141d2ef3d0f1.png",
+      "slug": "onefit-colageno-optimus-x-240gr",
+      "flavor": "naranja",
+      "sku": "ONE-0007",
+      "source": {
+        "width": 1536,
+        "height": 1024
+      },
+      "bounds": [
+        578,
+        162,
+        964,
+        847
+      ],
+      "placement": {
+        "left": 274,
+        "top": 100,
+        "width": 451,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [
+        "Original menor de 800 px: ampliar no recupera detalle."
+      ],
+      "sourceHash": "09e142d6b3aa4136e9bc43564f69a74795104ccd6c4fc06403493e90c35ca1c0",
+      "sourceBytes": 1014071,
+      "outputs": {
+        "320": {
+          "filename": "fff695cd-0f9a-4d63-a5a9-1e9822b15f0f-09e142d6b3aa-v1-320.webp",
+          "bytes": 16884
+        },
+        "600": {
+          "filename": "fff695cd-0f9a-4d63-a5a9-1e9822b15f0f-09e142d6b3aa-v1-600.webp",
+          "bytes": 40110
+        },
+        "1000": {
+          "filename": "fff695cd-0f9a-4d63-a5a9-1e9822b15f0f-09e142d6b3aa-v1-1000.webp",
+          "bytes": 75810
+        }
+      },
+      "status": "review"
+    },
+    {
+      "id": "821ba08b-299e-45c1-9837-82e376827c67",
+      "productId": "ea3e465f-0edc-496d-a30d-1efcd9c63a39",
+      "variantId": "e6f02255-2ef4-43cf-9bfd-79a608cb45ea",
+      "sourcePath": "ea3e465f-0edc-496d-a30d-1efcd9c63a39/19f4f431-cadd-42c5-a639-2eb3370de131.png",
+      "slug": "onefit-ganador-de-peso-the-best-gainer-1-5kg",
+      "flavor": "chocolate",
+      "sku": "ONE-0010",
+      "source": {
+        "width": 1485,
+        "height": 1059
+      },
+      "bounds": [
+        490,
+        118,
+        996,
+        956
+      ],
+      "placement": {
+        "left": 258,
+        "top": 100,
+        "width": 483,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [],
+      "sourceHash": "a4921edc649fb8bfd58707d72e53c94eb23aa39ef556ddfea39aed3e488a2914",
+      "sourceBytes": 715505,
+      "outputs": {
+        "320": {
+          "filename": "821ba08b-299e-45c1-9837-82e376827c67-a4921edc649f-v1-320.webp",
+          "bytes": 17154
+        },
+        "600": {
+          "filename": "821ba08b-299e-45c1-9837-82e376827c67-a4921edc649f-v1-600.webp",
+          "bytes": 42016
+        },
+        "1000": {
+          "filename": "821ba08b-299e-45c1-9837-82e376827c67-a4921edc649f-v1-1000.webp",
+          "bytes": 83670
+        }
+      },
+      "status": "ready"
+    },
+    {
+      "id": "0277bcbb-c691-422c-9b12-9de22e4efacf",
+      "productId": "94616ae5-d1ea-4a14-b53b-b3cd7f084218",
+      "variantId": "15960d5d-2ad1-4a11-9c0b-2aa9dd3265bc",
+      "sourcePath": "94616ae5-d1ea-4a14-b53b-b3cd7f084218/f469f36a-af6f-407c-ad68-ebea90ee6a71.png",
+      "slug": "onefit-pre-entreno-friction-3-2-x-300gr",
+      "flavor": "limón",
+      "sku": "ONE-0012",
+      "source": {
+        "width": 1448,
+        "height": 1086
+      },
+      "bounds": [
+        431,
+        49,
+        1017,
+        1036
+      ],
+      "placement": {
+        "left": 262,
+        "top": 100,
+        "width": 475,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [],
+      "sourceHash": "effaa8c40d0985aeaf48dd1172a8caf1e50fd5cb2a215599f60df0e99f544b9d",
+      "sourceBytes": 882936,
+      "outputs": {
+        "320": {
+          "filename": "0277bcbb-c691-422c-9b12-9de22e4efacf-effaa8c40d09-v1-320.webp",
+          "bytes": 16738
+        },
+        "600": {
+          "filename": "0277bcbb-c691-422c-9b12-9de22e4efacf-effaa8c40d09-v1-600.webp",
+          "bytes": 42044
+        },
+        "1000": {
+          "filename": "0277bcbb-c691-422c-9b12-9de22e4efacf-effaa8c40d09-v1-1000.webp",
+          "bytes": 83156
+        }
+      },
+      "status": "ready"
+    },
+    {
+      "id": "9f9bdf86-6df2-48cf-90fd-e82cbc1d8d13",
+      "productId": "2908c277-201c-4d5b-87a9-169841e07f41",
+      "variantId": "3eb37c89-a023-4ab1-98e0-168940b95ddc",
+      "sourcePath": "2908c277-201c-4d5b-87a9-169841e07f41/ea949369-dbb0-4cf9-ae99-65a3c89994ac.png",
+      "slug": "onefit-proteina-whey-protein-2lbs-dp",
+      "flavor": "chocolate",
+      "sku": "ONE-0014",
+      "source": {
+        "width": 1403,
+        "height": 1121
+      },
+      "bounds": [
+        352,
+        114,
+        1051,
+        1003
+      ],
+      "placement": {
+        "left": 185,
+        "top": 100,
+        "width": 629,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [],
+      "sourceHash": "c1c8db21f7b6abd0e724cfc05b47ef8d21f8f8244d18098600e80088c29ca55f",
+      "sourceBytes": 971713,
+      "outputs": {
+        "320": {
+          "filename": "9f9bdf86-6df2-48cf-90fd-e82cbc1d8d13-c1c8db21f7b6-v1-320.webp",
+          "bytes": 23260
+        },
+        "600": {
+          "filename": "9f9bdf86-6df2-48cf-90fd-e82cbc1d8d13-c1c8db21f7b6-v1-600.webp",
+          "bytes": 54716
+        },
+        "1000": {
+          "filename": "9f9bdf86-6df2-48cf-90fd-e82cbc1d8d13-c1c8db21f7b6-v1-1000.webp",
+          "bytes": 102928
+        }
+      },
+      "status": "ready",
+      "notes": [
+        "Chocolate ONE-0014 confirmado por el usuario. El UUID inicial corresponde a Dulce de leche ONE-0015, que se conserva sin cambios."
+      ]
+    }
+  ],
+  "review": [
+    {
+      "sku": "ONE-0002",
+      "variantId": "58165b1d-4ff2-464e-aae3-cb2a09608a0d",
+      "warnings": [
+        "Original menor de 800 px: ampliar no recupera detalle.",
+        "La foto original asociada a EEAA naranja muestra OPTIMUS COLLAGEN. Requiere reemplazar el original correcto; no se retocó la etiqueta."
+      ]
+    },
+    {
+      "sku": "ONE-0007",
+      "variantId": "c369f4b7-a0e9-472e-96db-d03db0d02a86",
+      "warnings": [
+        "Original menor de 800 px: ampliar no recupera detalle."
+      ]
+    }
+  ],
+  "tools": {
+    "rembg": "2.0.85",
+    "Pillow": "12.3.0",
+    "scipy": "1.18.1"
+  }
+}

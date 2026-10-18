@@ -1,0 +1,55 @@
+{
+  "publicCatalogUnchanged": true,
+  "products": 53,
+  "variants": 76,
+  "originals": [
+    {
+      "sku": "ONE-0001",
+      "sourcePath": "d242dd6b-989a-49a4-9b20-e852cddb5561/7dad49c4-9732-4c60-9f64-d4e502f8c8b4.png",
+      "sha256": "b0d55897ead4ca83c8cf0cae62541b8cdd1a9e0e310a860a4be52e328d483517",
+      "unchanged": true
+    },
+    {
+      "sku": "ONE-0002",
+      "sourcePath": "d242dd6b-989a-49a4-9b20-e852cddb5561/8b168ff0-7353-4080-900e-8f691b2a9017.png",
+      "sha256": "7219f88d9b58a600493dc0fc3b62c4e3abadf80de50e519ccf67884dd8477d49",
+      "unchanged": true
+    },
+    {
+      "sku": "ONE-0003",
+      "sourcePath": "d242dd6b-989a-49a4-9b20-e852cddb5561/13967d10-04f1-41f2-99a0-54de5047eb32.png",
+      "sha256": "f9236af82e8002fda3eab774b56e6b8097d7f8704996087d77f479b511edd01b",
+      "unchanged": true
+    },
+    {
+      "sku": "ONE-0004",
+      "sourcePath": "d242dd6b-989a-49a4-9b20-e852cddb5561/4957421b-30cc-4cbb-b93b-acda4350773a.png",
+      "sha256": "816960e261fbe3caf70fc09dd0e27d2620b98a1a7159d9a622aac3f156ef2323",
+      "unchanged": true
+    },
+    {
+      "sku": "ONE-0007",
+      "sourcePath": "1dc35418-8d84-4b15-bc31-45dda36636cd/2ae383f6-a42b-4a04-9bef-141d2ef3d0f1.png",
+      "sha256": "09e142d6b3aa4136e9bc43564f69a74795104ccd6c4fc06403493e90c35ca1c0",
+      "unchanged": true
+    },
+    {
+      "sku": "ONE-0010",
+      "sourcePath": "ea3e465f-0edc-496d-a30d-1efcd9c63a39/19f4f431-cadd-42c5-a639-2eb3370de131.png",
+      "sha256": "a4921edc649fb8bfd58707d72e53c94eb23aa39ef556ddfea39aed3e488a2914",
+      "unchanged": true
+    },
+    {
+      "sku": "ONE-0012",
+      "sourcePath": "94616ae5-d1ea-4a14-b53b-b3cd7f084218/f469f36a-af6f-407c-ad68-ebea90ee6a71.png",
+      "sha256": "effaa8c40d0985aeaf48dd1172a8caf1e50fd5cb2a215599f60df0e99f544b9d",
+      "unchanged": true
+    },
+    {
+      "sku": "ONE-0014",
+      "sourcePath": "2908c277-201c-4d5b-87a9-169841e07f41/ea949369-dbb0-4cf9-ae99-65a3c89994ac.png",
+      "sha256": "c1c8db21f7b6abd0e724cfc05b47ef8d21f8f8244d18098600e80088c29ca55f",
+      "unchanged": true
+    }
+  ]
+}

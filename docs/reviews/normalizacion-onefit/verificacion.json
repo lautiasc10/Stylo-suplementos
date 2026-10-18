@@ -1,0 +1,400 @@
+{
+  "viewports": [
+    {
+      "sku": "ONE-0001",
+      "viewport": 768,
+      "scrollWidth": 768,
+      "stage": {
+        "width": 640,
+        "height": 640
+      }
+    },
+    {
+      "sku": "ONE-0010",
+      "viewport": 768,
+      "scrollWidth": 768,
+      "stage": {
+        "width": 640,
+        "height": 640
+      }
+    },
+    {
+      "sku": "ONE-0014",
+      "viewport": 768,
+      "scrollWidth": 768,
+      "stage": {
+        "width": 640,
+        "height": 640
+      }
+    },
+    {
+      "sku": "ONE-0001",
+      "viewport": 375,
+      "scrollWidth": 375,
+      "stage": {
+        "width": 343,
+        "height": 343
+      }
+    },
+    {
+      "sku": "ONE-0010",
+      "viewport": 375,
+      "scrollWidth": 375,
+      "stage": {
+        "width": 343,
+        "height": 343
+      }
+    },
+    {
+      "sku": "ONE-0014",
+      "viewport": 375,
+      "scrollWidth": 375,
+      "stage": {
+        "width": 343,
+        "height": 343
+      }
+    }
+  ],
+  "details": [
+    {
+      "sku": "ONE-0001",
+      "variantId": "c6cc7d76-fa23-4a6a-9831-9d9509235ab2",
+      "src": "/media/onefit-normalized-v1/9af8ea20-2342-426c-8c17-c5fc70794578-b0d55897ead4-v1-1000.webp",
+      "srcSet": "/media/onefit-normalized-v1/9af8ea20-2342-426c-8c17-c5fc70794578-b0d55897ead4-v1-320.webp 320w, /media/onefit-normalized-v1/9af8ea20-2342-426c-8c17-c5fc70794578-b0d55897ead4-v1-600.webp 600w, /media/onefit-normalized-v1/9af8ea20-2342-426c-8c17-c5fc70794578-b0d55897ead4-v1-1000.webp 1000w",
+      "currentSrc": "/media/onefit-normalized-v1/9af8ea20-2342-426c-8c17-c5fc70794578-b0d55897ead4-v1-1000.webp",
+      "naturalWidth": 640,
+      "width": 640,
+      "height": 640
+    },
+    {
+      "sku": "ONE-0002",
+      "variantId": "58165b1d-4ff2-464e-aae3-cb2a09608a0d",
+      "src": "/media/onefit-normalized-v1/6204f1cb-e4ac-41de-943c-205416b14ef5-7219f88d9b58-v1-1000.webp",
+      "srcSet": "/media/onefit-normalized-v1/6204f1cb-e4ac-41de-943c-205416b14ef5-7219f88d9b58-v1-320.webp 320w, /media/onefit-normalized-v1/6204f1cb-e4ac-41de-943c-205416b14ef5-7219f88d9b58-v1-600.webp 600w, /media/onefit-normalized-v1/6204f1cb-e4ac-41de-943c-205416b14ef5-7219f88d9b58-v1-1000.webp 1000w",
+      "currentSrc": "/media/onefit-normalized-v1/6204f1cb-e4ac-41de-943c-205416b14ef5-7219f88d9b58-v1-1000.webp",
+      "naturalWidth": 640,
+      "width": 640,
+      "height": 640
+    },
+    {
+      "sku": "ONE-0003",
+      "variantId": "f2c98286-db57-414c-bbaa-9967088d1f9b",
+      "src": "/media/onefit-normalized-v1/593a75f0-57fe-47c8-90e9-88453a8725a7-f9236af82e80-v1-1000.webp",
+      "srcSet": "/media/onefit-normalized-v1/593a75f0-57fe-47c8-90e9-88453a8725a7-f9236af82e80-v1-320.webp 320w, /media/onefit-normalized-v1/593a75f0-57fe-47c8-90e9-88453a8725a7-f9236af82e80-v1-600.webp 600w, /media/onefit-normalized-v1/593a75f0-57fe-47c8-90e9-88453a8725a7-f9236af82e80-v1-1000.webp 1000w",
+      "currentSrc": "/media/onefit-normalized-v1/593a75f0-57fe-47c8-90e9-88453a8725a7-f9236af82e80-v1-1000.webp",
+      "naturalWidth": 640,
+      "width": 640,
+      "height": 640
+    },
+    {
+      "sku": "ONE-0004",
+      "variantId": "a958a828-50d5-4059-ad64-c1fba456354c",
+      "src": "/media/onefit-normalized-v1/93fea4ad-10a5-4e34-8998-089d75669574-816960e261fb-v1-1000.webp",
+      "srcSet": "/media/onefit-normalized-v1/93fea4ad-10a5-4e34-8998-089d75669574-816960e261fb-v1-320.webp 320w, /media/onefit-normalized-v1/93fea4ad-10a5-4e34-8998-089d75669574-816960e261fb-v1-600.webp 600w, /media/onefit-normalized-v1/93fea4ad-10a5-4e34-8998-089d75669574-816960e261fb-v1-1000.webp 1000w",
+      "currentSrc": "/media/onefit-normalized-v1/93fea4ad-10a5-4e34-8998-089d75669574-816960e261fb-v1-1000.webp",
+      "naturalWidth": 640,
+      "width": 640,
+      "height": 640
+    },
+    {
+      "sku": "ONE-0007",
+      "variantId": "c369f4b7-a0e9-472e-96db-d03db0d02a86",
+      "src": "/media/onefit-normalized-v1/fff695cd-0f9a-4d63-a5a9-1e9822b15f0f-09e142d6b3aa-v1-1000.webp",
+      "srcSet": "/media/onefit-normalized-v1/fff695cd-0f9a-4d63-a5a9-1e9822b15f0f-09e142d6b3aa-v1-320.webp 320w, /media/onefit-normalized-v1/fff695cd-0f9a-4d63-a5a9-1e9822b15f0f-09e142d6b3aa-v1-600.webp 600w, /media/onefit-normalized-v1/fff695cd-0f9a-4d63-a5a9-1e9822b15f0f-09e142d6b3aa-v1-1000.webp 1000w",
+      "currentSrc": "/media/onefit-normalized-v1/fff695cd-0f9a-4d63-a5a9-1e9822b15f0f-09e142d6b3aa-v1-1000.webp",
+      "naturalWidth": 640,
+      "width": 640,
+      "height": 640
+    },
+    {
+      "sku": "ONE-0010",
+      "variantId": "e6f02255-2ef4-43cf-9bfd-79a608cb45ea",
+      "src": "/media/onefit-normalized-v1/821ba08b-299e-45c1-9837-82e376827c67-a4921edc649f-v1-1000.webp",
+      "srcSet": "/media/onefit-normalized-v1/821ba08b-299e-45c1-9837-82e376827c67-a4921edc649f-v1-320.webp 320w, /media/onefit-normalized-v1/821ba08b-299e-45c1-9837-82e376827c67-a4921edc649f-v1-600.webp 600w, /media/onefit-normalized-v1/821ba08b-299e-45c1-9837-82e376827c67-a4921edc649f-v1-1000.webp 1000w",
+      "currentSrc": "/media/onefit-normalized-v1/821ba08b-299e-45c1-9837-82e376827c67-a4921edc649f-v1-1000.webp",
+      "naturalWidth": 640,
+      "width": 640,
+      "height": 640
+    },
+    {
+      "sku": "ONE-0012",
+      "variantId": "15960d5d-2ad1-4a11-9c0b-2aa9dd3265bc",
+      "src": "/media/onefit-normalized-v1/0277bcbb-c691-422c-9b12-9de22e4efacf-effaa8c40d09-v1-1000.webp",
+      "srcSet": "/media/onefit-normalized-v1/0277bcbb-c691-422c-9b12-9de22e4efacf-effaa8c40d09-v1-320.webp 320w, /media/onefit-normalized-v1/0277bcbb-c691-422c-9b12-9de22e4efacf-effaa8c40d09-v1-600.webp 600w, /media/onefit-normalized-v1/0277bcbb-c691-422c-9b12-9de22e4efacf-effaa8c40d09-v1-1000.webp 1000w",
+      "currentSrc": "/media/onefit-normalized-v1/0277bcbb-c691-422c-9b12-9de22e4efacf-effaa8c40d09-v1-1000.webp",
+      "naturalWidth": 640,
+      "width": 640,
+      "height": 640
+    },
+    {
+      "sku": "ONE-0014",
+      "variantId": "3eb37c89-a023-4ab1-98e0-168940b95ddc",
+      "src": "/media/onefit-normalized-v1/9f9bdf86-6df2-48cf-90fd-e82cbc1d8d13-c1c8db21f7b6-v1-1000.webp",
+      "srcSet": "/media/onefit-normalized-v1/9f9bdf86-6df2-48cf-90fd-e82cbc1d8d13-c1c8db21f7b6-v1-320.webp 320w, /media/onefit-normalized-v1/9f9bdf86-6df2-48cf-90fd-e82cbc1d8d13-c1c8db21f7b6-v1-600.webp 600w, /media/onefit-normalized-v1/9f9bdf86-6df2-48cf-90fd-e82cbc1d8d13-c1c8db21f7b6-v1-1000.webp 1000w",
+      "currentSrc": "/media/onefit-normalized-v1/9f9bdf86-6df2-48cf-90fd-e82cbc1d8d13-c1c8db21f7b6-v1-1000.webp",
+      "naturalWidth": 640,
+      "width": 640,
+      "height": 640
+    }
+  ],
+  "catalog": [
+    {
+      "viewport": 1600,
+      "scrollWidth": 1600,
+      "cards": [
+        {
+          "href": "/producto/onefit-aminoacidos-eeaa-essential-amino-acid?variante=c6cc7d76-fa23-4a6a-9831-9d9509235ab2",
+          "src": "/media/onefit-normalized-v1/9af8ea20-2342-426c-8c17-c5fc70794578-b0d55897ead4-v1-600.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-citrato-de-magnesio-x-150gr?variante=cb6cd6ea-d08c-4960-b30a-222f7f56d67c",
+          "src": "/media/products-normalized-v1/f474df82-797e-4099-a93d-463abcfc8564-45c2fceca634-v1-640.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-citrato-de-potasio-x-150gr?variante=fe910f0d-916c-48ac-ba16-a3612ad4bd6b",
+          "src": "/media/products-normalized-v1/c2b3db5c-9802-488e-90bb-e24955e40c2c-00307a45b26e-v1-640.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-colageno-optimus-x-240gr?variante=90f4cd2d-5c87-43bd-b4b6-e9766d65d425",
+          "src": "/media/products-normalized-v1/1e8c474c-0897-4451-97c2-038faf9259b6-ba539b39f4d6-v1-640.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-creatina-micronizada-poweraded-x-200gr?variante=18753271-2994-4ceb-b691-c43a17b84324",
+          "src": "/media/normalization-trial-v1/b1aa54e3-ff2b-4bf9-93db-cad90e03e6e1-fcbbd2a9b17c-v1-640.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-creatina-micronizada-poweraded-x-500gr?variante=735351ec-b0d3-4160-b438-4997ef7616d9",
+          "src": "/media/products-normalized-v1/067384fc-7f1f-4020-ae89-7de8d69af563-703a27ff18df-v1-640.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-ganador-de-peso-the-best-gainer-1-5kg?variante=e6f02255-2ef4-43cf-9bfd-79a608cb45ea",
+          "src": "/media/onefit-normalized-v1/821ba08b-299e-45c1-9837-82e376827c67-a4921edc649f-v1-600.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-glutamina-x-200gr?variante=8be66158-4c85-47c5-86a8-4d42b60f9108",
+          "src": "/media/products-normalized-v1/51e45bb1-7335-4073-b7f5-0c1dc4cf7de7-b8d489d1329d-v1-640.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-multivitaminico-x-60-capsulas?variante=a7ae159c-c5c5-4420-ba5c-c95774988a07",
+          "src": "/media/products-normalized-v1/d9d0a67a-d5b5-4171-950d-2431df1108d1-ceaf9fb5e83a-v1-640.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-omega-3-x-30-capsulas?variante=9efb2897-6097-403e-9d4d-4aa470a1af68",
+          "src": "/media/products-normalized-v1/c9210e3c-68dd-4812-b926-9ed031ad9edc-85d5453eeab6-v1-640.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-pre-entreno-friction-3-2-x-300gr?variante=15960d5d-2ad1-4a11-9c0b-2aa9dd3265bc",
+          "src": "/media/onefit-normalized-v1/0277bcbb-c691-422c-9b12-9de22e4efacf-effaa8c40d09-v1-600.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-proteina-whey-protein-2lbs-dp?variante=3eb37c89-a023-4ab1-98e0-168940b95ddc",
+          "src": "/media/onefit-normalized-v1/9f9bdf86-6df2-48cf-90fd-e82cbc1d8d13-c1c8db21f7b6-v1-600.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-quemador-de-grasas-fat-destroyer-2-0-x-90-capsulas?variante=3502a027-f00f-43d3-8366-5aa04b89d98b",
+          "src": "/media/products-normalized-v1/6d5801ab-c0cf-4c47-b113-0232599c6162-51d85dc4c435-v1-640.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-vitamina-c-x-150gr?variante=f0368e70-bc71-414d-904c-c100b7a6a355",
+          "src": "/media/products-normalized-v1/828053bf-aa28-446b-9689-68684435a97d-c2512234eb45-v1-640.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-vitaminas-d3-k2-x-60-capsulas?variante=8b9034ee-1fbc-4ac2-972e-c329680f123e",
+          "src": "/media/products-normalized-v1/77ffff23-34b8-4a04-b15e-10e6c23b1420-c1ca07bf1638-v1-640.webp",
+          "normalized": "true"
+        }
+      ]
+    },
+    {
+      "viewport": 768,
+      "scrollWidth": 768,
+      "cards": [
+        {
+          "href": "/producto/onefit-aminoacidos-eeaa-essential-amino-acid?variante=c6cc7d76-fa23-4a6a-9831-9d9509235ab2",
+          "src": "/media/onefit-normalized-v1/9af8ea20-2342-426c-8c17-c5fc70794578-b0d55897ead4-v1-600.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-citrato-de-magnesio-x-150gr?variante=cb6cd6ea-d08c-4960-b30a-222f7f56d67c",
+          "src": "/media/products-normalized-v1/f474df82-797e-4099-a93d-463abcfc8564-45c2fceca634-v1-640.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-citrato-de-potasio-x-150gr?variante=fe910f0d-916c-48ac-ba16-a3612ad4bd6b",
+          "src": "/media/products-normalized-v1/c2b3db5c-9802-488e-90bb-e24955e40c2c-00307a45b26e-v1-640.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-colageno-optimus-x-240gr?variante=90f4cd2d-5c87-43bd-b4b6-e9766d65d425",
+          "src": "/media/products-normalized-v1/1e8c474c-0897-4451-97c2-038faf9259b6-ba539b39f4d6-v1-640.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-creatina-micronizada-poweraded-x-200gr?variante=18753271-2994-4ceb-b691-c43a17b84324",
+          "src": "/media/normalization-trial-v1/b1aa54e3-ff2b-4bf9-93db-cad90e03e6e1-fcbbd2a9b17c-v1-640.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-creatina-micronizada-poweraded-x-500gr?variante=735351ec-b0d3-4160-b438-4997ef7616d9",
+          "src": "/media/products-normalized-v1/067384fc-7f1f-4020-ae89-7de8d69af563-703a27ff18df-v1-640.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-ganador-de-peso-the-best-gainer-1-5kg?variante=e6f02255-2ef4-43cf-9bfd-79a608cb45ea",
+          "src": "/media/onefit-normalized-v1/821ba08b-299e-45c1-9837-82e376827c67-a4921edc649f-v1-600.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-glutamina-x-200gr?variante=8be66158-4c85-47c5-86a8-4d42b60f9108",
+          "src": "/media/products-normalized-v1/51e45bb1-7335-4073-b7f5-0c1dc4cf7de7-b8d489d1329d-v1-640.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-multivitaminico-x-60-capsulas?variante=a7ae159c-c5c5-4420-ba5c-c95774988a07",
+          "src": "/media/products-normalized-v1/d9d0a67a-d5b5-4171-950d-2431df1108d1-ceaf9fb5e83a-v1-640.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-omega-3-x-30-capsulas?variante=9efb2897-6097-403e-9d4d-4aa470a1af68",
+          "src": "/media/products-normalized-v1/c9210e3c-68dd-4812-b926-9ed031ad9edc-85d5453eeab6-v1-640.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-pre-entreno-friction-3-2-x-300gr?variante=15960d5d-2ad1-4a11-9c0b-2aa9dd3265bc",
+          "src": "/media/onefit-normalized-v1/0277bcbb-c691-422c-9b12-9de22e4efacf-effaa8c40d09-v1-600.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-proteina-whey-protein-2lbs-dp?variante=3eb37c89-a023-4ab1-98e0-168940b95ddc",
+          "src": "/media/onefit-normalized-v1/9f9bdf86-6df2-48cf-90fd-e82cbc1d8d13-c1c8db21f7b6-v1-600.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-quemador-de-grasas-fat-destroyer-2-0-x-90-capsulas?variante=3502a027-f00f-43d3-8366-5aa04b89d98b",
+          "src": "/media/products-normalized-v1/6d5801ab-c0cf-4c47-b113-0232599c6162-51d85dc4c435-v1-640.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-vitamina-c-x-150gr?variante=f0368e70-bc71-414d-904c-c100b7a6a355",
+          "src": "/media/products-normalized-v1/828053bf-aa28-446b-9689-68684435a97d-c2512234eb45-v1-640.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-vitaminas-d3-k2-x-60-capsulas?variante=8b9034ee-1fbc-4ac2-972e-c329680f123e",
+          "src": "/media/products-normalized-v1/77ffff23-34b8-4a04-b15e-10e6c23b1420-c1ca07bf1638-v1-640.webp",
+          "normalized": "true"
+        }
+      ]
+    },
+    {
+      "viewport": 375,
+      "scrollWidth": 375,
+      "cards": [
+        {
+          "href": "/producto/onefit-aminoacidos-eeaa-essential-amino-acid?variante=c6cc7d76-fa23-4a6a-9831-9d9509235ab2",
+          "src": "/media/onefit-normalized-v1/9af8ea20-2342-426c-8c17-c5fc70794578-b0d55897ead4-v1-600.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-citrato-de-magnesio-x-150gr?variante=cb6cd6ea-d08c-4960-b30a-222f7f56d67c",
+          "src": "/media/products-normalized-v1/f474df82-797e-4099-a93d-463abcfc8564-45c2fceca634-v1-640.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-citrato-de-potasio-x-150gr?variante=fe910f0d-916c-48ac-ba16-a3612ad4bd6b",
+          "src": "/media/products-normalized-v1/c2b3db5c-9802-488e-90bb-e24955e40c2c-00307a45b26e-v1-640.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-colageno-optimus-x-240gr?variante=90f4cd2d-5c87-43bd-b4b6-e9766d65d425",
+          "src": "/media/products-normalized-v1/1e8c474c-0897-4451-97c2-038faf9259b6-ba539b39f4d6-v1-640.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-creatina-micronizada-poweraded-x-200gr?variante=18753271-2994-4ceb-b691-c43a17b84324",
+          "src": "/media/normalization-trial-v1/b1aa54e3-ff2b-4bf9-93db-cad90e03e6e1-fcbbd2a9b17c-v1-640.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-creatina-micronizada-poweraded-x-500gr?variante=735351ec-b0d3-4160-b438-4997ef7616d9",
+          "src": "/media/products-normalized-v1/067384fc-7f1f-4020-ae89-7de8d69af563-703a27ff18df-v1-640.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-ganador-de-peso-the-best-gainer-1-5kg?variante=e6f02255-2ef4-43cf-9bfd-79a608cb45ea",
+          "src": "/media/onefit-normalized-v1/821ba08b-299e-45c1-9837-82e376827c67-a4921edc649f-v1-600.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-glutamina-x-200gr?variante=8be66158-4c85-47c5-86a8-4d42b60f9108",
+          "src": "/media/products-normalized-v1/51e45bb1-7335-4073-b7f5-0c1dc4cf7de7-b8d489d1329d-v1-640.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-multivitaminico-x-60-capsulas?variante=a7ae159c-c5c5-4420-ba5c-c95774988a07",
+          "src": "/media/products-normalized-v1/d9d0a67a-d5b5-4171-950d-2431df1108d1-ceaf9fb5e83a-v1-640.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-omega-3-x-30-capsulas?variante=9efb2897-6097-403e-9d4d-4aa470a1af68",
+          "src": "/media/products-normalized-v1/c9210e3c-68dd-4812-b926-9ed031ad9edc-85d5453eeab6-v1-640.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-pre-entreno-friction-3-2-x-300gr?variante=15960d5d-2ad1-4a11-9c0b-2aa9dd3265bc",
+          "src": "/media/onefit-normalized-v1/0277bcbb-c691-422c-9b12-9de22e4efacf-effaa8c40d09-v1-600.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-proteina-whey-protein-2lbs-dp?variante=3eb37c89-a023-4ab1-98e0-168940b95ddc",
+          "src": "/media/onefit-normalized-v1/9f9bdf86-6df2-48cf-90fd-e82cbc1d8d13-c1c8db21f7b6-v1-600.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-quemador-de-grasas-fat-destroyer-2-0-x-90-capsulas?variante=3502a027-f00f-43d3-8366-5aa04b89d98b",
+          "src": "/media/products-normalized-v1/6d5801ab-c0cf-4c47-b113-0232599c6162-51d85dc4c435-v1-640.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-vitamina-c-x-150gr?variante=f0368e70-bc71-414d-904c-c100b7a6a355",
+          "src": "/media/products-normalized-v1/828053bf-aa28-446b-9689-68684435a97d-c2512234eb45-v1-640.webp",
+          "normalized": "true"
+        },
+        {
+          "href": "/producto/onefit-vitaminas-d3-k2-x-60-capsulas?variante=8b9034ee-1fbc-4ac2-972e-c329680f123e",
+          "src": "/media/products-normalized-v1/77ffff23-34b8-4a04-b15e-10e6c23b1420-c1ca07bf1638-v1-640.webp",
+          "normalized": "true"
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "arrowChanges": 8,
+  "withoutJavaScript": true,
+  "status": "passed",
+  "animatedCards": [
+    "ONE-0001",
+    "ONE-0002",
+    "ONE-0003",
+    "ONE-0004",
+    "ONE-0007",
+    "ONE-0010",
+    "ONE-0012",
+    "ONE-0014"
+  ],
+  "animatedCardErrors": []
+}

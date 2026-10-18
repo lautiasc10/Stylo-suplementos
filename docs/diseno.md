@@ -1,5 +1,7 @@
 # Diseño de STYLO
 
+La [Fase 3G de renormalización One Fit](normalizacion-onefit-fase-3g.md) procesa ocho frentes nuevos con rembg/Pillow, master transparente de 1000 × 1000, envase de 800 px de alto y base en y=900. Sus copias de tarjeta son de 320/600 px; se conservan los originales, el perfil anterior 320/640/1000 y toda la presentación vigente de catálogo y detalle. El informe señala una foto de EEAA naranja cuyo propio envase dice Colágeno y la discrepancia entre el nombre Chocolate y el UUID de Dulce de leche suministrado.
+
 ## Fichas de producto: dirección vigente del 17 de octubre
 
 La [ampliación de fondos por sabor](fondos-sabores.md) incorpora los doce recursos transparentes nuevos aportados por el usuario. Todas las familias de sabor del catálogo tienen decoración, incluida Citrus con limón y naranja; se conservan los transparentes anteriores de Frutilla y Vainilla porque sus PNG locales son opacos. Los recursos se sirven como WebP y las superficies animadas comparten los tokens de color de las categorías. El giro y los tachados se mantienen.
