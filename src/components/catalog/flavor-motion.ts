@@ -2,8 +2,9 @@
 export const flavorMotion = {
   total: 960,
   background: 850,
-  backgroundScale: 960,
+  backgroundScale: 850,
   backgroundFromScale: 1.06,
+  backgroundCrossfade: 160,
   exit: 260,
   enterDelay: 140,
   enter: 420,

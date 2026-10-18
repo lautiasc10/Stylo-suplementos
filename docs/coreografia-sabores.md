@@ -1,11 +1,13 @@
 # Fase 3H — Coreografía del detalle por sabor
 
+Actualización visual: el círculo y la escala del fondo nuevo terminan juntos a los 850 ms. Durante los primeros 160 ms, la nueva escena se funde suavemente dentro del círculo; la anterior sigue completa debajo hasta que el círculo termina. Si el navegador no admite `clip-path: circle`, el cambio usa el fundido simple existente. Esta actualización se verificó en las fichas de escritorio y móvil.
+
 18 de octubre de 2026. Rama `fase-3h-coreografia-sabores`. Alcance vigente: fichas de varios sabores; el pedido posterior reemplaza la prueba anterior en tres productos. El catálogo y las fichas sin escena de sabor conservan sus componentes y transiciones. No se cambian recursos originales, información comercial, diseño del bloque lateral ni datos de Supabase.
 
 ## Comportamiento
 
 - Flechas, chips, teclado y swipe comparten una solicitud con dirección, coordenadas y reloj. Precio, stock, botón y `?variante=` se actualizan dentro del evento; las fotografías y decoraciones no bloquean la compra.
-- El fondo es una composición completa por sabor: color, ingredientes existentes y el mismo velo de legibilidad. La nueva composición se descubre con un círculo desde el control tocado durante 850 ms y sus ingredientes pasan de escala 1,06 a 1 hasta 960 ms. La escena anterior se retira al terminar el círculo. Una interrupción completa visualmente la escena anterior y monta la siguiente; nunca hay más de dos escenas.
+- El fondo es una composición completa por sabor: color, ingredientes existentes y el mismo velo de legibilidad. La nueva composición se descubre con un círculo desde el control tocado durante 850 ms, con escala de 1,06 a 1 en esos mismos 850 ms y un fundido inicial de 160 ms. La escena anterior se retira al terminar el círculo. Una interrupción completa visualmente la escena anterior y monta la siguiente; nunca hay más de dos escenas.
 - El envase sale 24 px con 20° de giro y se desvanece en 260 ms. La aproximación del siguiente empieza a los 140 ms, pero permanece transparente hasta los 260 ms; llega a su posición a los 560 ms. Esa separación elimina la doble exposición: en ningún punto del timeline hay dos envases con opacidad visible simultánea. La escala y línea base se conservan.
 - El contorno del chip se desplaza mediante transform en 280 ms y conserva su posición visual si se interrumpe. Nombre de sabor, disponibilidad y precios entran con 6 px y retrasos de 120/160/200 ms; terminan a los 400 ms. Los acentos usan capas de opacidad de 300/600 ms.
 - Se preparan y decodifican las fotos y decoraciones vecinas al entrar al hero y en reposo. Hover/foco sobre un chip prepara también esa selección. La caché de fotografías está limitada a cuatro entradas. Si una foto falta o falla, se informa en el escenario y se mantiene la selección de compra solicitada; no se inventa una imagen.
@@ -24,7 +26,7 @@ Todos los tiempos y curvas de esta coreografía están en [`flavor-motion.ts`](.
 
 ## Medición de producción
 
-Servidor `next build` + `next start --port 3200`, Chromium con GPU NVIDIA GeForce GTX 1650 habilitada, DPR 1. Escritorio 1440 × 900, móvil emulado 375 × 900. El reloj real de la pantalla produjo intervalos habituales de 13,3 ms (aproximadamente 75 Hz). No se utilizó `next dev`. El móvil es una emulación, no una certificación en teléfono físico.
+Medición de la coreografía original, antes del fundido inicial de 160 ms y de igualar el zoom al círculo. Servidor `next build` + `next start --port 3200`, Chromium con GPU NVIDIA GeForce GTX 1650 habilitada, DPR 1. Escritorio 1440 × 900, móvil emulado 375 × 900. El reloj real de la pantalla produjo intervalos habituales de 13,3 ms (aproximadamente 75 Hz). No se utilizó `next dev`. El móvil es una emulación, no una certificación en teléfono físico.
 
 | Recorrido | Duración medida | Máximo durante la transición | Cuadros >20 ms | Cuadros >32 ms | Scripting en ventana de 1,25 s | CLS |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |

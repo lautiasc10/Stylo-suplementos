@@ -65,7 +65,9 @@ export function FlavorHeroScene({
     if (!change || previousFlavor === flavor || !layer || !inner || !element)
       return;
     const animations: Animation[] = [];
-    const full = change.mode === "full";
+    const full =
+      change.mode === "full" &&
+      CSS.supports("clip-path", "circle(10px at 50% 50%)");
     const outgoing = element.querySelector<HTMLElement>(
       ".flavor-hero-background[data-outgoing]",
     );
@@ -78,7 +80,7 @@ export function FlavorHeroScene({
       bounds.height,
       change.point,
     );
-    layer.style.willChange = full ? "clip-path, transform" : "opacity";
+    layer.style.willChange = full ? "clip-path, opacity" : "opacity";
     const reveal = layer.animate(
       full
         ? [
@@ -93,6 +95,17 @@ export function FlavorHeroScene({
       },
     );
     animations.push(reveal);
+    if (full) {
+      // The short opacity overlap softens the cut at the reveal's origin and
+      // also provides a visual fallback while the clip surface is promoted.
+      animations.push(
+        layer.animate([{ opacity: 0 }, { opacity: 1 }], {
+          duration: m.backgroundCrossfade,
+          easing: m.easing.fade,
+          fill: "both",
+        }),
+      );
+    }
     void reveal.finished
       .then(() => {
         layer.style.willChange = "";

@@ -128,6 +128,27 @@ test("coreografía: origen circular, datos inmediatos y ningún cuadro con dos e
       };
     });
   expect(reveal.duration).toBe(flavorMotion.background);
+  await expect(page.locator(".flavor-hero-background")).toHaveCount(2);
+  const backgroundAnimations = await page
+    .locator('.flavor-hero-background[data-current="true"]')
+    .evaluate((el) => ({
+      fade: el
+        .getAnimations()
+        .find((animation) =>
+          (animation.effect as KeyframeEffect)
+            .getKeyframes()
+            .some((frame) => frame.opacity !== undefined),
+        )
+        ?.effect?.getTiming().duration,
+      zoom: el
+        .querySelector(".flavor-hero-background-content")
+        ?.getAnimations()[0]
+        ?.effect?.getTiming().duration,
+    }));
+  expect(backgroundAnimations).toEqual({
+    fade: flavorMotion.backgroundCrossfade,
+    zoom: flavorMotion.backgroundScale,
+  });
   const coords = String(reveal.start).match(/at ([\d.]+)px ([\d.]+)px/)!;
   expect(
     Math.abs(Number(coords[1]) - (arrow!.x + arrow!.width / 2 - box!.x)),
