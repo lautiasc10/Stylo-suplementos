@@ -28,7 +28,7 @@
 .flavor-hero-scenes[data-ambient="true"]
   .flavor-hero-background[data-current="true"]
   .flavor-hero-background-content {
-  animation: flavor-ambient-drift 28s ease-in-out infinite alternate;
+  animation: flavor-ambient-drift 20s ease-in-out infinite alternate;
   animation-play-state: paused;
 }
 .flavor-hero-scenes[data-ambient="true"][data-playing="true"]
@@ -39,8 +39,30 @@
 }
 @keyframes flavor-ambient-drift {
   0% { transform: translate3d(0, 0, 0) scale(1); }
-  55% { transform: translate3d(-0.5%, 0.35%, 0) scale(1.035); }
-  100% { transform: translate3d(0.5%, -0.35%, 0) scale(1.04); }
+  55% { transform: translate3d(-0.9%, 0.6%, 0) scale(1.055); }
+  100% { transform: translate3d(0.9%, -0.6%, 0) scale(1.065); }
+}
+.flavor-hero-scenes[data-ambient="true"]
+  .flavor-scene-piece[data-place="hero"] img,
+.flavor-hero-scenes[data-ambient="true"]
+  .flavor-scene-piece[data-place="bottom"] img {
+  animation: flavor-ingredient-float 11s ease-in-out infinite alternate;
+}
+.flavor-hero-scenes[data-ambient="true"]
+  .flavor-scene-piece[data-place="bottom"] img {
+  animation-duration: 13s;
+  animation-direction: alternate-reverse;
+}
+.flavor-hero-scenes[data-ambient="true"][data-playing="true"]
+  .flavor-scene-piece[data-place="hero"] img,
+.flavor-hero-scenes[data-ambient="true"][data-playing="true"]
+  .flavor-scene-piece[data-place="bottom"] img {
+  will-change: transform;
+}
+@keyframes flavor-ingredient-float {
+  0% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  55% { transform: translate3d(7px, -10px, 0) rotate(0.5deg); }
+  100% { transform: translate3d(-6px, 7px, 0) rotate(-0.4deg); }
 }
 .flavor-hero-readability {
   position: absolute;
@@ -142,6 +164,10 @@
     animation: none !important;
     will-change: auto !important;
   }
+  .flavor-hero-scenes .flavor-scene-piece img {
+    animation: none !important;
+    will-change: auto !important;
+  }
   .flavor-hero-gallery .variant-spinner-frames {
     perspective: none;
   }
@@ -149,7 +175,16 @@
 @media (max-width: 767px) {
   @keyframes flavor-ambient-drift {
     0% { transform: translate3d(0, 0, 0) scale(1); }
-    55% { transform: translate3d(-0.3%, 0.2%, 0) scale(1.018); }
-    100% { transform: translate3d(0.3%, -0.2%, 0) scale(1.025); }
+    55% { transform: translate3d(-0.55%, 0.4%, 0) scale(1.03); }
+    100% { transform: translate3d(0.55%, -0.4%, 0) scale(1.04); }
+  }
+  @keyframes flavor-ingredient-float {
+    0% { transform: translate3d(0, 0, 0) rotate(0deg); }
+    55% { transform: translate3d(4px, -6px, 0) rotate(0.3deg); }
+    100% { transform: translate3d(-4px, 5px, 0) rotate(-0.3deg); }
+  }
+  .flavor-hero-scenes[data-ambient="true"]
+    .flavor-scene-piece[data-place="bottom"] img {
+    animation: none;
   }
 }

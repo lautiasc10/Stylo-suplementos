@@ -700,10 +700,21 @@ test("el movimiento ambiente empieza tras el reveal, se pausa y respeta movimien
   await expect(page.getByRole("button", { name: /Pausar fondo/i })).toHaveCount(
     0,
   );
-  await expect(decor.locator("img").first()).toHaveCSS(
-    "animation-name",
-    "none",
-  );
+  await expect(decor).toHaveAttribute("data-ambient", "true");
+  const initialBackground = decor.locator('.flavor-hero-background[data-current="true"] .flavor-hero-background-content');
+  await expect(initialBackground).toHaveCSS("animation-play-state", "running");
+  const ingredient = decor.locator('.flavor-scene-piece[data-place="hero"] img').first();
+  await expect(ingredient).toHaveCSS("animation-name", "flavor-ingredient-float");
+  const movement = await ingredient.evaluate((element) => {
+    const animation = element.getAnimations()[0];
+    animation.pause();
+    animation.currentTime = 0;
+    const start = getComputedStyle(element).transform;
+    animation.currentTime = 5500;
+    const middle = getComputedStyle(element).transform;
+    return { start, middle };
+  });
+  expect(movement.middle).not.toBe(movement.start);
   await page
     .getByRole("button", { name: "Sabor siguiente", exact: true })
     .click();

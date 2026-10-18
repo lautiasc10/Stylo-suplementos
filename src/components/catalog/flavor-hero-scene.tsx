@@ -169,7 +169,7 @@ export function FlavorHeroScene({
       className="flavor-scene-decorations flavor-hero-scenes"
       aria-hidden="true"
       data-ambient={
-        !reduced && change && ambientReady === change.token && !hasPrevious
+        !reduced && !hasPrevious && (!change || ambientReady === change.token)
           ? "true"
           : undefined
       }
