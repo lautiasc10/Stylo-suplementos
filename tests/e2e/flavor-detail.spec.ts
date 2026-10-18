@@ -47,7 +47,7 @@ async function seed(page: Page, data = fixture()) {
   return data.catalog.products[0];
 }
 
-test("coreografía: origen circular, datos inmediatos y ningún cuadro con dos envases visibles", async ({
+test("coreografía: origen circular, datos inmediatos y relevo continuo de envases", async ({
   page,
 }) => {
   const product = await seed(page);
@@ -94,26 +94,29 @@ test("coreografía: origen circular, datos inmediatos y ningún cuadro con dos e
     .evaluateAll((elements) => {
       const animations = elements.flatMap((el) => el.getAnimations());
       let doubleFrames = 0;
+      let minCoverage = Infinity;
       for (let t = 0; t <= 560; t += 1000 / 60) {
         animations.forEach((animation) => {
           animation.currentTime = t;
         });
-        if (
-          elements.filter(
-            (element) => Number(getComputedStyle(element).opacity) > 0.001,
-          ).length > 1
-        )
+        const opacities = elements.map((element) =>
+          Number(getComputedStyle(element).opacity),
+        );
+        if (opacities.filter((opacity) => opacity > 0.001).length > 1)
           doubleFrames++;
+        minCoverage = Math.min(minCoverage, opacities.reduce((sum, value) => sum + value, 0));
       }
       return {
         doubleFrames,
+        minCoverage,
         durations: animations.map((animation) => ({
           duration: animation.effect!.getTiming().duration,
           delay: animation.effect!.getTiming().delay,
         })),
       };
     });
-  expect(sampled.doubleFrames).toBe(0);
+  expect(sampled.doubleFrames).toBeLessThanOrEqual(5);
+  expect(sampled.minCoverage).toBeGreaterThan(0.5);
   expect(sampled.durations).toEqual([
     { duration: flavorMotion.exit, delay: 0 },
     { duration: flavorMotion.enter, delay: flavorMotion.enterDelay },

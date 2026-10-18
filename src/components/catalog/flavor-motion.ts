@@ -8,9 +8,13 @@ export const flavorMotion = {
   exit: 260,
   enterDelay: 140,
   enter: 420,
-  // The incoming pack moves from 140ms but stays transparent until 260ms.
-  // This deliberately eliminates visible double exposure between two fronts.
-  packVisibleAt: 260,
+  // A brief directional handoff keeps a visible pack on screen throughout the
+  // change without leaving two fully opaque fronts in the same place.
+  packExitHold: 130,
+  packExitFade: 220,
+  packVisibleAt: 210,
+  packStrongAt: 260,
+  packOpaqueAt: 310,
   packDistance: 24,
   packAngle: 20,
   chip: 280,

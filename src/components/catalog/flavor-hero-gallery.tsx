@@ -116,12 +116,22 @@ export function FlavorHeroGallery({
           ? "transform, opacity"
           : "opacity";
         const duration = flavorDuration(change);
-        // No visible overlap: incoming opacity remains zero until the outgoing
-        // pack has finished fading. Its approach is prepared in that interval.
+        // Keep the old pack legible until the new one starts arriving. Their
+        // short opacity handoff happens while they move in opposite directions.
         const exit = outgoing.animate(
           full
             ? [
                 { transform: "translateX(0px) rotateY(0deg)", opacity: 1 },
+                {
+                  transform: `translateX(${-m.packDistance * sign * 0.5}px) rotateY(${-m.packAngle * sign * 0.5}deg)`,
+                  opacity: 1,
+                  offset: m.packExitHold / m.exit,
+                },
+                {
+                  transform: `translateX(${-m.packDistance * sign * 0.85}px) rotateY(${-m.packAngle * sign * 0.85}deg)`,
+                  opacity: 0.75,
+                  offset: m.packExitFade / m.exit,
+                },
                 {
                   transform: `translateX(${-m.packDistance * sign}px) rotateY(${-m.packAngle * sign}deg)`,
                   opacity: 0,
@@ -143,10 +153,19 @@ export function FlavorHeroGallery({
                   easing: m.easing.enter,
                 },
                 {
-                  transform: `translateX(${(m.packDistance * sign) / 2}px) rotateY(${(m.packAngle * sign) / 2}deg)`,
+                  transform: `translateX(${m.packDistance * sign * 0.85}px) rotateY(${m.packAngle * sign * 0.85}deg)`,
                   opacity: 0,
                   offset: (m.packVisibleAt - m.enterDelay) / m.enter,
-                  easing: m.easing.enter,
+                },
+                {
+                  transform: `translateX(${(m.packDistance * sign) / 2}px) rotateY(${(m.packAngle * sign) / 2}deg)`,
+                  opacity: 0.65,
+                  offset: (m.packStrongAt - m.enterDelay) / m.enter,
+                },
+                {
+                  transform: `translateX(${m.packDistance * sign * 0.25}px) rotateY(${m.packAngle * sign * 0.25}deg)`,
+                  opacity: 1,
+                  offset: (m.packOpaqueAt - m.enterDelay) / m.enter,
                 },
                 { transform: "translateX(0px) rotateY(0deg)", opacity: 1 },
               ]
