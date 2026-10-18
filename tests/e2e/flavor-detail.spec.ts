@@ -280,7 +280,7 @@ test("diez cambios rápidos por sentido, chips, teclado y swipe dejan selección
   await expect(page.locator(".flavor-hero-pack")).toHaveCount(1);
 });
 
-test("tres cuadros lentos activan el fundido para el resto de la sesión", async ({
+test("los cambios repetidos conservan el reveal aun tras cuadros lentos", async ({
   page,
 }) => {
   await seed(page);
@@ -303,24 +303,18 @@ test("tres cuadros lentos activan el fundido para el resto de la sesión", async
         requestAnimationFrame(slow);
       }),
   );
-  await expect
-    .poll(() =>
-      page.evaluate(() =>
-        sessionStorage.getItem("stylo.flavor-motion.simple.v1"),
-      ),
-    )
-    .toBe("1");
   await page
     .getByRole("button", { name: "Sabor siguiente", exact: true })
     .click();
   await expect(page.locator(".flavor-product-detail")).toHaveAttribute(
     "data-flavor-motion",
-    "simple",
+    "full",
   );
-  await expect(page.locator(".flavor-product-detail")).not.toHaveAttribute(
-    "data-flavor-running",
-    "true",
-  );
+  const reveal = await page.locator('.flavor-hero-background[data-current="true"]')
+    .evaluate((element) => element.getAnimations().some((animation) =>
+      (animation.effect as KeyframeEffect).getKeyframes().some((frame) => frame.clipPath !== undefined),
+    ));
+  expect(reveal).toBe(true);
 });
 
 test("todos los fondos disponibles siguen el sabor y conservan el color de las categorías", async ({
@@ -693,7 +687,7 @@ test("la decoración fallida no bloquea el sabor y otros productos comparten la 
   ).toHaveCount(0);
 });
 
-test("el fondo se detiene solo, permite cambiar de sabor y respeta movimiento reducido", async ({
+test("el movimiento ambiente empieza tras el reveal, se pausa y respeta movimiento reducido", async ({
   page,
 }) => {
   await seed(page);
@@ -715,7 +709,17 @@ test("el fondo se detiene solo, permite cambiar de sabor y respeta movimiento re
     .click();
   const layer = decor.locator('.flavor-scene-layer[data-flavor="frutilla"]');
   await expect(layer).toHaveCSS("opacity", "1");
+  const background = decor.locator('.flavor-hero-background[data-current="true"] .flavor-hero-background-content');
+  await expect(decor).toHaveAttribute("data-ambient", "true");
+  await expect(background).toHaveCSS("animation-name", "flavor-ambient-drift");
+  await page.evaluate(() => {
+    Object.defineProperty(document, "hidden", { configurable: true, value: true });
+    document.dispatchEvent(new Event("visibilitychange"));
+  });
+  await expect(background).toHaveCSS("animation-play-state", "paused");
   await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(decor).not.toHaveAttribute("data-ambient", "true");
+  await expect(background).toHaveCSS("animation-name", "none");
   await expect(layer.locator("img").first()).toHaveCSS(
     "animation-name",
     "none",

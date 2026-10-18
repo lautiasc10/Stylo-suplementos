@@ -23,8 +23,6 @@ export const flavorMotion = {
   simple: 400,
   reduced: 250,
   idlePreload: 120,
-  slowFrame: 32,
-  slowFrameLimit: 3,
   easing: {
     background: "cubic-bezier(.65,0,.35,1)",
     exit: "cubic-bezier(.4,0,1,1)",

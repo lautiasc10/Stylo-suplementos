@@ -10,13 +10,9 @@ import {
 import { useMotionPreference } from "@/components/ui/use-motion-preference";
 import {
   flavorDuration,
-  flavorMotion,
   type FlavorChange,
   type FlavorPoint,
 } from "./flavor-motion";
-
-const simpleKey = "stylo.flavor-motion.simple.v1";
-let sessionSimple = false;
 
 export function useFlavorChoreography(
   root: RefObject<HTMLDivElement | null>,
@@ -34,12 +30,6 @@ export function useFlavorChoreography(
     (id: string, direction: number, clientPoint: FlavorPoint) => {
       if (id === current.current) return;
       const bounds = root.current?.getBoundingClientRect();
-      let simple = sessionSimple;
-      try {
-        simple ||= sessionStorage.getItem(simpleKey) === "1";
-      } catch {
-        /* Storage may be disabled; the in-memory session flag remains available. */
-      }
       const fromId = current.current;
       current.current = id;
       // Selection is synchronous with the gesture, independent of all media.
@@ -54,7 +44,7 @@ export function useFlavorChoreography(
           y: clientPoint.y - (bounds?.top ?? 0),
         },
         startedAt: performance.now(),
-        mode: reduced !== false ? "reduced" : simple ? "simple" : "full",
+        mode: reduced !== false ? "reduced" : "full",
       });
       setRunning(true);
     },
@@ -74,17 +64,6 @@ export function useFlavorChoreography(
     const sample = (now: number) => {
       gaps.push(now - previous);
       previous = now;
-      if (
-        gaps.filter((gap) => gap > flavorMotion.slowFrame).length >=
-        flavorMotion.slowFrameLimit
-      ) {
-        sessionSimple = true;
-        try {
-          sessionStorage.setItem(simpleKey, "1");
-        } catch {
-          /* No persistent storage is required for the animation. */
-        }
-      }
       if (document.hidden || now - change.startedAt >= flavorDuration(change)) {
         setRunning(false);
         const detail = {
@@ -95,7 +74,7 @@ export function useFlavorChoreography(
           framesOver20: gaps.filter((gap) => gap > 20).length,
           framesOver32: gaps.filter((gap) => gap > 32).length,
           maxFrame: Math.max(...gaps),
-          simplifiedNext: sessionSimple,
+          simplifiedNext: false,
         };
         performance.measure("stylo:flavor-transition", {
           start: change.startedAt,

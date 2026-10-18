@@ -1,6 +1,7 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useMotionPreference } from "@/components/ui/use-motion-preference";
 import { IngredientLayer } from "./flavor-scene";
 import type { SceneFlavor } from "@/modules/catalog/flavor-scenes";
 import {
@@ -25,9 +26,33 @@ export function FlavorHeroScene({
   const incoming = useRef<HTMLDivElement>(null);
   const content = useRef<HTMLDivElement>(null);
   const [expired, setExpired] = useState<number | null>(null);
+  const [ambientReady, setAmbientReady] = useState<number | null>(null);
+  const [visible, setVisible] = useState(false);
+  const [documentVisible, setDocumentVisible] = useState(true);
+  const reduced = useMotionPreference();
   const hasPrevious = Boolean(
     change && expired !== change.token && previousFlavor !== flavor,
   );
+
+  useEffect(() => {
+    const element = root.current;
+    if (!element) return;
+    const updateVisibility = () => setDocumentVisible(!document.hidden);
+    updateVisibility();
+    document.addEventListener("visibilitychange", updateVisibility);
+    if (!window.IntersectionObserver) {
+      setVisible(true);
+      return () => document.removeEventListener("visibilitychange", updateVisibility);
+    }
+    const observer = new IntersectionObserver(([entry]) =>
+      setVisible(entry.isIntersecting),
+    );
+    observer.observe(element);
+    return () => {
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", updateVisibility);
+    };
+  }, []);
 
   useLayoutEffect(() => {
     const element = root.current;
@@ -111,6 +136,7 @@ export function FlavorHeroScene({
         layer.style.willChange = "";
         if (outgoing) outgoing.style.willChange = "";
         setExpired(change.token);
+        if (full) setAmbientReady(change.token);
       })
       .catch(() => {});
     if (full) {
@@ -142,6 +168,12 @@ export function FlavorHeroScene({
       ref={root}
       className="flavor-scene-decorations flavor-hero-scenes"
       aria-hidden="true"
+      data-ambient={
+        !reduced && change && ambientReady === change.token && !hasPrevious
+          ? "true"
+          : undefined
+      }
+      data-playing={visible && documentVisible ? "true" : undefined}
     >
       {layers.map((value, index) => {
         const active = index === layers.length - 1;

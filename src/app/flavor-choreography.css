@@ -23,6 +23,25 @@
   transform-origin: center;
   contain: paint;
 }
+/* Starts only after the circular reveal has finished. One composited layer
+   moves the ingredients and the readability veil together. */
+.flavor-hero-scenes[data-ambient="true"]
+  .flavor-hero-background[data-current="true"]
+  .flavor-hero-background-content {
+  animation: flavor-ambient-drift 28s ease-in-out infinite alternate;
+  animation-play-state: paused;
+}
+.flavor-hero-scenes[data-ambient="true"][data-playing="true"]
+  .flavor-hero-background[data-current="true"]
+  .flavor-hero-background-content {
+  animation-play-state: running;
+  will-change: transform;
+}
+@keyframes flavor-ambient-drift {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  55% { transform: translate3d(-0.5%, 0.35%, 0) scale(1.035); }
+  100% { transform: translate3d(0.5%, -0.35%, 0) scale(1.04); }
+}
 .flavor-hero-readability {
   position: absolute;
   left: var(--flavor-copy-x, 55%);
@@ -119,7 +138,18 @@
   );
 }
 @media (prefers-reduced-motion: reduce) {
+  .flavor-hero-scenes .flavor-hero-background-content {
+    animation: none !important;
+    will-change: auto !important;
+  }
   .flavor-hero-gallery .variant-spinner-frames {
     perspective: none;
+  }
+}
+@media (max-width: 767px) {
+  @keyframes flavor-ambient-drift {
+    0% { transform: translate3d(0, 0, 0) scale(1); }
+    55% { transform: translate3d(-0.3%, 0.2%, 0) scale(1.018); }
+    100% { transform: translate3d(0.3%, -0.2%, 0) scale(1.025); }
   }
 }
