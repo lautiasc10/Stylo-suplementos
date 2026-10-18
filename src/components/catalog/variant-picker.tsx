@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { variantLabel, type Variant } from "@/modules/catalog/model";
+import { flavorLabel, variantLabel, type Variant } from "@/modules/catalog/model";
 
 /** Real links preserve variant selection before hydration and without JavaScript. */
 export function VariantPicker({
@@ -47,7 +47,7 @@ export function VariantPicker({
           >
             <span>
               {distinctFlavors && item.flavor
-                ? item.flavor
+                ? flavorLabel(item.flavor)
                 : variantLabel(item)}
             </span>
             {item.stock === 0 && item.id !== selected.id && (

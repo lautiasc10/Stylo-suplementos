@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AddToCart } from "@/components/commerce/add-to-cart";
 import { ProductPricing } from "@/components/commerce/product-pricing";
 import { RevealGroup, RevealItem } from "@/components/ui/Reveal";
-import { variantLabel } from "@/modules/catalog/model";
+import { flavorLabel, variantLabel } from "@/modules/catalog/model";
 import {
   FlavorSceneDecorations,
   sceneFlavor,
@@ -362,7 +362,7 @@ export function ProductDetail({
                   <span className="gainer-flavor-name">
                     {repeatedFlavor
                       ? variantLabel(item)
-                      : item.flavor || variantLabel(item)}
+                      : flavorLabel(item.flavor) || variantLabel(item)}
                   </span>
                 </a>
               ))}

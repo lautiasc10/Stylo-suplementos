@@ -75,8 +75,23 @@ export const formatPrice = (cents: number, fractionDigits: 0 | 2 = 2) =>
     minimumFractionDigits: fractionDigits,
     maximumFractionDigits: fractionDigits,
   }).format(cents / 100);
+/** Customer-facing names; the original flavor remains intact for SKU and editing. */
+export function flavorLabel(value: string): string {
+  const raw = value.trim();
+  if (!raw) return "";
+  const key = raw
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLocaleLowerCase("es-AR")
+    .replace(/\s+/g, " ");
+  if (/^fru\.?\s*rojos$|^frutos rojos$/.test(key)) return "Frutos rojos";
+  if (key === "anana") return "Ananá";
+  if (key === "limon") return "Limón";
+  if (key === "sandia") return "Sandía";
+  return raw.charAt(0).toLocaleUpperCase("es-AR") + raw.slice(1);
+}
 export const variantLabel = (variant: Variant) =>
-  [variant.flavor, variant.size, variant.presentation]
+  [flavorLabel(variant.flavor), variant.size, variant.presentation]
     .filter(Boolean)
     .join(" · ") || "Presentación única";
 
@@ -285,7 +300,8 @@ export function matchingVariants(
   return product.variants.filter(
     (variant) =>
       variant.active &&
-      (!filters.flavor || variant.flavor === filters.flavor) &&
+      (!filters.flavor ||
+        flavorLabel(variant.flavor) === flavorLabel(filters.flavor)) &&
       (filters.availability !== "in-stock" || variant.stock > 0) &&
       (filters.availability !== "out-of-stock" || variant.stock === 0) &&
       (min === undefined || variant.listPrice >= min) &&

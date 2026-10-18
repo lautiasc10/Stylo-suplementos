@@ -1,4 +1,4 @@
-import { publicCatalog, variantImages, type Catalog } from "./model";
+import { flavorLabel, publicCatalog, variantImages, variantLabel, type Catalog } from "./model";
 import { catalogMediaSource } from "./media-source";
 
 export const POPULAR_SEARCHES = [
@@ -88,10 +88,8 @@ export function createSearchIndex(
               : "";
           return {
             id: v.id,
-            flavor: v.flavor,
-            label: [v.flavor, v.size, v.presentation]
-              .filter(Boolean)
-              .join(" · "),
+            flavor: flavorLabel(v.flavor),
+            label: variantLabel(v),
             listPrice: v.listPrice,
             stock: v.stock,
             image: catalogMediaSource(source, imageBase, "thumbnail"),

@@ -9,7 +9,7 @@ import {
   type RefObject,
 } from "react";
 import { Icon } from "@/components/ui/icon";
-import { variantLabel, type Variant } from "@/modules/catalog/model";
+import { flavorLabel, variantLabel, type Variant } from "@/modules/catalog/model";
 import { createGalleryPhotoCache } from "./gallery-photo-cache";
 import type { GalleryImage } from "./product-gallery";
 import {
@@ -357,7 +357,7 @@ export function FlavorHeroGallery({
         </p>
       </div>
       <p className="variant-spinner-caption" aria-live="polite">
-        {active.flavor || variantLabel(active)}
+        {flavorLabel(active.flavor) || variantLabel(active)}
       </p>
     </div>
   );

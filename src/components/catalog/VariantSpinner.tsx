@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Icon } from "@/components/ui/icon";
 import { useMotionPreference } from "@/components/ui/use-motion-preference";
-import { variantLabel, type Variant } from "@/modules/catalog/model";
+import { flavorLabel, variantLabel, type Variant } from "@/modules/catalog/model";
 import { createGalleryPhotoCache } from "./gallery-photo-cache";
 import { ProductThumbnailRail } from "./product-thumbnail-rail";
 import type { GalleryImage } from "./product-gallery";
@@ -663,7 +663,7 @@ export function VariantSpinner(props: VariantSpinnerProps) {
       {mode === "detail" && (
         <>
           <p className="variant-spinner-caption">
-            {variant.flavor || variantLabel(variant)}
+            {flavorLabel(variant.flavor) || variantLabel(variant)}
           </p>
           {showThumbnails && (
             <ProductThumbnailRail

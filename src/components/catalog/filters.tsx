@@ -10,6 +10,7 @@ import type {
   CatalogFilters,
   CatalogGroup,
 } from "@/modules/catalog/model";
+import { flavorLabel } from "@/modules/catalog/model";
 
 type FilterProps = {
   catalog: Catalog;
@@ -33,7 +34,7 @@ function selections({
       key: "marca",
       label: catalog.brands.find((item) => item.slug === filters.brand)?.name,
     },
-    { key: "sabor", label: filters.flavor },
+    { key: "sabor", label: filters.flavor && flavorLabel(filters.flavor) },
     {
       key: "disponibilidad",
       label:
@@ -91,7 +92,7 @@ export function CatalogFilterSidebar(props: FilterProps) {
       catalog.products.flatMap((product) =>
         product.variants
           .filter((variant) => variant.active)
-          .map((variant) => variant.flavor)
+          .map((variant) => flavorLabel(variant.flavor))
           .filter(Boolean),
       ),
     ),
@@ -106,7 +107,7 @@ export function CatalogFilterSidebar(props: FilterProps) {
             q: filters.q,
             categoria: filters.category,
             marca: filters.brand,
-            sabor: filters.flavor,
+            sabor: flavorLabel(filters.flavor ?? ""),
             orden: filters.sort ?? "name",
             disponibilidad: filters.availability,
             min: filters.min,

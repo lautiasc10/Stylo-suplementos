@@ -3,12 +3,15 @@ import { readFileSync } from "node:fs";
 import { demoCatalog } from "../../src/modules/catalog/demo";
 import {
   filterCatalog,
+  flavorLabel,
+  matchingVariants,
   parseMoney,
   publicCatalog,
   validateCatalog,
   variantImages,
   variantInformationImages,
   variantTurnImages,
+  variantLabel,
 } from "../../src/modules/catalog/model";
 import {
   importColumns,
@@ -34,6 +37,25 @@ const row = [
   "true",
 ];
 describe("catálogo y precios", () => {
+  it("muestra nombres de sabor consistentes sin cambiar la identidad de las variantes", () => {
+    expect(["fru.rojos", "fru. rojos", "frutos rojos"].map(flavorLabel)).toEqual([
+      "Frutos rojos",
+      "Frutos rojos",
+      "Frutos rojos",
+    ]);
+    expect(["anana", "limon", "sandia"].map(flavorLabel)).toEqual([
+      "Ananá",
+      "Limón",
+      "Sandía",
+    ]);
+    const product = demoCatalog().products[0];
+    product.variants[0].flavor = "fru.rojos";
+    expect(variantLabel(product.variants[0])).toContain("Frutos rojos");
+    expect(matchingVariants(product, { flavor: "Frutos rojos" }).map((item) => item.id)).toEqual([
+      product.variants[0].id,
+    ]);
+    expect(product.variants[0].flavor).toBe("fru.rojos");
+  });
   it("conserva los ángulos por SKU y prioriza la vista específica sobre la compartida", () => {
     const catalog = demoCatalog();
     const product = catalog.products[0];

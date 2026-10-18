@@ -17,6 +17,7 @@ import {
   type CatalogGroup,
   type Product,
   type Variant,
+  flavorLabel,
 } from "@/modules/catalog/model";
 
 function FlavorBadge({ flavor }: { flavor: string }) {
@@ -176,7 +177,7 @@ export function ProductCard({
             key={`promotion:${variant.id}`}
             variant={variant}
           />
-          {variant.flavor && <FlavorBadge flavor={variant.flavor} />}
+          {variant.flavor && <FlavorBadge flavor={flavorLabel(variant.flavor)} />}
           {variant.stock === 0 && (
             <span
               key={`stock:${variant.id}`}
