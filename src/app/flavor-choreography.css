@@ -23,84 +23,6 @@
   transform-origin: center;
   contain: paint;
 }
-.flavor-hero-art {
-  --ambient-x: 1.5%;
-  --ambient-y: -1.2%;
-  --ambient-mobile-x: 1%;
-  --ambient-mobile-y: -0.8%;
-  --ambient-scale: 1.05;
-  --ambient-duration: 27s;
-  position: absolute;
-  inset: -4%;
-  transform-origin: center;
-}
-.flavor-hero-background:is(
-    [data-flavor="frutilla"],
-    [data-flavor="cereza"],
-    [data-flavor="frutos-rojos"],
-    [data-flavor="sandia"]
-  )
-  .flavor-hero-art {
-  --ambient-x: -1.4%;
-  --ambient-y: 1.5%;
-  --ambient-mobile-x: -0.9%;
-  --ambient-mobile-y: 1%;
-  --ambient-duration: 29s;
-}
-.flavor-hero-background:is(
-    [data-flavor="banana"],
-    [data-flavor="vainilla"],
-    [data-flavor="dulce"],
-    [data-flavor="cookies"]
-  )
-  .flavor-hero-art {
-  --ambient-x: 1.1%;
-  --ambient-y: 1.5%;
-  --ambient-mobile-x: 0.7%;
-  --ambient-mobile-y: 1%;
-  --ambient-duration: 26s;
-}
-.flavor-hero-background:is(
-    [data-flavor="limon"],
-    [data-flavor="citrus"],
-    [data-flavor="naranja"],
-    [data-flavor="pomelo"],
-    [data-flavor="anana"]
-  )
-  .flavor-hero-art {
-  --ambient-x: -1.5%;
-  --ambient-y: -1.1%;
-  --ambient-mobile-x: -1%;
-  --ambient-mobile-y: -0.7%;
-  --ambient-duration: 30s;
-}
-.flavor-hero-art[data-ambient="true"] {
-  animation: flavor-hero-ambient var(--ambient-duration) ease-in-out infinite
-    alternate both;
-  animation-play-state: paused;
-}
-.flavor-hero-scenes[data-ambient-playing="true"]
-  .flavor-hero-background[data-current="true"]
-  .flavor-hero-art[data-ambient="true"] {
-  animation-play-state: running;
-  will-change: transform;
-}
-@keyframes flavor-hero-ambient {
-  from {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  to {
-    transform: translate3d(var(--ambient-x), var(--ambient-y), 0)
-      scale(var(--ambient-scale));
-  }
-}
-@media (max-width: 800px) {
-  .flavor-hero-art {
-    --ambient-x: var(--ambient-mobile-x);
-    --ambient-y: var(--ambient-mobile-y);
-    --ambient-scale: 1.03;
-  }
-}
 .flavor-hero-readability {
   position: absolute;
   left: var(--flavor-copy-x, 55%);
@@ -197,9 +119,6 @@
   );
 }
 @media (prefers-reduced-motion: reduce) {
-  .flavor-hero-art[data-ambient="true"] {
-    animation: none;
-  }
   .flavor-hero-gallery .variant-spinner-frames {
     perspective: none;
   }
