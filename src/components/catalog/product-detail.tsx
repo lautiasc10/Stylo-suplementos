@@ -386,7 +386,7 @@ export function ProductDetail({
           <ProductPricing
             variant={variant}
             animateChange={!choreographed}
-            transferFirst
+            listFirst
           />
         </RevealItem>
         <RevealItem className="purchase-action" direction="none">
@@ -408,13 +408,13 @@ export function ProductDetail({
             compras.
           </p>
         )}
+        <ProductInformation
+          product={product}
+          variantId={variant.id}
+          imageBase={imageBase}
+          imageUrls={imageUrls}
+        />
       </RevealGroup>
-      <ProductInformation
-        product={product}
-        variantId={variant.id}
-        imageBase={imageBase}
-        imageUrls={imageUrls}
-      />
     </div>
   );
 }

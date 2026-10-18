@@ -223,7 +223,7 @@ export function ProductCard({
         <h2>
           <Link href={href}>{product.name}</Link>
         </h2>
-        <ProductPricing variant={variant} compact />
+        <ProductPricing variant={variant} compact listFirst />
         <Link href={href} className="product-card-action">
           Ver variantes <Icon name="arrow" />
         </Link>

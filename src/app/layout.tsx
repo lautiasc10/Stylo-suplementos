@@ -9,6 +9,7 @@ import "./product-detail.css";
 import "./variant-spinner.css";
 import "./product-flavors.css";
 import "./flavor-choreography.css";
+import "./pricing-hierarchy.css";
 import { getEnvironment } from "@/lib/config/server";
 
 const display = Barlow_Condensed({

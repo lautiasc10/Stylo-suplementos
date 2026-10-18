@@ -79,9 +79,13 @@ test("la ficha compartida une color de sabor e información de ganadores sin ani
     "background-color",
     "rgba(0, 0, 0, 0)",
   );
-  await expect(
-    scene.locator(".crossfade-layer:not([inert]) .transfer-pricing-primary"),
-  ).toContainText("110.000");
+  await expect(scene.locator(".editorial-pricing-transfer")).toContainText(
+    "110.000",
+  );
+  await expect(scene.locator(".editorial-pricing-list")).toContainText(
+    "120.000",
+  );
+  await expect(scene.locator(".transfer-saving")).toContainText("10.000");
   await page
     .getByRole("button", { name: "Sabor siguiente", exact: true })
     .click();
@@ -97,9 +101,9 @@ test("la ficha compartida une color de sabor e información de ganadores sin ani
   await expect(
     scene.locator(".flavor-scene-layer:not([data-outgoing])"),
   ).toHaveAttribute("data-flavor", "frutilla");
-  await expect(
-    scene.locator(".crossfade-layer:not([inert]) .transfer-pricing-primary"),
-  ).toContainText("111.000");
+  await expect(scene.locator(".editorial-pricing-transfer")).toContainText(
+    "111.000",
+  );
   await expect(
     scene.locator('.add-to-cart input[name="variantId"]'),
   ).toHaveValue(product.variants[1].id);
@@ -150,9 +154,9 @@ test("chips, flechas, URL y carrito comparten la misma selección y recarga", as
   await expect(scene).not.toHaveClass(/flavor-product-detail/);
   await expect(scene.locator(".flavor-scene-decorations")).toHaveCount(0);
   await expect(scene.locator(".product-no-photo")).toBeVisible();
-  await expect(
-    scene.locator(".crossfade-layer:not([inert]) .transfer-pricing-primary"),
-  ).toContainText("114.000");
+  await expect(scene.locator(".editorial-pricing-transfer")).toContainText(
+    "114.000",
+  );
 });
 
 test("movimiento reducido elimina los giros y permite comprar", async ({
@@ -181,7 +185,7 @@ test("movimiento reducido elimina los giros y permite comprar", async ({
   ).toBeEnabled();
 });
 
-test("una foto fallida conserva el sabor, precio y SKU anterior", async ({
+test("una foto fallida informa el error y mantiene la nueva selección de compra", async ({
   page,
 }) => {
   const product = await seed(page, true);
@@ -194,14 +198,14 @@ test("una foto fallida conserva el sabor, precio y SKU anterior", async ({
   );
   await expect(page.locator(".unified-product-detail")).toHaveAttribute(
     "data-variant",
-    product.variants[0].id,
+    product.variants[1].id,
   );
   await expect(
     page.locator('#contenido .add-to-cart input[name="variantId"]'),
-  ).toHaveValue(product.variants[0].id);
-  await expect(
-    page.locator(".crossfade-layer:not([inert]) .transfer-pricing-primary"),
-  ).toContainText("110.000");
+  ).toHaveValue(product.variants[1].id);
+  await expect(page.locator(".editorial-pricing-transfer")).toContainText(
+    "111.000",
+  );
   await page
     .locator(".gainer-flavor-options")
     .getByRole("link", { name: /Vainilla/ })

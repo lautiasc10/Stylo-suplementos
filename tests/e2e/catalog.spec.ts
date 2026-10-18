@@ -268,24 +268,24 @@ test("búsqueda, orden por lista y selección de variante actualizan la ficha", 
   await expect(page.locator(".product-card")).toHaveCount(1);
   await closeMobileFilters(page);
   await page.getByRole("link", { name: "Ver variantes" }).click();
-  await expect(page.locator(".variant-picker")).toHaveAttribute(
+  await expect(page.locator(".gainer-flavor-picker")).toHaveAttribute(
     "data-selected-variant",
     demoCatalog().products[0].variants[0].id,
   );
   await expect(page.locator(".product-sku")).toHaveCount(0);
   await page
-    .locator(".variant-picker")
+    .locator(".gainer-flavor-picker")
     .getByRole("link", {
       name: "Vainilla · 1 kg · Envase · Sin stock",
       exact: true,
     })
     .click();
-  await expect(page.locator(".variant-picker")).toHaveAttribute(
+  await expect(page.locator(".gainer-flavor-picker")).toHaveAttribute(
     "data-selected-variant",
     demoCatalog().products[0].variants[1].id,
   );
   await expect(
-    page.locator("#contenido .crossfade-layer:not([inert]) .product-prices"),
+    page.locator("#contenido .editorial-pricing-list"),
   ).toContainText("47.000");
   await expect(
     page.getByRole("button", { name: "Sin stock", exact: true }),
@@ -324,16 +324,16 @@ test("edición de precio, stock e imágenes persiste sin tocar la tienda real", 
   );
   expect(storedPrice).toBe(5100029);
   await page.goto("/vista-previa/producto/proteina-de-prueba");
-  await expect(page.locator("#contenido .product-prices")).toContainText(
-    "51.000",
-  );
+  await expect(
+    page.locator("#contenido .editorial-pricing-list"),
+  ).toContainText("51.000");
   await expect(
     page.getByRole("img", { name: "Imagen de prueba para chocolate" }),
   ).toHaveAttribute("src", /^data:image\/webp;base64,/);
   await page.reload();
-  await expect(page.locator("#contenido .product-prices")).toContainText(
-    "51.000",
-  );
+  await expect(
+    page.locator("#contenido .editorial-pricing-list"),
+  ).toContainText("51.000");
   await page.goto("/catalogo");
   await expect(
     page.getByText("Proteína de prueba", { exact: true }),
@@ -622,10 +622,12 @@ test("CSV previsualiza antes de aplicar y conserva variantes omitidas", async ({
     .click();
   await expect(page.getByRole("status")).toContainText("Cambios guardados.");
   await page.goto("/vista-previa/producto/proteina-de-prueba");
-  await expect(page.locator("#contenido .product-prices")).toContainText(
-    "49.000",
+  await expect(
+    page.locator("#contenido .editorial-pricing-list"),
+  ).toContainText("49.000");
+  await expect(page.locator(".gainer-flavor-picker .variant-chip")).toHaveCount(
+    2,
   );
-  await expect(page.locator(".variant-picker .variant-chip")).toHaveCount(2);
 });
 
 test("Excel real se lee en el navegador y un lote duplicado queda bloqueado", async ({
@@ -843,7 +845,7 @@ test("el panel lateral conserva selección con teclado y al cambiar a celular", 
   ).toBe(true);
 });
 
-test("el giro automático cambia de variante y la ficha conserva sus fotografías", async ({
+test("el giro automático cambia de variante y la ficha abre el sabor elegido sin miniaturas", async ({
   page,
 }) => {
   await page.clock.install();
@@ -874,7 +876,7 @@ test("el giro automático cambia de variante y la ficha conserva sus fotografía
     card.getByAltText("Vainilla frente", { exact: true }),
   ).toBeVisible();
   await expect(card.locator(".product-card-marker")).toHaveText("Vainilla");
-  await expect(card.locator(".product-prices")).toContainText("47.000");
+  await expect(card.locator(".editorial-pricing-list")).toContainText("47.000");
   await expect(card.locator(".stock-badge")).toHaveText("Sin stock");
   await expect(
     card.getByRole("link", { name: "Ver variantes", exact: true }),
@@ -892,14 +894,12 @@ test("el giro automático cambia de variante y la ficha conserva sus fotografía
     card.getByAltText("Chocolate frente", { exact: true }),
   ).toBeVisible();
   await card.getByRole("link", { name: "Ver variantes", exact: true }).click();
-  await page
-    .getByRole("link", { name: "Ver Chocolate dorso", exact: true })
-    .click();
+  await expect(page.locator(".product-thumbnails")).toHaveCount(0);
   await expect(
-    page.getByAltText("Chocolate dorso", { exact: true }),
+    page.getByAltText("Chocolate frente", { exact: true }),
   ).toBeVisible();
   await page
-    .locator(".variant-picker")
+    .locator(".gainer-flavor-picker")
     .getByRole("link", {
       name: "Vainilla · 1 kg · Envase · Sin stock",
       exact: true,
@@ -908,11 +908,8 @@ test("el giro automático cambia de variante y la ficha conserva sus fotografía
   await expect(
     page.getByAltText("Vainilla frente", { exact: true }),
   ).toBeVisible();
-  await page.clock.runFor(350);
-  await expect(
-    page.getByAltText("Chocolate dorso", { exact: true }),
-  ).toHaveCount(0);
-  await expect(page.locator(".variant-picker")).toHaveAttribute(
+  await expect(page.locator(".editorial-pricing-list")).toContainText("47.000");
+  await expect(page.locator(".gainer-flavor-picker")).toHaveAttribute(
     "data-selected-variant",
     demoCatalog().products[0].variants[1].id,
   );
@@ -1054,10 +1051,10 @@ test("una foto por variante alterna sus datos y respeta sabor, precio y disponib
     card.getByRole("img", { name: "Vainilla frente", exact: true }),
   ).toBeVisible();
   await expect(card.locator(".product-card-marker")).toContainText("Vainilla");
-  await expect(card.locator(".product-prices")).toContainText("47.000");
+  await expect(card.locator(".editorial-pricing-list")).toContainText("47.000");
   await expect(card.locator(".stock-badge")).toHaveText("Sin stock");
   await card.getByRole("link", { name: "Ver variantes", exact: true }).click();
-  await expect(page.locator(".variant-picker")).toHaveAttribute(
+  await expect(page.locator(".gainer-flavor-picker")).toHaveAttribute(
     "data-selected-variant",
     demoCatalog().products[0].variants[1].id,
   );
@@ -1081,7 +1078,7 @@ test("una foto por variante alterna sus datos y respeta sabor, precio y disponib
   await expect(
     card.getByRole("button", { name: "Siguiente imagen", exact: true }),
   ).toHaveCount(0);
-  await expect(card.locator(".product-prices")).toContainText("47.000");
+  await expect(card.locator(".editorial-pricing-list")).toContainText("47.000");
 });
 
 test("el giro automático conserva el tamaño, evita fragmentos y se cancela con movimiento reducido", async ({
