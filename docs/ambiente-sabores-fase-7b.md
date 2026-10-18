@@ -1,0 +1,10 @@
+# Fase 7B — Movimiento ambiente de sabores
+
+Después del reveal circular, las imágenes decorativas del sabor activo comienzan un movimiento Ken Burns de 26 a 30 segundos, alternado e infinito. El conjunto parte de escala 1 y llega a 1,05, con desplazamientos de hasta 1,5 %; en móvil llega a 1,03 y hasta 1 %. Los sabores usan cuatro direcciones y velocidades. La capa decorativa sobresale un 4 % por cada lado dentro del recorte del hero, así no aparecen bordes al moverla. El color y el velo de legibilidad permanecen quietos.
+
+La animación CSS transforma un único contenedor activo. La escena saliente queda pausada debajo del reveal y se descarta al finalizarlo; la nueva animación empieza justo después de que el zoom de entrada alcanza escala 1. `IntersectionObserver` y `visibilitychange` la pausan fuera de pantalla o en una pestaña oculta. El movimiento reducido la desactiva. No hay bucles JavaScript ni filtros animados. Las quince imágenes `*-decor-v1.webp` actuales son estáticas: Sharp informó una sola página por archivo.
+
+Verificación con `next build` y `next start`, Chromium GPU en 1440 × 900 y móvil emulado de 375 × 900: duración del cambio 965,6–967,1 ms, máximo de 13,5 ms por cuadro en la transición normal, cero cuadros por encima de 20 ms, CLS 0 y ninguna doble exposición de envases. La toma móvil reducida duró 259,5 ms y también quedó sin cuadros de más de 20 ms. Estas cifras corresponden a una pasada en esta máquina; no garantizan la misma frecuencia en otro dispositivo. Las capturas de mitad de ciclo muestran cobertura completa de la escena en ambos tamaños. Las pruebas de navegador comprobaron inicio posterior al reveal, escala y dirección por sabor, pausa por visibilidad, reducción de movimiento y ausencia de desbordamiento. Sin JavaScript, las decoraciones permanecen visibles y quietas.
+
+- [Escritorio: comienzo](reviews/ambiente-sabores/escritorio-inicio.png) y [mitad del ciclo](reviews/ambiente-sabores/escritorio-mitad.png).
+- [Móvil: comienzo](reviews/ambiente-sabores/movil-inicio.png) y [mitad del ciclo](reviews/ambiente-sabores/movil-mitad.png).

@@ -1,5 +1,7 @@
 # Diseño de STYLO
 
+La [Fase 7B](ambiente-sabores-fase-7b.md) agrega una respiración lenta al fondo decorativo activo después del reveal: solo transform, escala y desplazamiento menores en móvil, con pausa fuera de pantalla o al ocultar la pestaña. Texto, velo y color permanecen estables.
+
 La jerarquía de precios vigente muestra primero el precio de lista en grande y debajo el precio por transferencia, junto con el ahorro real en pesos cuando existe. Se aplica a las tarjetas y fichas, sin cambiar los importes ni las promociones. La ficha acerca «Información del producto» al botón de compra; sobre escenas claras, el regreso, el sabor y los textos secundarios usan mayor peso para conservar legibilidad. La cabecera y las otras vistas que reutilizan `ProductPricing` conservan su presentación.
 
 La [Fase 3H de coreografía por sabor](coreografia-sabores.md) coordina el detalle de productos con varios sabores: revelado circular de escenas completas, envases con salida y entrada sin doble exposición, contorno de chip móvil e información escalonada. Los datos de compra y la URL cambian desde el gesto. Se conservan los componentes del catálogo y el diseño lateral. Tiempos y curvas están en `flavor-motion.ts`; movimiento reducido, fondo visible sin JavaScript, precarga vecina y degradación por cuadros lentos quedan verificados. La duración medida con GPU es de 964–966 ms y CLS es 0; un cuadro de 26,7 ms deja pendiente acreditar el límite estricto de 20 ms en todas las pasadas. El pedido vigente reemplaza la prueba anterior limitada a tres productos.

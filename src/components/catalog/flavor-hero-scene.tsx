@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { IngredientLayer } from "./flavor-scene";
 import type { SceneFlavor } from "@/modules/catalog/flavor-scenes";
 import {
@@ -24,6 +24,7 @@ export function FlavorHeroScene({
   const root = useRef<HTMLDivElement>(null);
   const incoming = useRef<HTMLDivElement>(null);
   const content = useRef<HTMLDivElement>(null);
+  const artwork = useRef<HTMLDivElement>(null);
   const [expired, setExpired] = useState<number | null>(null);
   const hasPrevious = Boolean(
     change && expired !== change.token && previousFlavor !== flavor,
@@ -58,12 +59,37 @@ export function FlavorHeroScene({
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    const element = root.current;
+    if (!element) return;
+    let visible = true;
+    const update = () => {
+      if (visible && !document.hidden) element.dataset.ambientPlaying = "true";
+      else delete element.dataset.ambientPlaying;
+    };
+    const observer = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      update();
+    });
+    observer.observe(element);
+    document.addEventListener("visibilitychange", update);
+    update();
+    return () => {
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", update);
+    };
+  }, []);
+
   useLayoutEffect(() => {
     const layer = incoming.current,
       inner = content.current,
+      art = artwork.current,
       element = root.current;
-    if (!change || previousFlavor === flavor || !layer || !inner || !element)
+    if (!layer || !inner || !element) return;
+    if (!change || previousFlavor === flavor) {
+      if (flavor && art) art.dataset.ambient = "true";
       return;
+    }
     const animations: Animation[] = [];
     const full =
       change.mode === "full" &&
@@ -106,16 +132,10 @@ export function FlavorHeroScene({
         }),
       );
     }
-    void reveal.finished
-      .then(() => {
-        layer.style.willChange = "";
-        if (outgoing) outgoing.style.willChange = "";
-        setExpired(change.token);
-      })
-      .catch(() => {});
+    let depth: Animation | null = null;
     if (full) {
       inner.style.willChange = "transform";
-      const depth = inner.animate(
+      depth = inner.animate(
         [
           { transform: `scale(${m.backgroundFromScale})` },
           { transform: "scale(1)" },
@@ -123,12 +143,15 @@ export function FlavorHeroScene({
         { duration: m.backgroundScale, easing: m.easing.enter, fill: "both" },
       );
       animations.push(depth);
-      void depth.finished
-        .then(() => {
-          inner.style.willChange = "";
-        })
-        .catch(() => {});
     }
+    void Promise.all([reveal.finished, depth?.finished ?? Promise.resolve()])
+      .then(() => {
+        layer.style.willChange = inner.style.willChange = "";
+        if (outgoing) outgoing.style.willChange = "";
+        if (flavor && art) art.dataset.ambient = "true";
+        setExpired(change.token);
+      })
+      .catch(() => {});
     return () => {
       animations.forEach((animation) => animation.cancel());
       layer.style.willChange = inner.style.willChange = "";
@@ -158,7 +181,14 @@ export function FlavorHeroScene({
               ref={active ? content : undefined}
               className="flavor-hero-background-content"
             >
-              {value && <IngredientLayer flavor={value} outgoing={!active} />}
+              {value && (
+                <div
+                  ref={active ? artwork : undefined}
+                  className="flavor-hero-art"
+                >
+                  <IngredientLayer flavor={value} outgoing={!active} />
+                </div>
+              )}
               <div className="flavor-hero-readability" />
             </div>
           </div>
