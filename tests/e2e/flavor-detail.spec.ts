@@ -167,6 +167,45 @@ test("coreografía: origen circular, datos inmediatos y ningún cuadro con dos e
   await expect(page.locator(".flavor-hero-background")).toHaveCount(1);
 });
 
+test("el fondo saliente conserva su movimiento durante el reveal y el nuevo lo retoma sin corte", async ({ page }) => {
+  await seed(page);
+  await page.goto("/vista-previa/producto/whey-protein");
+  const next = page.getByRole("button", {
+    name: "Sabor siguiente",
+    exact: true,
+  });
+  const scenes = page.locator(".flavor-hero-scenes");
+
+  for (let index = 0; index < 2; index++) {
+    const active = scenes.locator('.flavor-hero-background[data-current="true"]');
+    await expect(active).toHaveAttribute("data-ambient", "true");
+    const before = await active.locator(".flavor-hero-background-content").evaluate(async (element) => {
+      const animation = element.getAnimations().find((item) =>
+        item instanceof CSSAnimation && item.animationName === "flavor-ambient-drift",
+      )!;
+      animation.pause();
+      await animation.ready;
+      animation.currentTime = 8000;
+      await new Promise(requestAnimationFrame);
+      return getComputedStyle(element).transform;
+    });
+    await next.click();
+    const outgoing = scenes.locator('.flavor-hero-background[data-outgoing="true"]');
+    await expect(outgoing).toHaveAttribute("data-ambient", "true");
+    const during = await outgoing.locator(".flavor-hero-background-content").evaluate((element) => {
+      const animation = element.getAnimations().find((item) =>
+        item instanceof CSSAnimation && item.animationName === "flavor-ambient-drift",
+      );
+      return { transform: getComputedStyle(element).transform, time: animation?.currentTime };
+    });
+    expect(during.transform).toBe(before);
+    expect(Number(during.time)).toBeCloseTo(8000, 0);
+    await expect(scenes.locator(".flavor-hero-background")).toHaveCount(1);
+    await expect(scenes.locator('.flavor-hero-background[data-current="true"]'))
+      .toHaveAttribute("data-ambient", "true");
+  }
+});
+
 test("la compra y la URL responden incluso si decode del nuevo envase está pendiente", async ({
   page,
 }) => {

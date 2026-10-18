@@ -26,13 +26,16 @@ export function FlavorHeroScene({
   const incoming = useRef<HTMLDivElement>(null);
   const content = useRef<HTMLDivElement>(null);
   const [expired, setExpired] = useState<number | null>(null);
-  const [ambientReady, setAmbientReady] = useState<number | null>(null);
+  const [ambientFlavor, setAmbientFlavor] = useState<SceneFlavor | null>(flavor);
   const [visible, setVisible] = useState(false);
   const [documentVisible, setDocumentVisible] = useState(true);
   const reduced = useMotionPreference();
   const hasPrevious = Boolean(
     change && expired !== change.token && previousFlavor !== flavor,
   );
+  const activeAmbient = !reduced && !hasPrevious && ambientFlavor === flavor;
+  const outgoingAmbient =
+    !reduced && hasPrevious && ambientFlavor === previousFlavor;
 
   useEffect(() => {
     const element = root.current;
@@ -131,17 +134,10 @@ export function FlavorHeroScene({
         }),
       );
     }
-    void reveal.finished
-      .then(() => {
-        layer.style.willChange = "";
-        if (outgoing) outgoing.style.willChange = "";
-        setExpired(change.token);
-        if (full) setAmbientReady(change.token);
-      })
-      .catch(() => {});
+    let depth: Animation | null = null;
     if (full) {
       inner.style.willChange = "transform";
-      const depth = inner.animate(
+      depth = inner.animate(
         [
           { transform: `scale(${m.backgroundFromScale})` },
           { transform: "scale(1)" },
@@ -149,12 +145,21 @@ export function FlavorHeroScene({
         { duration: m.backgroundScale, easing: m.easing.enter, fill: "both" },
       );
       animations.push(depth);
-      void depth.finished
-        .then(() => {
-          inner.style.willChange = "";
-        })
-        .catch(() => {});
     }
+    // Keep the outgoing ambient transform until both the circle and the zoom
+    // finish. Then the new ambient animation starts at the zoom's scale(1).
+    void Promise.all([reveal.finished, ...(depth ? [depth.finished] : [])])
+      .then(() => {
+        // A finished fill:both zoom would keep overriding the ambient CSS
+        // transform until the next click, then disappear in one frame.
+        // At this point both effects end at scale(1) and a fully open circle.
+        animations.forEach((animation) => animation.cancel());
+        layer.style.willChange = inner.style.willChange = "";
+        if (outgoing) outgoing.style.willChange = "";
+        setExpired(change.token);
+        setAmbientFlavor(flavor);
+      })
+      .catch(() => {});
     return () => {
       animations.forEach((animation) => animation.cancel());
       layer.style.willChange = inner.style.willChange = "";
@@ -168,11 +173,7 @@ export function FlavorHeroScene({
       ref={root}
       className="flavor-scene-decorations flavor-hero-scenes"
       aria-hidden="true"
-      data-ambient={
-        !reduced && !hasPrevious && (!change || ambientReady === change.token)
-          ? "true"
-          : undefined
-      }
+      data-ambient={activeAmbient ? "true" : undefined}
       data-playing={visible && documentVisible ? "true" : undefined}
     >
       {layers.map((value, index) => {
@@ -185,6 +186,9 @@ export function FlavorHeroScene({
             data-flavor={value ?? "neutral"}
             data-outgoing={!active || undefined}
             data-current={active || undefined}
+            data-ambient={
+              (active ? activeAmbient : outgoingAmbient) ? "true" : undefined
+            }
           >
             <div
               ref={active ? content : undefined}
