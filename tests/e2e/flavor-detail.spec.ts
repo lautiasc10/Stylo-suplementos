@@ -1,6 +1,7 @@
 import { test, expect, type Page } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { demoCatalog } from "../../src/modules/catalog/demo";
+import { flavorMotion } from "../../src/components/catalog/flavor-motion";
 
 function fixture() {
   const catalog = demoCatalog();
@@ -45,6 +46,261 @@ async function seed(page: Page, data = fixture()) {
   }, data);
   return data.catalog.products[0];
 }
+
+test("coreografía: origen circular, datos inmediatos y ningún cuadro con dos envases visibles", async ({
+  page,
+}) => {
+  const product = await seed(page);
+  await page.goto("/vista-previa/producto/whey-protein");
+  await expect(page.locator(".flavor-scene-layer")).toHaveCSS("opacity", "1");
+  await page.evaluate(() => {
+    const original = Element.prototype.animate;
+    Element.prototype.animate = function (frames, options) {
+      const animation = original.call(this, frames, options);
+      if (this.classList.contains("flavor-hero-pack")) animation.pause();
+      return animation;
+    };
+  });
+  const hero = page.locator(".flavor-product-detail");
+  const next = page.getByRole("button", {
+    name: "Sabor siguiente",
+    exact: true,
+  });
+  await next.scrollIntoViewIfNeeded();
+  const box = await hero.boundingBox(),
+    arrow = await next.boundingBox();
+  await next.click();
+  await expect(hero).toHaveAttribute("data-variant", product.variants[1].id);
+  await expect(page.locator('#contenido input[name="variantId"]')).toHaveValue(
+    product.variants[1].id,
+  );
+  await expect(
+    page.getByRole("button", { name: "Sin stock", exact: true }),
+  ).toBeDisabled();
+  await expect(page).toHaveURL(
+    new RegExp(`variante=${product.variants[1].id}`),
+  );
+  await expect
+    .poll(() =>
+      page
+        .locator(".flavor-hero-pack")
+        .evaluateAll(
+          (elements) => elements.flatMap((el) => el.getAnimations()).length,
+        ),
+    )
+    .toBe(2);
+  const sampled = await page
+    .locator(".flavor-hero-pack")
+    .evaluateAll((elements) => {
+      const animations = elements.flatMap((el) => el.getAnimations());
+      let doubleFrames = 0;
+      for (let t = 0; t <= 560; t += 1000 / 60) {
+        animations.forEach((animation) => {
+          animation.currentTime = t;
+        });
+        if (
+          elements.filter(
+            (element) => Number(getComputedStyle(element).opacity) > 0.001,
+          ).length > 1
+        )
+          doubleFrames++;
+      }
+      return {
+        doubleFrames,
+        durations: animations.map((animation) => ({
+          duration: animation.effect!.getTiming().duration,
+          delay: animation.effect!.getTiming().delay,
+        })),
+      };
+    });
+  expect(sampled.doubleFrames).toBe(0);
+  expect(sampled.durations).toEqual([
+    { duration: flavorMotion.exit, delay: 0 },
+    { duration: flavorMotion.enter, delay: flavorMotion.enterDelay },
+  ]);
+  const reveal = await page
+    .locator('.flavor-hero-background[data-current="true"]')
+    .evaluate((el) => {
+      const animation = el.getAnimations()[0];
+      return {
+        duration: animation.effect!.getTiming().duration,
+        start: (animation.effect as KeyframeEffect).getKeyframes()[0].clipPath,
+      };
+    });
+  expect(reveal.duration).toBe(flavorMotion.background);
+  const coords = String(reveal.start).match(/at ([\d.]+)px ([\d.]+)px/)!;
+  expect(
+    Math.abs(Number(coords[1]) - (arrow!.x + arrow!.width / 2 - box!.x)),
+  ).toBeLessThan(2);
+  expect(
+    Math.abs(Number(coords[2]) - (arrow!.y + arrow!.height / 2 - box!.y)),
+  ).toBeLessThan(2);
+  await page
+    .locator(".flavor-hero-pack")
+    .evaluateAll((elements) =>
+      elements.forEach((el) =>
+        el.getAnimations().forEach((animation) => animation.finish()),
+      ),
+    );
+  await expect(page.locator(".flavor-hero-pack")).toHaveCount(1);
+  await expect(page.locator(".flavor-hero-background")).toHaveCount(1);
+});
+
+test("la compra y la URL responden incluso si decode del nuevo envase está pendiente", async ({
+  page,
+}) => {
+  const product = await seed(page);
+  await page.addInitScript(() => {
+    const original = HTMLImageElement.prototype.decode;
+    HTMLImageElement.prototype.decode = function () {
+      const task = original.call(this);
+      if (this.alt !== "Foto Frutilla 2") return task;
+      return task.then(
+        () =>
+          new Promise<void>((resolve) => {
+            (
+              window as Window & { releaseFlavorPhoto?: () => void }
+            ).releaseFlavorPhoto = resolve;
+          }),
+      );
+    };
+  });
+  await page.goto("/vista-previa/producto/whey-protein");
+  await page
+    .getByRole("button", { name: "Sabor siguiente", exact: true })
+    .click();
+  await expect(page.locator('#contenido input[name="variantId"]')).toHaveValue(
+    product.variants[1].id,
+  );
+  await expect(page).toHaveURL(
+    new RegExp(`variante=${product.variants[1].id}`),
+  );
+  await expect(
+    page.getByRole("button", { name: "Sin stock", exact: true }),
+  ).toBeDisabled();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          typeof (window as Window & { releaseFlavorPhoto?: () => void })
+            .releaseFlavorPhoto,
+      ),
+    )
+    .toBe("function");
+  await page.evaluate(() =>
+    (
+      window as Window & { releaseFlavorPhoto?: () => void }
+    ).releaseFlavorPhoto?.(),
+  );
+  await expect(page.locator(".flavor-hero-pack")).toHaveCount(1);
+});
+
+test("diez cambios rápidos por sentido, chips, teclado y swipe dejan selección y URL coherentes", async ({
+  page,
+}) => {
+  const product = await seed(page);
+  await page.goto("/vista-previa/producto/whey-protein");
+  const hero = page.locator(".flavor-product-detail");
+  let index = 0;
+  for (const direction of [1, -1])
+    for (let i = 0; i < 10; i++) {
+      await page
+        .getByRole("button", {
+          name: direction > 0 ? "Sabor siguiente" : "Sabor anterior",
+          exact: true,
+        })
+        .dispatchEvent("click", {
+          detail: 1,
+          clientX: direction > 0 ? 300 : 40,
+          clientY: 300,
+        });
+      index = (index + direction + 4) % 4;
+      await expect(hero).toHaveAttribute(
+        "data-variant",
+        product.variants[index].id,
+      );
+      expect(
+        await page.locator(".flavor-hero-background").count(),
+      ).toBeLessThanOrEqual(2);
+      expect(
+        await page.locator(".flavor-hero-pack").count(),
+      ).toBeLessThanOrEqual(2);
+    }
+  await page.locator(".variant-chip").nth(2).click();
+  await expect(hero).toHaveAttribute("data-variant", product.variants[2].id);
+  const previous = page.getByRole("button", {
+    name: "Sabor anterior",
+    exact: true,
+  });
+  await previous.focus();
+  await page.keyboard.press("ArrowLeft");
+  await expect(hero).toHaveAttribute("data-variant", product.variants[1].id);
+  const stage = page.locator(".flavor-hero-gallery .product-image-stage");
+  await stage.dispatchEvent("pointerdown", {
+    pointerType: "touch",
+    isPrimary: true,
+    clientX: 280,
+    clientY: 150,
+  });
+  await stage.dispatchEvent("pointerup", {
+    pointerType: "touch",
+    isPrimary: true,
+    clientX: 80,
+    clientY: 155,
+  });
+  await expect(hero).toHaveAttribute("data-variant", product.variants[2].id);
+  await expect(page).toHaveURL(
+    new RegExp(`variante=${product.variants[2].id}`),
+  );
+  await expect(page.locator('#contenido input[name="variantId"]')).toHaveValue(
+    product.variants[2].id,
+  );
+  await expect(page.locator(".flavor-hero-background")).toHaveCount(1);
+  await expect(page.locator(".flavor-hero-pack")).toHaveCount(1);
+});
+
+test("tres cuadros lentos activan el fundido para el resto de la sesión", async ({
+  page,
+}) => {
+  await seed(page);
+  await page.goto("/vista-previa/producto/whey-protein");
+  await page
+    .getByRole("button", { name: "Sabor siguiente", exact: true })
+    .click();
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        let remaining = 4;
+        const slow = () => {
+          const end = performance.now() + 48;
+          while (performance.now() < end) {
+            /* Deterministic CPU pressure for the watchdog. */
+          }
+          if (--remaining) requestAnimationFrame(slow);
+          else resolve();
+        };
+        requestAnimationFrame(slow);
+      }),
+  );
+  await expect
+    .poll(() =>
+      page.evaluate(() =>
+        sessionStorage.getItem("stylo.flavor-motion.simple.v1"),
+      ),
+    )
+    .toBe("1");
+  await page
+    .getByRole("button", { name: "Sabor siguiente", exact: true })
+    .click();
+  await expect(page.locator(".flavor-product-detail")).toHaveAttribute(
+    "data-flavor-motion",
+    "simple",
+  );
+  await expect(page.locator(".flavor-product-detail")).not.toHaveAttribute(
+    "data-flavor-running",
+    "true",
+  );
+});
 
 test("todos los fondos disponibles siguen el sabor y conservan el color de las categorías", async ({
   page,
@@ -239,9 +495,9 @@ test("las flechas sincronizan fondo, foto, stock, precio y carrito sin navegar",
   await expect(
     page.getByRole("button", { name: "Sin stock", exact: true }),
   ).toBeDisabled();
-  await expect(
-    page.locator("#contenido .crossfade-layer:not([inert]) .transfer-pricing"),
-  ).toContainText("46.000");
+  await expect(page.locator("#contenido .transfer-pricing")).toContainText(
+    "46.000",
+  );
   await expect(page).toHaveURL(
     new RegExp(`variante=${product.variants[1].id}`),
   );
@@ -353,13 +609,12 @@ test("cambios rápidos conservan solo dos capas y movimiento reducido cancela el
   await expect(
     page.getByRole("button", { name: "Sabor anterior", exact: true }),
   ).toBeFocused();
-  await expect(page.locator(".flavor-scene-layer")).toHaveCSS(
-    "animation-name",
-    "none",
-  );
+  await expect(
+    page.locator(".flavor-scene-layer:not([data-outgoing])"),
+  ).toHaveCSS("animation-name", "none");
 });
 
-test("una foto fallida conserva el sabor y la variante de compra anteriores", async ({
+test("una foto fallida informa el error sin retrasar la selección de compra", async ({
   page,
 }) => {
   const data = fixture();
@@ -375,18 +630,18 @@ test("una foto fallida conserva el sabor y la variante de compra anteriores", as
   );
   await expect(page.locator(".flavor-product-detail")).toHaveAttribute(
     "data-flavor",
-    "banana",
+    "frutilla",
   );
   await expect(
     page.locator('.flavor-product-detail .add-to-cart input[name="variantId"]'),
-  ).toHaveValue(product.variants[0].id);
+  ).toHaveValue(product.variants[1].id);
   await expect(page.locator(".product-frame-current")).toHaveAttribute(
     "alt",
-    "Foto Banana 0",
+    "Foto Frutilla 2",
   );
   await expect(
-    page.getByRole("button", { name: "Agregar al carrito", exact: true }),
-  ).toBeEnabled();
+    page.getByRole("button", { name: "Sin stock", exact: true }),
+  ).toBeDisabled();
 });
 
 test("la decoración fallida no bloquea el sabor y otros productos comparten la información", async ({
@@ -423,13 +678,16 @@ test("el fondo se detiene solo, permite cambiar de sabor y respeta movimiento re
   await seed(page);
   await page.goto("/vista-previa/producto/whey-protein");
   const decor = page.locator(".flavor-scene-decorations");
-  await expect(decor).toHaveAttribute("data-playing", "true");
+  await expect(page.locator(".flavor-product-detail")).toHaveAttribute(
+    "data-choreography",
+    "true",
+  );
   await expect(page.getByRole("button", { name: /Pausar fondo/i })).toHaveCount(
     0,
   );
   await expect(decor.locator("img").first()).toHaveCSS(
-    "animation-iteration-count",
-    "1",
+    "animation-name",
+    "none",
   );
   await page
     .getByRole("button", { name: "Sabor siguiente", exact: true })

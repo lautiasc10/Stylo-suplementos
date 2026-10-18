@@ -1,0 +1,125 @@
+/* Product detail only. All durations and easing live in flavor-motion.ts. */
+.product-detail[data-choreography="true"] {
+  transition: none;
+}
+.product-detail[data-choreography="true"] .product-detail-copy::before {
+  /* Readability travels inside each complete scene, beneath the circular cut. */
+  background: none;
+}
+.flavor-hero-background,
+.flavor-hero-background-content {
+  position: absolute;
+  inset: 0;
+}
+.flavor-hero-scenes .flavor-scene-layer {
+  /* SSR/cached images may finish before hydration dispatches onLoad. The
+     decoration must stay progressively visible, including without JavaScript. */
+  opacity: 1;
+}
+.flavor-hero-background {
+  overflow: hidden;
+}
+.flavor-hero-background-content {
+  transform-origin: center;
+  contain: paint;
+}
+.flavor-hero-readability {
+  position: absolute;
+  left: var(--flavor-copy-x, 55%);
+  top: var(--flavor-copy-y, 0px);
+  width: var(--flavor-copy-width, 50%);
+  height: var(--flavor-copy-height, 100%);
+  z-index: 2;
+  background: radial-gradient(
+    ellipse,
+    var(--flavor-nav-background) 48%,
+    transparent 72%
+  );
+}
+.product-image-gallery.variant-spinner[data-transition="choreography"]
+  .variant-spinner-frame
+  .product-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  padding: 0;
+  object-fit: contain;
+  transform: none;
+  animation: none;
+  opacity: 1;
+}
+.flavor-hero-gallery .variant-spinner-frame {
+  will-change: auto;
+}
+.flavor-hero-pack[data-failed="true"] img {
+  visibility: hidden;
+}
+.flavor-hero-pack[data-failed="true"]::after {
+  content: "Imagen del producto pendiente";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--foreground);
+  background: #ffffff24;
+}
+.flavor-hero-gallery .variant-navigation button {
+  position: relative;
+  overflow: hidden;
+}
+.flavor-hero-gallery .variant-navigation .icon {
+  position: relative;
+  z-index: 1;
+}
+.flavor-motion-accent {
+  pointer-events: none;
+}
+.flavor-arrow-accent,
+.flavor-chip-accent {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: color-mix(in srgb, var(--flavor-nav-background) 20%, transparent);
+}
+.product-detail[data-choreography="true"] .gainer-flavor-options {
+  position: relative;
+}
+.flavor-chip-indicator {
+  position: absolute;
+  inset: 0 auto auto 0;
+  z-index: 1;
+  opacity: 0;
+  border: 1px solid var(--gold);
+  border-radius: 4px;
+  pointer-events: none;
+  transform-origin: 0 0;
+}
+.product-detail[data-choreography="true"][data-enhanced="true"]
+  .gainer-flavor-options
+  a[aria-current="true"] {
+  border-color: var(--border-strong);
+}
+.product-detail[data-choreography="true"] .gainer-stock {
+  min-height: 1.5em;
+}
+.product-detail[data-choreography="true"] .purchase-action {
+  position: relative;
+}
+.flavor-button-accent {
+  position: absolute;
+  inset: var(--space-2) 0 0;
+  border-radius: 4px;
+  background: linear-gradient(
+    110deg,
+    transparent,
+    color-mix(in srgb, var(--flavor-nav-background) 22%, transparent),
+    transparent
+  );
+}
+@media (prefers-reduced-motion: reduce) {
+  .flavor-hero-gallery .variant-spinner-frames {
+    perspective: none;
+  }
+}

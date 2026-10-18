@@ -12,7 +12,7 @@ export {
   sceneIngredients,
 } from "@/modules/catalog/flavor-scenes";
 
-function IngredientLayer({
+export function IngredientLayer({
   flavor,
   outgoing,
 }: {

@@ -1,0 +1,10 @@
+﻿{
+    "encodedFps":  60,
+    "capturedFrames":  73,
+    "encodedFrames":  83,
+    "duration":  1.3833333333333333,
+    "sourceCaptureMaxGapMs":  260.9729766845703,
+    "motionCaptureFrames":  69,
+    "motionCaptureMaxGapMs":  26.747941970825195,
+    "method":  "CDP compositor recording resampled by timestamps; repeated frames are possible. Actual pacing is measured separately without recording."
+}

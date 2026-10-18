@@ -1,7 +1,12 @@
 import { test, expect, type Page } from "@playwright/test";
 import { demoCatalog } from "../../src/modules/catalog/demo";
 
-async function seed(page: Page, broken = false, single = false) {
+async function seed(
+  page: Page,
+  broken = false,
+  single = false,
+  flavorScene = true,
+) {
   const catalog = demoCatalog(),
     product = catalog.products[0];
   catalog.products = [product];
@@ -71,6 +76,13 @@ async function seed(page: Page, broken = false, single = false) {
         : photos[i % photos.length],
     ]),
   );
+  // Generic galleries retain their existing decode/rotation contract. Flavor
+  // heroes have independent tests for their immediate selection choreography.
+  if (!flavorScene)
+    product.variants.forEach((variant) => {
+      variant.size = variant.flavor;
+      variant.flavor = "";
+    });
   await page.addInitScript(
     (data) => {
       if (!localStorage.getItem("stylo.catalog-preview.v1"))
@@ -246,7 +258,7 @@ test("tarjeta: flechas, teclado, swipe y enlace abren la misma variante sin nave
 test("una imagen lenta no cambia el SKU antes de decode; errores conservan el estado y permiten reintentar", async ({
   page,
 }) => {
-  const { product, photos } = await seed(page);
+  const { product, photos } = await seed(page, false, false, false);
   await page.addInitScript((delayed) => {
     const decode = HTMLImageElement.prototype.decode;
     const state = window as Window & {
@@ -304,7 +316,7 @@ test("una imagen lenta no cambia el SKU antes de decode; errores conservan el es
 test("fallo de fotografía conserva pack, precio, stock y URL anteriores", async ({
   page,
 }) => {
-  const { product } = await seed(page, true);
+  const { product } = await seed(page, true, false, false);
   await page.goto(detail);
   const spinner = page.locator(".variant-spinner");
   await spinner
@@ -334,7 +346,7 @@ test("fallo de fotografía conserva pack, precio, stock y URL anteriores", async
 test("solo se conserva la última elección encolada y reduced-motion elimina la rotación", async ({
   page,
 }) => {
-  const { product } = await seed(page);
+  const { product } = await seed(page, false, false, false);
   await page.goto(detail);
   const spinner = page.locator(".variant-spinner");
   await spinner
@@ -384,7 +396,7 @@ test("solo se conserva la última elección encolada y reduced-motion elimina la
 test("detalle responde al inicio del giro, solapa sus mitades y conserva la información sin miniaturas", async ({
   page,
 }) => {
-  const { product } = await seed(page);
+  const { product } = await seed(page, false, false, false);
   await page.goto(detail);
   const spinner = page.locator(".variant-spinner");
   await expect(spinner.locator(".product-thumbnail-rail")).toHaveCount(0);

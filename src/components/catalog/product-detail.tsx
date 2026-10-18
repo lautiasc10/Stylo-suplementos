@@ -19,6 +19,11 @@ import { createGalleryPhotoCache } from "./gallery-photo-cache";
 import { galleryPhotos, galleryInformation } from "./gallery-images";
 import { ProductGallery, type GalleryImage } from "./product-gallery";
 import { ProductInformation } from "./product-information";
+import { FlavorHeroGallery } from "./flavor-hero-gallery";
+import { FlavorHeroScene } from "./flavor-hero-scene";
+import { useFlavorChoreography } from "./use-flavor-choreography";
+import { useFlavorDetailsMotion } from "./use-flavor-details-motion";
+import { elementPoint } from "./flavor-motion";
 export type ProductDetailProps = {
   product: Product;
   brandName: string;
@@ -41,6 +46,8 @@ export function ProductDetail({
   imageUrls = emptyImages,
   preview = false,
 }: ProductDetailProps) {
+  const heroRoot = useRef<HTMLDivElement>(null);
+  const preloadGallery = useRef<((id: string) => void) | null>(null);
   const ingredientCache = useRef<ReturnType<
     typeof createGalleryPhotoCache
   > | null>(null);
@@ -50,6 +57,30 @@ export function ProductDetail({
   const variant =
     product.variants.find((item) => item.id === variantId) ??
     product.variants[0];
+  const choreographed =
+    product.variants.length > 1 &&
+    product.variants.some((item) => productFlavor(item.flavor));
+  const selectVariant = useCallback((id: string) => {
+    setVariantId(id);
+    const url = new URL(window.location.href);
+    url.searchParams.set("variante", id);
+    window.history.replaceState(
+      window.history.state,
+      "",
+      url.pathname + url.search + url.hash,
+    );
+  }, []);
+  const choreography = useFlavorChoreography(
+    heroRoot,
+    variantId,
+    selectVariant,
+  );
+  useFlavorDetailsMotion(
+    heroRoot,
+    variantId,
+    choreographed,
+    choreography.change,
+  );
   const [enhanced, setEnhanced] = useState(false);
   const [selectionRequest, setSelectionRequest] = useState<{
     variantId: string;
@@ -104,6 +135,10 @@ export function ProductDetail({
     },
     [loadIngredients],
   );
+  const warmVariant = (id: string) => {
+    if (choreographed) preloadGallery.current?.(id);
+    else warmIngredients({ id, variantId: id, src: "", alt: "" });
+  };
   // Preserve both the public route and the local image-review route without JS.
   const variantHref = (id: string) => `?variante=${id}`;
   const images = useMemo(
@@ -151,13 +186,29 @@ export function ProductDetail({
   );
   return (
     <div
+      ref={heroRoot}
       className={`product-detail gainer-product-detail unified-product-detail${flavor ? " flavor-product-detail" : ""}`}
       data-flavor={flavor ?? undefined}
       data-enhanced={enhanced ? "true" : undefined}
       data-variant={variant.id}
+      data-choreography={choreographed || undefined}
+      data-flavor-motion={choreography.change?.mode}
+      data-flavor-running={choreography.running || undefined}
     >
-      {flavor && (
-        <FlavorSceneDecorations flavor={sceneFlavor(variant.flavor)} />
+      {flavor && choreographed ? (
+        <FlavorHeroScene
+          flavor={sceneFlavor(variant.flavor)}
+          previousFlavor={sceneFlavor(
+            product.variants.find(
+              (item) => item.id === choreography.change?.fromId,
+            )?.flavor ?? variant.flavor,
+          )}
+          change={choreography.change}
+        />
+      ) : (
+        flavor && (
+          <FlavorSceneDecorations flavor={sceneFlavor(variant.flavor)} />
+        )
       )}
       <Link
         href={preview ? "/vista-previa" : "/catalogo"}
@@ -166,25 +217,37 @@ export function ProductDetail({
         ← Volver a la tienda
       </Link>
       <div className="product-gallery">
-        <ProductGallery
-          images={images}
-          variants={product.variants}
-          mode="detail"
-          transition="turn"
-          showThumbnails={false}
-          flavorNavigation
-          initialVariantId={variant.id}
-          onImageChange={selectImage}
-          onPrepareImage={warmIngredients}
-          prepareImage={prepareIngredients}
-          selectionRequest={selectionRequest}
-          informationImages={galleryInformation(
-            product,
-            variant.id,
-            imageBase,
-            imageUrls,
-          )}
-        />
+        {choreographed ? (
+          <FlavorHeroGallery
+            variants={product.variants}
+            images={images}
+            activeId={variant.id}
+            change={choreography.change}
+            onRequest={choreography.request}
+            onPrepareImage={warmIngredients}
+            preload={preloadGallery}
+          />
+        ) : (
+          <ProductGallery
+            images={images}
+            variants={product.variants}
+            mode="detail"
+            transition="turn"
+            showThumbnails={false}
+            flavorNavigation
+            initialVariantId={variant.id}
+            onImageChange={selectImage}
+            onPrepareImage={warmIngredients}
+            prepareImage={prepareIngredients}
+            selectionRequest={selectionRequest}
+            informationImages={galleryInformation(
+              product,
+              variant.id,
+              imageBase,
+              imageUrls,
+            )}
+          />
+        )}
       </div>
       <RevealGroup
         className="product-detail-copy gainer-product-copy"
@@ -215,7 +278,39 @@ export function ProductDetail({
                 ? "Sabor"
                 : "Presentación"}
             </p>
-            <div className="gainer-flavor-options">
+            <div
+              className="gainer-flavor-options"
+              onKeyDown={(event) => {
+                if (
+                  !choreographed ||
+                  !["ArrowLeft", "ArrowRight"].includes(event.key)
+                )
+                  return;
+                event.preventDefault();
+                const direction = event.key === "ArrowRight" ? 1 : -1;
+                const index = product.variants.findIndex(
+                  (item) => item.id === variant.id,
+                );
+                const target =
+                  (index + direction + product.variants.length) %
+                  product.variants.length;
+                const chip =
+                  event.currentTarget.querySelectorAll<HTMLAnchorElement>("a")[
+                    target
+                  ];
+                choreography.request(
+                  product.variants[target].id,
+                  direction,
+                  elementPoint(chip),
+                );
+                chip.focus({ preventScroll: true });
+              }}
+            >
+              {choreographed && (
+                <span className="flavor-chip-indicator" aria-hidden="true">
+                  <span className="flavor-motion-accent flavor-chip-accent" />
+                </span>
+              )}
               {product.variants.map((item) => (
                 <a
                   key={item.id}
@@ -225,22 +320,8 @@ export function ProductDetail({
                   aria-label={`${variantLabel(item)}${item.stock === 0 ? " · Sin stock" : ""}`}
                   data-unavailable={item.stock === 0}
                   data-flavor={productFlavor(item.flavor) ?? "neutral"}
-                  onPointerEnter={() =>
-                    warmIngredients({
-                      id: item.id,
-                      variantId: item.id,
-                      src: "",
-                      alt: "",
-                    })
-                  }
-                  onFocus={() =>
-                    warmIngredients({
-                      id: item.id,
-                      variantId: item.id,
-                      src: "",
-                      alt: "",
-                    })
-                  }
+                  onPointerEnter={() => warmVariant(item.id)}
+                  onFocus={() => warmVariant(item.id)}
                   onClick={(event) => {
                     if (
                       !enhanced ||
@@ -252,6 +333,25 @@ export function ProductDetail({
                     )
                       return;
                     event.preventDefault();
+                    if (choreographed) {
+                      const index = product.variants.findIndex(
+                        (entry) => entry.id === variant.id,
+                      );
+                      const target = product.variants.findIndex(
+                        (entry) => entry.id === item.id,
+                      );
+                      const forward =
+                        (target - index + product.variants.length) %
+                        product.variants.length;
+                      choreography.request(
+                        item.id,
+                        forward <= product.variants.length / 2 ? 1 : -1,
+                        event.detail
+                          ? { x: event.clientX, y: event.clientY }
+                          : elementPoint(event.currentTarget),
+                      );
+                      return;
+                    }
                     setSelectionRequest((previous) => ({
                       variantId: item.id,
                       nonce: (previous?.nonce ?? 0) + 1,
@@ -283,7 +383,11 @@ export function ProductDetail({
           </p>
         </RevealItem>
         <RevealItem aria-live="polite" aria-atomic="true">
-          <ProductPricing variant={variant} animateChange transferFirst />
+          <ProductPricing
+            variant={variant}
+            animateChange={!choreographed}
+            transferFirst
+          />
         </RevealItem>
         <RevealItem className="purchase-action" direction="none">
           <AddToCart
@@ -291,6 +395,12 @@ export function ProductDetail({
             stock={variant.stock}
             slug={product.slug}
           />
+          {choreographed && (
+            <span
+              className="flavor-motion-accent flavor-button-accent"
+              aria-hidden="true"
+            />
+          )}
         </RevealItem>
         {preview && (
           <p className="purchase-note">

@@ -1,0 +1,127 @@
+{
+  "productionURL": "http://127.0.0.1:3200",
+  "slug": "star-nutrition-proteina-whey-protein-x-2-lbs-dp",
+  "device": "Chromium local, DPR 1; mobile viewport emulated",
+  "scenarios": [
+    {
+      "scenario": "desktop-siguiente",
+      "transitions": [
+        {
+          "token": 1,
+          "mode": "full",
+          "duration": 973.6999999523159,
+          "frames": 57,
+          "framesOver20": 2,
+          "framesOver32": 2,
+          "maxFrame": 33.30000000000018,
+          "simplifiedNext": false
+        }
+      ],
+      "sampledFrames": 74,
+      "framesOver20": 2,
+      "maxFrame": 33.30000000000018,
+      "p95Frame": 16.799999999999727,
+      "doubleExposureFrames": 0,
+      "maximumPacks": 2,
+      "maximumBackgrounds": 2,
+      "cls": 0,
+      "layoutShiftIncludingInput": 0,
+      "imageBytes": 1219124,
+      "horizontalOverflow": false,
+      "scriptingMs": 17.937,
+      "layoutMs": 2.0149999999999997,
+      "styleMs": 18.008,
+      "errors": []
+    },
+    {
+      "scenario": "desktop-anterior",
+      "transitions": [
+        {
+          "token": 1,
+          "mode": "full",
+          "duration": 976.5000000357627,
+          "frames": 55,
+          "framesOver20": 4,
+          "framesOver32": 4,
+          "maxFrame": 33.40000000000009,
+          "simplifiedNext": true
+        }
+      ],
+      "sampledFrames": 72,
+      "framesOver20": 4,
+      "maxFrame": 33.40000000000009,
+      "p95Frame": 33.29999999999973,
+      "doubleExposureFrames": 0,
+      "maximumPacks": 2,
+      "maximumBackgrounds": 2,
+      "cls": 0,
+      "layoutShiftIncludingInput": 0,
+      "imageBytes": 1142998,
+      "horizontalOverflow": false,
+      "scriptingMs": 16.617,
+      "layoutMs": 1.143,
+      "styleMs": 15.431000000000001,
+      "errors": []
+    },
+    {
+      "scenario": "mobile-swipe",
+      "transitions": [
+        {
+          "token": 1,
+          "mode": "full",
+          "duration": 970.1999999999998,
+          "frames": 59,
+          "framesOver20": 0,
+          "framesOver32": 0,
+          "maxFrame": 16.800000000000182,
+          "simplifiedNext": false
+        }
+      ],
+      "sampledFrames": 76,
+      "framesOver20": 0,
+      "maxFrame": 16.800000000000182,
+      "p95Frame": 16.799999999999955,
+      "doubleExposureFrames": 0,
+      "maximumPacks": 2,
+      "maximumBackgrounds": 2,
+      "cls": 0,
+      "layoutShiftIncludingInput": 0,
+      "imageBytes": 1185470,
+      "horizontalOverflow": false,
+      "scriptingMs": 14.482999999999999,
+      "layoutMs": 1.27,
+      "styleMs": 12.874,
+      "errors": []
+    },
+    {
+      "scenario": "mobile-reducido",
+      "transitions": [
+        {
+          "token": 1,
+          "mode": "reduced",
+          "duration": 260.5999999642372,
+          "frames": 16,
+          "framesOver20": 0,
+          "framesOver32": 0,
+          "maxFrame": 16.700000000000045,
+          "simplifiedNext": false
+        }
+      ],
+      "sampledFrames": 75,
+      "framesOver20": 0,
+      "maxFrame": 16.800000000000182,
+      "p95Frame": 16.700000000000273,
+      "doubleExposureFrames": 0,
+      "maximumPacks": 2,
+      "maximumBackgrounds": 2,
+      "cls": 0,
+      "layoutShiftIncludingInput": 0.00012957777777777778,
+      "imageBytes": 1185470,
+      "horizontalOverflow": false,
+      "scriptingMs": 13.317,
+      "layoutMs": 0.9349999999999999,
+      "styleMs": 6.28,
+      "errors": []
+    }
+  ]
+}
