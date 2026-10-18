@@ -22,14 +22,27 @@ CANVAS, HEIGHT, BASELINE = 1000, 800, 900
 SIZES = (320, 600, 1000)
 
 
-def normalize(image, session):
+def normalize(image, session, matte_mode="rembg"):
     image = ImageOps.exif_transpose(image).convert("RGBA")
-    # Segment even RGBA sources: an existing alpha channel can contain a halo
-    # or an opaque shadow. A white matte separates the dark cap from transparency.
-    matte = Image.new("RGBA", image.size, "white")
-    matte.alpha_composite(image)
-    mask = remove(matte.convert("RGB"), session=session, only_mask=True)
-    alpha = ImageChops.darker(image.getchannel("A"), mask.convert("L"))
+    if matte_mode == "existing-alpha":
+        # Explicit opt-in for a visually verified transparent original. Running
+        # segmentation again can eat white labels or fine edges of a clean pack.
+        alpha = image.getchannel("A")
+        if alpha.getextrema()[0] != 0 or any(
+            alpha.getpixel(point) >= 24 for point in
+            ((0, 0), (image.width - 1, 0), (0, image.height - 1),
+             (image.width - 1, image.height - 1))
+        ):
+            raise ValueError("El modo existing-alpha necesita un fondo transparente verificado.")
+    elif matte_mode == "rembg":
+        # RGBA sources can still contain an opaque shadow or halo. Composite on
+        # white to separate the black cap before predicting the foreground mask.
+        matte = Image.new("RGBA", image.size, "white")
+        matte.alpha_composite(image)
+        mask = remove(matte.convert("RGB"), session=session, only_mask=True)
+        alpha = ImageChops.darker(image.getchannel("A"), mask.convert("L"))
+    else:
+        raise ValueError("matteMode debe ser rembg o existing-alpha.")
     # Discard very faint inference noise; retain the original edge transparency.
     alpha = alpha.point(lambda value: 0 if value < 24 else value)
     labels, count = ndimage.label(np.asarray(alpha) > 32)
@@ -89,7 +102,7 @@ def main():
     records = []
     for item in manifest["images"]:
         record = {key: item[key] for key in
-                  ("id", "productId", "variantId", "sourcePath", "slug", "flavor", "sku", "notes")
+                  ("id", "productId", "variantId", "sourcePath", "slug", "flavor", "sku", "notes", "sourceOverride")
                   if key in item}
         try:
             if not re.fullmatch(r"[a-zA-Z0-9_-]{1,100}", item["id"]):
@@ -99,9 +112,11 @@ def main():
                 raise ValueError("Separar la carpeta de salida de los originales.")
             original = source.read_bytes()
             digest = hashlib.sha256(original).hexdigest()
-            canvas, details = normalize(Image.open(io.BytesIO(original)), session)
+            matte_mode = item.get("matteMode", "rembg")
+            canvas, details = normalize(Image.open(io.BytesIO(original)), session, matte_mode)
             details["warnings"].extend(item.get("warnings", []))
-            record.update(details, sourceHash=digest, sourceBytes=len(original), outputs={})
+            record.update(details, sourceHash=digest, sourceBytes=len(original),
+                          matteMode=matte_mode, outputs={})
             for size in SIZES:
                 image = canvas if size == CANVAS else canvas.resize(
                     (size, size), Image.Resampling.LANCZOS)

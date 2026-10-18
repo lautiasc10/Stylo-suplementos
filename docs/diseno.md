@@ -1,6 +1,6 @@
 # Diseño de STYLO
 
-La [Fase 3G de renormalización One Fit](normalizacion-onefit-fase-3g.md) procesa ocho frentes nuevos con rembg/Pillow, master transparente de 1000 × 1000, envase de 800 px de alto y base en y=900. Sus copias de tarjeta son de 320/600 px; se conservan los originales, el perfil anterior 320/640/1000 y toda la presentación vigente de catálogo y detalle. El informe señala una foto de EEAA naranja cuyo propio envase dice Colágeno y la discrepancia entre el nombre Chocolate y el UUID de Dulce de leche suministrado.
+La [Fase 3G de renormalización One Fit](normalizacion-onefit-fase-3g.md) procesa ocho frentes nuevos con rembg/Pillow, master transparente de 1000 × 1000, envase de 800 px de alto y base en y=900. Sus copias de tarjeta son de 320/600 px; se conservan los originales, el perfil anterior 320/640/1000 y toda la presentación vigente de catálogo y detalle. La corrección posterior incorpora el adjunto correcto de EAA naranja conservando su alfa y sustituye el Colágeno naranja de borde mordido por la toma completa que estaba mal asociada a EAA. Los dos originales de corrección quedan en `assets/product-originals/onefit`, con procedencia documentada, y solo sus derivados van a la tienda. Chocolate ONE-0014 quedó confirmado por el usuario.
 
 ## Fichas de producto: dirección vigente del 17 de octubre
 

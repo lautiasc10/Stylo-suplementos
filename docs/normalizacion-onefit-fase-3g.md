@@ -4,6 +4,28 @@
 
 Se renormalizaron ocho fotos frontales de cinco productos, conservando los originales de Supabase Storage (`product-media`). No se modificaron registros remotos, SKU, variantes, stock, precios, logos, fondos de sabor ni animaciones.
 
+## Corrección posterior — EAA y Colágeno naranja
+
+El usuario adjuntó la foto correcta de EAA naranja y señaló que la silueta de Colágeno naranja estaba mordida por el recorte. Se sustituyen únicamente esos dos derivados: EAA usa el adjunto nuevo y Colágeno usa la toma completa de Optimus Collagen naranja que estaba asociada por error a EAA. Se conservan sus originales en `assets/product-originals/onefit`, fuera de `public`, junto con su procedencia.
+
+La foto nueva de EAA tiene transparencia real; el modo explícito `existing-alpha` conserva la silueta, quita ruido de alfa insignificante y evita volver a segmentar la etiqueta blanca. Este modo rechaza un fondo opaco. Colágeno sigue usando rembg sobre la toma completa. Tres pruebas Python cubren conservación de bordes blancos, rechazo de fondo opaco y continuidad del modo rembg.
+
+El registro mantiene las asociaciones por variante y ruta exacta; se actualizan los WebP de 320, 600 y 1000, con nuevos nombres, sin sobrescribir los anteriores. El informe vigente guarda `sourceOverride` para distinguir el original de entrada del objeto de Storage sustituido visualmente, `sourceHash` del archivo utilizado y `catalogSourceHash` del archivo remoto anterior. Supabase no se modifica. Los otros seis frentes permanecen idénticos.
+
+Para reproducir estas dos correcciones usando los originales conservados en el repositorio:
+
+```powershell
+python scripts/normalize-product-photos.py scripts/manifests/onefit-naranja-correcciones-20261018.json C:/trabajo/naranja-corregida
+```
+
+La revisión inicial y sus observaciones quedan descritas a continuación como historial. Las cifras vigentes de los ocho archivos son 8.127.354 bytes de entrada, 142.872 en 320 px, 348.540 en 600 px y 683.554 en masters de 1000 px. La copia más pesada de tarjeta sigue siendo de 54.716 bytes. La incidencia de la foto de Colágeno puesta en EAA queda resuelta en catálogo y detalle por el registro local; sus asociaciones originales en administración/Storage se conservan.
+
+Validación de la corrección: `npm.cmd run check` aprobado (87 pruebas unitarias, dos omitidas), tres pruebas Python aprobadas, seis recorridos de detalle a 1600/768/375 px y cuatro de tarjetas con las animaciones activas. Probados retorno de variante, URL, carga sin JavaScript y movimiento reducido. Sin errores de consola ni desbordamientos. Los hashes de ambos archivos de Storage siguen intactos y las copias originales locales coinciden con los archivos utilizados.
+
+Evidencia actual: [comparación de las dos correcciones](reviews/normalizacion-onefit/correccion-naranja.webp), [Colágeno naranja en detalle](reviews/normalizacion-onefit/ONE-0007-corregida-1600.webp), [EAA naranja en tarjeta móvil](reviews/normalizacion-onefit/ONE-0002-tarjeta-corregida-375.webp) e [informe de navegador](reviews/normalizacion-onefit/correccion-naranja-verificacion.json).
+
+## Primera entrega
+
 | Producto                    | Sabores / SKU procesados                                         |
 | --------------------------- | ---------------------------------------------------------------- |
 | EEAA + Essential Amino Acid | Cereza ONE-0001, naranja ONE-0002, pomelo ONE-0003, uva ONE-0004 |
@@ -35,7 +57,7 @@ La copia de tarjeta más pesada mide 54.716 bytes. Estas cifras describen las fo
 
 - **EEAA naranja, ONE-0002:** la foto actualmente asociada a esa variante muestra **OPTIMUS COLLAGEN** en la etiqueta. Se conserva su asociación y se normaliza el archivo recibido, sin alterar textos ni asignar la imagen de otro SKU. Hay que reemplazar ese original por el EEAA naranja correcto. El recorte no puede corregir la identidad del envase.
 - **Whey Chocolate:** el usuario confirmó **Chocolate, ONE-0014**, UUID `3eb37c89-a023-4ab1-98e0-168940b95ddc`, que tiene la nueva foto PNG. El UUID suministrado inicialmente `baa2445c-aa97-4cbd-b020-231f40bf5464` corresponde a **Dulce de leche, ONE-0015**, sin foto propia. Dulce de leche queda intacto, sin recibir la foto de Chocolate.
-- EEAA naranja y Colágeno naranja necesitan ampliaciones leves (recortes de 797 y 685 px de alto, respectivamente). El escalado no inventa nitidez. No quedan fallos de recorte detectados tras la revisión visual; las observaciones anteriores siguen en el informe.
+- En la primera entrega, EEAA naranja y Colágeno naranja necesitaban ampliaciones (recortes de 797 y 685 px de alto, respectivamente). La revisión posterior del usuario detectó un borde mordido en Colágeno naranja, corregido con la toma completa descrita arriba. El escalado no inventa nitidez.
 
 ## Reproducción local
 

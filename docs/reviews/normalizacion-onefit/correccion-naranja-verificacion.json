@@ -1,0 +1,104 @@
+{
+  "details": [
+    {
+      "sku": "ONE-0002",
+      "viewport": 1600,
+      "scrollWidth": 1600,
+      "stage": {
+        "width": 640,
+        "height": 640
+      },
+      "flavor": "naranja"
+    },
+    {
+      "sku": "ONE-0007",
+      "viewport": 1600,
+      "scrollWidth": 1600,
+      "stage": {
+        "width": 640,
+        "height": 640
+      },
+      "flavor": "naranja"
+    },
+    {
+      "sku": "ONE-0002",
+      "viewport": 768,
+      "scrollWidth": 768,
+      "stage": {
+        "width": 640,
+        "height": 640
+      },
+      "flavor": "naranja"
+    },
+    {
+      "sku": "ONE-0007",
+      "viewport": 768,
+      "scrollWidth": 768,
+      "stage": {
+        "width": 640,
+        "height": 640
+      },
+      "flavor": "naranja"
+    },
+    {
+      "sku": "ONE-0002",
+      "viewport": 375,
+      "scrollWidth": 375,
+      "stage": {
+        "width": 343,
+        "height": 343
+      },
+      "flavor": "naranja"
+    },
+    {
+      "sku": "ONE-0007",
+      "viewport": 375,
+      "scrollWidth": 375,
+      "stage": {
+        "width": 343,
+        "height": 343
+      },
+      "flavor": "naranja"
+    }
+  ],
+  "cards": [
+    {
+      "sku": "ONE-0002",
+      "viewport": 1600,
+      "source": "/media/onefit-normalized-v1/6204f1cb-e4ac-41de-943c-205416b14ef5-fc2267c52ed9-v1-600.webp"
+    },
+    {
+      "sku": "ONE-0007",
+      "viewport": 1600,
+      "source": "/media/onefit-normalized-v1/fff695cd-0f9a-4d63-a5a9-1e9822b15f0f-7219f88d9b58-v1-600.webp"
+    },
+    {
+      "sku": "ONE-0002",
+      "viewport": 375,
+      "source": "/media/onefit-normalized-v1/6204f1cb-e4ac-41de-943c-205416b14ef5-fc2267c52ed9-v1-600.webp"
+    },
+    {
+      "sku": "ONE-0007",
+      "viewport": 375,
+      "source": "/media/onefit-normalized-v1/fff695cd-0f9a-4d63-a5a9-1e9822b15f0f-7219f88d9b58-v1-600.webp"
+    }
+  ],
+  "errors": [],
+  "withoutJavaScript": true,
+  "reducedMotion": true,
+  "sources": [
+    {
+      "sku": "ONE-0002",
+      "sourceHash": "fc2267c52ed9c72fe6728a70a03f3c6e2fb41d4eb06408b276d38bad6460fcd2",
+      "catalogSourceHash": "7219f88d9b58a600493dc0fc3b62c4e3abadf80de50e519ccf67884dd8477d49",
+      "originalIntact": true
+    },
+    {
+      "sku": "ONE-0007",
+      "sourceHash": "7219f88d9b58a600493dc0fc3b62c4e3abadf80de50e519ccf67884dd8477d49",
+      "catalogSourceHash": "09e142d6b3aa4136e9bc43564f69a74795104ccd6c4fc06403493e90c35ca1c0",
+      "originalIntact": true
+    }
+  ],
+  "status": "passed"
+}

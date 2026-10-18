@@ -66,6 +66,8 @@ describe("renormalización One Fit: originales nuevos sin alterar el catálogo",
     records: {
       sourcePath: string;
       variantId: string;
+      sourceOverride?: { kind: string; file: string };
+      matteMode?: string;
       outputs: Record<string, { filename: string; bytes: number }>;
     }[];
   };
@@ -74,6 +76,8 @@ describe("renormalización One Fit: originales nuevos sin alterar el catálogo",
     expect(Object.keys(onefit)).toHaveLength(8);
     expect(report.records).toHaveLength(8);
     for (const [path, master] of Object.entries(onefit)) {
+      const record = report.records.find((r) => r.sourcePath === path)!;
+      expect(record.outputs[1000].filename).toBe(master.split("/").at(-1));
       const original = { path, imageBase };
       const card = normalizedPhotoProps(
         `${imageBase}/${path}`,
@@ -112,6 +116,23 @@ describe("renormalización One Fit: originales nuevos sin alterar el catálogo",
         (r) => r.variantId === "3eb37c89-a023-4ab1-98e0-168940b95ddc",
       ),
     ).toBe(true);
+  });
+
+  it("mantiene las correcciones de EAA y Colágeno naranja en sus propias variantes", () => {
+    const eaa = report.records.find(
+      (r) => r.variantId === "58165b1d-4ff2-464e-aae3-cb2a09608a0d",
+    )!;
+    const collagen = report.records.find(
+      (r) => r.variantId === "c369f4b7-a0e9-472e-96db-d03db0d02a86",
+    )!;
+    expect(eaa.matteMode).toBe("existing-alpha");
+    expect(eaa.sourceOverride?.kind).toBe("user-attachment");
+    expect(collagen.sourceOverride?.kind).toBe("existing-catalog-photo");
+    expect(eaa.outputs[1000].filename).not.toBe(
+      collagen.outputs[1000].filename,
+    );
+    expect(existsSync(eaa.sourceOverride!.file)).toBe(true);
+    expect(existsSync(collagen.sourceOverride!.file)).toBe(true);
   });
 
   it("todos los WebP conservan transparencia, altura y base común, sin PNG pesado en cards", async () => {

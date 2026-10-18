@@ -60,44 +60,49 @@
       "slug": "onefit-aminoacidos-eeaa-essential-amino-acid",
       "flavor": "naranja",
       "sku": "ONE-0002",
+      "sourceOverride": {
+        "kind": "user-attachment",
+        "file": "assets/product-originals/onefit/eaa-naranja-20261018.png",
+        "reason": "Foto correcta de EAA naranja adjuntada por el usuario; reemplaza visualmente la foto de Colágeno mal asociada, sin modificar Storage."
+      },
       "source": {
-        "width": 1536,
-        "height": 1024
+        "width": 1448,
+        "height": 1086
       },
       "bounds": [
-        524,
-        134,
-        1012,
-        931
+        420,
+        53,
+        1029,
+        1042
       ],
       "placement": {
-        "left": 255,
+        "left": 253,
         "top": 100,
-        "width": 490,
+        "width": 493,
         "height": 800,
         "baseline": 900
       },
-      "warnings": [
-        "Original menor de 800 px: ampliar no recupera detalle.",
-        "La foto original asociada a EEAA naranja muestra OPTIMUS COLLAGEN. Requiere reemplazar el original correcto; no se retocó la etiqueta."
-      ],
-      "sourceHash": "7219f88d9b58a600493dc0fc3b62c4e3abadf80de50e519ccf67884dd8477d49",
-      "sourceBytes": 1153333,
+      "warnings": [],
+      "sourceHash": "fc2267c52ed9c72fe6728a70a03f3c6e2fb41d4eb06408b276d38bad6460fcd2",
+      "sourceBytes": 924645,
+      "matteMode": "existing-alpha",
       "outputs": {
         "320": {
-          "filename": "6204f1cb-e4ac-41de-943c-205416b14ef5-7219f88d9b58-v1-320.webp",
-          "bytes": 18046
+          "filename": "6204f1cb-e4ac-41de-943c-205416b14ef5-fc2267c52ed9-v1-320.webp",
+          "bytes": 17610
         },
         "600": {
-          "filename": "6204f1cb-e4ac-41de-943c-205416b14ef5-7219f88d9b58-v1-600.webp",
-          "bytes": 42598
+          "filename": "6204f1cb-e4ac-41de-943c-205416b14ef5-fc2267c52ed9-v1-600.webp",
+          "bytes": 43038
         },
         "1000": {
-          "filename": "6204f1cb-e4ac-41de-943c-205416b14ef5-7219f88d9b58-v1-1000.webp",
-          "bytes": 82500
+          "filename": "6204f1cb-e4ac-41de-943c-205416b14ef5-fc2267c52ed9-v1-1000.webp",
+          "bytes": 86316
         }
       },
-      "status": "review"
+      "status": "ready",
+      "catalogSourceHash": "7219f88d9b58a600493dc0fc3b62c4e3abadf80de50e519ccf67884dd8477d49",
+      "replacesDerivative": "6204f1cb-e4ac-41de-943c-205416b14ef5-7219f88d9b58-v1-1000.webp"
     },
     {
       "id": "593a75f0-57fe-47c8-90e9-88453a8725a7",
@@ -195,43 +200,52 @@
       "slug": "onefit-colageno-optimus-x-240gr",
       "flavor": "naranja",
       "sku": "ONE-0007",
+      "sourceOverride": {
+        "kind": "existing-catalog-photo",
+        "file": "assets/product-originals/onefit/colageno-naranja-completo-20261018.png",
+        "originalStoragePath": "d242dd6b-989a-49a4-9b20-e852cddb5561/8b168ff0-7353-4080-900e-8f691b2a9017.png",
+        "reason": "Toma completa de Optimus Collagen naranja que estaba asociada por error a EAA. Solicitada como referencia por el usuario."
+      },
       "source": {
         "width": 1536,
         "height": 1024
       },
       "bounds": [
-        578,
-        162,
-        964,
-        847
+        524,
+        134,
+        1012,
+        931
       ],
       "placement": {
-        "left": 274,
+        "left": 255,
         "top": 100,
-        "width": 451,
+        "width": 490,
         "height": 800,
         "baseline": 900
       },
       "warnings": [
         "Original menor de 800 px: ampliar no recupera detalle."
       ],
-      "sourceHash": "09e142d6b3aa4136e9bc43564f69a74795104ccd6c4fc06403493e90c35ca1c0",
-      "sourceBytes": 1014071,
+      "sourceHash": "7219f88d9b58a600493dc0fc3b62c4e3abadf80de50e519ccf67884dd8477d49",
+      "sourceBytes": 1153333,
+      "matteMode": "rembg",
       "outputs": {
         "320": {
-          "filename": "fff695cd-0f9a-4d63-a5a9-1e9822b15f0f-09e142d6b3aa-v1-320.webp",
-          "bytes": 16884
+          "filename": "fff695cd-0f9a-4d63-a5a9-1e9822b15f0f-7219f88d9b58-v1-320.webp",
+          "bytes": 18046
         },
         "600": {
-          "filename": "fff695cd-0f9a-4d63-a5a9-1e9822b15f0f-09e142d6b3aa-v1-600.webp",
-          "bytes": 40110
+          "filename": "fff695cd-0f9a-4d63-a5a9-1e9822b15f0f-7219f88d9b58-v1-600.webp",
+          "bytes": 42598
         },
         "1000": {
-          "filename": "fff695cd-0f9a-4d63-a5a9-1e9822b15f0f-09e142d6b3aa-v1-1000.webp",
-          "bytes": 75810
+          "filename": "fff695cd-0f9a-4d63-a5a9-1e9822b15f0f-7219f88d9b58-v1-1000.webp",
+          "bytes": 82500
         }
       },
-      "status": "review"
+      "status": "review",
+      "catalogSourceHash": "09e142d6b3aa4136e9bc43564f69a74795104ccd6c4fc06403493e90c35ca1c0",
+      "replacesDerivative": "fff695cd-0f9a-4d63-a5a9-1e9822b15f0f-09e142d6b3aa-v1-1000.webp"
     },
     {
       "id": "821ba08b-299e-45c1-9837-82e376827c67",
@@ -371,14 +385,6 @@
   ],
   "review": [
     {
-      "sku": "ONE-0002",
-      "variantId": "58165b1d-4ff2-464e-aae3-cb2a09608a0d",
-      "warnings": [
-        "Original menor de 800 px: ampliar no recupera detalle.",
-        "La foto original asociada a EEAA naranja muestra OPTIMUS COLLAGEN. Requiere reemplazar el original correcto; no se retocó la etiqueta."
-      ]
-    },
-    {
       "sku": "ONE-0007",
       "variantId": "c369f4b7-a0e9-472e-96db-d03db0d02a86",
       "warnings": [
@@ -390,5 +396,6 @@
     "rembg": "2.0.85",
     "Pillow": "12.3.0",
     "scipy": "1.18.1"
-  }
+  },
+  "revision": "naranja-20261018"
 }

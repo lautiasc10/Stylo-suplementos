@@ -1,0 +1,36 @@
+{
+  "images": [
+    {
+      "id": "6204f1cb-e4ac-41de-943c-205416b14ef5",
+      "productId": "d242dd6b-989a-49a4-9b20-e852cddb5561",
+      "variantId": "58165b1d-4ff2-464e-aae3-cb2a09608a0d",
+      "sourcePath": "d242dd6b-989a-49a4-9b20-e852cddb5561/8b168ff0-7353-4080-900e-8f691b2a9017.png",
+      "slug": "onefit-aminoacidos-eeaa-essential-amino-acid",
+      "flavor": "naranja",
+      "sku": "ONE-0002",
+      "input": "../../assets/product-originals/onefit/eaa-naranja-20261018.png",
+      "matteMode": "existing-alpha",
+      "sourceOverride": {
+        "kind": "user-attachment",
+        "file": "assets/product-originals/onefit/eaa-naranja-20261018.png",
+        "reason": "Foto correcta de EAA naranja adjuntada por el usuario; reemplaza visualmente la foto de Colágeno mal asociada, sin modificar Storage."
+      }
+    },
+    {
+      "id": "fff695cd-0f9a-4d63-a5a9-1e9822b15f0f",
+      "productId": "1dc35418-8d84-4b15-bc31-45dda36636cd",
+      "variantId": "c369f4b7-a0e9-472e-96db-d03db0d02a86",
+      "sourcePath": "1dc35418-8d84-4b15-bc31-45dda36636cd/2ae383f6-a42b-4a04-9bef-141d2ef3d0f1.png",
+      "slug": "onefit-colageno-optimus-x-240gr",
+      "flavor": "naranja",
+      "sku": "ONE-0007",
+      "input": "../../assets/product-originals/onefit/colageno-naranja-completo-20261018.png",
+      "sourceOverride": {
+        "kind": "existing-catalog-photo",
+        "file": "assets/product-originals/onefit/colageno-naranja-completo-20261018.png",
+        "originalStoragePath": "d242dd6b-989a-49a4-9b20-e852cddb5561/8b168ff0-7353-4080-900e-8f691b2a9017.png",
+        "reason": "Toma completa de Optimus Collagen naranja que estaba asociada por error a EAA. Solicitada como referencia por el usuario."
+      }
+    }
+  ]
+}
