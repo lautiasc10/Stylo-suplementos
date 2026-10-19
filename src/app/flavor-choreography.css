@@ -51,7 +51,9 @@
 .flavor-hero-scenes .flavor-hero-background[data-ambient="true"]
   .flavor-scene-piece[data-place="bottom"] img {
   animation-duration: 13s;
-  animation-direction: alternate-reverse;
+  /* Both ingredient loops must begin at the untransformed reveal pose.
+     alternate-reverse starts at 100% and visibly jumps at handoff. */
+  animation-direction: alternate;
 }
 .flavor-hero-scenes[data-playing="true"] .flavor-hero-background[data-ambient="true"]
   .flavor-scene-piece[data-place="hero"] img,

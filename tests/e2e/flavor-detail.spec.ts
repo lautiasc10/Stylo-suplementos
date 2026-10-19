@@ -765,6 +765,21 @@ test("el movimiento ambiente empieza tras el reveal, se pausa y respeta movimien
   const background = decor.locator('.flavor-hero-background[data-current="true"] .flavor-hero-background-content');
   await expect(decor).toHaveAttribute("data-ambient", "true");
   await expect(background).toHaveCSS("animation-name", "flavor-ambient-drift");
+  const animatedPlace = page.viewportSize()!.width < 768 ? "hero" : "bottom";
+  const initialPose = await decor.locator(`.flavor-hero-background[data-current="true"] .flavor-scene-piece[data-place="${animatedPlace}"] img`).evaluate((element) => {
+    const animation = element.getAnimations().find((item) =>
+      item instanceof CSSAnimation && item.animationName === "flavor-ingredient-float",
+    );
+    if (!animation) return null;
+    animation.pause();
+    animation.currentTime = 0;
+    const pose = new DOMMatrix(getComputedStyle(element).transform);
+    return { x: pose.m41, y: pose.m42, angle: Math.atan2(pose.m12, pose.m11) };
+  });
+  expect(initialPose).not.toBeNull();
+  expect(Math.abs(initialPose!.x)).toBeLessThan(0.01);
+  expect(Math.abs(initialPose!.y)).toBeLessThan(0.01);
+  expect(Math.abs(initialPose!.angle)).toBeLessThan(0.001);
   await page.evaluate(() => {
     Object.defineProperty(document, "hidden", { configurable: true, value: true });
     document.dispatchEvent(new Event("visibilitychange"));
