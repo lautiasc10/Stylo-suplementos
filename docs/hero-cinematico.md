@@ -10,7 +10,7 @@ El escenario coloca el título a la izquierda y el león a la derecha en escrito
 
 Se incorporan el grano estático, el ascenso de las líneas, el degradado que recorre el texto, los botones rectos y la cinta de la referencia. La cinta contiene Proteína, Creatina, Pre-entreno, Aminoácidos, Colágeno y el mensaje de envíos suministrado por el usuario; las categorías conservan enlaces funcionales y el mensaje de envíos es texto. El grupo duplicado no agrega pasos al teclado ni al lector de pantalla. Hover pausa la cinta; foco visible habilita su navegación manual. La pausa compartida y el movimiento reducido detienen el movimiento continuo.
 
-El titular queda libre del león en escritorio. En celular queda por encima de la ilustración para conservar su lectura. El navbar, el logo oficial, el carrito, la búsqueda y las categorías superiores mantienen estructura, fuentes y navegación. Se conserva el contenido comercial existente; las afirmaciones de marcas y alcance de envíos siguen pendientes de confirmación antes de publicar.
+El titular queda libre del león en escritorio, más cerca de él y con los botones inmediatamente debajo. Se retiró la bajada del hero por pedido del usuario. En celular, título, león y botones se agrupan más cerca sin superponerse. El navbar, el logo oficial, el carrito, la búsqueda y las categorías superiores mantienen estructura, fuentes y navegación. Las afirmaciones de marcas y alcance de envíos que aún aparecen en otras partes siguen pendientes de confirmación antes de publicar.
 
 ## Movimiento compartido
 

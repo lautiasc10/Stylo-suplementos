@@ -317,24 +317,34 @@ export function CinematicHero() {
         onActivityChange={setAmbientActive}
       />
       <div className="hero-stage">
-        <h1 id="hero-title" className="hero-title">
-          <span className="hero-title-parallax">
-            <span className="hero-line-clip">
-              <span className="hero-line-rise">
-                <span className="hero-title-line hero-title-outline">
-                  {HERO_COPY.titleLines[0]}
+        <div className="hero-stage-copy">
+          <h1 id="hero-title" className="hero-title">
+            <span className="hero-title-parallax">
+              <span className="hero-line-clip">
+                <span className="hero-line-rise">
+                  <span className="hero-title-line hero-title-outline">
+                    {HERO_COPY.titleLines[0]}
+                  </span>
                 </span>
-              </span>
-            </span>{" "}
-            <span className="hero-line-clip">
-              <span className="hero-line-rise">
-                <span className="hero-title-line hero-title-gold">
-                  {HERO_COPY.titleLines.slice(1).join(" ")}
+              </span>{" "}
+              <span className="hero-line-clip">
+                <span className="hero-line-rise">
+                  <span className="hero-title-line hero-title-gold">
+                    {HERO_COPY.titleLines.slice(1).join(" ")}
+                  </span>
                 </span>
               </span>
             </span>
-          </span>
-        </h1>
+          </h1>
+          <div className="hero-actions">
+            <Link href="/catalogo" className="hero-pill hero-pill-primary">
+              Explorar tienda
+            </Link>
+            <a href="#destacados" className="hero-pill hero-pill-secondary">
+              Destacados
+            </a>
+          </div>
+        </div>
         <div
           className="sport-hero-visual"
           aria-hidden="true"
@@ -363,19 +373,6 @@ export function CinematicHero() {
                 />
               )}
             </div>
-          </div>
-        </div>
-      </div>
-      <div className="container sport-hero-inner">
-        <div className="hero-content hero-bottom-row">
-          <p className="hero-subtitle">{HERO_COPY.subtitle}</p>
-          <div className="hero-actions">
-            <Link href="/catalogo" className="hero-pill hero-pill-primary">
-              Explorar tienda
-            </Link>
-            <a href="#destacados" className="hero-pill hero-pill-secondary">
-              Destacados
-            </a>
           </div>
         </div>
       </div>

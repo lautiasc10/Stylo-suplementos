@@ -1,0 +1,107 @@
+[
+  {
+    "slug": "star-nutrition-proteina-whey-protein-x-2-lbs-dp",
+    "width": 1440,
+    "status": 200,
+    "transition": "slide",
+    "count": "1/4",
+    "changed": true,
+    "photo": {
+      "complete": true,
+      "width": 640,
+      "height": 640
+    },
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "slug": "onefit-aminoacidos-eeaa-essential-amino-acid",
+    "width": 1440,
+    "status": 200,
+    "transition": "slide",
+    "count": "1/4",
+    "changed": true,
+    "photo": {
+      "complete": true,
+      "width": 640,
+      "height": 640
+    },
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "slug": "star-nutrition-proteina-platinum-whey-x-2-lbs",
+    "width": 1440,
+    "status": 200,
+    "transition": "slide",
+    "count": "1/3",
+    "changed": true,
+    "photo": {
+      "complete": true,
+      "width": 640,
+      "height": 640
+    },
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "slug": "star-nutrition-proteina-whey-protein-x-2-lbs-dp",
+    "width": 375,
+    "status": 200,
+    "transition": "slide",
+    "count": "1/4",
+    "changed": true,
+    "photo": {
+      "complete": true,
+      "width": 375,
+      "height": 375
+    },
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "slug": "onefit-aminoacidos-eeaa-essential-amino-acid",
+    "width": 375,
+    "status": 200,
+    "transition": "slide",
+    "count": "1/4",
+    "changed": true,
+    "photo": {
+      "complete": true,
+      "width": 375,
+      "height": 375
+    },
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "slug": "star-nutrition-proteina-platinum-whey-x-2-lbs",
+    "width": 375,
+    "status": 200,
+    "transition": "slide",
+    "count": "1/3",
+    "changed": true,
+    "photo": {
+      "complete": true,
+      "width": 375,
+      "height": 375
+    },
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "slug": "star-nutrition-proteina-whey-protein-x-2-lbs-dp",
+    "card": "changed",
+    "transition": "slide"
+  },
+  {
+    "slug": "onefit-aminoacidos-eeaa-essential-amino-acid",
+    "card": "changed",
+    "transition": "slide"
+  },
+  {
+    "slug": "star-nutrition-proteina-platinum-whey-x-2-lbs",
+    "card": "changed",
+    "transition": "slide"
+  }
+]

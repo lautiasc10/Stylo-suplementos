@@ -7,10 +7,11 @@ test("las fuentes de la referencia quedan limitadas al hero", async ({
   await page.evaluate(() => document.fonts.ready);
   await expect(page.locator(".hero-title")).toHaveCSS("font-family", /Anton/);
   await expect(page.locator(".hero-title")).toHaveCSS("font-weight", "400");
-  await expect(page.locator(".hero-subtitle")).toHaveCSS(
+  await expect(page.locator(".hero-actions")).toHaveCSS(
     "font-family",
     /Manrope/,
   );
+  await expect(page.locator(".hero-subtitle")).toHaveCount(0);
   await expect(page.locator(".site-header")).toHaveCSS("font-family", /Inter/);
 });
 
@@ -20,10 +21,13 @@ test("el titular queda legible a la izquierda y el león a la derecha en escrito
   test.skip(info.project.name !== "desktop");
   await page.goto("/");
   const title = await page.locator(".hero-title").boundingBox();
+  const actions = await page.locator(".hero-actions").boundingBox();
   const lion = await page.locator(".sport-hero-visual").boundingBox();
   expect(title).not.toBeNull();
+  expect(actions).not.toBeNull();
   expect(lion).not.toBeNull();
   expect(title!.x + title!.width + 16).toBeLessThan(lion!.x);
+  expect(actions!.y).toBeGreaterThan(title!.y + title!.height);
   expect(lion!.x + lion!.width).toBeLessThanOrEqual(page.viewportSize()!.width);
 });
 
@@ -266,7 +270,7 @@ test("el hero conserva accesos y muestra un fotograma mientras carga", async ({
   await expect(hero.getByRole("heading", { level: 1 })).toHaveText(
     "Potenciá tu mejor versión.",
   );
-  await expect(hero).toContainText("Proteínas, creatinas y pre-entrenos");
+  await expect(hero.locator(".hero-subtitle")).toHaveCount(0);
   await expect(hero).toContainText("Potenciá tu mejor versión.");
   await expect
     .poll(() =>

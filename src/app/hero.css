@@ -36,14 +36,16 @@
   min-height: 420px;
   perspective: 1200px;
 }
-.sport-hero .hero-title {
+.hero-stage-copy {
   position: absolute;
-  left: var(--page-gutter);
-  width: min(48vw, 900px);
+  z-index: 4;
   top: 50%;
-  z-index: 1;
-  margin: 0;
+  left: calc(var(--page-gutter) + min(3vw, 40px));
+  width: min(43vw, 820px);
   transform: translateY(-50%);
+}
+.sport-hero .hero-title {
+  margin: 0;
   font:
     400 clamp(64px, 7.3vw, 150px)/0.82 var(--font-hero-display),
     Impact,
@@ -128,28 +130,11 @@
 .sport-hero-visual[data-video-ready="true"] .sport-hero-poster {
   visibility: hidden;
 }
-.sport-hero-inner {
-  position: relative;
-  z-index: 4;
-  padding-block: var(--space-6) var(--space-8);
-}
-.hero-bottom-row {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: var(--space-6);
-}
-.hero-subtitle {
-  max-width: 320px;
-  margin: 0;
-  font-size: var(--text-sm);
-  line-height: 1.5;
-  color: oklch(0.66 0.02 80);
-}
 .hero-actions {
   display: flex;
   flex-shrink: 0;
   gap: var(--space-3);
+  margin-top: clamp(24px, 4vh, 40px);
 }
 .hero-pill {
   display: inline-flex;
@@ -400,9 +385,6 @@
     padding-inline: var(--space-4);
     letter-spacing: 0.1em;
   }
-  .hero-subtitle {
-    max-width: 32ch;
-  }
 }
 @media (max-width: 800px) {
   .sport-hero {
@@ -410,9 +392,15 @@
     min-height: calc(100svh - 96px);
   }
   .hero-stage {
-    min-height: max(400px, 55svh);
+    min-height: max(600px, 65svh);
+  }
+  .hero-stage-copy {
+    position: static;
+    width: 100%;
+    transform: none;
   }
   .sport-hero .hero-title {
+    position: absolute;
     left: 0;
     width: 100%;
     top: 24px;
@@ -426,23 +414,20 @@
   .sport-hero-visual {
     left: 50%;
     right: auto;
-    top: 66%;
+    top: 54%;
     width: min(78vw, 440px, 46svh);
     transform: translate(-50%, -50%);
   }
-  .hero-bottom-row {
-    flex-direction: column;
-    align-items: stretch;
-    gap: var(--space-6);
-  }
-  .hero-subtitle {
-    max-width: 48ch;
-    font-size: var(--text-sm);
-  }
   .hero-actions {
+    position: absolute;
+    z-index: 4;
+    right: var(--page-gutter);
+    bottom: 60px;
+    left: var(--page-gutter);
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-2);
+    margin-top: 0;
   }
   .hero-pill {
     padding-inline: var(--space-3);

@@ -5,6 +5,4 @@ export const HERO_COPY = {
   eyebrow: "STYLO SUPLEMENTOS",
   title: TITLE_LINES.join(" "),
   titleLines: TITLE_LINES,
-  subtitle:
-    "Proteínas, creatinas y pre-entrenos de las mejores marcas. Envíos a todo el país.",
 } as const;
