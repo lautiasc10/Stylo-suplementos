@@ -1,4 +1,4 @@
-/* Three-product trial. Tokens, product data and the catalog remain shared. */
+/* Shared background for every unflavored detail. Catalog cards stay separate. */
 .product-detail.neutral-product-detail {
   --neutral-glow: color-mix(in srgb, var(--gold) 15%, transparent);
   background: var(--cinematic-background);

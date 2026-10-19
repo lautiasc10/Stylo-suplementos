@@ -204,7 +204,9 @@ async function closeMobileFilters(page: Page) {
     page.viewportSize()!.width < 960 &&
     (await panel.evaluate((element) => (element as HTMLDetailsElement).open))
   )
-    await panel.locator(":scope > summary").click();
+    await page
+      .getByRole("button", { name: "Ver productos", exact: true })
+      .click();
 }
 
 async function chooseFilter(
@@ -786,8 +788,12 @@ test("el lateral combina categoría, marca, sabor y orden y permite quitar un fi
   ).toBeChecked();
   await openFilters(page);
   await expect(
-    page.locator(".catalog-sidebar").getByRole("button"),
-  ).toHaveCount(0);
+    page.locator(".catalog-filters button[type=submit]"),
+  ).toBeHidden();
+  if (page.viewportSize()!.width < 960)
+    await expect(
+      page.getByRole("button", { name: "Ver productos", exact: true }),
+    ).toBeVisible();
 });
 
 test("el panel lateral conserva selección con teclado y al cambiar a celular", async ({
@@ -924,8 +930,8 @@ test("buscador sin sugerencias aplica el último texto y permite limpiar sin per
   await expect(search).not.toHaveAttribute("list");
   await expect(page.locator("datalist")).toHaveCount(0);
   await expect(
-    page.locator(".catalog-sidebar").getByRole("button"),
-  ).toHaveCount(0);
+    page.locator(".catalog-filters button[type=submit]"),
+  ).toBeHidden();
   await search.fill("creatina");
   await search.fill("proteina");
   await expect(page).toHaveURL(/q=proteina/);

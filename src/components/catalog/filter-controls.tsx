@@ -1,7 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { useRouter } from "next/navigation";
+import { Icon } from "@/components/ui/icon";
 
 function filterQuery(
   values: Iterable<[string, FormDataEntryValue | string | undefined]>,
@@ -140,24 +148,62 @@ export function AutomaticFilterForm({
 export function FilterPanel({
   activeCount,
   children,
+  footerAction = "close",
 }: {
   activeCount: number;
   children: ReactNode;
+  footerAction?: "close" | "submit";
 }) {
   const panel = useRef<HTMLDetailsElement>(null);
+  const dialog = useRef<HTMLDialogElement>(null);
+  const desktop = useRef(true);
+  const wasModal = useRef(false);
+  const [modal, setModal] = useState(false);
+  const titleId = useId();
   useEffect(() => {
-    const desktop = window.matchMedia("(min-width: 960px)");
+    const media = window.matchMedia("(min-width: 960px)");
     const update = () => {
-      if (panel.current) panel.current.open = desktop.matches;
+      desktop.current = media.matches;
+      wasModal.current = false;
+      setModal(false);
+      dialog.current?.close();
+      if (panel.current) panel.current.open = media.matches;
+      if (dialog.current) dialog.current.open = media.matches;
     };
     update();
-    desktop.addEventListener("change", update);
-    return () => desktop.removeEventListener("change", update);
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
   }, []);
 
+  useLayoutEffect(() => {
+    if (!modal || !dialog.current) return;
+    const element = dialog.current;
+    wasModal.current = true;
+    if (element.open) element.close();
+    element.showModal();
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+      element.close();
+      // A resize may have already restored the inline desktop form before
+      // this modal cleanup runs. Keep that non-modal dialog open.
+      if (desktop.current) element.open = true;
+    };
+  }, [modal]);
+
+  const close = () => dialog.current?.close();
   // The complete GET form is initially open and usable without JavaScript.
+  // The same form stays mounted across desktop, mobile and resize transitions.
   return (
-    <details className="catalog-filter-panel" ref={panel} open>
+    <details
+      className="catalog-filter-panel"
+      ref={panel}
+      open
+      onToggle={() => {
+        if (!desktop.current) setModal(Boolean(panel.current?.open));
+      }}
+    >
       <summary className="catalog-panel-toggle">
         <span>Filtrar y ordenar</span>
         {activeCount > 0 && (
@@ -165,7 +211,83 @@ export function FilterPanel({
         )}
         <span className="catalog-filter-chevron" aria-hidden="true" />
       </summary>
-      {children}
+      <dialog
+        ref={dialog}
+        className="catalog-filter-dialog"
+        open
+        role={modal ? "dialog" : "none"}
+        aria-modal={modal || undefined}
+        aria-labelledby={modal ? titleId : undefined}
+        data-modal={modal || undefined}
+        onClose={() => {
+          if (desktop.current) return;
+          if (panel.current) panel.current.open = false;
+          setModal(false);
+          if (wasModal.current)
+            panel.current
+              ?.querySelector("summary")
+              ?.focus({ preventScroll: true });
+          wasModal.current = false;
+        }}
+        onClick={(event) => {
+          if (!modal || event.target !== event.currentTarget) return;
+          const bounds = event.currentTarget.getBoundingClientRect();
+          if (
+            event.clientX < bounds.left ||
+            event.clientX > bounds.right ||
+            event.clientY < bounds.top ||
+            event.clientY > bounds.bottom
+          )
+            close();
+        }}
+        onSubmit={() => {
+          if (modal && footerAction === "submit") close();
+        }}
+        onKeyDown={(event) => {
+          if (!modal || event.key !== "Tab") return;
+          const elements = [
+            ...event.currentTarget.querySelectorAll<HTMLElement>(
+              'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), summary, [tabindex="0"]',
+            ),
+          ].filter((element) => element.getClientRects().length > 0);
+          const first = elements[0],
+            last = elements.at(-1);
+          if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last?.focus();
+          } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first?.focus();
+          }
+        }}
+      >
+        <div className="catalog-filter-dialog-heading">
+          <h2 id={titleId}>Filtrar y ordenar</h2>
+          <button
+            type="button"
+            className="icon-button"
+            aria-label="Cerrar filtros"
+            onClick={close}
+          >
+            <Icon name="close" />
+          </button>
+        </div>
+        {children}
+        <div className="catalog-filter-dialog-footer">
+          <button
+            type="button"
+            className="button button-gold"
+            onClick={() => {
+              if (footerAction === "submit") {
+                const form = dialog.current?.querySelector("form");
+                if (form?.reportValidity()) form.requestSubmit();
+              } else close();
+            }}
+          >
+            {footerAction === "submit" ? "Aplicar filtros" : "Ver productos"}
+          </button>
+        </div>
+      </dialog>
     </details>
   );
 }

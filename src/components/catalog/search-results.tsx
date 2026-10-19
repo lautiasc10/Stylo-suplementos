@@ -3,6 +3,7 @@ import Form from "next/form";
 import { ProductCard } from "./product-card";
 import { RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { Icon } from "@/components/ui/icon";
+import { FilterPanel } from "./filter-controls";
 import {
   parseMoney,
   publicCatalog,
@@ -153,93 +154,104 @@ export function SearchResults({
           prueba.
         </p>
       )}
-      <Form
-        action={target}
-        key={JSON.stringify(params)}
-        className="search-filter-bar"
-        aria-label="Filtrar resultados"
+      <aside
+        className="search-results-filters"
+        aria-label="Filtros de búsqueda"
       >
-        {q && <input type="hidden" name="q" value={q} />}
-        <label>
-          Categoría
-          <select
-            aria-label="Categoría"
-            name="categoria"
-            defaultValue={params.categoria ?? ""}
+        <FilterPanel activeCount={chips.length} footerAction="submit">
+          <Form
+            action={target}
+            key={JSON.stringify(params)}
+            className="search-filter-bar"
+            aria-label="Filtrar resultados"
           >
-            <option value="">Todas las categorías</option>
-            {index.categories.map((c) => (
-              <option key={c.slug} value={c.slug}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          Marca
-          <select
-            aria-label="Marca"
-            name="marca"
-            defaultValue={params.marca ?? ""}
-          >
-            <option value="">Todas las marcas</option>
-            {index.brands.map((b) => (
-              <option key={b.slug} value={b.slug}>
-                {b.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <fieldset className="search-price-filter">
-          <legend>Precio de lista</legend>
-          <label>
-            <span className="sr-only">Precio mínimo</span>
-            <input
-              name="min"
-              type="number"
-              min="0"
-              step="1"
-              defaultValue={params.min ?? ""}
-              placeholder="Desde"
-            />
-          </label>
-          <span aria-hidden="true">—</span>
-          <label>
-            <span className="sr-only">Precio máximo</span>
-            <input
-              name="max"
-              type="number"
-              min="0"
-              step="1"
-              defaultValue={params.max ?? ""}
-              placeholder="Hasta"
-            />
-          </label>
-        </fieldset>
-        <label className="search-stock-filter">
-          <input
-            name="stock"
-            type="checkbox"
-            value="1"
-            defaultChecked={params.stock === "1"}
-          />
-          Solo con stock
-        </label>
-        <label>
-          Ordenar por
-          <select aria-label="Ordenar por" name="orden" defaultValue={order}>
-            <option value="relevance">Relevancia</option>
-            <option value="price-asc">Menor precio</option>
-            <option value="price-desc">Mayor precio</option>
-            <option value="newest" disabled={!hasDates}>
-              {hasDates ? "Más nuevos" : "Más nuevos · próximamente"}
-            </option>
-          </select>
-        </label>
-        <button className="button button-outline" type="submit">
-          Aplicar filtros
-        </button>
-      </Form>
+            {q && <input type="hidden" name="q" value={q} />}
+            <label>
+              Categoría
+              <select
+                aria-label="Categoría"
+                name="categoria"
+                defaultValue={params.categoria ?? ""}
+              >
+                <option value="">Todas las categorías</option>
+                {index.categories.map((c) => (
+                  <option key={c.slug} value={c.slug}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Marca
+              <select
+                aria-label="Marca"
+                name="marca"
+                defaultValue={params.marca ?? ""}
+              >
+                <option value="">Todas las marcas</option>
+                {index.brands.map((b) => (
+                  <option key={b.slug} value={b.slug}>
+                    {b.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <fieldset className="search-price-filter">
+              <legend>Precio de lista</legend>
+              <label>
+                <span className="sr-only">Precio mínimo</span>
+                <input
+                  name="min"
+                  type="number"
+                  min="0"
+                  step="1"
+                  defaultValue={params.min ?? ""}
+                  placeholder="Desde"
+                />
+              </label>
+              <span aria-hidden="true">—</span>
+              <label>
+                <span className="sr-only">Precio máximo</span>
+                <input
+                  name="max"
+                  type="number"
+                  min="0"
+                  step="1"
+                  defaultValue={params.max ?? ""}
+                  placeholder="Hasta"
+                />
+              </label>
+            </fieldset>
+            <label className="search-stock-filter">
+              <input
+                name="stock"
+                type="checkbox"
+                value="1"
+                defaultChecked={params.stock === "1"}
+              />
+              Solo con stock
+            </label>
+            <label>
+              Ordenar por
+              <select
+                aria-label="Ordenar por"
+                name="orden"
+                defaultValue={order}
+              >
+                <option value="relevance">Relevancia</option>
+                <option value="price-asc">Menor precio</option>
+                <option value="price-desc">Mayor precio</option>
+                <option value="newest" disabled={!hasDates}>
+                  {hasDates ? "Más nuevos" : "Más nuevos · próximamente"}
+                </option>
+              </select>
+            </label>
+            <button className="button button-outline" type="submit">
+              Aplicar filtros
+            </button>
+          </Form>
+        </FilterPanel>
+      </aside>
       {requestedOrder === "newest" && !hasDates && (
         <p className="ui-notice" role="status">
           Todavía no tenemos fechas de incorporación para ordenar por novedades.

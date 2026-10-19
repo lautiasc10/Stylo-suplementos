@@ -113,12 +113,12 @@ test("el ambiente se detiene antes de cinco segundos, se pausa y respeta movimie
   ).toBeEnabled();
 });
 
-test("la prueba no se extiende a otras fichas ni sustituye un fondo de sabor", async ({
+test("la escena se extiende a cualquier ficha sin sabor y conserva los fondos de sabor", async ({
   page,
 }) => {
   await seed(page, "sin-sabor-fuera-de-prueba");
   await page.goto("/vista-previa/producto/sin-sabor-fuera-de-prueba");
-  await expect(page.locator(".neutral-product-scene")).toHaveCount(0);
+  await expect(page.locator(".neutral-product-scene")).toHaveCount(1);
   await seed(page, slugs[0], "Banana");
   await page.goto(`/vista-previa/producto/${slugs[0]}`);
   await expect(page.locator(".flavor-product-detail")).toHaveAttribute(

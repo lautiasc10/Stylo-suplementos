@@ -295,6 +295,8 @@ test("resultados comparten filtros, paginan y recuperan la URL con Atrás", asyn
     12,
   );
   const filters = page.getByRole("form", { name: "Filtrar resultados" });
+  const toggle = page.locator(".search-results-filters .catalog-panel-toggle");
+  if (await toggle.isVisible()) await toggle.click();
   await filters
     .getByLabel("Categoría", { exact: true })
     .selectOption("proteinas");
@@ -306,7 +308,9 @@ test("resultados comparten filtros, paginan y recuperan la URL con Atrás", asyn
   await filters
     .getByLabel("Ordenar por", { exact: true })
     .selectOption("price-desc");
-  await filters.getByRole("button", { name: "Aplicar filtros" }).click();
+  await page
+    .getByRole("button", { name: "Aplicar filtros", exact: true })
+    .click();
   await expect(page).toHaveURL(/categoria=proteinas/);
   await expect(page).toHaveURL(/orden=price-desc/);
   await expect(page.locator(".search-product-grid .product-card")).toHaveCount(

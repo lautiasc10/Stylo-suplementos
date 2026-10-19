@@ -1,0 +1,122 @@
+[
+  {
+    "file": "anana-decor-v1.webp",
+    "originalBytes": 195996,
+    "bytes": 95424,
+    "width": 640,
+    "height": 427,
+    "hasAlpha": true
+  },
+  {
+    "file": "banana-decor-v1.webp",
+    "originalBytes": 115090,
+    "bytes": 82290,
+    "width": 640,
+    "height": 427,
+    "hasAlpha": true
+  },
+  {
+    "file": "cereza-decor-v1.webp",
+    "originalBytes": 194868,
+    "bytes": 95658,
+    "width": 640,
+    "height": 427,
+    "hasAlpha": true
+  },
+  {
+    "file": "chocolate-decor-v1.webp",
+    "originalBytes": 196152,
+    "bytes": 95076,
+    "width": 640,
+    "height": 427,
+    "hasAlpha": true
+  },
+  {
+    "file": "cookies-decor-v1.webp",
+    "originalBytes": 202858,
+    "bytes": 97544,
+    "width": 640,
+    "height": 427,
+    "hasAlpha": true
+  },
+  {
+    "file": "dulce-de-leche-decor-v1.webp",
+    "originalBytes": 189094,
+    "bytes": 92556,
+    "width": 640,
+    "height": 427,
+    "hasAlpha": true
+  },
+  {
+    "file": "frutilla-decor-v1.webp",
+    "originalBytes": 144416,
+    "bytes": 100524,
+    "width": 640,
+    "height": 427,
+    "hasAlpha": true
+  },
+  {
+    "file": "frutos-rojos-decor-v1.webp",
+    "originalBytes": 210794,
+    "bytes": 100310,
+    "width": 640,
+    "height": 427,
+    "hasAlpha": true
+  },
+  {
+    "file": "limon-decor-v1.webp",
+    "originalBytes": 177578,
+    "bytes": 87052,
+    "width": 640,
+    "height": 427,
+    "hasAlpha": true
+  },
+  {
+    "file": "multifruta-decor-v1.webp",
+    "originalBytes": 206792,
+    "bytes": 99042,
+    "width": 640,
+    "height": 427,
+    "hasAlpha": true
+  },
+  {
+    "file": "naranja-decor-v1.webp",
+    "originalBytes": 182886,
+    "bytes": 88604,
+    "width": 640,
+    "height": 427,
+    "hasAlpha": true
+  },
+  {
+    "file": "pomelo-decor-v1.webp",
+    "originalBytes": 185108,
+    "bytes": 88786,
+    "width": 640,
+    "height": 427,
+    "hasAlpha": true
+  },
+  {
+    "file": "sandia-decor-v1.webp",
+    "originalBytes": 196008,
+    "bytes": 92854,
+    "width": 640,
+    "height": 427,
+    "hasAlpha": true
+  },
+  {
+    "file": "uva-decor-v1.webp",
+    "originalBytes": 193122,
+    "bytes": 91990,
+    "width": 640,
+    "height": 427,
+    "hasAlpha": true
+  },
+  {
+    "file": "vainilla-decor-v1.webp",
+    "originalBytes": 126732,
+    "bytes": 87972,
+    "width": 640,
+    "height": 427,
+    "hasAlpha": true
+  }
+]

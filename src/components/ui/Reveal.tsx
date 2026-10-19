@@ -186,7 +186,10 @@ export function RevealGroup({
         initial={false}
         animate={state.controls}
         whileInView={state.reduced ? undefined : "visible"}
-        viewport={state.viewport.current}
+        // A grid can be many screens tall, and mobile filters collapse after
+        // hydration. Observe its leading edge rather than a fraction of its
+        // total area so the first visible row can never remain transparent.
+        viewport={{ ...VIEWPORT, amount: "some" }}
         variants={{
           hidden: {},
           intro: {},

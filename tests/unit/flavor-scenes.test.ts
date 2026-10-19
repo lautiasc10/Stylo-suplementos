@@ -1,7 +1,9 @@
 import { expect, test } from "vitest";
+import { existsSync, statSync } from "node:fs";
 import {
   sceneFlavor,
   sceneIngredients,
+  compactSceneIngredient,
 } from "../../src/modules/catalog/flavor-scenes";
 
 test("asocia los sabores del catálogo y sus alias con las decoraciones disponibles", () => {
@@ -27,6 +29,37 @@ test("asocia los sabores del catálogo y sus alias con las decoraciones disponib
     ["Vainilla", "vainilla"],
   ])
     expect(sceneFlavor(name)).toBe(key);
+});
+
+test("cada fondo tiene una copia móvil existente y más liviana sin sustituir el original", () => {
+  const flavors = [
+    "Banana",
+    "Frutilla",
+    "Vainilla",
+    "Ananá",
+    "Cereza",
+    "Chocolate",
+    "Cookies",
+    "Dulce de leche",
+    "Frutos rojos",
+    "Limón",
+    "Multifruta",
+    "Naranja",
+    "Pomelo",
+    "Sandía",
+    "Uva",
+  ];
+  for (const flavor of flavors) {
+    for (const source of sceneIngredients(sceneFlavor(flavor)!)) {
+      const compact = compactSceneIngredient(source);
+      expect(compact).toContain("/sabores/mobile/");
+      expect(existsSync(`public${source}`)).toBe(true);
+      expect(existsSync(`public${compact}`)).toBe(true);
+      expect(statSync(`public${compact}`).size).toBeLessThan(
+        statSync(`public${source}`).size,
+      );
+    }
+  }
 });
 
 test("citrus reutiliza limón y naranja sin inventar un recurso; neutros no llevan fruta", () => {

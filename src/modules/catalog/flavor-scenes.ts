@@ -32,3 +32,7 @@ export function sceneFlavor(value: string): SceneFlavor | null {
 export const sceneIngredients = (flavor: SceneFlavor): readonly string[] =>
   assets[flavor];
 export const sceneIngredient = (flavor: SceneFlavor) => assets[flavor][0];
+
+/** Same artwork at a smaller resolution for decorative mobile backgrounds. */
+export const compactSceneIngredient = (source: string) =>
+  source.replace("/sabores/", "/sabores/mobile/");

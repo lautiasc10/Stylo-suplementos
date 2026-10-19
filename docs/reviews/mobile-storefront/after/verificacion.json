@@ -1,0 +1,939 @@
+{
+  "note": "Production build, Chromium GPU, CPU x4, emulated mobile sizes. Short local trace/RAF samples are not field INP, and do not establish performance on a physical phone. Scripting/paint/layout are unions of main-thread intervals, not sums of nested events.",
+  "results": [
+    {
+      "name": "home",
+      "width": 375,
+      "overflow": false,
+      "clippedHeadings": [],
+      "transparentVisibleCards": [],
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [
+        {
+          "cardWidth": 343,
+          "labels": [
+            {
+              "text": "Frutos rojos",
+              "width": 100.265625,
+              "height": 28,
+              "clipped": false
+            },
+            {
+              "text": "Sin stock",
+              "width": 91.78125,
+              "height": 28,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 343,
+          "labels": []
+        },
+        {
+          "cardWidth": 343,
+          "labels": [
+            {
+              "text": "Sin stock",
+              "width": 91.78125,
+              "height": 28,
+              "clipped": false
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "imageNetworkBytes": 284102
+    },
+    {
+      "name": "catalogo",
+      "width": 375,
+      "overflow": false,
+      "clippedHeadings": [],
+      "transparentVisibleCards": [],
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [
+        {
+          "cardWidth": 165.5,
+          "labels": []
+        },
+        {
+          "cardWidth": 165.5,
+          "labels": [
+            {
+              "text": "Frutos rojos",
+              "width": 100.265625,
+              "height": 28,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 165.5,
+          "labels": [
+            {
+              "text": "Cereza",
+              "width": 67.265625,
+              "height": 28,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 165.5,
+          "labels": [
+            {
+              "text": "Limón",
+              "width": 60.796875,
+              "height": 28,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 165.5,
+          "labels": []
+        },
+        {
+          "cardWidth": 165.5,
+          "labels": [
+            {
+              "text": "Frutos rojos",
+              "width": 100.265625,
+              "height": 28,
+              "clipped": false
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "scroll": {
+        "samples": 160,
+        "p95Ms": 13.4,
+        "maxMs": 13.5,
+        "over16ms": 0,
+        "over32ms": 0,
+        "scriptingMs": 136,
+        "paintMs": 26.27,
+        "layoutMs": 0,
+        "longTasks": []
+      },
+      "openFilters": {
+        "top": 120,
+        "height": 58,
+        "visibleFraction": 0.06872037914691943,
+        "position": "sticky"
+      },
+      "search": {
+        "samples": 48,
+        "p95Ms": 26.8,
+        "maxMs": 40,
+        "over16ms": 3,
+        "over32ms": 2,
+        "scriptingMs": 60.4,
+        "paintMs": 32.81,
+        "layoutMs": 55.52,
+        "longTasks": []
+      },
+      "imageNetworkBytes": 268415
+    },
+    {
+      "name": "etiquetas",
+      "width": 375,
+      "overflow": false,
+      "clippedHeadings": [],
+      "transparentVisibleCards": [],
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [
+        {
+          "cardWidth": 165.5,
+          "labels": [
+            {
+              "text": "Choco suizo",
+              "width": 103.484375,
+              "height": 28,
+              "clipped": false
+            },
+            {
+              "text": "Sin stock",
+              "width": 91.78125,
+              "height": 28,
+              "clipped": false
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "imageNetworkBytes": 1032
+    },
+    {
+      "name": "resultados",
+      "width": 375,
+      "overflow": false,
+      "clippedHeadings": [],
+      "transparentVisibleCards": [],
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [
+        {
+          "cardWidth": 165.5,
+          "labels": []
+        },
+        {
+          "cardWidth": 165.5,
+          "labels": [
+            {
+              "text": "Sin stock",
+              "width": 91.78125,
+              "height": 28,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 165.5,
+          "labels": [
+            {
+              "text": "Sin stock",
+              "width": 91.78125,
+              "height": 28,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 165.5,
+          "labels": []
+        },
+        {
+          "cardWidth": 165.5,
+          "labels": [
+            {
+              "text": "Sin stock",
+              "width": 91.78125,
+              "height": 28,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 165.5,
+          "labels": [
+            {
+              "text": "Neutro",
+              "width": 65.8125,
+              "height": 28,
+              "clipped": false
+            },
+            {
+              "text": "Sin stock",
+              "width": 91.78125,
+              "height": 28,
+              "clipped": false
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "imageNetworkBytes": 99477
+    },
+    {
+      "name": "sin-sabor",
+      "width": 375,
+      "overflow": false,
+      "clippedHeadings": [],
+      "transparentVisibleCards": [],
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [],
+      "status": 200,
+      "imageNetworkBytes": 36175
+    },
+    {
+      "name": "con-sabor",
+      "width": 375,
+      "overflow": false,
+      "clippedHeadings": [],
+      "transparentVisibleCards": [],
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [],
+      "status": 200,
+      "variantChange": {
+        "samples": 98,
+        "p95Ms": 13.5,
+        "maxMs": 93.3,
+        "over16ms": 3,
+        "over32ms": 1,
+        "scriptingMs": 199.4,
+        "paintMs": 67.23,
+        "layoutMs": 183.32,
+        "longTasks": [
+          93.98
+        ]
+      },
+      "imageNetworkBytes": 538714
+    },
+    {
+      "name": "nosotros",
+      "width": 375,
+      "overflow": false,
+      "clippedHeadings": [],
+      "transparentVisibleCards": [],
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [],
+      "status": 200,
+      "imageNetworkBytes": 1032
+    },
+    {
+      "name": "contacto",
+      "width": 375,
+      "overflow": false,
+      "clippedHeadings": [],
+      "transparentVisibleCards": [],
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [],
+      "status": 200,
+      "imageNetworkBytes": 1032
+    },
+    {
+      "name": "carrito",
+      "width": 375,
+      "overflow": false,
+      "clippedHeadings": [],
+      "transparentVisibleCards": [],
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": []
+    },
+    {
+      "name": "home",
+      "width": 390,
+      "overflow": false,
+      "clippedHeadings": [],
+      "transparentVisibleCards": [],
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [
+        {
+          "cardWidth": 358,
+          "labels": [
+            {
+              "text": "Frutos rojos",
+              "width": 100.265625,
+              "height": 28,
+              "clipped": false
+            },
+            {
+              "text": "Sin stock",
+              "width": 91.78125,
+              "height": 28,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 358,
+          "labels": []
+        },
+        {
+          "cardWidth": 358,
+          "labels": [
+            {
+              "text": "Sin stock",
+              "width": 91.78125,
+              "height": 28,
+              "clipped": false
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "imageNetworkBytes": 284102
+    },
+    {
+      "name": "catalogo",
+      "width": 390,
+      "overflow": false,
+      "clippedHeadings": [],
+      "transparentVisibleCards": [],
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [
+        {
+          "cardWidth": 173,
+          "labels": []
+        },
+        {
+          "cardWidth": 173,
+          "labels": [
+            {
+              "text": "Frutos rojos",
+              "width": 100.265625,
+              "height": 28,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 173,
+          "labels": [
+            {
+              "text": "Cereza",
+              "width": 67.265625,
+              "height": 28,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 173,
+          "labels": [
+            {
+              "text": "Limón",
+              "width": 60.796875,
+              "height": 28,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 173,
+          "labels": []
+        },
+        {
+          "cardWidth": 173,
+          "labels": [
+            {
+              "text": "Frutos rojos",
+              "width": 100.265625,
+              "height": 28,
+              "clipped": false
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "scroll": {
+        "samples": 159,
+        "p95Ms": 13.4,
+        "maxMs": 13.5,
+        "over16ms": 0,
+        "over32ms": 0,
+        "scriptingMs": 140.53,
+        "paintMs": 43.67,
+        "layoutMs": 10.5,
+        "longTasks": []
+      },
+      "openFilters": {
+        "top": 120,
+        "height": 58,
+        "visibleFraction": 0.06872037914691943,
+        "position": "sticky"
+      },
+      "search": {
+        "samples": 45,
+        "p95Ms": 40,
+        "maxMs": 66.8,
+        "over16ms": 6,
+        "over32ms": 3,
+        "scriptingMs": 90.74,
+        "paintMs": 36.83,
+        "layoutMs": 76.86,
+        "longTasks": [
+          60.25,
+          71.87
+        ]
+      },
+      "imageNetworkBytes": 268415
+    },
+    {
+      "name": "etiquetas",
+      "width": 390,
+      "overflow": false,
+      "clippedHeadings": [],
+      "transparentVisibleCards": [],
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [
+        {
+          "cardWidth": 173,
+          "labels": [
+            {
+              "text": "Choco suizo",
+              "width": 103.484375,
+              "height": 28,
+              "clipped": false
+            },
+            {
+              "text": "Sin stock",
+              "width": 91.78125,
+              "height": 28,
+              "clipped": false
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "imageNetworkBytes": 1032
+    },
+    {
+      "name": "resultados",
+      "width": 390,
+      "overflow": false,
+      "clippedHeadings": [],
+      "transparentVisibleCards": [],
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [
+        {
+          "cardWidth": 173,
+          "labels": []
+        },
+        {
+          "cardWidth": 173,
+          "labels": [
+            {
+              "text": "Sin stock",
+              "width": 91.78125,
+              "height": 28,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 173,
+          "labels": [
+            {
+              "text": "Sin stock",
+              "width": 91.78125,
+              "height": 28,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 173,
+          "labels": []
+        },
+        {
+          "cardWidth": 173,
+          "labels": [
+            {
+              "text": "Sin stock",
+              "width": 91.78125,
+              "height": 28,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 173,
+          "labels": [
+            {
+              "text": "Neutro",
+              "width": 65.8125,
+              "height": 28,
+              "clipped": false
+            },
+            {
+              "text": "Sin stock",
+              "width": 91.78125,
+              "height": 28,
+              "clipped": false
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "imageNetworkBytes": 64177
+    },
+    {
+      "name": "sin-sabor",
+      "width": 390,
+      "overflow": false,
+      "clippedHeadings": [],
+      "transparentVisibleCards": [],
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [],
+      "status": 200,
+      "imageNetworkBytes": 36175
+    },
+    {
+      "name": "con-sabor",
+      "width": 390,
+      "overflow": false,
+      "clippedHeadings": [],
+      "transparentVisibleCards": [],
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [],
+      "status": 200,
+      "variantChange": {
+        "samples": 97,
+        "p95Ms": 13.5,
+        "maxMs": 80,
+        "over16ms": 3,
+        "over32ms": 2,
+        "scriptingMs": 155.29,
+        "paintMs": 65.36,
+        "layoutMs": 157.49,
+        "longTasks": [
+          74.13
+        ]
+      },
+      "imageNetworkBytes": 538714
+    },
+    {
+      "name": "nosotros",
+      "width": 390,
+      "overflow": false,
+      "clippedHeadings": [],
+      "transparentVisibleCards": [],
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [],
+      "status": 200,
+      "imageNetworkBytes": 1032
+    },
+    {
+      "name": "contacto",
+      "width": 390,
+      "overflow": false,
+      "clippedHeadings": [],
+      "transparentVisibleCards": [],
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [],
+      "status": 200,
+      "imageNetworkBytes": 1032
+    },
+    {
+      "name": "carrito",
+      "width": 390,
+      "overflow": false,
+      "clippedHeadings": [],
+      "transparentVisibleCards": [],
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": []
+    },
+    {
+      "name": "home",
+      "width": 768,
+      "overflow": false,
+      "clippedHeadings": [],
+      "transparentVisibleCards": [],
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [
+        {
+          "cardWidth": 360,
+          "labels": [
+            {
+              "text": "Frutos rojos",
+              "width": 108.265625,
+              "height": 28,
+              "clipped": false
+            },
+            {
+              "text": "Sin stock",
+              "width": 99.78125,
+              "height": 28,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 360,
+          "labels": []
+        },
+        {
+          "cardWidth": 360,
+          "labels": [
+            {
+              "text": "Sin stock",
+              "width": 99.78125,
+              "height": 28,
+              "clipped": false
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "imageNetworkBytes": 373833
+    },
+    {
+      "name": "catalogo",
+      "width": 768,
+      "overflow": false,
+      "clippedHeadings": [],
+      "transparentVisibleCards": [],
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [
+        {
+          "cardWidth": 356,
+          "labels": []
+        },
+        {
+          "cardWidth": 356,
+          "labels": [
+            {
+              "text": "Frutos rojos",
+              "width": 108.265625,
+              "height": 28,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 356,
+          "labels": [
+            {
+              "text": "Cereza",
+              "width": 75.265625,
+              "height": 28,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 356,
+          "labels": [
+            {
+              "text": "Limón",
+              "width": 68.796875,
+              "height": 28,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 356,
+          "labels": []
+        },
+        {
+          "cardWidth": 356,
+          "labels": [
+            {
+              "text": "Frutos rojos",
+              "width": 108.265625,
+              "height": 28,
+              "clipped": false
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "scroll": {
+        "samples": 156,
+        "p95Ms": 13.4,
+        "maxMs": 40,
+        "over16ms": 1,
+        "over32ms": 1,
+        "scriptingMs": 169.52,
+        "paintMs": 36.99,
+        "layoutMs": 2.61,
+        "longTasks": []
+      },
+      "openFilters": {
+        "top": 120,
+        "height": 58,
+        "visibleFraction": 0.06872037914691943,
+        "position": "sticky"
+      },
+      "search": {
+        "samples": 46,
+        "p95Ms": 26.7,
+        "maxMs": 40,
+        "over16ms": 3,
+        "over32ms": 1,
+        "scriptingMs": 59.51,
+        "paintMs": 27.61,
+        "layoutMs": 46.24,
+        "longTasks": []
+      },
+      "imageNetworkBytes": 311322
+    },
+    {
+      "name": "etiquetas",
+      "width": 768,
+      "overflow": false,
+      "clippedHeadings": [],
+      "transparentVisibleCards": [],
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [
+        {
+          "cardWidth": 356,
+          "labels": [
+            {
+              "text": "Choco suizo",
+              "width": 111.484375,
+              "height": 28,
+              "clipped": false
+            },
+            {
+              "text": "Sin stock",
+              "width": 99.78125,
+              "height": 28,
+              "clipped": false
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "imageNetworkBytes": 1032
+    },
+    {
+      "name": "resultados",
+      "width": 768,
+      "overflow": false,
+      "clippedHeadings": [],
+      "transparentVisibleCards": [],
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [
+        {
+          "cardWidth": 356,
+          "labels": []
+        },
+        {
+          "cardWidth": 356,
+          "labels": [
+            {
+              "text": "Sin stock",
+              "width": 99.78125,
+              "height": 28,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 356,
+          "labels": [
+            {
+              "text": "Sin stock",
+              "width": 99.78125,
+              "height": 28,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 356,
+          "labels": []
+        },
+        {
+          "cardWidth": 356,
+          "labels": [
+            {
+              "text": "Sin stock",
+              "width": 99.78125,
+              "height": 28,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 356,
+          "labels": [
+            {
+              "text": "Neutro",
+              "width": 73.8125,
+              "height": 28,
+              "clipped": false
+            },
+            {
+              "text": "Sin stock",
+              "width": 99.78125,
+              "height": 28,
+              "clipped": false
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "imageNetworkBytes": 125060
+    },
+    {
+      "name": "sin-sabor",
+      "width": 768,
+      "overflow": false,
+      "clippedHeadings": [],
+      "transparentVisibleCards": [],
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [],
+      "status": 200,
+      "imageNetworkBytes": 75962
+    },
+    {
+      "name": "con-sabor",
+      "width": 768,
+      "overflow": false,
+      "clippedHeadings": [],
+      "transparentVisibleCards": [],
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [],
+      "status": 200,
+      "variantChange": {
+        "samples": 98,
+        "p95Ms": 13.5,
+        "maxMs": 53.3,
+        "over16ms": 2,
+        "over32ms": 1,
+        "scriptingMs": 146.46,
+        "paintMs": 63.7,
+        "layoutMs": 170.93,
+        "longTasks": [
+          61.96
+        ]
+      },
+      "imageNetworkBytes": 1093802
+    },
+    {
+      "name": "nosotros",
+      "width": 768,
+      "overflow": false,
+      "clippedHeadings": [],
+      "transparentVisibleCards": [],
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [],
+      "status": 200,
+      "imageNetworkBytes": 1032
+    },
+    {
+      "name": "contacto",
+      "width": 768,
+      "overflow": false,
+      "clippedHeadings": [],
+      "transparentVisibleCards": [],
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [],
+      "status": 200,
+      "imageNetworkBytes": 1032
+    },
+    {
+      "name": "carrito",
+      "width": 768,
+      "overflow": false,
+      "clippedHeadings": [],
+      "transparentVisibleCards": [],
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": []
+    }
+  ],
+  "errors": []
+}

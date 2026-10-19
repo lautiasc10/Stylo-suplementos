@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 import {
   sceneIngredients,
+  compactSceneIngredient,
   type SceneFlavor,
 } from "@/modules/catalog/flavor-scenes";
 export {
@@ -30,18 +31,24 @@ export function IngredientLayer({
     >
       {["hero", "left", "right", "bottom"].map((place, index) => (
         <div key={place} className="flavor-scene-piece" data-place={place}>
-          <img
-            src={sources[index % sources.length]}
-            alt=""
-            width={768}
-            height={512}
-            decoding="async"
-            fetchPriority="low"
-            onLoad={() => setReady(true)}
-            onError={(event) => {
-              event.currentTarget.style.visibility = "hidden";
-            }}
-          />
+          <picture>
+            <source
+              media="(max-width: 767px)"
+              srcSet={compactSceneIngredient(sources[index % sources.length])}
+            />
+            <img
+              src={sources[index % sources.length]}
+              alt=""
+              width={768}
+              height={512}
+              decoding="async"
+              fetchPriority="low"
+              onLoad={() => setReady(true)}
+              onError={(event) => {
+                event.currentTarget.style.visibility = "hidden";
+              }}
+            />
+          </picture>
         </div>
       ))}
     </div>

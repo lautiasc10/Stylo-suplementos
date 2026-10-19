@@ -1,6 +1,6 @@
 # Diseño de STYLO
 
-La [prueba de fichas sin sabor](fichas-sin-sabor.md) incorpora negro continuo, halo y apoyo dorado fijo, con partículas discretas en Creatina One Fit 200 g, ZMA XBody 90 cápsulas y Cafeína Star 200. La deriva dura menos de cinco segundos y se detiene; en celular se anima una sola capa. Se conservan fotos, logos, información y compra. Las demás fichas sin sabor mantienen su presentación hasta revisar esta prueba de tres productos.
+La [prueba de fichas sin sabor](fichas-sin-sabor.md), aprobada por el usuario, se extiende a todas las fichas sin sabor: negro continuo, halo y apoyo dorado fijo, con partículas discretas. La deriva dura menos de cinco segundos y se detiene; en celular se anima una sola capa. Se conservan fotos, logos, información y compra. La [revisión móvil de Fase 3K](revision-mobile.md) mejora filtros, etiquetas, búsqueda y carrito, y sirve copias compactas de las decoraciones de sabores sin alterar los originales.
 
 La jerarquía de precios vigente muestra primero el precio de lista en grande y debajo el precio por transferencia, junto con el ahorro real en pesos cuando existe. Se aplica a las tarjetas y fichas, sin cambiar los importes ni las promociones. La ficha acerca «Información del producto» al botón de compra; sobre escenas claras, el regreso, el sabor y los textos secundarios usan mayor peso para conservar legibilidad. La cabecera y las otras vistas que reutilizan `ProductPricing` conservan su presentación.
 

@@ -220,7 +220,9 @@ test("el último clic prevalece y las decoraciones lentas no bloquean la selecci
   page,
 }) => {
   const product = await seed(page);
-  await page.route("**/sabores/frutilla-*.webp", (route) => route.abort());
+  await page.route(/\/sabores\/(?:mobile\/)?frutilla-.*\.webp/, (route) =>
+    route.abort(),
+  );
   await page.goto("/vista-previa/producto/ganador-de-prueba");
   await page.locator(".gainer-flavor-options").evaluate((root) => {
     const links = root.querySelectorAll<HTMLAnchorElement>("a");

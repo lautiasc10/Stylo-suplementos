@@ -60,43 +60,50 @@ export function SearchPanel({ onOpen }: { onOpen: () => void }) {
   const loading = fetching || query.trim() !== settled.trim();
   const target = preview ? "/vista-previa/buscar" : "/buscar";
   const shop = preview ? "/vista-previa" : "/catalogo";
-  const options: Option[] =
-    loading || error || !settled.trim()
-      ? []
-      : [
-          ...results.products.slice(0, 5).map(({ product, variant }) => ({
-            kind: "product" as const,
-            name: product.name,
-            href: `${preview ? "/vista-previa" : ""}/producto/${product.slug}?variante=${variant.id}`,
-            brand: product.brand.name,
-            image: variant.image,
-            price: priceLines(
-              [
-                {
-                  variantId: variant.id,
-                  quantity: 1,
-                  listPrice: variant.listPrice,
-                  cashPrice: variant.listPrice,
-                  available: variant.stock > 0,
-                },
-              ],
-              promotions.filter((p) => p.kind === "sale"),
-              "mercado-pago",
-            ).total,
-            stock: variant.stock,
-            label: variant.label,
-          })),
-          ...results.categories.map((c) => ({
-            kind: "category" as const,
-            name: c.name,
-            href: `${target}?categoria=${encodeURIComponent(c.slug)}`,
-          })),
-          ...results.brands.map((b) => ({
-            kind: "brand" as const,
-            name: b.name,
-            href: `${target}?marca=${encodeURIComponent(b.slug)}`,
-          })),
-        ];
+  const sales = useMemo(
+    () => promotions.filter((promotion) => promotion.kind === "sale"),
+    [promotions],
+  );
+  const options = useMemo<Option[]>(
+    () =>
+      loading || error || !settled.trim()
+        ? []
+        : [
+            ...results.products.slice(0, 5).map(({ product, variant }) => ({
+              kind: "product" as const,
+              name: product.name,
+              href: `${preview ? "/vista-previa" : ""}/producto/${product.slug}?variante=${variant.id}`,
+              brand: product.brand.name,
+              image: variant.image,
+              price: priceLines(
+                [
+                  {
+                    variantId: variant.id,
+                    quantity: 1,
+                    listPrice: variant.listPrice,
+                    cashPrice: variant.listPrice,
+                    available: variant.stock > 0,
+                  },
+                ],
+                sales,
+                "mercado-pago",
+              ).total,
+              stock: variant.stock,
+              label: variant.label,
+            })),
+            ...results.categories.map((c) => ({
+              kind: "category" as const,
+              name: c.name,
+              href: `${target}?categoria=${encodeURIComponent(c.slug)}`,
+            })),
+            ...results.brands.map((b) => ({
+              kind: "brand" as const,
+              name: b.name,
+              href: `${target}?marca=${encodeURIComponent(b.slug)}`,
+            })),
+          ],
+    [loading, error, settled, results, preview, sales, target],
+  );
   function remember(text: string) {
     const value = text.trim().slice(0, 100);
     if (!value) return;

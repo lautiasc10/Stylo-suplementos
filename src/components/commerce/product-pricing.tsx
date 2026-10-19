@@ -43,13 +43,24 @@ export function ProductPromotionBadge({ variant }: { variant: Variant }) {
       title={offers.map((offer) => offer.name).join(" · ")}
     >
       <Icon name="bolt" />
-      {offers.length > 1
-        ? `${offers.length} promociones`
-        : offers[0].kind === "quantity"
-          ? `Promoción · Desde ${offers[0].components[0].quantity} unidades`
-          : offers[0].kind === "bundle"
-            ? "Promoción · Combo"
-            : "Precio rebajado"}
+      <span className="product-promotion-full">
+        {offers.length > 1
+          ? `${offers.length} promociones`
+          : offers[0].kind === "quantity"
+            ? `Promoción · Desde ${offers[0].components[0].quantity} unidades`
+            : offers[0].kind === "bundle"
+              ? "Promoción · Combo"
+              : "Precio rebajado"}
+      </span>
+      <span className="product-promotion-compact" aria-hidden="true">
+        {offers.length > 1
+          ? `${offers.length} promociones`
+          : offers[0].kind === "quantity"
+            ? `Promo · ${offers[0].components[0].quantity}+ unidades`
+            : offers[0].kind === "bundle"
+              ? "Promo · Combo"
+              : "Precio rebajado"}
+      </span>
     </span>
   );
 }

@@ -1,7 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { AddToCart } from "@/components/commerce/add-to-cart";
 import { ProductPricing } from "@/components/commerce/product-pricing";
 import { RevealGroup, RevealItem } from "@/components/ui/Reveal";
@@ -12,6 +19,7 @@ import {
   sceneIngredients,
 } from "./flavor-scene";
 import { productFlavor } from "@/modules/catalog/product-flavor";
+import { compactSceneIngredient } from "@/modules/catalog/flavor-scenes";
 import { BrandLogo } from "./brand-logo";
 import { catalogMediaSource } from "@/modules/catalog/media-source";
 import type { Product } from "@/modules/catalog/model";
@@ -24,10 +32,7 @@ import { FlavorHeroScene } from "./flavor-hero-scene";
 import { useFlavorChoreography } from "./use-flavor-choreography";
 import { useFlavorDetailsMotion } from "./use-flavor-details-motion";
 import { elementPoint } from "./flavor-motion";
-import {
-  NeutralProductScene,
-  neutralProductTrialSlugs,
-} from "./neutral-product-scene";
+import { NeutralProductScene } from "./neutral-product-scene";
 export type ProductDetailProps = {
   product: Product;
   brandName: string;
@@ -110,9 +115,13 @@ export function ProductDetail({
         product.variants.find((item) => item.id === image.variantId)?.flavor ??
         "";
       const scene = sceneFlavor(flavor);
+      const compact = window.matchMedia("(max-width: 767px)").matches;
       return Promise.allSettled(
         (scene ? sceneIngredients(scene) : []).map((src) =>
-          ingredientCache.current?.load(src, priority),
+          ingredientCache.current?.load(
+            compact ? compactSceneIngredient(src) : src,
+            priority,
+          ),
         ),
       );
     },
@@ -177,7 +186,7 @@ export function ProductDetail({
     );
   }, []);
   const flavor = productFlavor(variant.flavor);
-  const neutralScene = !flavor && neutralProductTrialSlugs.has(product.slug);
+  const neutralScene = !flavor;
   const logoSrc =
     brandLogo &&
     catalogMediaSource(
@@ -267,7 +276,14 @@ export function ProductDetail({
               brandName
             )}
           </p>
-          <h1>{product.name}</h1>
+          <h1>
+            {product.name.split(/(?<=\+)/).map((part, index) => (
+              <Fragment key={index}>
+                {index > 0 && <wbr />}
+                {part}
+              </Fragment>
+            ))}
+          </h1>
           {product.description && (
             <p className="product-description">{product.description}</p>
           )}

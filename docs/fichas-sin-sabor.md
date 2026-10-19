@@ -2,6 +2,8 @@
 
 Autorizada el 19 de octubre de 2026 después de integrar la versión anterior en `main`. Rama `fase-3j-fichas-sin-sabor`; la extensión al resto de productos y su integración quedan para después de revisar estos tres casos.
 
+**Actualización, Fase 3K:** el usuario aprobó la prueba y autorizó extenderla a todas las fichas sin sabor. La restricción por slug se retira en `fase-3k-revision-mobile`. El resto de este documento conserva el alcance y las mediciones de la prueba original; la entrega ampliada y la revisión de celular se documentan en [revisión móvil](revision-mobile.md).
+
 | Producto | Ruta | Escritorio | Celular |
 | --- | --- | --- | --- |
 | Creatina One Fit 200 g | `/producto/onefit-creatina-micronizada-poweraded-x-200gr` | [1440 px](reviews/fichas-sin-sabor/creatina-1440.webp) | [375 px](reviews/fichas-sin-sabor/creatina-375.webp) |

@@ -1,0 +1,1178 @@
+{
+  "note": "Production build, Chromium GPU, CPU x4, emulated mobile sizes. Short local trace/RAF samples are not field INP, and do not establish performance on a physical phone. Scripting/paint/layout are unions of main-thread intervals, not sums of nested events.",
+  "results": [
+    {
+      "name": "home",
+      "width": 375,
+      "overflow": false,
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [
+        {
+          "cardWidth": 343,
+          "labels": [
+            {
+              "text": "Frutos rojos",
+              "width": 88.65625,
+              "height": 32,
+              "clipped": false
+            },
+            {
+              "text": "Sin stock",
+              "width": 86.8125,
+              "height": 32,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 343,
+          "labels": []
+        },
+        {
+          "cardWidth": 343,
+          "labels": [
+            {
+              "text": "Sin stock",
+              "width": 86.8125,
+              "height": 32,
+              "clipped": false
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "imageNetworkBytes": 284102
+    },
+    {
+      "name": "catalogo",
+      "width": 375,
+      "overflow": false,
+      "brokenImages": [],
+      "smallInputs": [
+        "q",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "marca",
+        "marca",
+        "marca",
+        "marca",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "orden",
+        "orden",
+        "orden",
+        "disponibilidad",
+        "disponibilidad",
+        "disponibilidad",
+        "min",
+        "max"
+      ],
+      "badges": [
+        {
+          "cardWidth": 165.5,
+          "labels": []
+        },
+        {
+          "cardWidth": 165.5,
+          "labels": [
+            {
+              "text": "Frutos rojos",
+              "width": 88.65625,
+              "height": 32,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 165.5,
+          "labels": [
+            {
+              "text": "Cereza",
+              "width": 60.375,
+              "height": 32,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 165.5,
+          "labels": [
+            {
+              "text": "Limón",
+              "width": 54.828125,
+              "height": 32,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 165.5,
+          "labels": []
+        },
+        {
+          "cardWidth": 165.5,
+          "labels": [
+            {
+              "text": "Frutos rojos",
+              "width": 88.65625,
+              "height": 32,
+              "clipped": false
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "scroll": {
+        "samples": 158,
+        "p95Ms": 13.5,
+        "maxMs": 13.5,
+        "over16ms": 0,
+        "over32ms": 0,
+        "scriptingMs": 173.16,
+        "paintMs": 47.25,
+        "layoutMs": 0,
+        "longTasks": []
+      },
+      "openFilters": {
+        "top": 120,
+        "height": 820,
+        "visibleFraction": 0.9715639810426541,
+        "position": "sticky"
+      },
+      "search": {
+        "samples": 46,
+        "p95Ms": 26.7,
+        "maxMs": 53.5,
+        "over16ms": 4,
+        "over32ms": 2,
+        "scriptingMs": 80.49,
+        "paintMs": 26.61,
+        "layoutMs": 61,
+        "longTasks": []
+      },
+      "imageNetworkBytes": 252116
+    },
+    {
+      "name": "etiquetas",
+      "width": 375,
+      "overflow": false,
+      "brokenImages": [],
+      "smallInputs": [
+        "q",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "marca",
+        "marca",
+        "marca",
+        "marca",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "orden",
+        "orden",
+        "orden",
+        "disponibilidad",
+        "disponibilidad",
+        "disponibilidad",
+        "min",
+        "max"
+      ],
+      "badges": [
+        {
+          "cardWidth": 165.5,
+          "labels": [
+            {
+              "text": "Choco suizo",
+              "width": 56.6875,
+              "height": 62,
+              "clipped": false
+            },
+            {
+              "text": "Sin stock",
+              "width": 86.8125,
+              "height": 32,
+              "clipped": false
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "imageNetworkBytes": 1032
+    },
+    {
+      "name": "resultados",
+      "width": 375,
+      "overflow": false,
+      "brokenImages": [],
+      "smallInputs": [
+        "Categoría",
+        "Marca",
+        "min",
+        "max",
+        "stock",
+        "Ordenar por"
+      ],
+      "badges": [
+        {
+          "cardWidth": 343,
+          "labels": []
+        },
+        {
+          "cardWidth": 343,
+          "labels": [
+            {
+              "text": "Sin stock",
+              "width": 86.8125,
+              "height": 32,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 343,
+          "labels": [
+            {
+              "text": "Sin stock",
+              "width": 86.8125,
+              "height": 32,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 343,
+          "labels": []
+        },
+        {
+          "cardWidth": 343,
+          "labels": [
+            {
+              "text": "Sin stock",
+              "width": 86.8125,
+              "height": 32,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 343,
+          "labels": [
+            {
+              "text": "Neutro",
+              "width": 59.125,
+              "height": 32,
+              "clipped": false
+            },
+            {
+              "text": "Sin stock",
+              "width": 86.8125,
+              "height": 32,
+              "clipped": false
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "imageNetworkBytes": 33923
+    },
+    {
+      "name": "sin-sabor",
+      "width": 375,
+      "overflow": false,
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [],
+      "status": 200,
+      "imageNetworkBytes": 36692
+    },
+    {
+      "name": "con-sabor",
+      "width": 375,
+      "overflow": false,
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [],
+      "status": 200,
+      "variantChange": {
+        "samples": 96,
+        "p95Ms": 26.6,
+        "maxMs": 80.1,
+        "over16ms": 7,
+        "over32ms": 1,
+        "scriptingMs": 172.43,
+        "paintMs": 60,
+        "layoutMs": 150.55,
+        "longTasks": [
+          65.04
+        ]
+      },
+      "imageNetworkBytes": 929664
+    },
+    {
+      "name": "nosotros",
+      "width": 375,
+      "overflow": false,
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [],
+      "status": 200,
+      "imageNetworkBytes": 1032
+    },
+    {
+      "name": "contacto",
+      "width": 375,
+      "overflow": false,
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [],
+      "status": 200,
+      "imageNetworkBytes": 1032
+    },
+    {
+      "name": "carrito",
+      "width": 375,
+      "overflow": false,
+      "brokenImages": [],
+      "smallInputs": [
+        "_R_1lfiv6btb_",
+        "_R_1lfiv6btb_"
+      ],
+      "badges": []
+    },
+    {
+      "name": "home",
+      "width": 390,
+      "overflow": false,
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [
+        {
+          "cardWidth": 358,
+          "labels": [
+            {
+              "text": "Frutos rojos",
+              "width": 88.65625,
+              "height": 32,
+              "clipped": false
+            },
+            {
+              "text": "Sin stock",
+              "width": 86.8125,
+              "height": 32,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 358,
+          "labels": []
+        },
+        {
+          "cardWidth": 358,
+          "labels": [
+            {
+              "text": "Sin stock",
+              "width": 86.8125,
+              "height": 32,
+              "clipped": false
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "imageNetworkBytes": 284102
+    },
+    {
+      "name": "catalogo",
+      "width": 390,
+      "overflow": false,
+      "brokenImages": [],
+      "smallInputs": [
+        "q",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "marca",
+        "marca",
+        "marca",
+        "marca",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "orden",
+        "orden",
+        "orden",
+        "disponibilidad",
+        "disponibilidad",
+        "disponibilidad",
+        "min",
+        "max"
+      ],
+      "badges": [
+        {
+          "cardWidth": 173,
+          "labels": []
+        },
+        {
+          "cardWidth": 173,
+          "labels": [
+            {
+              "text": "Frutos rojos",
+              "width": 88.65625,
+              "height": 32,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 173,
+          "labels": [
+            {
+              "text": "Cereza",
+              "width": 60.375,
+              "height": 32,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 173,
+          "labels": [
+            {
+              "text": "Limón",
+              "width": 54.828125,
+              "height": 32,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 173,
+          "labels": []
+        },
+        {
+          "cardWidth": 173,
+          "labels": [
+            {
+              "text": "Frutos rojos",
+              "width": 88.65625,
+              "height": 32,
+              "clipped": false
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "scroll": {
+        "samples": 158,
+        "p95Ms": 13.5,
+        "maxMs": 13.5,
+        "over16ms": 0,
+        "over32ms": 0,
+        "scriptingMs": 174.8,
+        "paintMs": 49.62,
+        "layoutMs": 0,
+        "longTasks": []
+      },
+      "openFilters": {
+        "top": 120,
+        "height": 820,
+        "visibleFraction": 0.9715639810426541,
+        "position": "sticky"
+      },
+      "search": {
+        "samples": 47,
+        "p95Ms": 26.8,
+        "maxMs": 53.4,
+        "over16ms": 5,
+        "over32ms": 2,
+        "scriptingMs": 73.06,
+        "paintMs": 42.08,
+        "layoutMs": 56.86,
+        "longTasks": [
+          60.1
+        ]
+      },
+      "imageNetworkBytes": 252114
+    },
+    {
+      "name": "etiquetas",
+      "width": 390,
+      "overflow": false,
+      "brokenImages": [],
+      "smallInputs": [
+        "q",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "marca",
+        "marca",
+        "marca",
+        "marca",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "orden",
+        "orden",
+        "orden",
+        "disponibilidad",
+        "disponibilidad",
+        "disponibilidad",
+        "min",
+        "max"
+      ],
+      "badges": [
+        {
+          "cardWidth": 173,
+          "labels": [
+            {
+              "text": "Choco suizo",
+              "width": 64.1875,
+              "height": 44,
+              "clipped": false
+            },
+            {
+              "text": "Sin stock",
+              "width": 86.8125,
+              "height": 32,
+              "clipped": false
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "imageNetworkBytes": 1032
+    },
+    {
+      "name": "resultados",
+      "width": 390,
+      "overflow": false,
+      "brokenImages": [],
+      "smallInputs": [
+        "Categoría",
+        "Marca",
+        "min",
+        "max",
+        "stock",
+        "Ordenar por"
+      ],
+      "badges": [
+        {
+          "cardWidth": 358,
+          "labels": []
+        },
+        {
+          "cardWidth": 358,
+          "labels": [
+            {
+              "text": "Sin stock",
+              "width": 86.8125,
+              "height": 32,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 358,
+          "labels": [
+            {
+              "text": "Sin stock",
+              "width": 86.8125,
+              "height": 32,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 358,
+          "labels": []
+        },
+        {
+          "cardWidth": 358,
+          "labels": [
+            {
+              "text": "Sin stock",
+              "width": 86.8125,
+              "height": 32,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 358,
+          "labels": [
+            {
+              "text": "Neutro",
+              "width": 59.125,
+              "height": 32,
+              "clipped": false
+            },
+            {
+              "text": "Sin stock",
+              "width": 86.8125,
+              "height": 32,
+              "clipped": false
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "imageNetworkBytes": 33923
+    },
+    {
+      "name": "sin-sabor",
+      "width": 390,
+      "overflow": false,
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [],
+      "status": 200,
+      "imageNetworkBytes": 36692
+    },
+    {
+      "name": "con-sabor",
+      "width": 390,
+      "overflow": false,
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [],
+      "status": 200,
+      "variantChange": {
+        "samples": 97,
+        "p95Ms": 13.5,
+        "maxMs": 80.1,
+        "over16ms": 3,
+        "over32ms": 1,
+        "scriptingMs": 171.92,
+        "paintMs": 59.2,
+        "layoutMs": 163.04,
+        "longTasks": [
+          71.96
+        ]
+      },
+      "imageNetworkBytes": 929664
+    },
+    {
+      "name": "nosotros",
+      "width": 390,
+      "overflow": false,
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [],
+      "status": 200,
+      "imageNetworkBytes": 1032
+    },
+    {
+      "name": "contacto",
+      "width": 390,
+      "overflow": false,
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [],
+      "status": 200,
+      "imageNetworkBytes": 1032
+    },
+    {
+      "name": "carrito",
+      "width": 390,
+      "overflow": false,
+      "brokenImages": [],
+      "smallInputs": [
+        "_R_1lfiv6btb_",
+        "_R_1lfiv6btb_"
+      ],
+      "badges": []
+    },
+    {
+      "name": "home",
+      "width": 768,
+      "overflow": false,
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [
+        {
+          "cardWidth": 360,
+          "labels": [
+            {
+              "text": "Frutos rojos",
+              "width": 96.65625,
+              "height": 32,
+              "clipped": false
+            },
+            {
+              "text": "Sin stock",
+              "width": 94.8125,
+              "height": 32,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 360,
+          "labels": []
+        },
+        {
+          "cardWidth": 360,
+          "labels": [
+            {
+              "text": "Sin stock",
+              "width": 94.8125,
+              "height": 32,
+              "clipped": false
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "imageNetworkBytes": 373833
+    },
+    {
+      "name": "catalogo",
+      "width": 768,
+      "overflow": false,
+      "brokenImages": [],
+      "smallInputs": [
+        "q",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "marca",
+        "marca",
+        "marca",
+        "marca",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "orden",
+        "orden",
+        "orden",
+        "disponibilidad",
+        "disponibilidad",
+        "disponibilidad",
+        "min",
+        "max"
+      ],
+      "badges": [
+        {
+          "cardWidth": 356,
+          "labels": []
+        },
+        {
+          "cardWidth": 356,
+          "labels": [
+            {
+              "text": "Frutos rojos",
+              "width": 96.65625,
+              "height": 32,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 356,
+          "labels": [
+            {
+              "text": "Cereza",
+              "width": 68.375,
+              "height": 32,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 356,
+          "labels": [
+            {
+              "text": "Limón",
+              "width": 62.828125,
+              "height": 32,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 356,
+          "labels": []
+        },
+        {
+          "cardWidth": 356,
+          "labels": [
+            {
+              "text": "Frutos rojos",
+              "width": 96.65625,
+              "height": 32,
+              "clipped": false
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "scroll": {
+        "samples": 156,
+        "p95Ms": 13.4,
+        "maxMs": 53.4,
+        "over16ms": 1,
+        "over32ms": 1,
+        "scriptingMs": 213.62,
+        "paintMs": 43.14,
+        "layoutMs": 2.23,
+        "longTasks": []
+      },
+      "openFilters": {
+        "top": 120,
+        "height": 820,
+        "visibleFraction": 0.9715639810426541,
+        "position": "sticky"
+      },
+      "search": {
+        "samples": 47,
+        "p95Ms": 26.6,
+        "maxMs": 40.1,
+        "over16ms": 3,
+        "over32ms": 2,
+        "scriptingMs": 66.4,
+        "paintMs": 27.34,
+        "layoutMs": 51.45,
+        "longTasks": []
+      },
+      "imageNetworkBytes": 311322
+    },
+    {
+      "name": "etiquetas",
+      "width": 768,
+      "overflow": false,
+      "brokenImages": [],
+      "smallInputs": [
+        "q",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "categoria",
+        "marca",
+        "marca",
+        "marca",
+        "marca",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "sabor",
+        "orden",
+        "orden",
+        "orden",
+        "disponibilidad",
+        "disponibilidad",
+        "disponibilidad",
+        "min",
+        "max"
+      ],
+      "badges": [
+        {
+          "cardWidth": 356,
+          "labels": [
+            {
+              "text": "Choco suizo",
+              "width": 99.40625,
+              "height": 32,
+              "clipped": false
+            },
+            {
+              "text": "Sin stock",
+              "width": 94.8125,
+              "height": 32,
+              "clipped": false
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "imageNetworkBytes": 1032
+    },
+    {
+      "name": "resultados",
+      "width": 768,
+      "overflow": false,
+      "brokenImages": [],
+      "smallInputs": [
+        "Categoría",
+        "Marca",
+        "min",
+        "max",
+        "stock",
+        "Ordenar por"
+      ],
+      "badges": [
+        {
+          "cardWidth": 356,
+          "labels": []
+        },
+        {
+          "cardWidth": 356,
+          "labels": [
+            {
+              "text": "Sin stock",
+              "width": 94.8125,
+              "height": 32,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 356,
+          "labels": [
+            {
+              "text": "Sin stock",
+              "width": 94.8125,
+              "height": 32,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 356,
+          "labels": []
+        },
+        {
+          "cardWidth": 356,
+          "labels": [
+            {
+              "text": "Sin stock",
+              "width": 94.8125,
+              "height": 32,
+              "clipped": false
+            }
+          ]
+        },
+        {
+          "cardWidth": 356,
+          "labels": [
+            {
+              "text": "Neutro",
+              "width": 67.125,
+              "height": 32,
+              "clipped": false
+            },
+            {
+              "text": "Sin stock",
+              "width": 94.8125,
+              "height": 32,
+              "clipped": false
+            }
+          ]
+        }
+      ],
+      "status": 200,
+      "imageNetworkBytes": 83595
+    },
+    {
+      "name": "sin-sabor",
+      "width": 768,
+      "overflow": false,
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [],
+      "status": 200,
+      "imageNetworkBytes": 76479
+    },
+    {
+      "name": "con-sabor",
+      "width": 768,
+      "overflow": false,
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [],
+      "status": 200,
+      "variantChange": {
+        "samples": 98,
+        "p95Ms": 26.6,
+        "maxMs": 93.4,
+        "over16ms": 5,
+        "over32ms": 2,
+        "scriptingMs": 191.69,
+        "paintMs": 62.12,
+        "layoutMs": 176.53,
+        "longTasks": [
+          80.79
+        ]
+      },
+      "imageNetworkBytes": 1093802
+    },
+    {
+      "name": "nosotros",
+      "width": 768,
+      "overflow": false,
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [],
+      "status": 200,
+      "imageNetworkBytes": 1032
+    },
+    {
+      "name": "contacto",
+      "width": 768,
+      "overflow": false,
+      "brokenImages": [],
+      "smallInputs": [],
+      "badges": [],
+      "status": 200,
+      "imageNetworkBytes": 1032
+    },
+    {
+      "name": "carrito",
+      "width": 768,
+      "overflow": false,
+      "brokenImages": [],
+      "smallInputs": [
+        "_R_1lfiv6btb_",
+        "_R_1lfiv6btb_"
+      ],
+      "badges": []
+    }
+  ],
+  "errors": []
+}

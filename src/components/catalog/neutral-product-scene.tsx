@@ -3,13 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useMotionPreference } from "@/components/ui/use-motion-preference";
 
-/** Three packaging formats for visual approval before extending the scene. */
-export const neutralProductTrialSlugs = new Set([
-  "onefit-creatina-micronizada-poweraded-x-200gr",
-  "xbody-zinc-magnesio-vitamina-b6-zma-90-capsulas",
-  "star-nutrition-cafeina-200-x-30-caps",
-]);
-
 /** Static HTML supplies the atmosphere. Two small compositor layers drift for
  * less than five seconds, then settle; no canvas, frame loop or image download. */
 export function NeutralProductScene() {

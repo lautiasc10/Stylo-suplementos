@@ -14,7 +14,7 @@ test("HTML sin JavaScript y JavaScript demorado conservan títulos y pie visible
   });
   try {
     await page.goto("/", { waitUntil: "commit" });
-    await expect(page.locator("#destacados h2")).toHaveText(
+    await expect(page.locator("#destacados-title")).toHaveText(
       "Productos destacados",
     );
     await expect(page.locator(".site-footer")).toHaveCSS("opacity", "1");
