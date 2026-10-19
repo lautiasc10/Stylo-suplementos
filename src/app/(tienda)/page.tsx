@@ -16,7 +16,7 @@ export default async function HomePage() {
   const imageBase = config
     ? `${config.url}/storage/v1/object/public/product-media`
     : "";
-  const featured = data.products.filter((p) => p.featured).slice(0, 4);
+  const featured = data.products.filter((p) => p.featured);
   // There is no creation date in the catalog. Editorial tags control this section.
   const arrivals = data.products
     .filter((p) =>

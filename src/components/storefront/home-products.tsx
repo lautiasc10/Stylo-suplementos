@@ -3,6 +3,7 @@ import { ProductCard } from "@/components/catalog/product-card";
 import { Icon } from "@/components/ui/icon";
 import { Reveal, RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { SectionHeading } from "./section-heading";
+import { HomeProductCarousel } from "./home-product-carousel";
 import type { Catalog, Product } from "@/modules/catalog/model";
 
 export function HomeProducts({
@@ -22,6 +23,26 @@ export function HomeProducts({
   imageBase: string;
   unavailable?: boolean;
 }) {
+  const cards = products.map((product, index) => (
+    <RevealItem key={product.id} className="reveal-card">
+      <ProductCard
+        product={product}
+        variants={product.variants}
+        initialVariantId={
+          (product.variants.find((v) => v.stock > 0) ?? product.variants[0]).id
+        }
+        brand={catalog.brands.find((b) => b.id === product.brandId)!}
+        category={catalog.categories.find((c) =>
+          product.categoryIds.includes(c.id),
+        )}
+        index={index}
+        productPrefix="/producto"
+        imageBase={imageBase}
+        imageUrls={{}}
+        preview={false}
+      />
+    </RevealItem>
+  ));
   return (
     <section
       id={id}
@@ -31,31 +52,15 @@ export function HomeProducts({
       <div className="container">
         <SectionHeading id={`${id}-title`} title={title} eyebrow={eyebrow} />
         {products.length ? (
-          <RevealGroup className="home-product-grid">
-            {products.map((product, index) => (
-              <RevealItem key={product.id} className="reveal-card">
-                <ProductCard
-                  product={product}
-                  variants={product.variants}
-                  initialVariantId={
-                    (
-                      product.variants.find((v) => v.stock > 0) ??
-                      product.variants[0]
-                    ).id
-                  }
-                  brand={catalog.brands.find((b) => b.id === product.brandId)!}
-                  category={catalog.categories.find((c) =>
-                    product.categoryIds.includes(c.id),
-                  )}
-                  index={index}
-                  productPrefix="/producto"
-                  imageBase={imageBase}
-                  imageUrls={{}}
-                  preview={false}
-                />
-              </RevealItem>
-            ))}
-          </RevealGroup>
+          id === "destacados" ? (
+            <HomeProductCarousel count={products.length}>
+              {cards}
+            </HomeProductCarousel>
+          ) : (
+            <RevealGroup className="home-product-grid" delay={0.16}>
+              {cards}
+            </RevealGroup>
+          )
         ) : (
           <Reveal className="home-collection-empty">
             <p>

@@ -908,8 +908,78 @@
   font-size: clamp(2.5rem, 4.5vw, 4.5rem);
   line-height: 1.05;
 }
-.home-section-heading > .text-link {
+.home-section-heading-action {
   flex-shrink: 0;
+}
+.home-product-track {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-4);
+  width: max-content;
+  min-width: 100%;
+  padding-block: var(--space-4);
+}
+.home-product-track .reveal-card {
+  flex: 0 0 clamp(220px, 19vw, 270px);
+  scroll-snap-align: start;
+}
+.home-product-track .product-card h2 {
+  font-size: var(--text-lg);
+  min-height: 3.75em;
+}
+.home-carousel-viewport {
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  scroll-snap-type: x mandatory;
+  margin-block: calc(-1 * var(--space-4));
+  scrollbar-color: var(--action-border) var(--surface);
+  scrollbar-width: thin;
+}
+.home-carousel[data-ready="true"] .home-carousel-viewport {
+  scrollbar-width: none;
+}
+.home-carousel[data-ready="true"] .home-carousel-viewport::-webkit-scrollbar {
+  display: none;
+}
+.home-carousel-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  margin-top: var(--space-6);
+  visibility: hidden;
+}
+.home-carousel[data-ready="true"][data-scrollable="true"]
+  .home-carousel-controls {
+  visibility: visible;
+}
+.home-carousel-position {
+  margin-right: var(--space-3);
+  color: var(--muted);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+}
+.home-carousel-controls button {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--action-border);
+  background: var(--surface);
+  color: var(--gold);
+  transition: background var(--motion-control) var(--motion-ease);
+}
+.home-carousel-controls button:not(:disabled):hover {
+  background: var(--surface-hover);
+}
+.home-carousel-controls button .icon {
+  width: 20px;
+  height: 20px;
+}
+.home-carousel-controls button[aria-label="Producto destacado anterior"] .icon {
+  transform: rotate(180deg);
 }
 .home-product-grid {
   display: grid;
@@ -1051,6 +1121,9 @@
   }
   .home-product-grid {
     gap: var(--space-4);
+  }
+  .home-product-track .reveal-card {
+    flex-basis: min(76vw, 270px);
   }
   .home-offer-grid {
     grid-template-columns: 1fr;

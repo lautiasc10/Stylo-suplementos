@@ -53,7 +53,7 @@ export function HomePromotions({
           eyebrow="OPORTUNIDADES STYLO"
         />
         {offers.length ? (
-          <RevealGroup className="home-offer-grid">
+          <RevealGroup className="home-offer-grid" delay={0.16}>
             {offers.map((offer) => (
               <RevealItem as="article" className="home-offer" key={offer.id}>
                 <p className="eyebrow">

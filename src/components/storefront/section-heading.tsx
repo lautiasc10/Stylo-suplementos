@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Reveal } from "@/components/ui/Reveal";
+import { RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { Icon } from "@/components/ui/icon";
 
 /** Shared by present and future home collections: one reveal per heading. */
@@ -17,16 +17,18 @@ export function SectionHeading({
   linkText?: string;
 }) {
   return (
-    <Reveal as="header" className="home-section-heading">
-      <div>
+    <RevealGroup as="header" className="home-section-heading">
+      <RevealItem>
         <p className="eyebrow">{eyebrow}</p>
         <h2 id={id} className="reveal-heading">
           {title}
         </h2>
-      </div>
-      <Link href={href} className="text-link">
-        {linkText} <Icon name="arrow" />
-      </Link>
-    </Reveal>
+      </RevealItem>
+      <RevealItem className="home-section-heading-action">
+        <Link href={href} className="text-link">
+          {linkText} <Icon name="arrow" />
+        </Link>
+      </RevealItem>
+    </RevealGroup>
   );
 }
