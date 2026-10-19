@@ -7,12 +7,12 @@ Autorizada por el usuario el 11 de octubre de 2026. Rama: `fase-3-comercio`, cre
 - El administrador configura **dos precios finales**, lista y efectivo/transferencia, para rebajas, promociones por cantidad y combos.
 - Para cantidad, el precio final es **por unidad** al alcanzar el mínimo de esa presentación. Para combos, el precio final corresponde al conjunto definido; se repiten solo conjuntos completos y los sobrantes conservan su precio base.
 - Se conserva la regla de no acumulación. El usuario delegó la elección del criterio: aplicar una sola promoción, la que más dinero ahorre en el carrito según el medio de pago. Un empate se resuelve por identificador estable; una oferta nunca aumenta el importe habitual.
-- Una compra online se convierte en pedido tras verificar el pago. «Pendiente» después de pagar corresponde a preparación/entrega, sin confundirlo con un pago pendiente.
+- Una compra online se convierte en pedido tras verificar el pago. «Pendiente» después de pagar corresponde a preparación/entrega, sin confundirlo con un pago pendiente. El 19 de octubre el usuario confirmó que el carrito y el checkout no reservan stock: la compra online lo descuenta únicamente después de confirmar el pago, en una operación atómica. Esta regla se implementará en Fase 4; no habilita compras online todavía.
 - El administrador puede cargar manualmente un pedido para retirar, pendiente de cobro. No se considera pagado por registrarlo.
 
-La tienda admite únicamente **transferencia y Mercado Pago**, según la revisión solicitada el 11 de octubre. El efectivo queda exclusivamente en administración, para ventas presenciales ya cobradas y entregadas, con confirmación explícita del administrador.
+El checkout actual muestra **transferencia y Mercado Pago** como opciones de revisión, pero el usuario pospuso su definición e integración final, junto con los envíos. El efectivo queda exclusivamente en administración, para ventas presenciales ya cobradas y entregadas, con confirmación explícita del administrador.
 
-El carrito y los retiros manuales pendientes no reservan ni descuentan stock. Una venta presencial confirmada sí descuenta stock, congela importes y registra movimiento y auditoría de forma atómica e idempotente; incrementa la revisión del catálogo para evitar sobreescrituras desde gestión. La política de reservas y los cobros online se resuelven en Fase 4. Los cupones conservan sus condiciones pendientes.
+El carrito y los retiros manuales pendientes no reservan ni descuentan stock. Una venta presencial confirmada sí descuenta stock, congela importes y registra movimiento y auditoría de forma atómica e idempotente; incrementa la revisión del catálogo para evitar sobreescrituras desde gestión. El cobro online y su descuento de stock posterior al pago se implementarán en Fase 4. Los cupones conservan sus condiciones pendientes.
 
 ## Entrega implementada
 
@@ -76,7 +76,7 @@ El rediseño profundo solicitado el 12 de octubre se entrega en la rama separada
 
 - Completar las comprobaciones específicas de imágenes en Storage, cookies y auditoría con sesión autenticada. Lectura pública y rechazo anónimo de datos privados comprobados por el agente; ingreso, productos, carrito, promociones y pedidos manuales validados funcionalmente por el usuario.
 - Integrar pago verificado, intentos de cobro, conciliación y creación única de pedidos online pagados en Fase 4. No existe un endpoint público capaz de crear o marcar un pedido pagado en esta entrega.
-- Resolver concurrencia al cobrar la última unidad y la política de reservas/expiración, incluyendo encargos manuales.
+- Resolver de forma atómica la concurrencia al cobrar la última unidad, sin reservar stock durante el carrito ni el checkout online. Revisar por separado cualquier política futura para encargos manuales.
 - Definir entregas y costos, instrucciones bancarias, confirmación de cobro al retirar y avisos transaccionales.
 - Validar con el usuario la interfaz y la interpretación «precio por unidad desde una cantidad mínima»; completar las condiciones de cupones, textos legales y consentimiento antes del lanzamiento.
 
