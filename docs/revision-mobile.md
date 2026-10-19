@@ -1,5 +1,15 @@
 # Fase 3K — Extensión de fichas y revisión móvil
 
+## Corrección posterior 3L: scroll y compra
+
+El usuario pidió volver al inicio al elegir categorías o marcas y unificar la compra en celular. Rama `fase-3l-scroll-y-compra-mobile`, sobre la entrega 3K.
+
+- `ResultsScrollReset` lleva el scroll a cero después de confirmar los nuevos filtros en tienda o búsqueda. No espera animaciones ni afecta a la selección de sabores dentro de una ficha. Los enlaces de categorías de cabecera también vuelven arriba al navegar, tanto en el menú móvil como en la barra y el desplegable de escritorio.
+- La regla que hacía relativa la compra en fichas con coreografía se limita al escritorio. En todas las fichas móviles se reutiliza la barra fija inferior existente, con espacio para el área segura y reserva de página para no tapar el contenido final. Stock, variante y estado deshabilitado se conservan.
+- `npm.cmd run check` aprobado: lint, TypeScript, 90 pruebas unitarias y build de producción. Las pruebas de navegador sobre producción local incluyen 51 regresiones de búsqueda, filtros y coreografía, más cuatro casos específicos aprobados: regreso arriba con marca y categoría en escritorio/móvil y compra fija a 375/768 px en tres clases de ficha, antes/después de scroll, cambio de sabor agotado y movimiento reducido. Se corrigió la preparación del caso de escritorio para esperar los productos locales antes de intentar scrollear. Los casos exclusivos de móvil se omiten intencionalmente en escritorio.
+
+Las mediciones y capturas que siguen corresponden a la revisión 3K. Esta corrección no añade medios ni animaciones continuas.
+
 El usuario aprobó la prueba de tres fichas y pidió extenderla a todos los productos sin sabor, además de revisar diseño y rendimiento de tienda, etiquetas, filtros fijos, búsquedas y compra en celular. Rama `fase-3k-revision-mobile`; la integración queda para la revisión de esta entrega.
 
 ## Cambios

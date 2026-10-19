@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CatalogActiveFilters, CatalogFilterSidebar } from "./filters";
 import { ProductCard } from "./product-card";
 import { RevealGroup, RevealItem } from "@/components/ui/Reveal";
+import { ResultsScrollReset } from "./results-scroll-reset";
 import {
   filterCatalog,
   publicCatalog,
@@ -34,6 +35,7 @@ export function CatalogListing({
     results = filterCatalog(data, filters);
   return (
     <div className="catalog-layout">
+      <ResultsScrollReset queryKey={JSON.stringify(filters)} />
       <CatalogFilterSidebar
         catalog={data}
         filters={filters}

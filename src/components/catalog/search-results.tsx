@@ -4,6 +4,7 @@ import { ProductCard } from "./product-card";
 import { RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { Icon } from "@/components/ui/icon";
 import { FilterPanel } from "./filter-controls";
+import { ResultsScrollReset } from "./results-scroll-reset";
 import {
   parseMoney,
   publicCatalog,
@@ -121,6 +122,7 @@ export function SearchResults({
       className="container search-page"
       aria-labelledby="search-page-title"
     >
+      <ResultsScrollReset queryKey={JSON.stringify(params)} />
       <div className="search-page-heading">
         <p className="eyebrow">ENCONTRÁ TU STYLO</p>
         <h1 id="search-page-title">

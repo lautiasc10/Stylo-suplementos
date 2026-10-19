@@ -147,8 +147,10 @@
 .product-detail[data-choreography="true"] .gainer-stock {
   min-height: 1.5em;
 }
-.product-detail[data-choreography="true"] .purchase-action {
-  position: relative;
+@media (min-width: 960px) {
+  .product-detail[data-choreography="true"] .purchase-action {
+    position: relative;
+  }
 }
 .flavor-button-accent {
   position: absolute;

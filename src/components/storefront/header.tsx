@@ -66,6 +66,9 @@ export function Header({
     setActiveCategory(null);
     if (mobile.current) mobile.current.open = false;
   }
+  function navigateCategory() {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }
   function showCategory(slug: string, trigger: HTMLAnchorElement) {
     clearTimers();
     setFlavorPage(!!document.querySelector(".flavor-product-detail"));
@@ -180,6 +183,7 @@ export function Header({
                     <Link
                       key={category.slug}
                       href={`/catalogo?categoria=${category.slug}`}
+                      onNavigate={navigateCategory}
                       onClick={closeMenus}
                     >
                       {category.name}
@@ -229,6 +233,7 @@ export function Header({
               <Link
                 key={category.slug}
                 href={`/catalogo?categoria=${category.slug}`}
+                onNavigate={navigateCategory}
                 data-active={
                   activeCategory === category.slug ? "true" : undefined
                 }
@@ -292,6 +297,7 @@ export function Header({
                 <h2>{featuredCategory.name}</h2>
                 <Link
                   href={`/catalogo?categoria=${featuredCategory.slug}`}
+                  onNavigate={navigateCategory}
                   onClick={closeMenus}
                 >
                   Ver categoría <Icon name="arrow" />
@@ -346,6 +352,7 @@ export function Header({
                     <Link
                       className="text-link"
                       href={`/catalogo?categoria=${featuredCategory.slug}`}
+                      onNavigate={navigateCategory}
                       onClick={closeMenus}
                     >
                       Explorar productos <Icon name="arrow" />
