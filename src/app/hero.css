@@ -38,18 +38,19 @@
 }
 .sport-hero .hero-title {
   position: absolute;
-  inset-inline: 0;
+  left: var(--page-gutter);
+  width: min(48vw, 900px);
   top: 50%;
   z-index: 1;
   margin: 0;
   transform: translateY(-50%);
   font:
-    400 clamp(64px, 13vw, 260px)/0.82 var(--font-hero-display),
+    400 clamp(64px, 7.3vw, 150px)/0.82 var(--font-hero-display),
     Impact,
     sans-serif;
   letter-spacing: 0;
   text-transform: uppercase;
-  text-align: center;
+  text-align: left;
   pointer-events: none;
   user-select: none;
 }
@@ -69,11 +70,11 @@
 }
 .hero-title-outline {
   color: transparent;
-  -webkit-text-stroke: 1px
-    color-mix(in oklab, var(--hero-primary) 45%, transparent);
+  -webkit-text-stroke: 1.25px
+    color-mix(in oklab, var(--hero-primary) 72%, transparent);
 }
 .hero-title-gold {
-  font-size: clamp(44px, 9vw, 180px);
+  font-size: clamp(42px, 5vw, 104px);
   line-height: 0.9;
   color: var(--hero-primary);
   background: var(--hero-gradient);
@@ -86,10 +87,10 @@
   position: absolute;
   z-index: 2;
   top: 50%;
-  left: 50%;
-  width: min(78vw, 640px, calc(100svh - 310px));
+  right: calc(var(--page-gutter) + min(3vw, 40px));
+  width: min(42vw, 640px, calc(100svh - 310px));
   aspect-ratio: 1;
-  transform: translate(-50%, -50%);
+  transform: translateY(-50%);
   pointer-events: none;
   /* The source has a black matte. Feather its boundary rather than adding
      the title's colors through the lion with screen blending. */
@@ -412,7 +413,10 @@
     min-height: max(400px, 55svh);
   }
   .sport-hero .hero-title {
+    left: 0;
+    width: 100%;
     top: 24px;
+    text-align: center;
     transform: none;
     font-size: clamp(64px, 18vw, 140px);
   }
@@ -420,8 +424,11 @@
     font-size: clamp(36px, 10.5vw, 80px);
   }
   .sport-hero-visual {
+    left: 50%;
+    right: auto;
     top: 66%;
     width: min(78vw, 440px, 46svh);
+    transform: translate(-50%, -50%);
   }
   .hero-bottom-row {
     flex-direction: column;

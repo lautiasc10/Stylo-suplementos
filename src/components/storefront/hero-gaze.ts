@@ -1,5 +1,6 @@
 // Intermediate frames are baked into the local clip, never computed on hover.
 export const HERO_VIDEO_FPS = 96;
+export const HERO_GAZE_MAX_SPEED = 2.8;
 const SOURCE_VIDEO_FPS = 24;
 const ORIGIN = 0.5;
 const CENTER_WIDTH = 0.1;
@@ -70,16 +71,20 @@ export function advanceGaze(
 ) {
   const dt = Math.max(0, Math.min(elapsedMs, 50)) / 1000;
   if (!dt) return { position, velocity };
-  const omega = 12;
-  const maxSpeed = 2.4;
+  const omega = 14;
+  const maxSpeed = HERO_GAZE_MAX_SPEED;
   const change = position - target;
   const decay = Math.exp(-omega * dt);
   const impulse = (velocity + omega * change) * dt;
   const desired = target + (change + impulse) * decay;
-  const step = Math.max(
+  const proposedStep = Math.max(
     -maxSpeed * dt,
     Math.min(maxSpeed * dt, desired - position),
   );
+  // A fast cursor reversal must never make the face travel away from its new
+  // target for a frame before following it.
+  const step = proposedStep * (target - position) < 0 ? 0 : proposedStep;
+  if (!step && target !== position) return { position, velocity: 0 };
   const next = position + step;
   if ((target - position) * (target - next) <= 0)
     return { position: target, velocity: 0 };

@@ -3,6 +3,7 @@ import {
   advanceGaze,
   gazeFrameTime,
   gazeTime,
+  HERO_GAZE_MAX_SPEED,
 } from "@/components/storefront/hero-gaze";
 
 describe("seguimiento del león", () => {
@@ -45,7 +46,7 @@ describe("seguimiento del león", () => {
     for (let frame = 0; frame < 180; frame++) {
       const next = advanceGaze(position, velocity, target, 1000 / 60);
       expect(next.position).toBeGreaterThanOrEqual(position);
-      expect(next.position - position).toBeLessThanOrEqual(2.4 / 60 + 1e-10);
+      expect(next.position - position).toBeLessThanOrEqual(HERO_GAZE_MAX_SPEED / 60 + 1e-10);
       expect(next.position).toBeLessThanOrEqual(target);
       position = next.position;
       velocity = next.velocity;
@@ -53,7 +54,7 @@ describe("seguimiento del león", () => {
     expect(position).toBeCloseTo(target, 5);
   });
   it("cambiar de dirección o volver de una pestaña oculta conserva una velocidad acotada", () => {
-    let state = { position: 2, velocity: 2.4 };
+    let state = { position: 2, velocity: HERO_GAZE_MAX_SPEED };
     for (let frame = 0; frame < 180; frame++) {
       const next = advanceGaze(
         state.position,
@@ -62,11 +63,17 @@ describe("seguimiento del león", () => {
         frame === 0 ? 5000 : 1000 / 60,
       );
       expect(Math.abs(next.position - state.position)).toBeLessThanOrEqual(
-        frame === 0 ? 0.12 + 1e-10 : 2.4 / 60 + 1e-10,
+        frame === 0 ? HERO_GAZE_MAX_SPEED * 0.05 + 1e-10 : HERO_GAZE_MAX_SPEED / 60 + 1e-10,
       );
-      expect(Math.abs(next.velocity)).toBeLessThanOrEqual(2.4);
+      expect(Math.abs(next.velocity)).toBeLessThanOrEqual(HERO_GAZE_MAX_SPEED);
       state = next;
     }
     expect(state.position).toBeCloseTo(0.7, 5);
+  });
+  it("al invertir el cursor no retrocede un fotograma en sentido equivocado", () => {
+    const reversed = advanceGaze(2.266625, HERO_GAZE_MAX_SPEED, 2.1, 1000 / 60);
+    expect(reversed.position).toBeLessThanOrEqual(2.266625);
+    const following = advanceGaze(reversed.position, reversed.velocity, 2.1, 1000 / 60);
+    expect(following.position).toBeLessThan(reversed.position);
   });
 });

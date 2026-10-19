@@ -14,6 +14,19 @@ test("las fuentes de la referencia quedan limitadas al hero", async ({
   await expect(page.locator(".site-header")).toHaveCSS("font-family", /Inter/);
 });
 
+test("el titular queda legible a la izquierda y el león a la derecha en escritorio", async ({
+  page,
+}, info) => {
+  test.skip(info.project.name !== "desktop");
+  await page.goto("/");
+  const title = await page.locator(".hero-title").boundingBox();
+  const lion = await page.locator(".sport-hero-visual").boundingBox();
+  expect(title).not.toBeNull();
+  expect(lion).not.toBeNull();
+  expect(title!.x + title!.width + 16).toBeLessThan(lion!.x);
+  expect(lion!.x + lion!.width).toBeLessThanOrEqual(page.viewportSize()!.width);
+});
+
 test("la frase sigue al cursor en sentido inverso y se detiene al pausar", async ({
   page,
 }, info) => {

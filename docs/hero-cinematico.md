@@ -1,14 +1,16 @@
 # Hero — adaptación del código de referencia
 
+Actualización del 18 de octubre de 2026: el título se sitúa a la izquierda y el león a la derecha en escritorio, sin solapamiento; en móvil se conserva el orden vertical. El contorno dorado gana contraste sin cambiar la tipografía ni la paleta. La mirada responde algo más rápido y evita un cuadro de contramarcha al invertir el cursor. En una muestra local del build de producción a 1440 × 900, con barrido sintético del cursor en Chrome DevTools, el intervalo mediano fue de 13,3 ms, p95 de 13,6 ms y no hubo intervalos superiores a 32 ms entre 120 muestras; CLS 0 y consola sin errores. Son cifras de esa máquina y no garantizan la misma frecuencia en todos los dispositivos.
+
 Revisión del 16 de octubre de 2026. El usuario aportó el ZIP de protein-powerhouse-hub y pidió aplicar su hero conservando el navbar y las categorías superiores de STYLO. La implementación toma LionHero.tsx y styles.css como referencia; no ejecuta ni incorpora sus archivos de configuración, reportes, instrucciones AGENTS o dependencias.
 
 ## Composición y fuentes
 
-El escenario centra el león y pone el título detrás. Se conserva la frase aprobada «Potenciá tu mejor versión.»: primera línea en contorno y segunda en degradado dorado. Anton 400 reproduce la tipografía del ejemplo sin negrita sintética; Manrope se usa en texto y botones del hero. Ambas se sirven con next/font/google desde el componente de portada. Barlow Condensed e Inter permanecen en el resto de la web, incluida la cabecera.
+El escenario coloca el título a la izquierda y el león a la derecha en escritorio, sin solaparlos. Se conserva la frase aprobada «Potenciá tu mejor versión.»: primera línea en contorno y segunda en degradado dorado. Anton 400 reproduce la tipografía del ejemplo sin negrita sintética; Manrope se usa en texto y botones del hero. Ambas se sirven con next/font/google desde el componente de portada. Barlow Condensed e Inter permanecen en el resto de la web, incluida la cabecera.
 
 Se incorporan el grano estático, el ascenso de las líneas, el degradado que recorre el texto, los botones rectos y la cinta de la referencia. La cinta contiene Proteína, Creatina, Pre-entreno, Aminoácidos, Colágeno y el mensaje de envíos suministrado por el usuario; las categorías conservan enlaces funcionales y el mensaje de envíos es texto. El grupo duplicado no agrega pasos al teclado ni al lector de pantalla. Hover pausa la cinta; foco visible habilita su navegación manual. La pausa compartida y el movimiento reducido detienen el movimiento continuo.
 
-El titular permanece parcialmente cubierto por el león en escritorio, como en la referencia. En celular queda por encima de la ilustración para conservar su lectura. El navbar, el logo oficial, el carrito, la búsqueda y las categorías superiores mantienen estructura, fuentes y navegación. Se conserva el contenido comercial existente; las afirmaciones de marcas y alcance de envíos siguen pendientes de confirmación antes de publicar.
+El titular queda libre del león en escritorio. En celular queda por encima de la ilustración para conservar su lectura. El navbar, el logo oficial, el carrito, la búsqueda y las categorías superiores mantienen estructura, fuentes y navegación. Se conserva el contenido comercial existente; las afirmaciones de marcas y alcance de envíos siguen pendientes de confirmación antes de publicar.
 
 ## Movimiento compartido
 
@@ -20,7 +22,7 @@ El controlador suspende la actividad fuera de pantalla, con pestaña oculta, pau
 
 ## Recurso del león
 
-Se mantiene stylo-lion-motion-v3.mp4 y su póster derecho, sin reexportar, reducir su resolución ni generar medios. El giro continuo conserva la búsqueda coalescida y la amortiguación; el frente ahora corresponde al centro de pantalla (0,5), acorde con la nueva posición. La pose inicial del video coincide con el póster (aproximadamente 0,849 segundos). Se confirma antes del relevo y nunca se funden dos poses.
+Se mantiene stylo-lion-motion-v3.mp4 y su póster derecho, sin reexportar, reducir su resolución ni generar medios. El giro continuo conserva la búsqueda coalescida y la amortiguación, con una velocidad máxima de 2,8 segundos de video por segundo real y sin contramarcha al invertir el cursor; el frente ahora corresponde al centro de pantalla (0,5), con el cursor normalizado al ancho de pantalla. La pose inicial del video coincide con el póster (aproximadamente 0,849 segundos). Se confirma antes del relevo y nunca se funden dos poses.
 
 La referencia cruza dos imágenes durante 700 ms. Esa parte se conserva mediante el video existente, como se acordó con el usuario, evitando la duplicación de caras. El mate del video utiliza una máscara de borde suave en la presentación. Se retira screen blending porque sumaba el color de las letras sobre la cara. La máscara conserva el centro opaco y suaviza el contorno del medio; no calcula alfa por píxel ni cambia el archivo original. La entrada del león usa escala y opacidad, sin el desenfoque animado de la referencia.
 
