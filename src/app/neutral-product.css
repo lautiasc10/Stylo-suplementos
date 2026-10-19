@@ -1,0 +1,138 @@
+/* Three-product trial. Tokens, product data and the catalog remain shared. */
+.product-detail.neutral-product-detail {
+  --neutral-glow: color-mix(in srgb, var(--gold) 15%, transparent);
+  background: var(--cinematic-background);
+}
+.neutral-product-scene {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  contain: layout style paint;
+  background: radial-gradient(
+    ellipse at 26% 43%,
+    var(--neutral-glow),
+    transparent 56%
+  );
+}
+.neutral-scene-field {
+  position: absolute;
+  inset: 0 43% 0 0;
+  max-height: 820px;
+}
+.neutral-scene-particles {
+  position: absolute;
+  inset: 5% 4% 7%;
+  background-repeat: no-repeat;
+  animation-play-state: paused;
+}
+.neutral-scene-particles-far {
+  opacity: 0.28;
+  background-image:
+    radial-gradient(circle at 12% 14%, var(--gold) 0 1px, transparent 2px),
+    radial-gradient(circle at 39% 7%, var(--gold) 0 1px, transparent 2px),
+    radial-gradient(circle at 77% 17%, var(--gold) 0 1px, transparent 2px),
+    radial-gradient(circle at 9% 48%, var(--gold) 0 1px, transparent 2px),
+    radial-gradient(circle at 90% 41%, var(--gold) 0 1px, transparent 2px),
+    radial-gradient(circle at 24% 67%, var(--gold) 0 1px, transparent 2px),
+    radial-gradient(circle at 76% 73%, var(--gold) 0 1px, transparent 2px),
+    radial-gradient(circle at 38% 89%, var(--gold) 0 1px, transparent 2px),
+    radial-gradient(circle at 88% 87%, var(--gold) 0 1px, transparent 2px);
+}
+.neutral-scene-particles-near {
+  opacity: 0.65;
+  background-image:
+    radial-gradient(circle at 20% 22%, var(--gold) 0 1px, transparent 3px),
+    radial-gradient(circle at 64% 12%, var(--gold) 0 1px, transparent 2.5px),
+    radial-gradient(circle at 86% 32%, var(--gold) 0 1px, transparent 3px),
+    radial-gradient(circle at 17% 57%, var(--gold) 0 1px, transparent 2.5px),
+    radial-gradient(circle at 80% 60%, var(--gold) 0 1px, transparent 3px),
+    radial-gradient(circle at 12% 81%, var(--gold) 0 1px, transparent 3px),
+    radial-gradient(circle at 66% 88%, var(--gold) 0 1px, transparent 2.5px);
+}
+.neutral-product-scene[data-motion="true"] .neutral-scene-particles-far {
+  animation: neutral-particles-far 4.2s ease-out both paused;
+}
+.neutral-product-scene[data-motion="true"] .neutral-scene-particles-near {
+  animation: neutral-particles-near 4.8s ease-out both paused;
+}
+.neutral-product-scene[data-playing="true"] .neutral-scene-particles {
+  animation-play-state: running;
+}
+.neutral-product-scene[data-motion="true"][data-playing="true"]:not(
+    [data-settled]
+  )
+  .neutral-scene-particles {
+  will-change: transform;
+}
+@keyframes neutral-particles-far {
+  to {
+    transform: translate3d(-6px, -10px, 0);
+  }
+}
+@keyframes neutral-particles-near {
+  to {
+    transform: translate3d(10px, -18px, 0);
+  }
+}
+.neutral-product-detail .product-image-gallery .product-image-stage {
+  background: transparent;
+}
+.neutral-product-detail .product-image-stage::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 12% 10% 8%;
+  pointer-events: none;
+  background: radial-gradient(ellipse, var(--neutral-glow), transparent 70%);
+}
+.neutral-product-detail .product-image-gallery .product-image-stage::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 88% 20% auto;
+  height: 5%;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse,
+    color-mix(in srgb, var(--gold) 26%, transparent),
+    transparent 72%
+  );
+}
+.neutral-product-detail .product-detail-copy {
+  /* Keep the approved information hierarchy readable over the atmosphere. */
+  --muted: #b9b7b0;
+}
+.neutral-product-detail .gainer-back-link {
+  color: var(--foreground);
+}
+.neutral-product-detail .product-information {
+  border-color: color-mix(in srgb, var(--gold) 25%, transparent);
+}
+@media (max-width: 959px) {
+  .neutral-scene-field {
+    inset: 0 0 auto;
+    height: min(110vw, 720px);
+  }
+  .neutral-product-scene {
+    background: radial-gradient(
+      ellipse 90% 440px at 50% 230px,
+      var(--neutral-glow),
+      transparent 82%
+    );
+  }
+}
+@media (max-width: 767px) {
+  .neutral-product-scene .neutral-scene-particles-far {
+    /* Keep the distant dust static on smaller devices: one moving surface. */
+    animation: none;
+    will-change: auto !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .neutral-product-scene .neutral-scene-particles {
+    animation: none !important;
+    will-change: auto !important;
+  }
+}

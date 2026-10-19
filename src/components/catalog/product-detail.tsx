@@ -24,6 +24,10 @@ import { FlavorHeroScene } from "./flavor-hero-scene";
 import { useFlavorChoreography } from "./use-flavor-choreography";
 import { useFlavorDetailsMotion } from "./use-flavor-details-motion";
 import { elementPoint } from "./flavor-motion";
+import {
+  NeutralProductScene,
+  neutralProductTrialSlugs,
+} from "./neutral-product-scene";
 export type ProductDetailProps = {
   product: Product;
   brandName: string;
@@ -173,6 +177,7 @@ export function ProductDetail({
     );
   }, []);
   const flavor = productFlavor(variant.flavor);
+  const neutralScene = !flavor && neutralProductTrialSlugs.has(product.slug);
   const logoSrc =
     brandLogo &&
     catalogMediaSource(
@@ -187,7 +192,7 @@ export function ProductDetail({
   return (
     <div
       ref={heroRoot}
-      className={`product-detail gainer-product-detail unified-product-detail${flavor ? " flavor-product-detail" : ""}`}
+      className={`product-detail gainer-product-detail unified-product-detail${flavor ? " flavor-product-detail" : ""}${neutralScene ? " neutral-product-detail" : ""}`}
       data-flavor={flavor ?? undefined}
       data-enhanced={enhanced ? "true" : undefined}
       data-variant={variant.id}
@@ -195,6 +200,7 @@ export function ProductDetail({
       data-flavor-motion={choreography.change?.mode}
       data-flavor-running={choreography.running || undefined}
     >
+      {neutralScene && <NeutralProductScene />}
       {flavor && choreographed ? (
         <FlavorHeroScene
           flavor={sceneFlavor(variant.flavor)}

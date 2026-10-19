@@ -1,0 +1,338 @@
+{
+  "note": "Production build, CPU x4, same-page static/trial comparison. Short local RAF samples do not establish field INP or universal 60fps. No external images added by this scene.",
+  "results": [
+    {
+      "name": "creatina",
+      "width": 1440,
+      "status": 200,
+      "cpuSlowdown": 4,
+      "baseline": {
+        "samples": 120,
+        "medianMs": 13.3,
+        "p95Ms": 13.4,
+        "maxMs": 13.5,
+        "over32ms": 0,
+        "cls": 0,
+        "longTasks": []
+      },
+      "trial": {
+        "samples": 120,
+        "medianMs": 13.3,
+        "p95Ms": 13.4,
+        "maxMs": 13.5,
+        "over32ms": 0,
+        "cls": 0.00004710438748781686,
+        "longTasks": []
+      },
+      "initialImageNetworkBytes": 122527,
+      "trialAddedImageBytes": 0,
+      "cls": 0.0012408462018762185,
+      "longTasks": [
+        236,
+        69,
+        73,
+        198
+      ],
+      "overflow": false,
+      "title": "CREATINA MICRONIZADA POWERADED x 200GR",
+      "photo": [
+        {
+          "complete": true,
+          "width": 640,
+          "height": 640
+        }
+      ],
+      "ambientImageRequests": 0,
+      "purchaseVisible": true,
+      "errors": []
+    },
+    {
+      "name": "zma",
+      "width": 1440,
+      "status": 200,
+      "cpuSlowdown": 4,
+      "baseline": {
+        "samples": 120,
+        "medianMs": 13.3,
+        "p95Ms": 13.4,
+        "maxMs": 13.5,
+        "over32ms": 0,
+        "cls": 0,
+        "longTasks": []
+      },
+      "trial": {
+        "samples": 120,
+        "medianMs": 13.3,
+        "p95Ms": 13.5,
+        "maxMs": 13.5,
+        "over32ms": 0,
+        "cls": 0.00004710438748781675,
+        "longTasks": []
+      },
+      "initialImageNetworkBytes": 117467,
+      "trialAddedImageBytes": 0,
+      "cls": 0.0005964017574317738,
+      "longTasks": [
+        148,
+        191,
+        59,
+        171
+      ],
+      "overflow": false,
+      "title": "ZINC+MAGNESIO+VITAMINA B6 \"ZMA\" - 90 CAPSULAS",
+      "photo": [
+        {
+          "complete": true,
+          "width": 640,
+          "height": 640
+        }
+      ],
+      "ambientImageRequests": 0,
+      "purchaseVisible": true,
+      "errors": []
+    },
+    {
+      "name": "cafeina",
+      "width": 1440,
+      "status": 200,
+      "cpuSlowdown": 4,
+      "baseline": {
+        "samples": 120,
+        "medianMs": 13.3,
+        "p95Ms": 13.5,
+        "maxMs": 13.5,
+        "over32ms": 0,
+        "cls": 0,
+        "longTasks": []
+      },
+      "trial": {
+        "samples": 120,
+        "medianMs": 13.3,
+        "p95Ms": 13.4,
+        "maxMs": 13.5,
+        "over32ms": 0,
+        "cls": 0.00004710438748781686,
+        "longTasks": []
+      },
+      "initialImageNetworkBytes": 104957,
+      "trialAddedImageBytes": 0,
+      "cls": 0.001382951465034113,
+      "longTasks": [
+        157,
+        178,
+        52,
+        54,
+        170
+      ],
+      "overflow": false,
+      "title": "CAFEINA 200 x 30 CAPS",
+      "photo": [
+        {
+          "complete": true,
+          "width": 640,
+          "height": 640
+        }
+      ],
+      "ambientImageRequests": 0,
+      "purchaseVisible": true,
+      "errors": []
+    },
+    {
+      "name": "creatina",
+      "width": 375,
+      "status": 200,
+      "cpuSlowdown": 4,
+      "baseline": {
+        "samples": 120,
+        "medianMs": 13.3,
+        "p95Ms": 13.4,
+        "maxMs": 13.5,
+        "over32ms": 0,
+        "cls": 0,
+        "longTasks": []
+      },
+      "trial": {
+        "samples": 120,
+        "medianMs": 13.3,
+        "p95Ms": 13.5,
+        "maxMs": 13.5,
+        "over32ms": 0,
+        "cls": 0.00005924695606542279,
+        "longTasks": []
+      },
+      "initialImageNetworkBytes": 87633,
+      "trialAddedImageBytes": 0,
+      "cls": 0.004259336931859546,
+      "longTasks": [
+        187,
+        55,
+        174
+      ],
+      "overflow": false,
+      "title": "CREATINA MICRONIZADA POWERADED x 200GR",
+      "photo": [
+        {
+          "complete": true,
+          "width": 375,
+          "height": 375
+        }
+      ],
+      "ambientImageRequests": 0,
+      "purchaseVisible": true,
+      "errors": []
+    },
+    {
+      "name": "zma",
+      "width": 375,
+      "status": 200,
+      "cpuSlowdown": 4,
+      "baseline": {
+        "samples": 120,
+        "medianMs": 13.3,
+        "p95Ms": 13.5,
+        "maxMs": 13.5,
+        "over32ms": 0,
+        "cls": 0,
+        "longTasks": []
+      },
+      "trial": {
+        "samples": 120,
+        "medianMs": 13.3,
+        "p95Ms": 13.4,
+        "maxMs": 13.5,
+        "over32ms": 0,
+        "cls": 0.00005924695606542279,
+        "longTasks": []
+      },
+      "initialImageNetworkBytes": 82573,
+      "trialAddedImageBytes": 0,
+      "cls": 0.0041195616400543575,
+      "longTasks": [
+        235,
+        53,
+        60,
+        188
+      ],
+      "overflow": false,
+      "title": "ZINC+MAGNESIO+VITAMINA B6 \"ZMA\" - 90 CAPSULAS",
+      "photo": [
+        {
+          "complete": true,
+          "width": 375,
+          "height": 375
+        }
+      ],
+      "ambientImageRequests": 0,
+      "purchaseVisible": true,
+      "errors": []
+    },
+    {
+      "name": "cafeina",
+      "width": 375,
+      "status": 200,
+      "cpuSlowdown": 4,
+      "baseline": {
+        "samples": 120,
+        "medianMs": 13.3,
+        "p95Ms": 13.4,
+        "maxMs": 13.5,
+        "over32ms": 0,
+        "cls": 0,
+        "longTasks": []
+      },
+      "trial": {
+        "samples": 120,
+        "medianMs": 13.3,
+        "p95Ms": 13.4,
+        "maxMs": 13.5,
+        "over32ms": 0,
+        "cls": 0.00005924695606542192,
+        "longTasks": []
+      },
+      "initialImageNetworkBytes": 70063,
+      "trialAddedImageBytes": 0,
+      "cls": 0.010386153889320293,
+      "longTasks": [
+        132,
+        176,
+        53,
+        64,
+        188
+      ],
+      "overflow": false,
+      "title": "CAFEINA 200 x 30 CAPS",
+      "photo": [
+        {
+          "complete": true,
+          "width": 375,
+          "height": 375
+        }
+      ],
+      "ambientImageRequests": 0,
+      "purchaseVisible": true,
+      "errors": []
+    },
+    {
+      "name": "creatina",
+      "width": 768,
+      "status": 200,
+      "cpuSlowdown": 4,
+      "baseline": {
+        "samples": 120,
+        "medianMs": 13.3,
+        "p95Ms": 13.4,
+        "maxMs": 13.5,
+        "over32ms": 0,
+        "cls": 0,
+        "longTasks": []
+      },
+      "trial": {
+        "samples": 120,
+        "medianMs": 13.3,
+        "p95Ms": 13.5,
+        "maxMs": 13.5,
+        "over32ms": 0,
+        "cls": 0.00013387562759695302,
+        "longTasks": []
+      },
+      "initialImageNetworkBytes": 118324,
+      "trialAddedImageBytes": 0,
+      "cls": 0.0017448980695983379,
+      "longTasks": [
+        153,
+        307,
+        57,
+        82,
+        196
+      ],
+      "overflow": false,
+      "title": "CREATINA MICRONIZADA POWERADED x 200GR",
+      "photo": [
+        {
+          "complete": true,
+          "width": 767,
+          "height": 767
+        }
+      ],
+      "ambientImageRequests": 0,
+      "purchaseVisible": true,
+      "errors": []
+    },
+    {
+      "mode": "sin-javascript",
+      "scene": true,
+      "motion": null,
+      "photo": true,
+      "animation": "none",
+      "overflow": false
+    },
+    {
+      "mode": "movimiento-reducido",
+      "scene": true,
+      "motion": null,
+      "photo": true,
+      "animation": "none",
+      "overflow": false
+    }
+  ]
+}

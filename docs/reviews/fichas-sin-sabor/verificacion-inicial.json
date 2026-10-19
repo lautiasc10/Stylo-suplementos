@@ -1,0 +1,304 @@
+{
+  "note": "Production build, CPU x4, same-page static/trial comparison. Short local RAF samples do not establish field INP or universal 60fps. No external images added by this scene.",
+  "results": [
+    {
+      "name": "creatina",
+      "width": 1440,
+      "status": 200,
+      "cpuSlowdown": 4,
+      "baseline": {
+        "samples": 120,
+        "medianMs": 13.3,
+        "p95Ms": 13.4,
+        "maxMs": 13.5,
+        "over32ms": 0
+      },
+      "trial": {
+        "samples": 120,
+        "medianMs": 13.3,
+        "p95Ms": 13.4,
+        "maxMs": 13.5,
+        "over32ms": 0
+      },
+      "cls": 0.0006139456170808967,
+      "longTasks": [
+        190,
+        58,
+        52,
+        163
+      ],
+      "overflow": false,
+      "title": "CREATINA MICRONIZADA POWERADED x 200GR",
+      "photo": [
+        {
+          "complete": true,
+          "width": 640,
+          "height": 640
+        }
+      ],
+      "photoBytes": 33654,
+      "ambientImageRequests": 0,
+      "purchaseVisible": true,
+      "errors": []
+    },
+    {
+      "name": "zma",
+      "width": 1440,
+      "status": 200,
+      "cpuSlowdown": 4,
+      "baseline": {
+        "samples": 120,
+        "medianMs": 13.3,
+        "p95Ms": 13.5,
+        "maxMs": 13.5,
+        "over32ms": 0
+      },
+      "trial": {
+        "samples": 120,
+        "medianMs": 13.3,
+        "p95Ms": 13.5,
+        "maxMs": 13.5,
+        "over32ms": 0
+      },
+      "cls": 0.0012233023422270955,
+      "longTasks": [
+        218,
+        65,
+        77,
+        233
+      ],
+      "overflow": false,
+      "title": "ZINC+MAGNESIO+VITAMINA B6 \"ZMA\" - 90 CAPSULAS",
+      "photo": [
+        {
+          "complete": true,
+          "width": 640,
+          "height": 640
+        }
+      ],
+      "photoBytes": 33654,
+      "ambientImageRequests": 0,
+      "purchaseVisible": true,
+      "errors": []
+    },
+    {
+      "name": "cafeina",
+      "width": 1440,
+      "status": 200,
+      "cpuSlowdown": 4,
+      "baseline": {
+        "samples": 120,
+        "medianMs": 13.3,
+        "p95Ms": 13.4,
+        "maxMs": 13.5,
+        "over32ms": 0
+      },
+      "trial": {
+        "samples": 120,
+        "medianMs": 13.3,
+        "p95Ms": 13.4,
+        "maxMs": 13.6,
+        "over32ms": 0
+      },
+      "cls": 0.001382951465034113,
+      "longTasks": [
+        246,
+        67,
+        77,
+        253
+      ],
+      "overflow": false,
+      "title": "CAFEINA 200 x 30 CAPS",
+      "photo": [
+        {
+          "complete": true,
+          "width": 640,
+          "height": 640
+        }
+      ],
+      "photoBytes": 33654,
+      "ambientImageRequests": 0,
+      "purchaseVisible": true,
+      "errors": []
+    },
+    {
+      "name": "creatina",
+      "width": 375,
+      "status": 200,
+      "cpuSlowdown": 4,
+      "baseline": {
+        "samples": 120,
+        "medianMs": 13.3,
+        "p95Ms": 13.5,
+        "maxMs": 13.5,
+        "over32ms": 0
+      },
+      "trial": {
+        "samples": 112,
+        "medianMs": 13.3,
+        "p95Ms": 13.5,
+        "maxMs": 79.9,
+        "over32ms": 2
+      },
+      "cls": 0.004259336931859546,
+      "longTasks": [
+        100,
+        175,
+        55,
+        72,
+        203
+      ],
+      "overflow": false,
+      "title": "CREATINA MICRONIZADA POWERADED x 200GR",
+      "photo": [
+        {
+          "complete": true,
+          "width": 375,
+          "height": 375
+        }
+      ],
+      "photoBytes": 0,
+      "ambientImageRequests": 0,
+      "purchaseVisible": true,
+      "errors": []
+    },
+    {
+      "name": "zma",
+      "width": 375,
+      "status": 200,
+      "cpuSlowdown": 4,
+      "baseline": {
+        "samples": 120,
+        "medianMs": 13.3,
+        "p95Ms": 13.4,
+        "maxMs": 13.5,
+        "over32ms": 0
+      },
+      "trial": {
+        "samples": 120,
+        "medianMs": 13.3,
+        "p95Ms": 13.4,
+        "maxMs": 13.5,
+        "over32ms": 0
+      },
+      "cls": 0.0041195616400543575,
+      "longTasks": [
+        274,
+        72,
+        77,
+        225
+      ],
+      "overflow": false,
+      "title": "ZINC+MAGNESIO+VITAMINA B6 \"ZMA\" - 90 CAPSULAS",
+      "photo": [
+        {
+          "complete": true,
+          "width": 375,
+          "height": 375
+        }
+      ],
+      "photoBytes": 0,
+      "ambientImageRequests": 0,
+      "purchaseVisible": true,
+      "errors": []
+    },
+    {
+      "name": "cafeina",
+      "width": 375,
+      "status": 200,
+      "cpuSlowdown": 4,
+      "baseline": {
+        "samples": 120,
+        "medianMs": 13.3,
+        "p95Ms": 13.4,
+        "maxMs": 13.5,
+        "over32ms": 0
+      },
+      "trial": {
+        "samples": 120,
+        "medianMs": 13.3,
+        "p95Ms": 13.5,
+        "maxMs": 13.5,
+        "over32ms": 0
+      },
+      "cls": 0.010386153889320293,
+      "longTasks": [
+        124,
+        207,
+        53,
+        63,
+        195
+      ],
+      "overflow": false,
+      "title": "CAFEINA 200 x 30 CAPS",
+      "photo": [
+        {
+          "complete": true,
+          "width": 375,
+          "height": 375
+        }
+      ],
+      "photoBytes": 0,
+      "ambientImageRequests": 0,
+      "purchaseVisible": true,
+      "errors": []
+    },
+    {
+      "name": "creatina",
+      "width": 768,
+      "status": 200,
+      "cpuSlowdown": 4,
+      "baseline": {
+        "samples": 120,
+        "medianMs": 13.3,
+        "p95Ms": 13.4,
+        "maxMs": 13.5,
+        "over32ms": 0
+      },
+      "trial": {
+        "samples": 120,
+        "medianMs": 13.3,
+        "p95Ms": 13.5,
+        "maxMs": 13.5,
+        "over32ms": 0
+      },
+      "cls": 0.0017448980695983379,
+      "longTasks": [
+        140,
+        216,
+        53,
+        66,
+        188
+      ],
+      "overflow": false,
+      "title": "CREATINA MICRONIZADA POWERADED x 200GR",
+      "photo": [
+        {
+          "complete": true,
+          "width": 767,
+          "height": 767
+        }
+      ],
+      "photoBytes": 0,
+      "ambientImageRequests": 0,
+      "purchaseVisible": true,
+      "errors": []
+    },
+    {
+      "mode": "sin-javascript",
+      "scene": true,
+      "motion": null,
+      "photo": true,
+      "animation": "none",
+      "overflow": false
+    },
+    {
+      "mode": "movimiento-reducido",
+      "scene": true,
+      "motion": null,
+      "photo": true,
+      "animation": "none",
+      "overflow": false
+    }
+  ]
+}
