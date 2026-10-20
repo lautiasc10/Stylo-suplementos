@@ -76,14 +76,14 @@ for (const width of [375, 768]) {
         expect(Math.abs(bounds.y + bounds.height - 844)).toBeLessThan(2);
         expect(bounds.x).toBe(0);
         expect(bounds.width).toBe(width);
-        await expect(action.locator("button")).toBeInViewport();
+        await expect(action.locator('button[type="submit"]')).toBeInViewport();
       };
       await verify();
       await page.evaluate(() => scrollTo({ top: 600, behavior: "instant" }));
       await verify();
       if (product.variants.length > 1) {
         await page.getByRole("link", { name: /Vainilla/ }).click();
-        await expect(action.locator("button")).toHaveText("Sin stock");
+        await expect(action.locator('button[type="submit"]')).toHaveText("Sin stock");
         await verify();
       }
       await page.emulateMedia({ reducedMotion: "reduce" });

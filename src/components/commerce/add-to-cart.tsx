@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useState } from "react";
 import { useCart } from "./cart-provider";
 import { updateCartAndRedirect } from "@/modules/commerce/actions";
 import { Icon } from "@/components/ui/icon";
@@ -9,6 +10,9 @@ export function AddToCart({
   illustrated = false,
   compact = false,
   accessibleLabel,
+  quantityControl = false,
+  selectedQuantity,
+  onQuantityChange,
 }: {
   variantId: string;
   stock: number;
@@ -16,24 +20,78 @@ export function AddToCart({
   illustrated?: boolean;
   compact?: boolean;
   accessibleLabel?: string;
+  quantityControl?: boolean;
+  selectedQuantity?: number;
+  onQuantityChange?: (quantity: number) => void;
 }) {
-  const { busy, error, preview, change } = useCart();
+  const { busy, error, preview, change, quote } = useCart();
+  const [ready, setReady] = useState(false);
+  const [selection, setSelection] = useState({ variantId, quantity: 1 });
+  useEffect(() => setReady(true), []);
+  const inCart =
+    quote.lines.find((line) => line.variantId === variantId)?.quantity ?? 0;
+  const available = Math.max(0, stock - inCart);
+  const quantity = Math.max(
+    1,
+    Math.min(
+      available,
+      selectedQuantity ??
+        (selection.variantId === variantId ? selection.quantity : 1),
+    ),
+  );
+  const update = (amount: number) => {
+    const next = Math.max(1, Math.min(available, amount));
+    if (onQuantityChange) onQuantityChange(next);
+    else setSelection({ variantId, quantity: next });
+  };
   return (
     <form
-      className="add-to-cart"
+      className={`add-to-cart${quantityControl ? " product-purchase-form" : ""}`}
       action={updateCartAndRedirect}
       onSubmit={(event) => {
         event.preventDefault();
-        void change(variantId, "add");
+        void change(variantId, "add", quantityControl ? quantity : 1);
       }}
     >
       <input type="hidden" name="variantId" value={variantId} />
-      <input type="hidden" name="quantity" value="1" />
+      <input
+        type="hidden"
+        name="quantity"
+        value={quantityControl ? quantity : 1}
+      />
       <input type="hidden" name="operation" value="add" />
       <input type="hidden" name="returnTo" value={`/producto/${slug}`} />
+      {quantityControl && (
+        <div
+          className="product-quantity"
+          role="group"
+          aria-label="Cantidad a agregar"
+        >
+          <button
+            type="button"
+            aria-label="Disminuir cantidad"
+            disabled={!ready || busy || quantity <= 1 || !available}
+            onClick={() => update(quantity - 1)}
+          >
+            −
+          </button>
+          <output aria-live="polite" aria-label="Cantidad a agregar">
+            {quantity}
+          </output>
+          <button
+            type="button"
+            aria-label="Aumentar cantidad"
+            disabled={!ready || busy || quantity >= available}
+            onClick={() => update(quantity + 1)}
+          >
+            +
+          </button>
+        </div>
+      )}
       <button
-        className="button button-gold"
-        disabled={busy || stock === 0}
+        type="submit"
+        className={`button button-gold${quantityControl ? " premium-cta" : ""}`}
+        disabled={busy || stock === 0 || (quantityControl && available === 0)}
         aria-label={
           accessibleLabel && stock === 0
             ? `${accessibleLabel} (sin stock)`
@@ -44,9 +102,11 @@ export function AddToCart({
         <span>
           {stock === 0
             ? "Sin stock"
-            : compact
-              ? "Agregar"
-              : "Agregar al carrito"}
+            : quantityControl && available === 0
+              ? "Todo el stock está en tu carrito"
+              : compact
+                ? "Agregar"
+                : "Agregar al carrito"}
         </span>
         {illustrated && <Icon name="arrow" />}
       </button>

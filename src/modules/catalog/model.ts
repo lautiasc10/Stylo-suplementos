@@ -69,13 +69,19 @@ export const emptyCatalog: Catalog = {
   categories: [],
   products: [],
 };
+const priceFormatters = Object.fromEntries(
+  [0, 2].map((fractionDigits) => [
+    fractionDigits,
+    new Intl.NumberFormat("es-AR", {
+      style: "currency",
+      currency: "ARS",
+      minimumFractionDigits: fractionDigits,
+      maximumFractionDigits: fractionDigits,
+    }),
+  ]),
+);
 export const formatPrice = (cents: number, fractionDigits: 0 | 2 = 2) =>
-  new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency: "ARS",
-    minimumFractionDigits: fractionDigits,
-    maximumFractionDigits: fractionDigits,
-  }).format(cents / 100);
+  priceFormatters[fractionDigits].format(cents / 100);
 /** Customer-facing names; the original flavor remains intact for SKU and editing. */
 export function flavorLabel(value: string): string {
   const raw = value.trim();

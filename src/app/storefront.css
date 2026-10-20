@@ -1002,8 +1002,8 @@
 .home-collection-empty a {
   flex-shrink: 0;
 }
-.home-promotions > .container {
-  width: min(calc(100% - 2 * var(--page-gutter)), 1280px);
+.home-collection > .container {
+  width: min(calc(100% - 2 * var(--page-gutter)), var(--collection-width));
 }
 .home-promotions-intro {
   max-width: 40ch;
@@ -1033,7 +1033,7 @@
   padding: var(--space-1);
   border: 1px solid var(--line);
   border-radius: var(--radius-pill);
-  background: var(--surface);
+  background: var(--commercial-background);
 }
 .offer-payment-indicator {
   position: absolute;
@@ -1054,7 +1054,7 @@
   min-height: 40px;
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-pill);
-  color: var(--foreground);
+  color: var(--color-stylo-white);
   font-size: var(--text-sm);
   cursor: pointer;
 }

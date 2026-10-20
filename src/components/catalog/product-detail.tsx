@@ -11,6 +11,7 @@ import {
 } from "react";
 import { AddToCart } from "@/components/commerce/add-to-cart";
 import { ProductPricing } from "@/components/commerce/product-pricing";
+import { useCart } from "@/components/commerce/cart-provider";
 import { RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { flavorLabel, variantLabel } from "@/modules/catalog/model";
 import {
@@ -66,11 +67,30 @@ export function ProductDetail({
   const variant =
     product.variants.find((item) => item.id === variantId) ??
     product.variants[0];
+  const { quote } = useCart();
+  const [purchaseSelection, setPurchaseSelection] = useState({
+    variantId: variant.id,
+    quantity: 1,
+  });
+  const inCart =
+    quote.lines.find((line) => line.variantId === variant.id)?.quantity ?? 0;
+  const quantity = Math.max(
+    1,
+    Math.min(
+      Math.max(0, variant.stock - inCart),
+      purchaseSelection.variantId === variant.id
+        ? purchaseSelection.quantity
+        : 1,
+    ),
+  );
   const choreographed =
     product.variants.length > 1 &&
     product.variants.some((item) => productFlavor(item.flavor));
   const selectVariant = useCallback((id: string) => {
     setVariantId(id);
+    setPurchaseSelection((previous) =>
+      previous.variantId === id ? previous : { variantId: id, quantity: 1 },
+    );
     const url = new URL(window.location.href);
     url.searchParams.set("variante", id);
     window.history.replaceState(
@@ -177,6 +197,10 @@ export function ProductDetail({
     if (!image.variantId) return;
     // Gallery commits only after decoding, so pack, price and cart stay in sync.
     setVariantId(image.variantId);
+    const id = image.variantId;
+    setPurchaseSelection((previous) =>
+      previous.variantId === id ? previous : { variantId: id, quantity: 1 },
+    );
     const url = new URL(window.location.href);
     url.searchParams.set("variante", image.variantId);
     window.history.replaceState(
@@ -284,9 +308,6 @@ export function ProductDetail({
               </Fragment>
             ))}
           </h1>
-          {product.description && (
-            <p className="product-description">{product.description}</p>
-          )}
         </RevealItem>
         <RevealItem direction="none">
           <div
@@ -299,6 +320,10 @@ export function ProductDetail({
               {product.variants.some((item) => productFlavor(item.flavor))
                 ? "Sabor"
                 : "Presentación"}
+              :{" "}
+              <strong>
+                {flavorLabel(variant.flavor) || variantLabel(variant)}
+              </strong>
             </p>
             <div
               className="gainer-flavor-options"
@@ -404,11 +429,12 @@ export function ProductDetail({
               `${variant.stock > 0 ? " · " : ""}${[variant.size, variant.presentation].filter(Boolean).join(" · ")}`}
           </p>
         </RevealItem>
-        <RevealItem aria-live="polite" aria-atomic="true">
+        <RevealItem direction="none">
           <ProductPricing
             variant={variant}
             animateChange={!choreographed}
-            listFirst
+            selectable
+            quantity={Math.max(1, Math.min(variant.stock, quantity + inCart))}
           />
         </RevealItem>
         <RevealItem className="purchase-action" direction="none">
@@ -416,6 +442,11 @@ export function ProductDetail({
             variantId={variant.id}
             stock={variant.stock}
             slug={product.slug}
+            quantityControl
+            selectedQuantity={quantity}
+            onQuantityChange={(amount) =>
+              setPurchaseSelection({ variantId: variant.id, quantity: amount })
+            }
           />
           {choreographed && (
             <span
@@ -432,6 +463,7 @@ export function ProductDetail({
         )}
         <ProductInformation
           product={product}
+          brandName={brandName}
           variantId={variant.id}
           imageBase={imageBase}
           imageUrls={imageUrls}

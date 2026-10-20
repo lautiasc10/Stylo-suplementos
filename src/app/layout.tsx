@@ -12,6 +12,7 @@ import "./flavor-choreography.css";
 import "./pricing-hierarchy.css";
 import "./neutral-product.css";
 import "./mobile-storefront.css";
+import "./purchase-pricing.css";
 import { getEnvironment } from "@/lib/config/server";
 
 const display = Barlow_Condensed({

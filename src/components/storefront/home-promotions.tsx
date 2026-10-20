@@ -3,6 +3,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { useCart } from "@/components/commerce/cart-provider";
+import { PaymentSelector } from "@/components/commerce/payment-selector";
+import { AnimatedAmount } from "@/components/ui/animated-amount";
 import { addPromotionAndRedirect } from "@/modules/commerce/actions";
 import { productOffers } from "@/modules/commerce/product-offers";
 import { promotionPrice } from "@/modules/commerce/promotion-cart";
@@ -31,7 +33,6 @@ export function HomePromotions({
     imageUrls,
     preview,
     paymentMethod,
-    setPaymentMethod,
     addPromotion,
     busy,
     error,
@@ -95,31 +96,7 @@ export function HomePromotions({
             </p>
           </RevealItem>
           <RevealItem className="home-promotions-tools" direction="none">
-            <fieldset
-              className="offer-payment"
-              data-method={paymentMethod}
-              disabled={!ready}
-            >
-              <legend className="sr-only">Ver promociones con</legend>
-              <span className="offer-payment-indicator" aria-hidden="true" />
-              {(
-                [
-                  ["transferencia", "Transferencia"],
-                  ["mercado-pago", "Mercado Pago"],
-                ] as const
-              ).map(([value, label]) => (
-                <label key={value}>
-                  <input
-                    type="radio"
-                    name="promotion-payment"
-                    value={value}
-                    checked={paymentMethod === value}
-                    onChange={() => setPaymentMethod(value)}
-                  />
-                  <span>{label}</span>
-                </label>
-              ))}
-            </fieldset>
+            <PaymentSelector label="Ver promociones con" />
             <Link href={preview ? prefix : "/catalogo"} className="text-link">
               Explorar tienda <Icon name="arrow" />
             </Link>
@@ -264,7 +241,9 @@ export function HomePromotions({
                         aria-label={`Precios de ${offer.name}`}
                       >
                         <p className="home-offer-price">
-                          <strong>{formatPrice(current.price, 0)}</strong>
+                          <strong>
+                            <AnimatedAmount value={current.price} />
+                          </strong>
                           {current.saving > 0 && (
                             <del>{formatPrice(current.original, 0)}</del>
                           )}
@@ -272,7 +251,7 @@ export function HomePromotions({
                         <p className="home-offer-saving">
                           {current.saving > 0 && (
                             <>
-                              Ahorrás {formatPrice(current.saving, 0)}
+                              Ahorrás <AnimatedAmount value={current.saving} />
                               {offer.kind === "quantity" ? " por unidad" : ""}
                             </>
                           )}
@@ -281,16 +260,18 @@ export function HomePromotions({
                           {paymentMethod === "transferencia"
                             ? "Con Mercado Pago"
                             : "Con transferencia"}
-                          : <strong>{formatPrice(alternative.price, 0)}</strong>
+                          :{" "}
+                          <strong>
+                            <AnimatedAmount value={alternative.price} />
+                          </strong>
                           {offer.kind === "quantity" && (
                             <span>
                               {" "}
                               · {current.quantity} u. ={" "}
                               <strong>
-                                {formatPrice(
-                                  current.price * current.quantity,
-                                  0,
-                                )}
+                                <AnimatedAmount
+                                  value={current.price * current.quantity}
+                                />
                               </strong>
                             </span>
                           )}
@@ -334,7 +315,7 @@ export function HomePromotions({
                             value={offer.id}
                           />
                           <button
-                            className="home-offer-add"
+                            className="home-offer-add premium-cta"
                             type="submit"
                             disabled={
                               busy || added === offer.id || (preview && !ready)

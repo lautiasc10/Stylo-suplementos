@@ -84,7 +84,7 @@ test("chips accesibles sincronizan precio, stock, foto y URL sin duplicar el est
   );
   await expect(
     page.locator(
-      ".product-detail-copy .crossfade-layer:not([inert]) .transfer-pricing",
+      ".product-detail-copy .product-payment-prices",
     ),
   ).toContainText("47.000");
   await expect(
