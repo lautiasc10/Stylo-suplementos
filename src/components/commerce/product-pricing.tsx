@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
   formatPrice,
+  packagingLabel,
   variantLabel,
   type Variant,
 } from "@/modules/catalog/model";
@@ -13,6 +14,7 @@ import { Icon } from "@/components/ui/icon";
 import { Crossfade } from "@/components/ui/Crossfade";
 import { AnimatedAmount } from "@/components/ui/animated-amount";
 import { PaymentSelector } from "./payment-selector";
+import { addPromotionAndRedirect } from "@/modules/commerce/actions";
 
 function useOffers(variant: Variant) {
   const { catalog, promotions, preview } = useCart();
@@ -34,6 +36,119 @@ function useOffers(variant: Variant) {
   }, [promotions, now]);
   const offers = productOffers(catalog, promotions, variant.id, now);
   return { offers, now, preview };
+}
+
+function ProductOfferDetails({
+  offers,
+  appliedId,
+  preview,
+}: {
+  offers: ReturnType<typeof productOffers>;
+  appliedId?: string | null;
+  preview: boolean;
+}) {
+  const { paymentMethod, addPromotion, openCart, busy, error } = useCart();
+  const [adding, setAdding] = useState(false);
+  const [failed, setFailed] = useState("");
+  const [ready, setReady] = useState(false);
+  useEffect(() => setReady(true), []);
+  const method =
+    paymentMethod === "mercado-pago" ? "Mercado Pago" : "transferencia";
+  return (
+    <section
+      className="product-offers product-offers-simple"
+      aria-label="Promociones disponibles"
+    >
+      {offers.map((offer) => {
+        if (offer.kind === "sale" && offer.id === appliedId) {
+          return (
+            <p className="product-offer-applied" key={offer.id}>
+              <Icon name="bolt" /> Precio promocional aplicado
+            </p>
+          );
+        }
+        const bundle = offer.kind === "bundle";
+        const minimum = offer.components[0].quantity;
+        const amount =
+          paymentMethod === "mercado-pago" ? offer.listPrice : offer.cashPrice;
+        return (
+          <details className="product-offer-details" key={offer.id}>
+            <summary>
+              <Icon name="bolt" />
+              <span>
+                {bundle
+                  ? "Combo disponible"
+                  : offer.kind === "quantity"
+                    ? `Desde ${minimum} unidades`
+                    : "Oferta disponible"}
+                : {offer.name}
+              </span>
+              <span className="product-offer-expand" aria-hidden="true" />
+            </summary>
+            <div className="product-offer-content">
+              {bundle ? (
+                <ul>
+                  {offer.components.map((component) => (
+                    <li key={component.variantId}>
+                      {component.quantity} ×{" "}
+                      <Link
+                        href={`${preview ? "/vista-previa" : ""}/producto/${component.product!.slug}?variante=${component.variantId}`}
+                      >
+                        {packagingLabel(component.product!.name)} ·{" "}
+                        {variantLabel(component.variant!)}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              ) : offer.kind === "quantity" ? (
+                <p>Agregá al menos {minimum} unidades de esta presentación.</p>
+              ) : null}
+              <p className="product-offer-total">
+                <span>
+                  {bundle ? "Total del combo" : "Precio por unidad"} con{" "}
+                  {method}
+                </span>
+                <strong>{formatPrice(amount, 0)}</strong>
+              </p>
+              {bundle ? (
+                <form
+                  action={addPromotionAndRedirect}
+                  onSubmit={async (event) => {
+                    event.preventDefault();
+                    if (adding || busy) return;
+                    setFailed("");
+                    setAdding(true);
+                    try {
+                      if (await addPromotion(offer.id)) openCart();
+                      else setFailed(offer.id);
+                    } finally {
+                      setAdding(false);
+                    }
+                  }}
+                >
+                  <input type="hidden" name="promotionId" value={offer.id} />
+                  <button
+                    type="submit"
+                    className="button button-outline"
+                    disabled={busy || (preview && !ready)}
+                    aria-busy={adding}
+                  >
+                    {adding ? "Agregando combo…" : "Agregar combo completo"}
+                  </button>
+                  {failed === offer.id && error && <p role="alert">{error}</p>}
+                </form>
+              ) : (
+                <p className="product-offer-condition">
+                  El descuento se aplica en el carrito si se cumplen las
+                  condiciones y queda cupo.
+                </p>
+              )}
+            </div>
+          </details>
+        );
+      })}
+    </section>
+  );
 }
 
 export function ProductPromotionBadge({ variant }: { variant: Variant }) {
@@ -114,15 +229,9 @@ export function ProductPricing({
     discount: cashQuote.discount / quantity,
   };
   const selected = paymentMethod === "mercado-pago" ? list : cash;
-  const alternative = paymentMethod === "mercado-pago" ? cash : list;
   const original =
     paymentMethod === "mercado-pago" ? variant.listPrice : variant.cashPrice;
   const saving = Math.max(0, original - selected.total);
-  const shownSaving =
-    saving ||
-    (paymentMethod === "transferencia"
-      ? Math.max(0, list.total - cash.total)
-      : 0);
   const prices = selectable ? (
     <div
       className="transfer-pricing product-payment-prices"
@@ -130,49 +239,20 @@ export function ProductPricing({
       aria-live="polite"
       aria-atomic="true"
     >
+      <p className="product-price-label">
+        Precio por unidad con{" "}
+        {paymentMethod === "mercado-pago" ? "Mercado Pago" : "transferencia"}
+      </p>
       <p
         className={`product-price-main ${paymentMethod === "mercado-pago" ? "editorial-pricing-list" : "editorial-pricing-transfer"}`}
       >
-        <span className="sr-only">
-          {paymentMethod === "mercado-pago"
-            ? "Precio de lista"
-            : "Con transferencia"}
-        </span>
         <strong>
           <AnimatedAmount value={selected.total} resetKey={variant.id} />
         </strong>
         {saving > 0 && (
-          <del>
+          <del aria-label={`Antes ${formatPrice(original, 0)}`}>
             <AnimatedAmount value={original} resetKey={variant.id} />
           </del>
-        )}
-        {saving > 0 && (
-          <span className="product-price-discount">
-            −{Math.round((saving * 100) / original)}%
-          </span>
-        )}
-      </p>
-      <p
-        className={`product-price-other ${paymentMethod === "mercado-pago" ? "editorial-pricing-transfer" : "editorial-pricing-list"}`}
-      >
-        {paymentMethod === "transferencia" && (
-          <span className="sr-only">Precio de lista</span>
-        )}
-        {paymentMethod === "mercado-pago"
-          ? "Con transferencia"
-          : "Con Mercado Pago"}
-        :{" "}
-        <strong>
-          <AnimatedAmount value={alternative.total} resetKey={variant.id} />
-        </strong>
-        {shownSaving > 0 && (
-          <span className="product-price-saving transfer-saving">
-            {" "}
-            · Ahorrás{" "}
-            <b>
-              <AnimatedAmount value={shownSaving} resetKey={variant.id} />
-            </b>
-          </span>
         )}
       </p>
     </div>
@@ -242,7 +322,14 @@ export function ProductPricing({
       ) : (
         prices
       )}
-      {!compact && offers.length > 0 && (
+      {!compact && selectable && offers.length > 0 && (
+        <ProductOfferDetails
+          offers={offers}
+          appliedId={selected.promotionId}
+          preview={preview}
+        />
+      )}
+      {!compact && !selectable && offers.length > 0 && (
         <section
           className="product-offers"
           aria-label="Promociones disponibles"

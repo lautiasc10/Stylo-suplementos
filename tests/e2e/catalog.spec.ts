@@ -104,7 +104,9 @@ test("productos se agrupan por marca y se buscan por nombre, sabor o SKU", async
   await page.goto("/vista-previa/gestion");
   const brands = page.locator(".admin-product-brand-heading h3");
   await expect(brands).toHaveText("STAR NUTRITION");
-  const pages = page.getByRole("navigation", { name: "Páginas de productos por marca" });
+  const pages = page.getByRole("navigation", {
+    name: "Páginas de productos por marca",
+  });
   await expect(pages.getByRole("button")).toHaveCount(3);
   await pages.getByRole("button", { name: /2\. ONE FIT/ }).click();
   await expect(brands).toHaveText("ONE FIT");
@@ -292,8 +294,9 @@ test("búsqueda, orden por lista y selección de variante actualizan la ficha", 
     "data-selected-variant",
     demoCatalog().products[0].variants[1].id,
   );
+  await page.getByRole("radio", { name: "Mercado Pago", exact: true }).check();
   await expect(
-    page.locator("#contenido .editorial-pricing-list"),
+    page.locator("#contenido .product-price-main"),
   ).toContainText("47.000");
   await expect(
     page.getByRole("button", { name: "Sin stock", exact: true }),
@@ -332,15 +335,17 @@ test("edición de precio, stock e imágenes persiste sin tocar la tienda real", 
   );
   expect(storedPrice).toBe(5100029);
   await page.goto("/vista-previa/producto/proteina-de-prueba");
+  await page.getByRole("radio", { name: "Mercado Pago", exact: true }).check();
   await expect(
-    page.locator("#contenido .editorial-pricing-list"),
+    page.locator("#contenido .product-price-main"),
   ).toContainText("51.000");
   await expect(
     page.getByRole("img", { name: "Imagen de prueba para chocolate" }),
   ).toHaveAttribute("src", /^data:image\/webp;base64,/);
   await page.reload();
+  await page.getByRole("radio", { name: "Mercado Pago", exact: true }).check();
   await expect(
-    page.locator("#contenido .editorial-pricing-list"),
+    page.locator("#contenido .product-price-main"),
   ).toContainText("51.000");
   await page.goto("/catalogo");
   await expect(
@@ -630,8 +635,9 @@ test("CSV previsualiza antes de aplicar y conserva variantes omitidas", async ({
     .click();
   await expect(page.getByRole("status")).toContainText("Cambios guardados.");
   await page.goto("/vista-previa/producto/proteina-de-prueba");
+  await page.getByRole("radio", { name: "Mercado Pago", exact: true }).check();
   await expect(
-    page.locator("#contenido .editorial-pricing-list"),
+    page.locator("#contenido .product-price-main"),
   ).toContainText("49.000");
   await expect(page.locator(".gainer-flavor-picker .variant-chip")).toHaveCount(
     2,
@@ -920,7 +926,8 @@ test("el giro automático cambia de variante y la ficha abre el sabor elegido si
   await expect(
     page.getByAltText("Vainilla frente", { exact: true }),
   ).toBeVisible();
-  await expect(page.locator(".editorial-pricing-list")).toContainText("47.000");
+  await page.getByRole("radio", { name: "Mercado Pago", exact: true }).check();
+  await expect(page.locator(".product-price-main")).toContainText("47.000");
   await expect(page.locator(".gainer-flavor-picker")).toHaveAttribute(
     "data-selected-variant",
     demoCatalog().products[0].variants[1].id,

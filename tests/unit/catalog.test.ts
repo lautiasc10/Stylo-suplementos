@@ -4,6 +4,7 @@ import { demoCatalog } from "../../src/modules/catalog/demo";
 import {
   filterCatalog,
   flavorLabel,
+  packagingLabel,
   matchingVariants,
   parseMoney,
   publicCatalog,
@@ -37,12 +38,24 @@ const row = [
   "true",
 ];
 describe("catálogo y precios", () => {
+  it("aclara Doypack sin modificar los datos originales de producto o variante", () => {
+    const product = demoCatalog().products[0];
+    product.name = 'PROTEÍNA "WHEY" x 2 LBS DP';
+    product.variants[0].presentation = "dp";
+    expect(packagingLabel(product.name)).toBe(
+      'PROTEÍNA "WHEY" x 2 LBS Doypack',
+    );
+    expect(variantLabel(product.variants[0])).toContain("Doypack");
+    expect(packagingLabel("DP / 2 DP / DPP / Doypack")).toBe(
+      "Doypack / 2 Doypack / DPP / Doypack",
+    );
+    expect(product.name).toContain("LBS DP");
+    expect(product.variants[0].presentation).toBe("dp");
+  });
   it("muestra nombres de sabor consistentes sin cambiar la identidad de las variantes", () => {
-    expect(["fru.rojos", "fru. rojos", "frutos rojos"].map(flavorLabel)).toEqual([
-      "Frutos rojos",
-      "Frutos rojos",
-      "Frutos rojos",
-    ]);
+    expect(
+      ["fru.rojos", "fru. rojos", "frutos rojos"].map(flavorLabel),
+    ).toEqual(["Frutos rojos", "Frutos rojos", "Frutos rojos"]);
     expect(["anana", "limon", "sandia"].map(flavorLabel)).toEqual([
       "Ananá",
       "Limón",
@@ -51,9 +64,11 @@ describe("catálogo y precios", () => {
     const product = demoCatalog().products[0];
     product.variants[0].flavor = "fru.rojos";
     expect(variantLabel(product.variants[0])).toContain("Frutos rojos");
-    expect(matchingVariants(product, { flavor: "Frutos rojos" }).map((item) => item.id)).toEqual([
-      product.variants[0].id,
-    ]);
+    expect(
+      matchingVariants(product, { flavor: "Frutos rojos" }).map(
+        (item) => item.id,
+      ),
+    ).toEqual([product.variants[0].id]);
     expect(product.variants[0].flavor).toBe("fru.rojos");
   });
   it("conserva los ángulos por SKU y prioriza la vista específica sobre la compartida", () => {

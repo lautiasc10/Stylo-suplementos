@@ -82,10 +82,10 @@ test("la ficha compartida une color de sabor e información de ganadores sin ani
   await expect(scene.locator(".editorial-pricing-transfer")).toContainText(
     "110.000",
   );
-  await expect(scene.locator(".editorial-pricing-list")).toContainText(
+  await expect(scene.locator(".product-payment-prices")).not.toContainText(
     "120.000",
   );
-  await expect(scene.locator(".transfer-saving")).toContainText("10.000");
+  await expect(scene.locator(".transfer-saving")).toHaveCount(0);
   await page
     .getByRole("button", { name: "Sabor siguiente", exact: true })
     .click();

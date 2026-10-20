@@ -202,7 +202,7 @@ test("admin configura cantidad con dos precios y checkout revalida sin guardar d
   ).toContainText("Cantidad de prueba");
   await expect(
     page.getByRole("region", { name: "Promociones disponibles" }),
-  ).toContainText("DESDE 2 UNIDADES");
+  ).toContainText("Desde 2 unidades");
   await page
     .getByRole("button", { name: "Agregar al carrito", exact: true })
     .click();

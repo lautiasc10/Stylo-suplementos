@@ -35,7 +35,7 @@ test.beforeEach(async ({ page }) => {
   );
 });
 
-test("ficha: selección de pago, descuento real, cantidad y carrito permanecen sincronizados", async ({
+test("ficha: un precio por medio de pago, sin ahorro ni sabor duplicado; cantidad y carrito sincronizados", async ({
   page,
 }) => {
   const errors: string[] = [];
@@ -47,12 +47,29 @@ test("ficha: selección de pago, descuento real, cantidad y carrito permanecen s
     "$ 30.000",
   );
   await expect(pricing.locator("del")).toHaveText("$ 41.000");
-  await expect(pricing.locator(".product-price-discount")).toHaveText("−27%");
+  expect(
+    await pricing
+      .locator("del .animated-amount-visual")
+      .evaluate((node) => getComputedStyle(node, "::after").textDecorationLine),
+  ).toBe("line-through");
+  await expect(pricing.locator(".product-price-label")).toHaveText(
+    "Precio por unidad con transferencia",
+  );
+  await expect(pricing.locator(".product-price-main > strong")).toHaveCount(1);
+  await expect(pricing).not.toContainText("Ahorrás");
+  await expect(pricing).not.toContainText("Mercado Pago");
+  await expect(page.locator(".gainer-flavor-picker > p")).toHaveCount(0);
+  await expect(page.locator(".product-offer-applied")).toHaveText(
+    "Precio promocional aplicado",
+  );
   await page.getByRole("radio", { name: "Mercado Pago", exact: true }).check();
   await expect(pricing.locator(".product-price-main > strong")).toHaveText(
     "$ 34.000",
   );
   await expect(pricing.locator("del")).toHaveText("$ 45.000");
+  await expect(pricing.locator(".product-price-label")).toHaveText(
+    "Precio por unidad con Mercado Pago",
+  );
   await page
     .getByRole("button", { name: "Aumentar cantidad", exact: true })
     .click();
@@ -133,6 +150,72 @@ test("la cantidad elegida y el carrito determinan el precio por unidad y respeta
     .getByRole("button", { name: "Disminuir cantidad", exact: true })
     .click();
   await expect(price).toHaveText("$ 35.000");
+});
+
+test("el combo es opcional, tiene un solo total identificado y agrega todos sus componentes", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/vista-previa/ofertas");
+  await page.evaluate(() => {
+    const catalog = JSON.parse(
+      localStorage.getItem("stylo.catalog-preview.v1")!,
+    );
+    catalog.catalog.products[0].name = "Proteína de prueba DP";
+    catalog.catalog.products[0].variants[0].presentation = "DP";
+    localStorage.setItem("stylo.catalog-preview.v1", JSON.stringify(catalog));
+    localStorage.setItem(
+      "stylo.promotions-preview.v1",
+      JSON.stringify({
+        revision: 0,
+        promotions: [
+          {
+            id: "22222222-2222-4222-8222-222222222222",
+            name: "Proteína y creatina",
+            kind: "bundle",
+            active: true,
+            components: [
+              catalog.catalog.products[0].variants[0],
+              catalog.catalog.products[1].variants[0],
+            ].map((variant) => ({ variantId: variant.id, quantity: 1 })),
+            listPrice: 5000000,
+            cashPrice: 4000000,
+            startsAt: null,
+            endsAt: null,
+          },
+        ],
+      }),
+    );
+  });
+  await page.goto("/vista-previa/producto/proteina-de-prueba");
+  await expect(page.locator("h1")).toHaveText("Proteína de prueba Doypack");
+  await expect(page.locator(".gainer-stock")).toContainText("Doypack");
+  const price = page.locator(".product-price-main > strong");
+  await expect(price).toHaveText("$ 41.000");
+  const offer = page.locator(".product-offer-details");
+  await expect(offer).not.toHaveAttribute("open", "");
+  await expect(offer.locator(".product-offer-total")).not.toBeVisible();
+  await offer.locator("summary").click();
+  await expect(offer.locator(".product-offer-total")).toHaveText(
+    "Total del combo con transferencia$ 40.000",
+  );
+  await expect(offer.locator("strong")).toHaveCount(1);
+  await expect(offer.locator("del")).toHaveCount(0);
+  await expect(offer).not.toContainText("Ahorrás");
+  await page.getByRole("radio", { name: "Mercado Pago", exact: true }).check();
+  await expect(price).toHaveText("$ 45.000");
+  await expect(offer.locator(".product-offer-total")).toHaveText(
+    "Total del combo con Mercado Pago$ 50.000",
+  );
+  await page
+    .getByRole("button", { name: "Agregar combo completo", exact: true })
+    .click();
+  const cart = page.getByRole("dialog", { name: /Tu carrito/ });
+  await expect(cart).toBeVisible();
+  await expect(
+    cart.locator('input[value="mercado-pago"] + span strong'),
+  ).toHaveText("$ 50.000");
+  await expect(cart.getByLabel("Cantidad: 1", { exact: true })).toHaveCount(2);
 });
 
 test("el contador muestra valores intermedios en ficha y promociones, interrumpe cambios rápidos y respeta movimiento reducido", async ({

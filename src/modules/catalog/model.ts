@@ -97,8 +97,15 @@ export function flavorLabel(value: string): string {
   if (key === "sandia") return "Sandía";
   return raw.charAt(0).toLocaleUpperCase("es-AR") + raw.slice(1);
 }
+/** Expand packaging abbreviations only for display; imports, SKUs and stored data stay intact. */
+export const packagingLabel = (value: string) =>
+  value.replace(/\bDP\b/gi, "Doypack");
 export const variantLabel = (variant: Variant) =>
-  [flavorLabel(variant.flavor), variant.size, variant.presentation]
+  [
+    flavorLabel(variant.flavor),
+    variant.size,
+    packagingLabel(variant.presentation),
+  ]
     .filter(Boolean)
     .join(" · ") || "Presentación única";
 

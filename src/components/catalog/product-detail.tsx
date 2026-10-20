@@ -13,7 +13,11 @@ import { AddToCart } from "@/components/commerce/add-to-cart";
 import { ProductPricing } from "@/components/commerce/product-pricing";
 import { useCart } from "@/components/commerce/cart-provider";
 import { RevealGroup, RevealItem } from "@/components/ui/Reveal";
-import { flavorLabel, variantLabel } from "@/modules/catalog/model";
+import {
+  flavorLabel,
+  packagingLabel,
+  variantLabel,
+} from "@/modules/catalog/model";
 import {
   FlavorSceneDecorations,
   sceneFlavor,
@@ -301,12 +305,14 @@ export function ProductDetail({
             )}
           </p>
           <h1>
-            {product.name.split(/(?<=\+)/).map((part, index) => (
-              <Fragment key={index}>
-                {index > 0 && <wbr />}
-                {part}
-              </Fragment>
-            ))}
+            {packagingLabel(product.name)
+              .split(/(?<=\+)/)
+              .map((part, index) => (
+                <Fragment key={index}>
+                  {index > 0 && <wbr />}
+                  {part}
+                </Fragment>
+              ))}
           </h1>
         </RevealItem>
         <RevealItem direction="none">
@@ -316,15 +322,6 @@ export function ProductDetail({
             aria-label="Elegir presentación"
             data-selected-variant={variant.id}
           >
-            <p>
-              {product.variants.some((item) => productFlavor(item.flavor))
-                ? "Sabor"
-                : "Presentación"}
-              :{" "}
-              <strong>
-                {flavorLabel(variant.flavor) || variantLabel(variant)}
-              </strong>
-            </p>
             <div
               className="gainer-flavor-options"
               onKeyDown={(event) => {
@@ -426,7 +423,7 @@ export function ProductDetail({
               {variant.stock > 0 ? "Disponible" : "Sin stock"}
             </span>
             {[variant.size, variant.presentation].filter(Boolean).length > 0 &&
-              `${variant.stock > 0 ? " · " : ""}${[variant.size, variant.presentation].filter(Boolean).join(" · ")}`}
+              `${variant.stock > 0 ? " · " : ""}${[variant.size, packagingLabel(variant.presentation)].filter(Boolean).join(" · ")}`}
           </p>
         </RevealItem>
         <RevealItem direction="none">

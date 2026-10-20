@@ -63,12 +63,11 @@ for (const slug of slugs) {
     await expect(
       scene.locator('.add-to-cart input[name="variantId"]'),
     ).toHaveValue(product.variants[0].id);
-    await expect(scene.locator(".editorial-pricing-list strong")).toContainText(
+    await expect(scene.locator(".product-price-main strong")).toContainText(
       "$",
     );
-    await expect(scene.locator(".editorial-pricing-list .sr-only")).toHaveCSS(
-      "clip-path",
-      "inset(50%)",
+    await expect(scene.locator(".product-price-label")).toHaveText(
+      "Precio por unidad con transferencia",
     );
     expect(
       await page.evaluate(

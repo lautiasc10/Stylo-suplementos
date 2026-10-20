@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import {
   variantInformationImages,
+  packagingLabel,
   type Product,
   type ProductImage,
 } from "@/modules/catalog/model";
@@ -81,7 +82,7 @@ export function ProductInformation({
             {variant.presentation && (
               <div>
                 <dt>Presentación</dt>
-                <dd>{variant.presentation}</dd>
+                <dd>{packagingLabel(variant.presentation)}</dd>
               </div>
             )}
           </dl>

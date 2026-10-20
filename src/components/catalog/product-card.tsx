@@ -18,6 +18,7 @@ import {
   type Product,
   type Variant,
   flavorLabel,
+  packagingLabel,
 } from "@/modules/catalog/model";
 
 function FlavorBadge({ flavor }: { flavor: string }) {
@@ -222,7 +223,7 @@ export function ProductCard({
           )}
         </p>
         <h2>
-          <Link href={href}>{product.name}</Link>
+          <Link href={href}>{packagingLabel(product.name)}</Link>
         </h2>
         <ProductPricing variant={variant} compact listFirst />
         <Link href={href} className="product-card-action">
