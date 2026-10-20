@@ -145,6 +145,21 @@ describe("carrito y reglas comerciales de Fase 3", () => {
         .listPricing.total,
     ).toBe(12000000);
   });
+  it("respeta el cupo de unidades sin descontar una compra que lo supera", () => {
+    const limited = promo({ maxUses: 10, used: 9 });
+    const one = quoteCart(catalog, [{ variantId: protein.id, quantity: 1 }], [limited]);
+    const two = quoteCart(catalog, [{ variantId: protein.id, quantity: 2 }], [limited]);
+    expect(one.cashPricing.promotionUses).toBe(1);
+    expect(one.cashPricing.discount).toBeGreaterThan(0);
+    expect(two.cashPricing.discount).toBe(0);
+    expect(two.cashPricing.total).toBe(two.cashSubtotal);
+    expect(validatePromotions([promo({ maxUses: 0 })], catalog)).toContain(
+      "El cupo debe ser un número entero entre 1 y 1.000.000.",
+    );
+    expect(validatePromotions([promo({ maxUses: 8, used: 9 })], catalog)).toContain(
+      "El cupo no puede ser menor que las unidades ya vendidas.",
+    );
+  });
   it("combos repiten solo grupos completos y cobran sobrantes al precio base", () => {
     const bundle = promo({
       kind: "bundle",

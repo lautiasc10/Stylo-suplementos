@@ -10,6 +10,7 @@ import {
 import { normalizeSearch } from "@/modules/catalog/search";
 import {
   emptyPromotions,
+  promotionStockWarnings,
   validatePromotions,
   type Promotion,
   type PromotionState,
@@ -48,6 +49,7 @@ export function PromotionsManager({
     [busy, setBusy] = useState(false);
   const [kind, setKind] = useState<Promotion["kind"]>("sale");
   const [selectedVariant, setSelectedVariant] = useState("");
+  const [minimum, setMinimum] = useState(2);
   const [promotionQuery, setPromotionQuery] = useState("");
   const [promotionPage, setPromotionPage] = useState(0);
   const [editing, setEditing] = useState<Promotion | null>(null);
@@ -75,6 +77,7 @@ export function PromotionsManager({
     setComponents([]);
     setKind("sale");
     setSelectedVariant("");
+    setMinimum(2);
     requestAnimationFrame(() => createButton.current?.focus());
   }
   useEffect(() => {
@@ -170,6 +173,12 @@ export function PromotionsManager({
     currentPage * 10,
     (currentPage + 1) * 10,
   );
+  const draftComponents = kind === "bundle"
+    ? components
+    : selectedVariant
+      ? [{ variantId: selectedVariant, quantity: kind === "quantity" ? minimum : 1 }]
+      : [];
+  const draftStockWarnings = promotionStockWarnings(catalog, draftComponents);
   const imageFor = (promotion: Promotion) => {
     if (promotion.kind === "bundle" && promotion.imagePath && imageBase)
       return `${imageBase}/${promotion.imagePath}`;
@@ -198,6 +207,7 @@ export function PromotionsManager({
               setKind("sale");
               setSelectedVariant(variants[0]?.value ?? "");
               setComponents([]);
+              setMinimum(2);
               setEditorOpen(true);
             }}
           >
@@ -311,9 +321,24 @@ export function PromotionsManager({
                         )}
                       </td>
                       <td role="cell" data-label="Estado">
-                        <span className="status-badge" data-active={p.active}>
-                          {p.active ? "Activa" : "Pausada"}
+                        <span
+                          className="status-badge"
+                          data-active={p.active && (p.maxUses == null || (p.used ?? 0) < p.maxUses) && promotionStockWarnings(catalog, p.components).length === 0}
+                        >
+                          {p.active && p.maxUses != null && (p.used ?? 0) >= p.maxUses
+                            ? "Cupo agotado"
+                            : p.active ? "Activa" : "Pausada"}
                         </span>
+                        {p.active && promotionStockWarnings(catalog, p.components).length > 0 && (
+                          <small className="promotion-stock-warning">
+                            Sin stock suficiente: no aparece en la tienda.
+                          </small>
+                        )}
+                        {p.maxUses != null && (
+                          <small className="promotion-usage">
+                            Cupo: {p.used ?? 0} de {p.maxUses} usados
+                          </small>
+                        )}
                       </td>
                       <td
                         role="cell"
@@ -356,6 +381,7 @@ export function PromotionsManager({
                               setComponents(
                                 p.components.map((c) => ({ ...c })),
                               );
+                              setMinimum(p.kind === "quantity" ? p.components[0].quantity : 2);
                               setNotice("");
                               setEditorOpen(true);
                             }}
@@ -446,6 +472,9 @@ export function PromotionsManager({
                       ],
                 listPrice: list,
                 cashPrice: cash,
+                maxUses: data.get("maxUses")
+                  ? Number(data.get("maxUses"))
+                  : null,
                 startsAt: data.get("startsAt")
                   ? new Date(String(data.get("startsAt"))).toISOString()
                   : null,
@@ -456,6 +485,7 @@ export function PromotionsManager({
                   kind === "bundle" && !data.has("removeImage")
                     ? (editing?.imagePath ?? null)
                     : null,
+                used: editing?.used ?? 0,
               };
               const image = data.get("comboImage");
               const upload =
@@ -511,6 +541,7 @@ export function PromotionsManager({
                     onChange={(e) => {
                       setKind(e.target.value as Promotion["kind"]);
                       setComponents([]);
+                      setMinimum(2);
                       if (!selectedVariant)
                         setSelectedVariant(variants[0]?.value ?? "");
                     }}
@@ -537,7 +568,8 @@ export function PromotionsManager({
                       type="number"
                       min={2}
                       max={999}
-                      defaultValue={editing?.components[0].quantity ?? 2}
+                      value={minimum}
+                      onChange={(event) => setMinimum(Number(event.target.value))}
                       required
                     />
                   </label>
@@ -582,7 +614,34 @@ export function PromotionsManager({
                     defaultValue={localDate(editing?.endsAt)}
                   />
                 </label>
+                <label>
+                  Cupo de unidades promocionadas (opcional)
+                  <input
+                    name="maxUses"
+                    type="number"
+                    min={1}
+                    max={1000000}
+                    step={1}
+                    defaultValue={editing?.maxUses ?? ""}
+                    placeholder="Sin límite"
+                  />
+                </label>
               </div>
+              <p className="promotion-usage-note">
+                Las rebajas y ofertas por cantidad cuentan unidades con descuento;
+                los combos cuentan combos completos. Solo las ventas cobradas consumen cupo.
+              </p>
+              {editing?.maxUses != null && (
+                <p className="promotion-usage-note">
+                  Ya se usaron {editing.used ?? 0} de {editing.maxUses} cupos.
+                </p>
+              )}
+              {draftStockWarnings.length > 0 && (
+                <div className="promotion-stock-warning" role="status">
+                  <strong>Esta promoción no aparecerá en la tienda mientras falte stock:</strong>
+                  <ul>{draftStockWarnings.map((warning) => <li key={warning}>{warning}</li>)}</ul>
+                </div>
+              )}
               {kind === "bundle" && (
                 <div className="bundle-components">
                   <label className="combo-image-input">

@@ -92,6 +92,11 @@ export async function savePromotions(state: PromotionState, image?: FormData) {
     return { error: "La configuración no es válida." };
   const errors = validatePromotions(state.promotions, catalog);
   if (errors.length) return { error: errors.join(" ") };
+  if (state.promotions.some((promotion) => promotion.maxUses != null)) {
+    const capabilities = await client.rpc("commerce_promotions");
+    if (capabilities.error || capabilities.data?.limitsEnabled !== true)
+      return { error: "Para usar cupos, primero aplicá la migración de promociones en Supabase." };
+  }
   let uploadedPath: string | undefined;
   if (image) {
     const file = image.get("file");
@@ -135,7 +140,12 @@ export async function savePromotions(state: PromotionState, image?: FormData) {
     };
   }
   revalidatePath("/", "layout");
-  return { state: { ...state, revision: result.data as number } };
+  const refreshed = await client.rpc("commerce_promotions");
+  return {
+    state: refreshed.error || !refreshed.data
+      ? { ...state, revision: result.data as number }
+      : (refreshed.data as PromotionState),
+  };
 }
 export async function createManualOrder(input: ManualOrderInput) {
   const { client } = await requireAdmin();

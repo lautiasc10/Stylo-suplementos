@@ -60,6 +60,7 @@ describe("Fase 3: precios de servidor, permisos e idempotencia", () => {
       "202610100002_catalog.sql",
       "202610110001_commerce.sql",
       "202610110002_manual_cash_sales.sql",
+      "202610200001_promotion_limits.sql",
     ])
       await db.exec(readFileSync(`supabase/migrations/${file}`, "utf8"));
     await db.query("insert into auth.users values($1),($2)", [admin, other]);
@@ -287,6 +288,52 @@ describe("Fase 3: precios de servidor, permisos e idempotencia", () => {
     await role(admin, "aal2", async () => {
       await sale();
       await expect(saveCatalogStale()).rejects.toMatchObject({ code: "40001" });
+    });
+  });
+  it("consume el cupo solo al cobrar y vuelve al precio habitual al agotarlo", async () => {
+    await role(admin, "aal2", async () => {
+      await save([{ ...promotions[0], maxUses: 2, used: 999 }]);
+      const sale = (id: string) => db.query<{
+        create_manual_cash_sale: {
+          id: string;
+          snapshot: { total: number; promotion: string | null; promotionUses: number };
+        };
+      }>("select public.create_manual_cash_sale($1,$2::jsonb,$3::jsonb,true)", [
+        id,
+        JSON.stringify([{ variantId: variant.id, quantity: 1 }]),
+        JSON.stringify({ name: "Cliente de prueba", phone: "" }),
+      ]);
+      const ids = [
+        "66666666-6666-4666-8666-666666666661",
+        "66666666-6666-4666-8666-666666666662",
+        "66666666-6666-4666-8666-666666666663",
+      ];
+      await db.query("select public.create_manual_pickup_order($1,$2::jsonb,$3::jsonb)", [
+        "66666666-6666-4666-8666-666666666660",
+        JSON.stringify([{ variantId: variant.id, quantity: 1 }]),
+        JSON.stringify({ name: "Cliente pendiente", phone: "" }),
+      ]);
+      const beforePayment = await db.query<{
+        commerce_promotions: { promotions: { used: number }[] };
+      }>("select public.commerce_promotions()");
+      expect(beforePayment.rows[0].commerce_promotions.promotions[0].used).toBe(0);
+      const first = (await sale(ids[0])).rows[0].create_manual_cash_sale;
+      const again = (await sale(ids[0])).rows[0].create_manual_cash_sale;
+      expect(again.id).toBe(first.id);
+      const second = (await sale(ids[1])).rows[0].create_manual_cash_sale;
+      expect(first.snapshot.promotionUses).toBe(1);
+      expect(second.snapshot.promotionUses).toBe(1);
+      const third = (await sale(ids[2])).rows[0].create_manual_cash_sale;
+      expect(third.snapshot.promotion).toBeNull();
+      expect(third.snapshot.total).toBe(variant.cashPrice);
+      const result = await db.query<{
+        commerce_promotions: { promotions: { used: number; maxUses: number }[] };
+      }>("select public.commerce_promotions()");
+      expect(result.rows[0].commerce_promotions.promotions[0]).toMatchObject({
+        used: 2,
+        maxUses: 2,
+      });
+      await expect(save([{ ...promotions[0], maxUses: 1 }], 2)).rejects.toThrow();
     });
   });
 });

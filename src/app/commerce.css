@@ -864,6 +864,24 @@
   gap: var(--space-4);
   margin-block: var(--space-6);
 }
+.promotion-stock-warning {
+  display: block;
+  margin-top: var(--space-2);
+  color: var(--gold);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+.promotion-stock-warning ul {
+  margin: var(--space-2) 0 0;
+  padding-left: var(--space-6);
+}
+.promotion-usage,
+.promotion-usage-note {
+  display: block;
+  color: var(--muted);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
 .order-status {
   display: inline-flex;
   border: 1px solid var(--border-strong);

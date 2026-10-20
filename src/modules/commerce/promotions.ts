@@ -1,4 +1,4 @@
-import type { Catalog } from "@/modules/catalog/model";
+import { publicCatalog, type Catalog } from "@/modules/catalog/model";
 import type { CartLine, PaymentMethod } from "./cart";
 export type Promotion = {
   id: string;
@@ -12,6 +12,10 @@ export type Promotion = {
   endsAt: string | null;
   /** Optional photo for a bundle, stored in the existing product-media bucket. */
   imagePath?: string | null;
+  /** Maximum discounted units (or complete combos); null means no limit. */
+  maxUses?: number | null;
+  /** Paid redemptions, supplied by the database and never editable by the client. */
+  used?: number;
 };
 export type Pricing = {
   base: number;
@@ -19,9 +23,26 @@ export type Pricing = {
   total: number;
   promotion: string | null;
   promotionId: string | null;
+  promotionUses: number;
 };
 export const emptyPromotions = { revision: 0, promotions: [] as Promotion[] };
 export type PromotionState = typeof emptyPromotions;
+export function promotionStockWarnings(
+  catalog: Catalog,
+  components: Promotion["components"],
+): string[] {
+  const visible = publicCatalog(catalog);
+  return components.flatMap((component) => {
+    const product = visible.products.find((item) =>
+      item.variants.some((variant) => variant.id === component.variantId),
+    );
+    const variant = product?.variants.find((item) => item.id === component.variantId);
+    if (!product || !variant) return ["Una presentación no está visible en la tienda."];
+    if (variant.stock < component.quantity)
+      return [`${product.name}: quedan ${variant.stock} unidades; la promoción necesita ${component.quantity}.`];
+    return [];
+  });
+}
 export function validatePromotions(
   input: unknown,
   catalog?: Catalog,
@@ -57,6 +78,16 @@ export function validatePromotions(
       continue;
     }
     ids.add(p.id);
+    if (
+      p.maxUses != null &&
+      (!Number.isSafeInteger(p.maxUses) || p.maxUses < 1 || p.maxUses > 1000000)
+    ) errors.push("El cupo debe ser un número entero entre 1 y 1.000.000.");
+    if (p.used !== undefined && (!Number.isSafeInteger(p.used) || p.used < 0))
+      errors.push("El uso de la promoción no es válido.");
+    if (p.maxUses != null && p.used != null && p.maxUses < p.used)
+      errors.push("El cupo no puede ser menor que las unidades ya vendidas.");
+    if (p.kind === "quantity" && p.maxUses != null && p.maxUses < p.components[0]?.quantity)
+      errors.push("El cupo debe alcanzar el mínimo de unidades de la promoción.");
     if (
       p.imagePath != null &&
       (p.kind !== "bundle" ||
@@ -129,6 +160,7 @@ export function priceLines(
     total: base,
     promotion: null,
     promotionId: null,
+    promotionUses: 0,
   };
   for (const p of [...promotions].sort((a, b) => a.id.localeCompare(b.id))) {
     if (
@@ -149,6 +181,10 @@ export function priceLines(
       )
     )
       continue;
+    const uses = p.kind === "bundle"
+      ? Math.min(...matched.map(({ component, line }) => Math.floor(line!.quantity / component.quantity)))
+      : matched[0].line!.quantity;
+    if (p.maxUses != null && (p.used ?? 0) + uses > p.maxUses) continue;
     let discount: number;
     if (p.kind === "bundle") {
       const repeats = Math.min(
@@ -176,6 +212,7 @@ export function priceLines(
         total: base - discount,
         promotion: p.name,
         promotionId: p.id,
+        promotionUses: uses,
       };
   }
   return best;

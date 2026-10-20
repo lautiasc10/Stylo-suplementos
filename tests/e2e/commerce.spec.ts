@@ -1,6 +1,24 @@
 import { test, expect } from "@playwright/test";
 import { demoCatalog } from "../../src/modules/catalog/demo";
 
+test("avisa del stock agotado y permite guardar un cupo promocional", async ({ page }) => {
+  const catalog = demoCatalog();
+  catalog.products[0].variants[0].stock = 0;
+  await page.addInitScript((data) => {
+    localStorage.setItem("stylo.catalog-preview.v1", JSON.stringify(data));
+  }, { catalog });
+  await page.goto("/vista-previa/promociones");
+  await page.getByRole("button", { name: "Crear promoción" }).click();
+  await expect(page.getByText("Esta promoción no aparecerá en la tienda mientras falte stock:")).toBeVisible();
+  await page.getByRole("textbox", { name: "Nombre de promoción" }).fill("Cupo de prueba");
+  await page.getByRole("textbox", { name: "Precio final de lista (ARS)" }).fill("40000");
+  await page.getByRole("textbox", { name: "Precio final efectivo / transferencia (ARS)" }).fill("35000");
+  await page.getByRole("spinbutton", { name: "Cupo de unidades promocionadas (opcional)" }).fill("10");
+  await page.getByRole("button", { name: "Guardar promoción" }).click();
+  await expect(page.getByText("Sin stock suficiente: no aparece en la tienda.")).toBeVisible();
+  await expect(page.getByText("Cupo: 0 de 10 usados")).toBeVisible();
+});
+
 test("promociones se buscan y paginan, y la presentación se encuentra por SKU", async ({
   page,
 }) => {
