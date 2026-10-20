@@ -8,7 +8,7 @@ import { formatPrice } from "@/modules/catalog/model";
 import { updateCartAndRedirect } from "@/modules/commerce/actions";
 import { useCart } from "./cart-provider";
 
-export function CartContents() {
+export function CartContents({ compact = false }: { compact?: boolean }) {
   const {
     quote,
     preview,
@@ -18,20 +18,42 @@ export function CartContents() {
     closeCart,
     imageBase,
     imageUrls,
+    suggestions,
+    paymentMethod: method,
+    setPaymentMethod: setMethod,
   } = useCart();
-  const [method, setMethod] = useState<"mercado-pago" | "transferencia">(
-    "mercado-pago",
-  );
   const radioName = useId();
   const [interactive, setInteractive] = useState(false);
   useEffect(() => setInteractive(true), []);
   const root = useRef<HTMLDivElement>(null);
+  const undoButton = useRef<HTMLButtonElement>(null);
+  const [removed, setRemoved] = useState<{ variantId: string; quantity: number; name: string } | null>(null);
+  useEffect(() => {
+    if (!removed) return;
+    const timer = window.setTimeout(() => setRemoved(null), 8000);
+    return () => window.clearTimeout(timer);
+  }, [removed]);
   const prefix = preview ? "/vista-previa" : "";
   const pricing =
     method === "mercado-pago" ? quote.listPricing : quote.cashPricing;
   const hasDiscount = pricing.discount > 0;
+  const suggestion = suggestions.find((item) =>
+    !quote.lines.some((line) => line.variantId === item.variantId),
+  );
+  const suggestionImage = suggestion?.image;
+  const suggestionSrc = suggestionImage
+    ? imageUrls[suggestionImage.path] ||
+      (imageBase
+        ? catalogMediaSource(
+            `${imageBase}/${suggestionImage.path}`,
+            imageBase,
+            "thumbnail",
+          )
+        : undefined)
+    : undefined;
+  const transferSaving = Math.max(0, quote.listPricing.total - quote.cashPricing.total);
   return (
-    <div className="cart-contents" ref={root}>
+    <div className="cart-contents" ref={root} data-compact={compact}>
       <div className="cart-feedback">
         {preview && (
           <p className="preview-notice">
@@ -72,23 +94,6 @@ export function CartContents() {
       ) : (
         <>
           <div className="cart-products" aria-busy={busy}>
-            <fieldset className="cart-price-switch" disabled={!interactive}>
-              <legend>Ver precios con</legend>
-              {[
-                ["mercado-pago", "Mercado Pago"],
-                ["transferencia", "Transferencia"],
-              ].map(([value, label]) => (
-                <label key={value}>
-                  <input
-                    type="radio"
-                    name={radioName}
-                    checked={method === value}
-                    onChange={() => setMethod(value as typeof method)}
-                  />
-                  {label}
-                </label>
-              ))}
-            </fieldset>
             {!!quote.issues.length && (
               <div role="status" className="ui-notice">
                 {quote.issues.map((issue) => (
@@ -151,11 +156,11 @@ export function CartContents() {
                       <p className="cart-variant">{line.label}</p>
                       <div className="cart-price-row">
                         <span className="cart-unit-price">
-                          {formatPrice(unit)} <span>/ unidad</span>
+                          {formatPrice(unit, 0)} <span>/ unidad</span>
                         </span>
                         <span className="cart-line-subtotal">
                           <span>Subtotal</span>
-                          <strong>{formatPrice(unit * line.quantity)}</strong>
+                          <strong>{formatPrice(unit * line.quantity, 0)}</strong>
                         </span>
                       </div>
                       <div className="cart-line-actions">
@@ -210,68 +215,52 @@ export function CartContents() {
                             {line.quantity}
                           </span>
                         </div>
-                        <details className="cart-remove">
-                          <summary aria-label={`Quitar ${line.name}`}>
-                            Quitar
-                          </summary>
-                          <div className="cart-remove-confirm">
-                            <p>¿Quitar este producto?</p>
-                            <form
-                              action={updateCartAndRedirect}
-                              onSubmit={async (event) => {
-                                event.preventDefault();
-                                await change(line.variantId, "remove");
-                                requestAnimationFrame(() => {
-                                  if (
-                                    !root.current?.querySelector(
-                                      `[data-variant="${line.variantId}"]`,
-                                    )
-                                  )
-                                    (
-                                      root.current?.querySelector(
-                                        ".cart-step:not(:disabled), .cart-empty h3",
-                                      ) as HTMLElement | null
-                                    )?.focus();
-                                });
-                              }}
-                            >
-                              <input
-                                type="hidden"
-                                name="variantId"
-                                value={line.variantId}
-                              />
-                              <input
-                                type="hidden"
-                                name="operation"
-                                value="remove"
-                              />
-                              <button
-                                className="button button-destructive"
-                                disabled={busy}
-                              >
-                                Confirmar eliminación
-                              </button>
-                            </form>
-                            <button
-                              type="button"
-                              className="text-link"
-                              onClick={(event) => {
-                                const details =
-                                  event.currentTarget.closest("details")!;
-                                details.open = false;
-                                details.querySelector("summary")?.focus();
-                              }}
-                            >
-                              Cancelar
-                            </button>
-                          </div>
-                        </details>
+                        <form
+                          className="cart-remove"
+                          action={updateCartAndRedirect}
+                          onSubmit={async (event) => {
+                            event.preventDefault();
+                            const succeeded = await change(line.variantId, "remove");
+                            if (succeeded) {
+                              setRemoved({ variantId: line.variantId, quantity: line.quantity, name: line.name });
+                              requestAnimationFrame(() => undoButton.current?.focus());
+                            }
+                          }}
+                        >
+                          <input type="hidden" name="variantId" value={line.variantId} />
+                          <input type="hidden" name="operation" value="remove" />
+                          <input type="hidden" name="quantity" value="1" />
+                          <button className="cart-remove-button" aria-label={`Quitar ${line.name}`} disabled={busy}>
+                            <Icon name="trash" />
+                          </button>
+                        </form>
                       </div>
                     </div>
                   </li>
                 );
               })}
             </ul>
+            {suggestion && (
+              <div className="cart-suggestion">
+                <ProductThumbnail
+                  src={suggestionSrc}
+                  alt={suggestionImage?.alt || suggestion.name}
+                  size={56}
+                />
+                <p>
+                  <span>Completá tu rutina</span>
+                  <strong>{suggestion.name}</strong>
+                  <small>{formatPrice(method === "mercado-pago" ? suggestion.listPrice : suggestion.cashPrice, 0)}</small>
+                </p>
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() => void change(suggestion.variantId, "add")}
+                >
+                  Agregar
+                </button>
+              </div>
+            )}
             {hasDiscount && (
               <p className="cart-price-note">
                 Los subtotales de cada producto son anteriores a promociones.
@@ -290,51 +279,59 @@ export function CartContents() {
             aria-label="Resumen del carrito"
             aria-busy={busy}
           >
-            <div className="cart-summary-detail">
-              <h2>Resumen del pedido</h2>
-              <dl>
-                <div>
-                  <dt>Productos ({quote.quantity})</dt>
-                  <dd>{formatPrice(pricing.base)}</dd>
-                </div>
-                {hasDiscount && (
-                  <div className="cart-discount">
-                    <dt>Promoción aplicada</dt>
-                    <dd>−{formatPrice(pricing.discount)}</dd>
+            <fieldset className="cart-price-switch" disabled={!interactive}>
+              <legend>Ver precios con</legend>
+              {([
+                ["transferencia", "Transferencia", quote.cashPricing.total],
+                ["mercado-pago", "Mercado Pago", quote.listPricing.total],
+              ] as const).map(([value, label, total]) => (
+                <label key={value}>
+                  <input
+                    type="radio"
+                    name={radioName}
+                    value={value}
+                    checked={method === value}
+                    onChange={() => setMethod(value)}
+                  />
+                  <span>
+                    <span className="cart-price-label">{label}</span>
+                    <strong>{formatPrice(total, 0)}</strong>
+                    {value === "transferencia" && transferSaving > 0 && (
+                      <small>Ahorrás {formatPrice(transferSaving, 0)}</small>
+                    )}
+                  </span>
+                </label>
+              ))}
+            </fieldset>
+            <details className="cart-summary-detail">
+              <summary>Ver detalle del precio</summary>
+              <div className="cart-summary-breakdown">
+                <dl>
+                  <div>
+                    <dt>Productos ({quote.quantity})</dt>
+                    <dd>{formatPrice(pricing.base, 0)}</dd>
                   </div>
+                  {hasDiscount && (
+                    <div className="cart-discount">
+                      <dt>Promoción aplicada</dt>
+                      <dd>−{formatPrice(pricing.discount, 0)}</dd>
+                    </div>
+                  )}
+                </dl>
+                {pricing.promotion && (
+                  <p className="cart-promotion-name">{pricing.promotion}</p>
                 )}
-              </dl>
-              {pricing.promotion && (
-                <p className="cart-promotion-name">{pricing.promotion}</p>
-              )}
-              <p className="cart-delivery-note">
-                Entrega a definir en el checkout.
-              </p>
-            </div>
-            <div className="cart-checkout-action">
-              <div className="cart-total">
-                <span>
-                  Total en productos
-                  <small>
-                    {method === "mercado-pago"
-                      ? "Con Mercado Pago"
-                      : "Con transferencia"}
-                  </small>
-                </span>
-                <strong>{formatPrice(pricing.total)}</strong>
+                <p className="cart-delivery-note">Entrega a definir en el checkout.</p>
               </div>
-              <p className="cart-alternative-price">
-                {method === "mercado-pago"
-                  ? `Con transferencia: ${formatPrice(quote.cashPricing.total)}`
-                  : `Con Mercado Pago: ${formatPrice(quote.listPricing.total)}`}
-              </p>
+            </details>
+            <div className="cart-checkout-action">
               {quote.valid ? (
                 <Link
                   className="button button-gold"
                   href={`${prefix}/checkout`}
                   onClick={closeCart}
                 >
-                  Continuar al checkout <Icon name="arrow" />
+                  Continuar al checkout · {formatPrice(pricing.total, 0)} <Icon name="arrow" />
                 </Link>
               ) : (
                 <p className="ui-notice">
@@ -345,6 +342,21 @@ export function CartContents() {
             </div>
           </aside>
         </>
+      )}
+      {removed && (
+        <div className="cart-undo" role="status">
+          <span>Quitaste {removed.name}.</span>
+          <button
+            ref={undoButton}
+            type="button"
+            disabled={busy}
+            onClick={async () => {
+              if (await change(removed.variantId, "add", removed.quantity)) setRemoved(null);
+            }}
+          >
+            Deshacer
+          </button>
+        </div>
       )}
     </div>
   );

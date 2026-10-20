@@ -102,6 +102,18 @@ test("carrito lateral conserva SKU y cantidades, restaura foco y persiste sin me
     page.locator(".cart-page").getByText("Tu próxima elección empieza acá."),
   ).toBeVisible();
 });
+test("el carrito recomienda un accesorio real y conserva el precio elegido al ir al checkout", async ({ page }) => {
+  await page.goto("/vista-previa/producto/proteina-de-prueba");
+  await page.getByRole("button", { name: "Agregar al carrito", exact: true }).click();
+  const dialog = page.getByRole("dialog");
+  await expect(dialog.locator(".cart-suggestion")).toContainText("Shaker de prueba");
+  await dialog.locator(".cart-suggestion").getByRole("button", { name: "Agregar" }).click();
+  await expect(dialog.getByLabel("Cantidad: 1")).toHaveCount(2);
+  await dialog.locator(".cart-price-switch label").first().click();
+  await expect(dialog.locator('input[value="transferencia"]')).toBeChecked();
+  await dialog.getByRole("link", { name: /Continuar al checkout/ }).click();
+  await expect(page.getByRole("radio", { name: "Con transferencia" })).toBeChecked();
+});
 test("una variante agotada no se agrega y las cantidades no superan la existencia", async ({
   page,
 }) => {
@@ -127,18 +139,13 @@ test("una variante agotada no se agrega y las cantidades no superan la existenci
   await expect(increase).toBeDisabled();
   await expect(dialog.getByLabel("Cantidad: 8", { exact: true })).toBeVisible();
   await dialog.getByLabel("Quitar Proteína de prueba", { exact: true }).click();
-  await expect(dialog.getByLabel("Cantidad: 8", { exact: true })).toBeVisible();
-  await dialog.getByRole("button", { name: "Cancelar", exact: true }).click();
-  await expect(
-    dialog.getByLabel("Quitar Proteína de prueba", { exact: true }),
-  ).toBeFocused();
-  await dialog.getByLabel("Quitar Proteína de prueba", { exact: true }).click();
-  await dialog
-    .getByRole("button", { name: "Confirmar eliminación", exact: true })
-    .click();
   await expect(
     dialog.getByText("Tu próxima elección empieza acá."),
   ).toBeVisible();
+  await dialog.getByRole("button", { name: "Deshacer" }).click();
+  await expect(dialog.getByLabel("Cantidad: 8", { exact: true })).toBeVisible();
+  await dialog.getByLabel("Quitar Proteína de prueba", { exact: true }).click();
+  await expect(dialog.getByText("Tu próxima elección empieza acá.")).toBeVisible();
 });
 test("admin configura cantidad con dos precios y checkout revalida sin guardar datos personales", async ({
   page,

@@ -7,7 +7,6 @@ import {
   quoteCart,
   parseCart,
   validateGuest,
-  type PaymentMethod,
 } from "@/modules/commerce/cart";
 import {
   reviewCheckout,
@@ -18,8 +17,7 @@ import { ProductThumbnail } from "@/components/ui/product-thumbnail";
 import { catalogMediaSource } from "@/modules/catalog/media-source";
 
 export function Checkout() {
-  const { quote, preview, updateQuote, imageBase, imageUrls } = useCart();
-  const [payment, setPayment] = useState<PaymentMethod>("mercado-pago");
+  const { quote, preview, updateQuote, imageBase, imageUrls, paymentMethod: payment, setPaymentMethod: setPayment } = useCart();
   const [errors, setErrors] = useState<string[]>([]);
   const [reviewed, setReviewed] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);

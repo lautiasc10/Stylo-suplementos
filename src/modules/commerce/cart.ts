@@ -24,6 +24,32 @@ export type CartQuote = {
   listPricing: Pricing;
   cashPricing: Pricing;
 };
+export type CartSuggestion = Pick<CartLine, "variantId" | "name" | "slug" | "label" | "stock" | "listPrice" | "cashPrice" | "image" | "brand">;
+export function cartSuggestions(catalog: Catalog): CartSuggestion[] {
+  const visible = publicCatalog(catalog);
+  const accessories = new Set(visible.categories
+    .filter((category) => /shaker|accesorios/i.test(`${category.name} ${category.slug}`))
+    .map((category) => category.id));
+  return visible.products
+    .filter((product) => product.categoryIds.some((id) => accessories.has(id)))
+    .flatMap((product) => {
+      const variant = product.variants.find((item) => item.stock > 0);
+      if (!variant) return [];
+      const image = variantImages(product, variant.id)[0];
+      return [{
+        variantId: variant.id,
+        name: product.name,
+        slug: product.slug,
+        label: variantLabel(variant),
+        stock: variant.stock,
+        listPrice: variant.listPrice,
+        cashPrice: variant.cashPrice,
+        image: image ? { path: image.path, alt: image.alt } : undefined,
+        brand: visible.brands.find((brand) => brand.id === product.brandId)?.name,
+      }];
+    })
+    .slice(0, 3);
+}
 export const cartLimit = 30;
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 

@@ -16,8 +16,10 @@ import {
   parseCart,
   quoteCart,
   changeCart,
+  cartSuggestions,
   type CartQuote,
   type CartItem,
+  type CartSuggestion,
 } from "@/modules/commerce/cart";
 import { refreshCart, updateCart } from "@/modules/commerce/actions";
 import { CartContents } from "./cart-contents";
@@ -52,11 +54,14 @@ const CartContext = createContext<{
   error: string;
   imageBase: string;
   imageUrls: Record<string, string>;
+  suggestions: CartSuggestion[];
+  paymentMethod: "mercado-pago" | "transferencia";
+  setPaymentMethod: (value: "mercado-pago" | "transferencia") => void;
   change: (
     variantId: string,
     operation: string,
     quantity?: number,
-  ) => Promise<void>;
+  ) => Promise<boolean>;
   openCart: () => void;
   closeCart: () => void;
   updateQuote: (quote: CartQuote) => void;
@@ -70,12 +75,14 @@ export function CartProvider({
   initialQuote,
   initialCatalog,
   initialPromotions = [],
+  initialSuggestions = [],
   imageBase = "",
   children,
 }: {
   initialQuote: CartQuote;
   initialCatalog: Catalog;
   initialPromotions?: Promotion[];
+  initialSuggestions?: CartSuggestion[];
   imageBase?: string;
   children: ReactNode;
 }) {
@@ -86,6 +93,7 @@ export function CartProvider({
   const [localCatalog, setLocalCatalog] = useState(demoCatalog);
   const [localPromotions, setLocalPromotions] = useState<Promotion[]>([]);
   const [localImages, setLocalImages] = useState<Record<string, string>>({});
+  const [paymentMethod, setPaymentMethod] = useState<"mercado-pago" | "transferencia">("mercado-pago");
   const [busy, setBusy] = useState(false),
     [error, setError] = useState("");
   const lock = useRef(false);
@@ -149,6 +157,7 @@ export function CartProvider({
     opener.current?.focus({ preventScroll: true });
   }
   function openCart() {
+    if (dialog.current?.open) return;
     opener.current =
       document.activeElement instanceof HTMLElement
         ? document.activeElement
@@ -172,7 +181,7 @@ export function CartProvider({
     }
   }
   async function change(variantId: string, operation: string, quantity = 1) {
-    if (lock.current) return;
+    if (lock.current) return false;
     lock.current = true;
     ++refreshSequence.current;
     setRefreshing(false);
@@ -193,7 +202,7 @@ export function CartProvider({
         );
         if (result.error) {
           setError(result.error);
-          return;
+          return false;
         }
         localStorage.setItem(previewKey, JSON.stringify(result.items));
         setLocalQuote(quoteCart(catalog, result.items, previewPromotions()));
@@ -206,12 +215,14 @@ export function CartProvider({
         setRealQuote(result.quote);
         if (result.error) {
           setError(result.error);
-          return;
+          return false;
         }
       }
       if (operation === "add") openCart();
+      return true;
     } catch {
       setError("No pudimos guardar el carrito. Intentá otra vez.");
+      return false;
     } finally {
       lock.current = false;
       setBusy(false);
@@ -228,6 +239,9 @@ export function CartProvider({
         error,
         imageBase: preview ? "" : imageBase,
         imageUrls: preview ? localImages : {},
+        suggestions: preview ? cartSuggestions(localCatalog) : initialSuggestions,
+        paymentMethod,
+        setPaymentMethod,
         change,
         openCart,
         closeCart,
@@ -249,12 +263,8 @@ export function CartProvider({
           <div className="cart-heading">
             <div>
               <h2 id="cart-title">
-                <Icon name="cart" /> Tu carrito
+                Tu carrito <span aria-hidden="true">·</span> {quote.quantity}
               </h2>
-              <p>
-                {quote.quantity} {quote.quantity === 1 ? "unidad" : "unidades"}{" "}
-                en tu selección
-              </p>
             </div>
             <button
               type="button"
@@ -265,7 +275,7 @@ export function CartProvider({
               <Icon name="close" />
             </button>
           </div>
-          <CartContents />
+          <CartContents compact />
         </div>
       </dialog>
     </CartContext.Provider>
