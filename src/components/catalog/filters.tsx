@@ -4,19 +4,24 @@ import {
   AutomaticFilterForm,
   FilterOptions,
   FilterPanel,
+  CatalogSortControl,
 } from "./filter-controls";
 import type {
   Catalog,
   CatalogFilters,
   CatalogGroup,
 } from "@/modules/catalog/model";
-import { flavorLabel } from "@/modules/catalog/model";
+import { flavorLabel, filterCatalog } from "@/modules/catalog/model";
+import { CatalogPriceRange } from "./catalog-price-range";
+import type { Promotion } from "@/modules/commerce/promotions";
+import { promotedVariantIds } from "@/modules/commerce/product-offers";
 
 type FilterProps = {
   catalog: Catalog;
   filters: CatalogFilters;
   action: string;
   categories?: Pick<CatalogGroup, "id" | "name" | "slug">[];
+  promotions?: Promotion[];
 };
 
 function selections({
@@ -32,7 +37,10 @@ function selections({
     },
     {
       key: "marca",
-      label: catalog.brands.find((item) => item.slug === filters.brand)?.name,
+      label: catalog.brands
+        .filter((item) => filters.brand?.split(",").includes(item.slug))
+        .map((item) => item.name)
+        .join(", "),
     },
     { key: "sabor", label: filters.flavor && flavorLabel(filters.flavor) },
     {
@@ -90,35 +98,70 @@ export function CatalogActiveFilters(props: FilterProps) {
   );
 }
 
+function valuesFor(filters: CatalogFilters) {
+  return {
+    q: filters.q,
+    categoria: filters.category,
+    marca: filters.brand,
+    sabor: flavorLabel(filters.flavor ?? ""),
+    promocion: filters.promotion,
+    orden: filters.sort ?? "featured",
+    disponibilidad: filters.availability,
+    min: filters.min,
+    max: filters.max,
+  };
+}
+
+const filterFormId = (action: string) =>
+  `catalog-filter-${action.replace(/[^a-z0-9]/gi, "-")}`;
+
+export function CatalogSort({
+  filters,
+  action,
+}: Pick<FilterProps, "filters" | "action">) {
+  return (
+    <CatalogSortControl
+      formId={filterFormId(action)}
+      value={filters.sort ?? "featured"}
+    />
+  );
+}
+
 export function CatalogFilterSidebar(props: FilterProps) {
-  const { catalog, filters, action, categories = catalog.categories } = props;
+  const {
+    catalog,
+    filters,
+    action,
+    categories = catalog.categories,
+    promotions = [],
+  } = props;
+  const promoted = promotedVariantIds(catalog, promotions);
+  const count = (category?: string) =>
+    filterCatalog(catalog, { ...filters, category }, promoted).length;
+  const maximum = Math.max(
+    10000,
+    ...catalog.products.flatMap((p) =>
+      p.variants.map((v) => v.listPrice / 100),
+    ),
+  );
+  const ceiling = Math.ceil(maximum / 1000) * 1000;
   const flavors = [
     ...new Set(
-      catalog.products.flatMap((product) =>
-        product.variants
-          .filter((variant) => variant.active)
-          .map((variant) => flavorLabel(variant.flavor))
+      catalog.products.flatMap((p) =>
+        p.variants
+          .filter((v) => v.active)
+          .map((v) => flavorLabel(v.flavor))
           .filter(Boolean),
       ),
     ),
   ].sort((a, b) => a.localeCompare(b, "es"));
-
   return (
     <aside className="catalog-sidebar" aria-label="Filtros del catálogo">
       <FilterPanel activeCount={selections(props).length}>
         <AutomaticFilterForm
+          id={filterFormId(action)}
           action={action}
-          values={{
-            q: filters.q,
-            categoria: filters.category,
-            marca: filters.brand,
-            sabor: flavorLabel(filters.flavor ?? ""),
-            promocion: filters.promotion,
-            orden: filters.sort ?? "name",
-            disponibilidad: filters.availability,
-            min: filters.min,
-            max: filters.max,
-          }}
+          values={valuesFor(filters)}
         >
           <div className="catalog-filter-heading">
             <h2>Filtros</h2>
@@ -127,58 +170,87 @@ export function CatalogFilterSidebar(props: FilterProps) {
               className="catalog-clear"
               aria-label="Limpiar filtros"
             >
-              Limpiar <Icon name="close" />
+              Limpiar
             </Link>
           </div>
           <div className="catalog-search">
-            <label htmlFor="catalog-search">Buscá por producto o marca</label>
+            <label className="sr-only" htmlFor="catalog-search">
+              Buscá por producto o marca
+            </label>
             <div className="catalog-search-input">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                aria-hidden="true"
-              >
-                <circle cx="10.5" cy="10.5" r="6.5" />
-                <path d="m16 16 4.5 4.5" />
-              </svg>
               <input
                 id="catalog-search"
                 name="q"
                 type="search"
                 defaultValue={filters.q}
                 maxLength={100}
-                placeholder="Producto o marca"
+                placeholder="Buscar producto o marca"
                 autoComplete="off"
               />
             </div>
           </div>
-          <div className="catalog-filter-groups">
-            <FilterOptions
-              label="Categoría"
-              name="categoria"
-              value={filters.category}
-              options={[
-                { value: "", label: "Todas las categorías" },
-                ...categories.map((item) => ({
-                  value: item.slug,
-                  label: item.name,
-                })),
-              ]}
-            />
-            <FilterOptions
-              label="Marca"
-              name="marca"
-              value={filters.brand}
-              options={[
-                { value: "", label: "Todas las marcas" },
-                ...catalog.brands.map((item) => ({
-                  value: item.slug,
-                  label: item.name,
-                })),
-              ]}
-            />
+          <fieldset className="catalog-choice-list catalog-category-list">
+            <legend>Categoría</legend>
+            {[{ slug: "", name: "Todas" }, ...categories].map((item) => (
+              <label className="catalog-category-choice" key={item.slug}>
+                <input
+                  type="radio"
+                  name="categoria"
+                  value={item.slug}
+                  defaultChecked={(filters.category ?? "") === item.slug}
+                />
+                <span>{item.name}</span>
+                <span
+                  className="catalog-category-count"
+                  aria-label={`${count(item.slug || undefined)} productos`}
+                >
+                  {count(item.slug || undefined)}
+                </span>
+              </label>
+            ))}
+          </fieldset>
+          <fieldset className="catalog-choice-list catalog-brand-list">
+            <legend>Marca</legend>
+            {catalog.brands.map((item) => (
+              <label className="catalog-checkbox" key={item.id}>
+                <input
+                  type="checkbox"
+                  name="marca"
+                  value={item.slug}
+                  defaultChecked={
+                    filters.brand?.split(",").includes(item.slug) ?? false
+                  }
+                />
+                <span>{item.name}</span>
+              </label>
+            ))}
+          </fieldset>
+          <CatalogPriceRange value={filters.max} ceiling={ceiling} />
+          <fieldset className="catalog-choice-list catalog-toggle-list">
+            <legend className="sr-only">Disponibilidad y promociones</legend>
+            {filters.availability === "out-of-stock" && (
+              <input type="hidden" name="disponibilidad" value="out-of-stock" />
+            )}
+            <label className="catalog-checkbox">
+              <input
+                type="checkbox"
+                name="disponibilidad"
+                value="in-stock"
+                defaultChecked={filters.availability === "in-stock"}
+              />
+              <span>Solo con stock</span>
+            </label>
+            <label className="catalog-checkbox">
+              <input
+                type="checkbox"
+                name="promocion"
+                value="active"
+                defaultChecked={filters.promotion === "active"}
+              />
+              <span>Solo promociones</span>
+            </label>
+          </fieldset>
+          <div className="catalog-additional-filters">
             <FilterOptions
               label="Sabor"
               name="sabor"
@@ -188,76 +260,16 @@ export function CatalogFilterSidebar(props: FilterProps) {
                 ...flavors.map((flavor) => ({ value: flavor, label: flavor })),
               ]}
             />
-            <FilterOptions
-              label="Promociones"
-              name="promocion"
-              value={filters.promotion}
-              options={[
-                { value: "", label: "Todos los productos" },
-                { value: "active", label: "Con promoción" },
-              ]}
-            />
-            <FilterOptions
-              label="Ordenar"
-              name="orden"
-              value={filters.sort ?? "name"}
-              options={[
-                { value: "name", label: "Nombre: A a Z" },
-                { value: "price-asc", label: "Menor precio" },
-                { value: "price-desc", label: "Mayor precio" },
-              ]}
-            />
-            <details
-              className="catalog-extra-filters"
-              open={Boolean(filters.availability || filters.min || filters.max)}
-            >
-              <summary>
-                Precio y disponibilidad{" "}
-                <span className="catalog-filter-chevron" aria-hidden="true" />
-              </summary>
-              <fieldset className="catalog-filter-options">
-                <legend>Disponibilidad</legend>
-                {[
-                  { value: "", label: "Todas" },
-                  { value: "in-stock", label: "Con stock" },
-                  { value: "out-of-stock", label: "Sin stock" },
-                ].map((option) => (
-                  <label className="catalog-filter-option" key={option.value}>
-                    <input
-                      type="radio"
-                      name="disponibilidad"
-                      value={option.value}
-                      defaultChecked={
-                        (filters.availability ?? "") === option.value
-                      }
-                    />
-                    <span>{option.label}</span>
-                  </label>
-                ))}
-              </fieldset>
-              <div className="catalog-price-fields">
-                <label>
-                  Desde (ARS)
-                  <input
-                    name="min"
-                    inputMode="decimal"
-                    defaultValue={filters.min}
-                    placeholder="Sin mínimo"
-                    pattern="[0-9]+([.,][0-9]{1,2})?"
-                  />
-                </label>
-                <label>
-                  Hasta (ARS)
-                  <input
-                    name="max"
-                    inputMode="decimal"
-                    defaultValue={filters.max}
-                    placeholder="Sin máximo"
-                    pattern="[0-9]+([.,][0-9]{1,2})?"
-                  />
-                </label>
-              </div>
-            </details>
+            <label className="catalog-min-price">
+              Desde (ARS)
+              <input
+                name="min"
+                inputMode="decimal"
+                defaultValue={filters.min}
+                placeholder="Sin mínimo"
+                pattern="[0-9]+([.,][0-9]{1,2})?"
+              />
+            </label>
           </div>
         </AutomaticFilterForm>
       </FilterPanel>

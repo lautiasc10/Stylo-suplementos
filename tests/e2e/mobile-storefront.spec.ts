@@ -94,7 +94,6 @@ for (const width of [375, 768]) {
     ).toBeFocused();
     await page.keyboard.press("Tab");
     await expect(close).toBeFocused();
-    await modal.locator(".catalog-filter-group summary").first().click();
     await modal.locator('input[name="categoria"][value="proteinas"]').check();
     await expect(page).toHaveURL(/categoria=proteinas/);
     await expect(modal).toBeVisible();

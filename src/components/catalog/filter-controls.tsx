@@ -18,7 +18,15 @@ function filterQuery(
   for (const [name, value] of values) {
     if (typeof value !== "string") continue;
     const text = value.trim();
-    if (text && !(name === "orden" && text === "name")) query.set(name, text);
+    if (text && !(name === "orden" && text === "featured")) {
+      if (name === "marca") {
+        const brands = new Set([
+          ...(query.get(name)?.split(",") ?? []),
+          ...text.split(","),
+        ]);
+        query.set(name, [...brands].sort().join(","));
+      } else query.set(name, text);
+    }
   }
   query.sort();
   return query.toString();
@@ -28,10 +36,14 @@ export function AutomaticFilterForm({
   action,
   values,
   children,
+  className = "catalog-filters",
+  id,
 }: {
   action: string;
   values: Record<string, string | undefined>;
   children: ReactNode;
+  className?: string;
+  id?: string;
 }) {
   const router = useRouter();
   const form = useRef<HTMLFormElement>(null);
@@ -78,11 +90,19 @@ export function AutomaticFilterForm({
     pendingQuery.current = null;
     requestedQuery.current = null;
     for (const element of Array.from(form.current.elements)) {
-      if (!(element instanceof HTMLInputElement)) continue;
+      if (
+        !(element instanceof HTMLInputElement) &&
+        !(element instanceof HTMLSelectElement)
+      )
+        continue;
+      if (!element.name) continue;
       const value = values[element.name] ?? "";
-      if (element.type === "radio")
+      if (element instanceof HTMLInputElement && element.type === "checkbox")
+        element.checked = value.split(",").includes(element.value);
+      else if (element.type === "radio")
         element.checked =
-          element.value === (value || (element.name === "orden" ? "name" : ""));
+          element.value ===
+          (value || (element.name === "orden" ? "featured" : ""));
       else if (
         (!ownCommit || document.activeElement !== element) &&
         element.value !== value
@@ -113,12 +133,14 @@ export function AutomaticFilterForm({
   return (
     <form
       ref={form}
+      id={id}
       action={action}
       method="get"
-      className="catalog-filters"
+      className={className}
       onChange={(event) => {
-        if (event.target instanceof HTMLInputElement)
-          schedule(event.target.type === "radio");
+        if (event.target instanceof HTMLSelectElement) schedule(true);
+        else if (event.target instanceof HTMLInputElement)
+          schedule(["radio", "checkbox"].includes(event.target.type));
       }}
       onCompositionStart={() => {
         composing.current = true;
@@ -142,6 +164,31 @@ export function AutomaticFilterForm({
         </button>
       </noscript>
     </form>
+  );
+}
+
+export function CatalogSortControl({
+  formId,
+  value,
+}: {
+  formId: string;
+  value: string;
+}) {
+  return (
+    <label className="catalog-sort">
+      Ordenar por
+      <select
+        name="orden"
+        form={formId}
+        defaultValue={value}
+        onChange={(event) => event.currentTarget.form?.requestSubmit()}
+      >
+        <option value="featured">Destacados</option>
+        <option value="name">Nombre: A a Z</option>
+        <option value="price-asc">Menor precio</option>
+        <option value="price-desc">Mayor precio</option>
+      </select>
+    </label>
   );
 }
 

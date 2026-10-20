@@ -1,5 +1,9 @@
 import Link from "next/link";
-import { CatalogActiveFilters, CatalogFilterSidebar } from "./filters";
+import {
+  CatalogActiveFilters,
+  CatalogFilterSidebar,
+  CatalogSort,
+} from "./filters";
 import { ProductCard } from "./product-card";
 import { RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { ResultsScrollReset } from "./results-scroll-reset";
@@ -37,80 +41,94 @@ export function CatalogListing({
 }) {
   const data = publicCatalog(catalog),
     promoted = promotedVariantIds(data, promotions),
-    results = filterCatalog(data, filters, promoted);
+    results = filterCatalog(
+      data,
+      { ...filters, sort: filters.sort ?? "featured" },
+      promoted,
+    );
   return (
-    <div className="catalog-layout">
-      <ResultsScrollReset queryKey={JSON.stringify(filters)} />
-      <CatalogFilterSidebar
-        catalog={data}
-        filters={filters}
-        action={action}
-        categories={filterCategories}
-      />
-      <section className="catalog-results" aria-label="Resultados del catálogo">
-        <CatalogActiveFilters
+    <div className="catalog-store">
+      <div className="catalog-store-heading">
+        <h1>Tienda</h1>
+        <p>Encontrá lo que acompaña tu rutina.</p>
+      </div>
+      <div className="catalog-layout">
+        <ResultsScrollReset queryKey={JSON.stringify(filters)} />
+        <CatalogFilterSidebar
           catalog={data}
           filters={filters}
           action={action}
           categories={filterCategories}
+          promotions={promotions}
         />
-        <div className="catalog-results-heading">
-          <p role="status">
-            {results.length} {results.length === 1 ? "producto" : "productos"}
-          </p>
-          <p>Encontrá lo que acompaña tu rutina.</p>
-        </div>
-        {results.length ? (
-          <RevealGroup
-            className="product-grid"
-            revision={JSON.stringify(filters)}
-          >
-            {results.map(({ product, variant, brand }, index) => {
-              const category = data.categories.find((item) =>
-                product.categoryIds.includes(item.id),
-              );
-              return (
-                <RevealItem key={product.id} className="reveal-card">
-                  <ProductCard
-                    key={`${product.id}:${JSON.stringify(filters)}`}
-                    product={product}
-                    variants={matchingVariants(product, filters, promoted)}
-                    initialVariantId={variant.id}
-                    brand={brand}
-                    category={category}
-                    index={index}
-                    productPrefix={productPrefix}
-                    imageBase={imageBase}
-                    imageUrls={imageUrls}
-                    preview={preview}
-                  />
-                </RevealItem>
-              );
-            })}
-          </RevealGroup>
-        ) : (
-          <div className="empty-state">
-            <h2>
-              {data.products.length
-                ? "No encontramos coincidencias."
-                : "Tu próxima elección empieza acá."}
-            </h2>
-            <p>
-              {data.products.length
-                ? "Probá con otros filtros o palabras de búsqueda."
-                : "Estamos preparando nuestra selección de productos."}
+        <section
+          className="catalog-results"
+          aria-label="Resultados del catálogo"
+        >
+          <CatalogActiveFilters
+            catalog={data}
+            filters={filters}
+            action={action}
+            categories={filterCategories}
+          />
+          <div className="catalog-results-heading">
+            <p role="status">
+              {results.length} {results.length === 1 ? "producto" : "productos"}
             </p>
-            <Link
-              href={data.products.length ? action : "/"}
-              className="button button-outline"
-            >
-              {data.products.length
-                ? "Ver todo el catálogo"
-                : "Volver al inicio"}
-            </Link>
+            <CatalogSort filters={filters} action={action} />
           </div>
-        )}
-      </section>
+          {results.length ? (
+            <RevealGroup
+              className="product-grid"
+              revision={JSON.stringify(filters)}
+            >
+              {results.map(({ product, variant, brand }, index) => {
+                const category = data.categories.find((item) =>
+                  product.categoryIds.includes(item.id),
+                );
+                return (
+                  <RevealItem key={product.id} className="reveal-card">
+                    <ProductCard
+                      key={`${product.id}:${JSON.stringify(filters)}`}
+                      product={product}
+                      variants={matchingVariants(product, filters, promoted)}
+                      initialVariantId={variant.id}
+                      brand={brand}
+                      category={category}
+                      index={index}
+                      productPrefix={productPrefix}
+                      imageBase={imageBase}
+                      imageUrls={imageUrls}
+                      preview={preview}
+                    />
+                  </RevealItem>
+                );
+              })}
+            </RevealGroup>
+          ) : (
+            <div className="empty-state">
+              <h2>
+                {data.products.length
+                  ? "No encontramos coincidencias."
+                  : "Tu próxima elección empieza acá."}
+              </h2>
+              <p>
+                {data.products.length
+                  ? "Probá con otros filtros o palabras de búsqueda."
+                  : "Estamos preparando nuestra selección de productos."}
+              </p>
+              <Link
+                href={data.products.length ? action : "/"}
+                className="button button-outline"
+              >
+                {data.products.length
+                  ? "Ver todo el catálogo"
+                  : "Volver al inicio"}
+              </Link>
+            </div>
+          )}
+        </section>
+      </div>
     </div>
   );
 }

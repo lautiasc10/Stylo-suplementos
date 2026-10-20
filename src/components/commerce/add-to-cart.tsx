@@ -13,6 +13,7 @@ export function AddToCart({
   quantityControl = false,
   selectedQuantity,
   onQuantityChange,
+  iconOnly = false,
 }: {
   variantId: string;
   stock: number;
@@ -23,10 +24,12 @@ export function AddToCart({
   quantityControl?: boolean;
   selectedQuantity?: number;
   onQuantityChange?: (quantity: number) => void;
+  iconOnly?: boolean;
 }) {
   const { busy, error, preview, change, quote } = useCart();
   const [ready, setReady] = useState(false);
   const [selection, setSelection] = useState({ variantId, quantity: 1 });
+  const [submitted, setSubmitted] = useState("");
   useEffect(() => setReady(true), []);
   const inCart =
     quote.lines.find((line) => line.variantId === variantId)?.quantity ?? 0;
@@ -50,6 +53,7 @@ export function AddToCart({
       action={updateCartAndRedirect}
       onSubmit={(event) => {
         event.preventDefault();
+        setSubmitted(variantId);
         void change(variantId, "add", quantityControl ? quantity : 1);
       }}
     >
@@ -91,15 +95,20 @@ export function AddToCart({
       <button
         type="submit"
         className={`button button-gold${quantityControl ? " premium-cta" : ""}`}
-        disabled={busy || stock === 0 || (quantityControl && available === 0)}
+        disabled={
+          busy ||
+          stock === 0 ||
+          ((quantityControl || iconOnly) && available === 0)
+        }
         aria-label={
           accessibleLabel && stock === 0
             ? `${accessibleLabel} (sin stock)`
             : accessibleLabel
         }
       >
+        {iconOnly && <span aria-hidden="true">+</span>}
         {illustrated && <Icon name="cart" />}
-        <span>
+        <span className={iconOnly ? "sr-only" : undefined}>
           {stock === 0
             ? "Sin stock"
             : quantityControl && available === 0
@@ -110,7 +119,9 @@ export function AddToCart({
         </span>
         {illustrated && <Icon name="arrow" />}
       </button>
-      {error && <p role="alert">{error}</p>}
+      {error && (!iconOnly || submitted === variantId) && (
+        <p role="alert">{error}</p>
+      )}
       {preview && (
         <noscript>
           <p>El carrito de prueba requiere JavaScript.</p>

@@ -7,12 +7,12 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Icon } from "@/components/ui/icon";
 import { CategoryIllustration } from "@/components/storefront/category-illustration";
 import { ProductGallery, type GalleryImage } from "./product-gallery";
 import { galleryPhotos } from "./gallery-images";
 import { BrandLogo } from "./brand-logo";
 import { catalogMediaSource } from "@/modules/catalog/media-source";
+import { AddToCart } from "@/components/commerce/add-to-cart";
 import {
   type CatalogGroup,
   type Product,
@@ -178,7 +178,9 @@ export function ProductCard({
             key={`promotion:${variant.id}`}
             variant={variant}
           />
-          {variant.flavor && <FlavorBadge flavor={flavorLabel(variant.flavor)} />}
+          {variant.flavor && (
+            <FlavorBadge flavor={flavorLabel(variant.flavor)} />
+          )}
           {variant.stock === 0 && (
             <span
               key={`stock:${variant.id}`}
@@ -223,12 +225,23 @@ export function ProductCard({
           )}
         </p>
         <h2>
-          <Link href={href}>{packagingLabel(product.name)}</Link>
+          <Link href={href} title={packagingLabel(product.name)}>
+            {packagingLabel(product.name)}
+          </Link>
         </h2>
         <ProductPricing variant={variant} compact listFirst />
-        <Link href={href} className="product-card-action">
-          Ver variantes <Icon name="arrow" />
-        </Link>
+        <div className="product-card-actions">
+          <Link href={href} className="product-card-action">
+            Ver variantes
+          </Link>
+          <AddToCart
+            variantId={variant.id}
+            stock={variant.stock}
+            slug={product.slug}
+            iconOnly
+            accessibleLabel={`Agregar ${packagingLabel(product.name)}${variant.flavor ? ` · ${flavorLabel(variant.flavor)}` : ""} al carrito`}
+          />
+        </div>
       </div>
     </article>
   );

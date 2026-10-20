@@ -223,12 +223,26 @@ async function chooseFilter(
   value: string,
   automatic = true,
 ) {
+  if (name === "orden") {
+    if (automatic) await closeMobileFilters(page);
+    await page
+      .getByRole("combobox", { name: "Ordenar por" })
+      .selectOption(value);
+    if (automatic)
+      await expect
+        .poll(() => new URL(page.url()).searchParams.get(name) ?? "")
+        .toBe(value === "featured" ? "" : value);
+    return;
+  }
   await openFilters(page);
   const input = page.locator(
     `.catalog-filters input[name="${name}"][value="${value}"]`,
   );
-  const group = input.locator("xpath=ancestor::details[1]");
+  const group = input.locator(
+    "xpath=ancestor::details[contains(@class, 'catalog-filter-group')][1]",
+  );
   if (
+    (await group.count()) &&
     !(await group.evaluate((element) => (element as HTMLDetailsElement).open))
   )
     await group.locator(":scope > summary").click();
@@ -236,7 +250,7 @@ async function chooseFilter(
   if (automatic)
     await expect
       .poll(() => new URL(page.url()).searchParams.get(name) ?? "")
-      .toBe(name === "orden" && value === "name" ? "" : value);
+      .toBe(value);
 }
 
 test("catálogo filtra por la misma variante y conserva agotados", async ({
@@ -251,7 +265,9 @@ test("catálogo filtra por la misma variante y conserva agotados", async ({
   await expect(
     page.getByRole("heading", { name: "No encontramos coincidencias." }),
   ).toBeVisible();
-  await chooseFilter(page, "disponibilidad", "out-of-stock");
+  await page
+    .locator('input[name="disponibilidad"][value="in-stock"]')
+    .uncheck();
   await expect(page.locator(".product-card")).toHaveCount(1);
   await expect(page.locator(".product-card")).toContainText("47.000");
   await expect(page.locator(".product-card .stock-badge")).toHaveText(
@@ -295,9 +311,9 @@ test("búsqueda, orden por lista y selección de variante actualizan la ficha", 
     demoCatalog().products[0].variants[1].id,
   );
   await page.getByRole("radio", { name: "Mercado Pago", exact: true }).check();
-  await expect(
-    page.locator("#contenido .product-price-main"),
-  ).toContainText("47.000");
+  await expect(page.locator("#contenido .product-price-main")).toContainText(
+    "47.000",
+  );
   await expect(
     page.getByRole("button", { name: "Sin stock", exact: true }),
   ).toBeDisabled();
@@ -336,17 +352,17 @@ test("edición de precio, stock e imágenes persiste sin tocar la tienda real", 
   expect(storedPrice).toBe(5100029);
   await page.goto("/vista-previa/producto/proteina-de-prueba");
   await page.getByRole("radio", { name: "Mercado Pago", exact: true }).check();
-  await expect(
-    page.locator("#contenido .product-price-main"),
-  ).toContainText("51.000");
+  await expect(page.locator("#contenido .product-price-main")).toContainText(
+    "51.000",
+  );
   await expect(
     page.getByRole("img", { name: "Imagen de prueba para chocolate" }),
   ).toHaveAttribute("src", /^data:image\/webp;base64,/);
   await page.reload();
   await page.getByRole("radio", { name: "Mercado Pago", exact: true }).check();
-  await expect(
-    page.locator("#contenido .product-price-main"),
-  ).toContainText("51.000");
+  await expect(page.locator("#contenido .product-price-main")).toContainText(
+    "51.000",
+  );
   await page.goto("/catalogo");
   await expect(
     page.getByText("Proteína de prueba", { exact: true }),
@@ -580,6 +596,9 @@ test("alta de marca y producto, ocultación y stock bajo", async ({ page }) => {
     .click();
   await expect(page.locator(".low-stock-list")).toContainText("LOCAL-01");
   await page
+    .getByRole("searchbox", { name: "Buscar productos", exact: true })
+    .fill("LOCAL-01");
+  await page
     .getByRole("button", {
       name: "Editar Accesorio local de prueba",
       exact: true,
@@ -636,9 +655,9 @@ test("CSV previsualiza antes de aplicar y conserva variantes omitidas", async ({
   await expect(page.getByRole("status")).toContainText("Cambios guardados.");
   await page.goto("/vista-previa/producto/proteina-de-prueba");
   await page.getByRole("radio", { name: "Mercado Pago", exact: true }).check();
-  await expect(
-    page.locator("#contenido .product-price-main"),
-  ).toContainText("49.000");
+  await expect(page.locator("#contenido .product-price-main")).toContainText(
+    "49.000",
+  );
   await expect(page.locator(".gainer-flavor-picker .variant-chip")).toHaveCount(
     2,
   );
@@ -753,16 +772,16 @@ test("filtros públicos conservan navegación sin JavaScript", async ({
     await chooseFilter(page, "categoria", "creatinas", false);
     await chooseFilter(page, "orden", "price-asc", false);
     await page.getByLabel("Buscá por producto o marca").fill("creatina");
+    await page.getByLabel("Hasta (ARS)").fill("46000");
     await page.getByRole("button", { name: "Filtrar", exact: true }).click();
     await expect(page).toHaveURL(/q=creatina/);
     expect(new URL(page.url()).searchParams.get("categoria")).toBe("creatinas");
     expect(new URL(page.url()).searchParams.get("orden")).toBe("price-asc");
+    expect(new URL(page.url()).searchParams.get("max")).toBe("46000");
     await expect(page.getByLabel("Buscá por producto o marca")).toHaveValue(
       "creatina",
     );
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-      "Creatinas",
-    );
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Tienda");
   } finally {
     await context.close();
   }
@@ -795,9 +814,7 @@ test("el lateral combina categoría, marca, sabor y orden y permite quitar un fi
   await expect(
     page.locator('input[name="categoria"][value="proteinas"]'),
   ).toBeChecked();
-  await expect(
-    page.locator('input[name="orden"][value="price-desc"]'),
-  ).toBeChecked();
+  await expect(page.locator('select[name="orden"]')).toHaveValue("price-desc");
   await openFilters(page);
   await expect(
     page.locator(".catalog-filters button[type=submit]"),
@@ -826,7 +843,7 @@ test("el panel lateral conserva selección con teclado y al cambiar a celular", 
     page.locator('input[name="categoria"][value="proteinas"]'),
   ).toBeChecked();
   await expect(
-    page.locator(".catalog-filter-group").first().locator("summary"),
+    page.locator(".catalog-category-choice:has(input:checked)"),
   ).toContainText("Proteínas");
 
   await page.setViewportSize({ width: 390, height: 844 });
@@ -841,7 +858,10 @@ test("el panel lateral conserva selección con teclado y al cambiar a celular", 
   await chooseFilter(page, "sabor", "Chocolate");
   await chooseFilter(page, "disponibilidad", "in-stock");
   await page.getByLabel("Desde (ARS)").fill("40000");
-  await page.getByLabel("Hasta (ARS)").fill("46000");
+  const maximum = page.getByRole("slider", { name: "Precio máximo (ARS)" });
+  await maximum.focus();
+  await maximum.press("End");
+  for (let step = 0; step < 10; step++) await maximum.press("ArrowLeft");
   await expect
     .poll(() => new URL(page.url()).searchParams.get("max"))
     .toBe("46000");
@@ -982,6 +1002,31 @@ test("limpiar cancela una búsqueda pendiente sin volver a aplicar el texto", as
 test("los filtros siguen visibles al desplazar el catálogo y sus opciones largas son accesibles", async ({
   page,
 }) => {
+  const catalog = demoCatalog();
+  const base = catalog.products[3];
+  for (let index = 0; index < 16; index++) {
+    catalog.products.push({
+      ...base,
+      id: `00000000-0000-4000-8000-${String(500 + index).padStart(12, "0")}`,
+      slug: `accesorio-largo-${index}`,
+      name: `Accesorio de prueba ${index}`,
+      variants: [
+        {
+          ...base.variants[0],
+          id: `00000000-0000-4000-8000-${String(600 + index).padStart(12, "0")}`,
+          sku: `LARGO-${index}`,
+        },
+      ],
+    });
+  }
+  await page.addInitScript(
+    (catalog) =>
+      localStorage.setItem(
+        "stylo.catalog-preview.v1",
+        JSON.stringify({ catalog, images: {} }),
+      ),
+    catalog,
+  );
   await page.goto("/vista-previa");
   const sidebar = page.locator(".catalog-sidebar");
   const layout = await page.locator(".catalog-layout").boundingBox();
@@ -994,8 +1039,6 @@ test("los filtros siguen visibles al desplazar el catálogo y sus opciones larga
     .poll(async () => (await sidebar.boundingBox())!.y)
     .toBe(desktop ? 24 : 12);
   await openFilters(page);
-  const group = page.locator(".catalog-filter-group").first();
-  await group.locator("summary").click();
   await page
     .locator('input[name="categoria"][value="barras-y-snacks"]')
     .scrollIntoViewIfNeeded();

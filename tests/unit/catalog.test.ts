@@ -38,6 +38,28 @@ const row = [
   "true",
 ];
 describe("catálogo y precios", () => {
+  it("combina las marcas seleccionadas y prioriza los destacados sin perder el orden por precio", () => {
+    const catalog = demoCatalog();
+    expect(
+      filterCatalog(catalog, {
+        brand: catalog.brands.map((b) => b.slug).join(","),
+      }),
+    ).toHaveLength(4);
+    expect(
+      filterCatalog(catalog, { brand: catalog.brands[0].slug }),
+    ).toHaveLength(2);
+    expect(filterCatalog(catalog, { brand: "no-existe" })).toHaveLength(0);
+    const featured = filterCatalog(catalog, { sort: "featured" });
+    expect(featured.slice(0, 2).every((item) => item.product.featured)).toBe(
+      true,
+    );
+    expect(featured.slice(2).every((item) => !item.product.featured)).toBe(
+      true,
+    );
+    expect(filterCatalog(catalog, { sort: "price-asc" })[0].product.slug).toBe(
+      "shaker-de-prueba",
+    );
+  });
   it("aclara Doypack sin modificar los datos originales de producto o variante", () => {
     const product = demoCatalog().products[0];
     product.name = 'PROTEÍNA "WHEY" x 2 LBS DP';

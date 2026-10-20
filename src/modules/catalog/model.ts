@@ -346,7 +346,8 @@ export function filterCatalog(
         (!category || !product.categoryIds.includes(category.id))
       )
         return [];
-      if (filters.brand && filters.brand !== brand.slug) return [];
+      if (filters.brand && !filters.brand.split(",").includes(brand.slug))
+        return [];
       const searchable = normalize(
         [product.name, brand.name, ...product.tags, product.description].join(
           " ",
@@ -379,7 +380,10 @@ export function filterCatalog(
         ? a.variant.listPrice - b.variant.listPrice
         : filters.sort === "price-desc"
           ? b.variant.listPrice - a.variant.listPrice
-          : a.product.name.localeCompare(b.product.name, "es"),
+          : filters.sort === "featured" &&
+              a.product.featured !== b.product.featured
+            ? Number(b.product.featured) - Number(a.product.featured)
+            : a.product.name.localeCompare(b.product.name, "es"),
     );
 }
 

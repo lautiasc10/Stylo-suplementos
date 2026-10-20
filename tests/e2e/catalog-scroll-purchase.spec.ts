@@ -17,10 +17,8 @@ test("elegir marca o categoría vuelve al inicio después de scrollear", async (
     const mobile = await toggle.isVisible();
     if (mobile) await toggle.click();
     const field = page.locator(
-      `.catalog-filter-group:has(input[name="${name}"])`,
+      `.catalog-choice-list:has(input[name="${name}"])`,
     );
-    if ((await field.getAttribute("open")) === null)
-      await field.locator("summary").click();
     // Native scrolling to reach an option must not be mistaken for the reset.
     if (!mobile)
       await page.evaluate(() => scrollTo({ top: 500, behavior: "instant" }));
@@ -83,7 +81,9 @@ for (const width of [375, 768]) {
       await verify();
       if (product.variants.length > 1) {
         await page.getByRole("link", { name: /Vainilla/ }).click();
-        await expect(action.locator('button[type="submit"]')).toHaveText("Sin stock");
+        await expect(action.locator('button[type="submit"]')).toHaveText(
+          "Sin stock",
+        );
         await verify();
       }
       await page.emulateMedia({ reducedMotion: "reduce" });
