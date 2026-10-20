@@ -47,3 +47,44 @@ export function productOffers(
     ];
   });
 }
+
+export function promotedVariantIds(catalog: Catalog, promotions: Promotion[]) {
+  const ids = new Set<string>();
+  const variants = new Map(
+    publicCatalog(catalog).products.flatMap((product) =>
+      product.variants.map((variant) => [variant.id, variant] as const),
+    ),
+  );
+  const now = Date.now();
+  for (const promotion of promotions) {
+    if (
+      !promotion.active ||
+      (promotion.startsAt && Date.parse(promotion.startsAt) > now) ||
+      (promotion.endsAt && Date.parse(promotion.endsAt) <= now)
+    )
+      continue;
+    const lines = promotion.components.map((component) => {
+      const variant = variants.get(component.variantId);
+      return variant && variant.stock >= component.quantity
+        ? {
+            variantId: variant.id,
+            quantity: component.quantity,
+            listPrice: variant.listPrice,
+            cashPrice: variant.cashPrice,
+            available: true,
+          }
+        : null;
+    });
+    if (lines.some((line) => !line)) continue;
+    const complete = lines.filter(
+      (line): line is NonNullable<typeof line> => line !== null,
+    );
+    if (
+      priceLines(complete, [promotion], "mercado-pago", now).discount ||
+      priceLines(complete, [promotion], "transferencia", now).discount
+    )
+      for (const component of promotion.components)
+        ids.add(component.variantId);
+  }
+  return ids;
+}

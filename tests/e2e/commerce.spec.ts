@@ -1,4 +1,56 @@
 import { test, expect } from "@playwright/test";
+import { demoCatalog } from "../../src/modules/catalog/demo";
+
+test("promociones se buscan y paginan, y la presentación se encuentra por SKU", async ({
+  page,
+}) => {
+  const variant = demoCatalog().products[0].variants[0];
+  const promotions = Array.from({ length: 12 }, (_, index) => ({
+    id: `11111111-1111-4111-8111-${String(index + 1).padStart(12, "0")}`,
+    name: `Oferta ${String(index + 1).padStart(2, "0")}`,
+    kind: "sale",
+    active: true,
+    components: [{ variantId: variant.id, quantity: 1 }],
+    listPrice: 4000000,
+    cashPrice: 3500000,
+    startsAt: null,
+    endsAt: null,
+  }));
+  await page.addInitScript(
+    (items) =>
+      localStorage.setItem(
+        "stylo.promotions-preview.v1",
+        JSON.stringify({ revision: 0, promotions: items }),
+      ),
+    promotions,
+  );
+  await page.goto("/vista-previa/promociones");
+  await expect(page.locator(".promotions-table tbody tr")).toHaveCount(10);
+  await page
+    .getByRole("navigation", { name: "Páginas de promociones" })
+    .getByRole("button", { name: "Siguiente" })
+    .click();
+  await expect(page.locator(".promotions-table tbody tr")).toHaveCount(2);
+  await page
+    .getByRole("searchbox", { name: "Buscar promociones" })
+    .fill("Oferta 11");
+  await expect(page.locator(".promotions-table tbody tr")).toHaveCount(1);
+  await page.getByRole("button", { name: "Crear promoción" }).click();
+  await page
+    .getByRole("searchbox", { name: "Buscar presentación" })
+    .fill("DEMO-1-B");
+  await expect(
+    page
+      .getByRole("combobox", { name: "Presentación", exact: true })
+      .locator("option"),
+  ).toHaveCount(2);
+  await page
+    .getByRole("combobox", { name: "Presentación", exact: true })
+    .selectOption("00000000-0000-4000-8000-000000000051");
+  await expect(
+    page.getByRole("combobox", { name: "Presentación", exact: true }),
+  ).toHaveValue("00000000-0000-4000-8000-000000000051");
+});
 test("carrito lateral conserva SKU y cantidades, restaura foco y persiste sin mezclar la tienda", async ({
   page,
 }) => {
@@ -98,6 +150,11 @@ test("admin configura cantidad con dos precios y checkout revalida sin guardar d
     .getByRole("button", { name: "Guardar promoción", exact: true })
     .click();
   await expect(page.getByRole("status")).toHaveText("Promociones guardadas.");
+  await page.goto("/vista-previa?promocion=active");
+  await expect(page.locator(".product-card")).toHaveCount(1);
+  await expect(
+    page.getByRole("navigation", { name: "Filtros activos" }),
+  ).toContainText("Promociones");
   await page.goto("/vista-previa");
   await expect(page.locator(".product-promotion-tag")).toContainText(
     "Desde 2 unidades",
@@ -132,9 +189,7 @@ test("admin configura cantidad con dos precios y checkout revalida sin guardar d
   await expect(page.locator(".checkout-total")).toContainText("80.000,00");
   await expect(page.getByRole("radio")).toHaveCount(2);
   await expect(page.getByLabel(/Efectivo al retirar/)).toHaveCount(0);
-  await page
-    .getByLabel("Transferencia · precio por transferencia", { exact: true })
-    .check();
+  await page.getByLabel("Con transferencia", { exact: true }).check();
   await expect(page.locator(".checkout-total")).toContainText("70.000,00");
   await page
     .getByLabel("Nombre y apellido", { exact: true })

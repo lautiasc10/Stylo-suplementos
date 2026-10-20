@@ -58,6 +58,7 @@ export type CatalogFilters = {
   brand?: string;
   flavor?: string;
   availability?: string;
+  promotion?: string;
   min?: string;
   max?: string;
   sort?: string;
@@ -289,6 +290,7 @@ const normalize = (text: string) =>
 export function matchingVariants(
   product: Product,
   filters: CatalogFilters,
+  promotedVariantIds?: ReadonlySet<string>,
 ): Variant[] {
   let min: number | undefined, max: number | undefined;
   try {
@@ -300,6 +302,8 @@ export function matchingVariants(
   return product.variants.filter(
     (variant) =>
       variant.active &&
+      (filters.promotion !== "active" ||
+        promotedVariantIds?.has(variant.id) === true) &&
       (!filters.flavor ||
         flavorLabel(variant.flavor) === flavorLabel(filters.flavor)) &&
       (filters.availability !== "in-stock" || variant.stock > 0) &&
@@ -309,7 +313,11 @@ export function matchingVariants(
   );
 }
 
-export function filterCatalog(catalog: Catalog, filters: CatalogFilters) {
+export function filterCatalog(
+  catalog: Catalog,
+  filters: CatalogFilters,
+  promotedVariantIds?: ReadonlySet<string>,
+) {
   const data = publicCatalog(catalog);
   const category = data.categories.find(
     (item) => item.slug === filters.category,
@@ -340,7 +348,7 @@ export function filterCatalog(catalog: Catalog, filters: CatalogFilters) {
       )
         return [];
       // All filters apply to the same variant, so a price/stock match cannot come from different variants.
-      const variants = matchingVariants(product, filters);
+      const variants = matchingVariants(product, filters, promotedVariantIds);
       return variants.length
         ? [
             {

@@ -199,7 +199,7 @@ export function SearchResults({
               </select>
             </label>
             <fieldset className="search-price-filter">
-              <legend>Precio de lista</legend>
+              <legend>Precio</legend>
               <label>
                 <span className="sr-only">Precio mínimo</span>
                 <input

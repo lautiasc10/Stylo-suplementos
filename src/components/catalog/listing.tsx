@@ -3,6 +3,8 @@ import { CatalogActiveFilters, CatalogFilterSidebar } from "./filters";
 import { ProductCard } from "./product-card";
 import { RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { ResultsScrollReset } from "./results-scroll-reset";
+import { promotedVariantIds } from "@/modules/commerce/product-offers";
+import type { Promotion } from "@/modules/commerce/promotions";
 import {
   filterCatalog,
   publicCatalog,
@@ -21,6 +23,7 @@ export function CatalogListing({
   imageUrls = {},
   preview = false,
   filterCategories,
+  promotions = [],
 }: {
   catalog: Catalog;
   filters: CatalogFilters;
@@ -30,9 +33,11 @@ export function CatalogListing({
   imageUrls?: Record<string, string>;
   preview?: boolean;
   filterCategories?: Pick<CatalogGroup, "id" | "name" | "slug">[];
+  promotions?: Promotion[];
 }) {
   const data = publicCatalog(catalog),
-    results = filterCatalog(data, filters);
+    promoted = promotedVariantIds(data, promotions),
+    results = filterCatalog(data, filters, promoted);
   return (
     <div className="catalog-layout">
       <ResultsScrollReset queryKey={JSON.stringify(filters)} />
@@ -69,7 +74,7 @@ export function CatalogListing({
                   <ProductCard
                     key={`${product.id}:${JSON.stringify(filters)}`}
                     product={product}
-                    variants={matchingVariants(product, filters)}
+                    variants={matchingVariants(product, filters, promoted)}
                     initialVariantId={variant.id}
                     brand={brand}
                     category={category}

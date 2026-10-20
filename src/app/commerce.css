@@ -935,6 +935,66 @@
   font-size: var(--text-sm);
   padding-bottom: var(--space-3);
 }
+.admin-brand-pages,
+.admin-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+}
+.admin-brand-pages button,
+.admin-pagination button {
+  min-height: 44px;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid var(--line);
+  color: var(--foreground);
+  background: var(--surface-raised);
+  cursor: pointer;
+}
+.admin-brand-pages button[aria-current="page"],
+.admin-brand-pages button:hover,
+.admin-pagination button:hover:not(:disabled) {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+.admin-pagination button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.admin-pagination span {
+  padding-inline: var(--space-3);
+}
+.searchable-variant {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.searchable-variant input,
+.searchable-variant select {
+  width: 100%;
+  min-height: 48px;
+}
+.searchable-variant small {
+  color: var(--muted);
+}
+.admin-promotion-identity {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.admin-promotion-identity .product-thumbnail {
+  flex: none;
+}
+.combo-image-input {
+  display: grid;
+  gap: var(--space-2);
+}
+.combo-current-image {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
 .admin-product-brand + .admin-product-brand {
   margin-top: var(--space-10);
 }
@@ -1429,6 +1489,18 @@
 .product-offer dd {
   margin: 0;
   font-variant-numeric: tabular-nums;
+  display: flex;
+  gap: var(--space-2);
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+.product-offer dd del {
+  color: var(--muted);
+  font-size: var(--text-xs);
+}
+.product-offer dd strong {
+  color: var(--gold);
+  font-weight: 700;
 }
 .product-offer ul {
   padding-left: var(--space-4);

@@ -221,6 +221,7 @@ export function AdminWorkspace({
                 catalog={data.catalog!}
                 initial={data.promotions!}
                 preview={preview}
+                imageBase={imageBase}
                 onSaved={(promotions) => {
                   generation.current++;
                   setData((previous) => ({ ...previous, promotions }));

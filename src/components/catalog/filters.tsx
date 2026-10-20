@@ -36,6 +36,10 @@ function selections({
     },
     { key: "sabor", label: filters.flavor && flavorLabel(filters.flavor) },
     {
+      key: "promocion",
+      label: filters.promotion === "active" ? "Promociones" : undefined,
+    },
+    {
       key: "disponibilidad",
       label:
         filters.availability === "in-stock"
@@ -57,6 +61,7 @@ export function CatalogActiveFilters(props: FilterProps) {
     categoria: filters.category,
     marca: filters.brand,
     sabor: filters.flavor,
+    promocion: filters.promotion,
     disponibilidad: filters.availability,
     min: filters.min,
     max: filters.max,
@@ -108,6 +113,7 @@ export function CatalogFilterSidebar(props: FilterProps) {
             categoria: filters.category,
             marca: filters.brand,
             sabor: flavorLabel(filters.flavor ?? ""),
+            promocion: filters.promotion,
             orden: filters.sort ?? "name",
             disponibilidad: filters.availability,
             min: filters.min,
@@ -183,13 +189,22 @@ export function CatalogFilterSidebar(props: FilterProps) {
               ]}
             />
             <FilterOptions
+              label="Promociones"
+              name="promocion"
+              value={filters.promotion}
+              options={[
+                { value: "", label: "Todos los productos" },
+                { value: "active", label: "Con promoción" },
+              ]}
+            />
+            <FilterOptions
               label="Ordenar"
               name="orden"
               value={filters.sort ?? "name"}
               options={[
                 { value: "name", label: "Nombre: A a Z" },
-                { value: "price-asc", label: "Menor precio de lista" },
-                { value: "price-desc", label: "Mayor precio de lista" },
+                { value: "price-asc", label: "Menor precio" },
+                { value: "price-desc", label: "Mayor precio" },
               ]}
             />
             <details

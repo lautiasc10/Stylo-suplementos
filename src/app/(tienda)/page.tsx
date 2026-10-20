@@ -48,7 +48,11 @@ export default async function HomePage() {
         imageBase={imageBase}
         unavailable={error}
       />
-      <HomePromotions unavailable={promotions.error} />
+      <HomePromotions
+        unavailable={promotions.error}
+        imageBase={imageBase}
+        catalog={data}
+      />
     </>
   );
 }

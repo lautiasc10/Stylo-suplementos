@@ -146,8 +146,8 @@ export function Checkout() {
             <legend>02 · Medio de pago</legend>
             {(
               [
-                ["mercado-pago", "Mercado Pago · precio de lista"],
-                ["transferencia", "Transferencia · precio por transferencia"],
+                ["mercado-pago", "Mercado Pago"],
+                ["transferencia", "Con transferencia"],
               ] as const
             ).map(([value, label]) => (
               <label className="checkout-choice" key={value}>

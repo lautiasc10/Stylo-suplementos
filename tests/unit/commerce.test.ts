@@ -28,6 +28,26 @@ const promo = (patch: Partial<Promotion> = {}): Promotion => ({
   ...patch,
 });
 describe("carrito y reglas comerciales de Fase 3", () => {
+  it("acepta solo rutas de fotos de combo pertenecientes a la promoción", () => {
+    const id = "11111111-1111-4111-8111-111111111111";
+    const photo = `promotions/${id}/22222222-2222-4222-8222-222222222222.webp`;
+    const bundle = promo({ kind: "bundle", imagePath: photo });
+    expect(validatePromotions([bundle], catalog)).toEqual([]);
+    expect(
+      validatePromotions([promo({ imagePath: photo })], catalog),
+    ).toContain("La foto del combo no es válida.");
+    expect(
+      validatePromotions(
+        [
+          promo({
+            kind: "bundle",
+            imagePath: `promotions/33333333-3333-4333-8333-333333333333/file.webp`,
+          }),
+        ],
+        catalog,
+      ),
+    ).toContain("La foto del combo no es válida.");
+  });
   it("muestra la fotografía de la variante y solo usa la general como alternativa", () => {
     const data = structuredClone(catalog),
       product = data.products[0];

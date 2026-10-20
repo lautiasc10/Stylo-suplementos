@@ -1,6 +1,10 @@
 import { describe, it, expect } from "vitest";
 import { demoCatalog } from "../../src/modules/catalog/demo";
-import { productOffers } from "../../src/modules/commerce/product-offers";
+import {
+  productOffers,
+  promotedVariantIds,
+} from "../../src/modules/commerce/product-offers";
+import { filterCatalog } from "../../src/modules/catalog/model";
 import type { Promotion } from "../../src/modules/commerce/promotions";
 const catalog = demoCatalog(),
   variant = catalog.products[0].variants[0];
@@ -32,6 +36,26 @@ describe("ofertas antes de agregar al carrito", () => {
       { ...offer, components: [{ variantId: variant.id, quantity: 9 }] },
     ];
     expect(productOffers(catalog, cases, variant.id, now)).toEqual([]);
+  });
+  it("filtra el catálogo por variantes con promociones vigentes y comprables", () => {
+    const sale = {
+      ...offer,
+      kind: "sale" as const,
+      components: [{ variantId: variant.id, quantity: 1 }],
+    };
+    const promoted = promotedVariantIds(catalog, [
+      sale,
+      { ...offer, id: "22222222-2222-4222-8222-222222222222", active: false },
+    ]);
+    expect(promoted.has(variant.id)).toBe(true);
+    expect(
+      filterCatalog(catalog, { promotion: "active" }, promoted).map(
+        (item) => item.product.id,
+      ),
+    ).toEqual([catalog.products[0].id]);
+    expect(filterCatalog(catalog, { promotion: "active" }, new Set())).toEqual(
+      [],
+    );
   });
   it("un combo expone todas las presentaciones, su precio completo y nunca aumenta un medio de pago", () => {
     const bundle = {

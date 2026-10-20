@@ -53,6 +53,7 @@ export function CatalogManager({
     [plan, setPlan] = useState<ImportPlan | null>(null);
   const [approvedCategories, setApprovedCategories] = useState<string[]>([]);
   const [productQuery, setProductQuery] = useState("");
+  const [productBrandPage, setProductBrandPage] = useState(0);
   const [busy, setBusy] = useState(false),
     [message, setMessage] = useState("");
   const [group, setGroup] = useState<CatalogGroup | null>(null),
@@ -380,6 +381,10 @@ export function CatalogManager({
         a.brand.name.localeCompare(b.brand.name, "es")
       );
     });
+  const currentBrandPage = Math.min(
+    productBrandPage,
+    Math.max(0, productGroups.length - 1),
+  );
   const lowStock = publicCatalog(catalog).products.flatMap((product) =>
     product.variants
       .filter(
@@ -417,7 +422,10 @@ export function CatalogManager({
                 id="admin-product-query"
                 type="search"
                 value={productQuery}
-                onChange={(event) => setProductQuery(event.target.value)}
+                onChange={(event) => {
+                  setProductQuery(event.target.value);
+                  setProductBrandPage(0);
+                }}
                 placeholder="Nombre, marca, sabor o SKU"
                 autoComplete="off"
               />
@@ -429,64 +437,85 @@ export function CatalogManager({
                 de {catalog.products.length} productos
               </span>
             </div>
-            {productGroups.map(({ brand, products }) => (
-              <section
-                className="admin-product-brand"
-                key={brand.id}
-                aria-labelledby={`product-brand-${brand.id}`}
+            {productGroups.length > 1 && (
+              <nav
+                className="admin-brand-pages"
+                aria-label="Páginas de productos por marca"
               >
-                <div className="admin-product-brand-heading">
-                  <h3 id={`product-brand-${brand.id}`}>{brand.name}</h3>
-                  <span>
-                    {products.length}{" "}
-                    {products.length === 1 ? "producto" : "productos"}
-                  </span>
-                </div>
-                <ul
-                  className="admin-product-grid"
-                  aria-label={`Productos de ${brand.name}`}
+                {productGroups.map(({ brand, products }, index) => (
+                  <button
+                    key={brand.id}
+                    type="button"
+                    aria-current={
+                      currentBrandPage === index ? "page" : undefined
+                    }
+                    onClick={() => setProductBrandPage(index)}
+                  >
+                    {index + 1}. {brand.name} <span>({products.length})</span>
+                  </button>
+                ))}
+              </nav>
+            )}
+            {productGroups
+              .slice(currentBrandPage, currentBrandPage + 1)
+              .map(({ brand, products }) => (
+                <section
+                  className="admin-product-brand"
+                  key={brand.id}
+                  aria-labelledby={`product-brand-${brand.id}`}
                 >
-                  {products.map((product) => {
-                    const image =
-                      variantImages(
-                        product,
-                        product.variants[0]?.id ?? "",
-                      )[0] ??
-                      [...product.images].sort(
-                        (a, b) => a.position - b.position,
-                      )[0];
-                    const src = image
-                      ? imageUrls[image.path] ||
-                        (imageBase ? `${imageBase}/${image.path}` : undefined)
-                      : undefined;
-                    return (
-                      <li key={product.id}>
-                        <button
-                          type="button"
-                          className="admin-product-card"
-                          id={`edit-product-${product.id}`}
-                          aria-label={`Editar ${product.name}`}
-                          onClick={() => {
-                            productTriggerId.current = `edit-product-${product.id}`;
-                            setDraft(structuredClone(product));
-                            setMessage("");
-                          }}
-                        >
-                          <ProductThumbnail
-                            src={src}
-                            alt={`Foto de ${product.name}`}
-                            size={320}
-                          />
-                          <span className="admin-product-name">
-                            {product.name}
-                          </span>
-                        </button>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </section>
-            ))}
+                  <div className="admin-product-brand-heading">
+                    <h3 id={`product-brand-${brand.id}`}>{brand.name}</h3>
+                    <span>
+                      {products.length}{" "}
+                      {products.length === 1 ? "producto" : "productos"}
+                    </span>
+                  </div>
+                  <ul
+                    className="admin-product-grid"
+                    aria-label={`Productos de ${brand.name}`}
+                  >
+                    {products.map((product) => {
+                      const image =
+                        variantImages(
+                          product,
+                          product.variants[0]?.id ?? "",
+                        )[0] ??
+                        [...product.images].sort(
+                          (a, b) => a.position - b.position,
+                        )[0];
+                      const src = image
+                        ? imageUrls[image.path] ||
+                          (imageBase ? `${imageBase}/${image.path}` : undefined)
+                        : undefined;
+                      return (
+                        <li key={product.id}>
+                          <button
+                            type="button"
+                            className="admin-product-card"
+                            id={`edit-product-${product.id}`}
+                            aria-label={`Editar ${product.name}`}
+                            onClick={() => {
+                              productTriggerId.current = `edit-product-${product.id}`;
+                              setDraft(structuredClone(product));
+                              setMessage("");
+                            }}
+                          >
+                            <ProductThumbnail
+                              src={src}
+                              alt={`Foto de ${product.name}`}
+                              size={320}
+                            />
+                            <span className="admin-product-name">
+                              {product.name}
+                            </span>
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </section>
+              ))}
             {catalog.products.length > 0 && productGroups.length === 0 && (
               <p className="management-empty" role="status">
                 No encontramos productos con esa búsqueda.

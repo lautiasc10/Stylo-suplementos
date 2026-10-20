@@ -4,8 +4,10 @@ import {
   formatPrice,
   parseMoney,
   variantLabel,
+  variantImages,
   type Catalog,
 } from "@/modules/catalog/model";
+import { normalizeSearch } from "@/modules/catalog/search";
 import {
   emptyPromotions,
   validatePromotions,
@@ -18,6 +20,8 @@ import { ConfirmAction } from "@/components/ui/confirm-action";
 import { AdminTable } from "@/components/admin/data-table";
 import { IconAction } from "@/components/admin/icon-action";
 import { Icon } from "@/components/ui/icon";
+import { ProductThumbnail } from "@/components/ui/product-thumbnail";
+import { SearchableVariantSelect } from "./searchable-variant-select";
 function localDate(value?: string | null) {
   if (!value) return "";
   const date = new Date(value);
@@ -29,11 +33,13 @@ export function PromotionsManager({
   initial = emptyPromotions,
   catalog: initialCatalog,
   preview = false,
+  imageBase = "",
   onSaved,
 }: {
   initial?: PromotionState;
   catalog?: Catalog;
   preview?: boolean;
+  imageBase?: string;
   onSaved?: (state: PromotionState) => void;
 }) {
   const [state, setState] = useState(initial),
@@ -41,6 +47,9 @@ export function PromotionsManager({
   const [notice, setNotice] = useState(""),
     [busy, setBusy] = useState(false);
   const [kind, setKind] = useState<Promotion["kind"]>("sale");
+  const [selectedVariant, setSelectedVariant] = useState("");
+  const [promotionQuery, setPromotionQuery] = useState("");
+  const [promotionPage, setPromotionPage] = useState(0);
   const [editing, setEditing] = useState<Promotion | null>(null);
   const [editorOpen, setEditorOpen] = useState(false);
   const createButton = useRef<HTMLButtonElement>(null);
@@ -65,6 +74,7 @@ export function PromotionsManager({
     setEditing(null);
     setComponents([]);
     setKind("sale");
+    setSelectedVariant("");
     requestAnimationFrame(() => createButton.current?.focus());
   }
   useEffect(() => {
@@ -81,7 +91,7 @@ export function PromotionsManager({
       setNotice("No pudimos recuperar las promociones locales.");
     }
   }, [preview]);
-  async function commit(promotions: Promotion[]) {
+  async function commit(promotions: Promotion[], image?: FormData) {
     if (!catalog) return false;
     const errors = validatePromotions(promotions, catalog);
     if (errors.length) {
@@ -109,7 +119,7 @@ export function PromotionsManager({
         onSaved?.(next);
         window.dispatchEvent(new Event("stylo-preview-change"));
       } else {
-        const result = await savePromotions({ ...state, promotions });
+        const result = await savePromotions({ ...state, promotions }, image);
         if (result.error) {
           setNotice(result.error);
           return false;
@@ -137,6 +147,40 @@ export function PromotionsManager({
       label: `${product.name} · ${variantLabel(variant)} · ${variant.sku}`,
     })),
   );
+  const promotionTerms = normalizeSearch(promotionQuery)
+    .split(/\s+/)
+    .filter(Boolean);
+  const filteredPromotions = state.promotions.filter((promotion) => {
+    const text = normalizeSearch(
+      [
+        promotion.name,
+        promotion.kind,
+        ...promotion.components.map(
+          (component) =>
+            variants.find((variant) => variant.value === component.variantId)
+              ?.label ?? "",
+        ),
+      ].join(" "),
+    );
+    return promotionTerms.every((term) => text.includes(term));
+  });
+  const pageCount = Math.max(1, Math.ceil(filteredPromotions.length / 10));
+  const currentPage = Math.min(promotionPage, pageCount - 1);
+  const visiblePromotions = filteredPromotions.slice(
+    currentPage * 10,
+    (currentPage + 1) * 10,
+  );
+  const imageFor = (promotion: Promotion) => {
+    if (promotion.kind === "bundle" && promotion.imagePath && imageBase)
+      return `${imageBase}/${promotion.imagePath}`;
+    const first = promotion.components[0];
+    const product = catalog.products.find((item) =>
+      item.variants.some((variant) => variant.id === first?.variantId),
+    );
+    const path =
+      product && first && variantImages(product, first.variantId)[0]?.path;
+    return path && imageBase ? `${imageBase}/${path}` : undefined;
+  };
   return (
     <section className="promotions-manager">
       <p className="eyebrow">PRECIOS Y COMBOS</p>
@@ -152,6 +196,7 @@ export function PromotionsManager({
               setNotice("");
               setEditing(null);
               setKind("sale");
+              setSelectedVariant(variants[0]?.value ?? "");
               setComponents([]);
               setEditorOpen(true);
             }}
@@ -185,6 +230,24 @@ export function PromotionsManager({
             >
               Promociones guardadas
             </h2>
+            <div className="admin-product-search">
+              <label htmlFor="admin-promotion-query">Buscar promociones</label>
+              <input
+                id="admin-promotion-query"
+                type="search"
+                value={promotionQuery}
+                onChange={(event) => {
+                  setPromotionQuery(event.target.value);
+                  setPromotionPage(0);
+                }}
+                placeholder="Promoción, producto, sabor o SKU"
+                autoComplete="off"
+              />
+              <span aria-live="polite">
+                {filteredPromotions.length} de {state.promotions.length}{" "}
+                promociones
+              </span>
+            </div>
             {!state.promotions.length && (
               <p className="management-empty">
                 Todavía no hay promociones. Creá una para mostrarla en la
@@ -205,14 +268,21 @@ export function PromotionsManager({
                   </tr>
                 </thead>
                 <tbody role="rowgroup">
-                  {state.promotions.map((p) => (
+                  {visiblePromotions.map((p) => (
                     <tr key={p.id} role="row">
                       <td
                         role="cell"
                         data-label="Promoción"
                         className="admin-identity"
                       >
-                        <strong>{p.name}</strong>
+                        <div className="admin-promotion-identity">
+                          <ProductThumbnail
+                            src={imageFor(p)}
+                            alt=""
+                            size={96}
+                          />
+                          <strong>{p.name}</strong>
+                        </div>
                         <small>
                           {p.kind === "bundle"
                             ? "Combo"
@@ -278,6 +348,11 @@ export function PromotionsManager({
                             onClick={() => {
                               setEditing(p);
                               setKind(p.kind);
+                              setSelectedVariant(
+                                p.kind === "bundle"
+                                  ? ""
+                                  : (p.components[0]?.variantId ?? ""),
+                              );
                               setComponents(
                                 p.components.map((c) => ({ ...c })),
                               );
@@ -304,6 +379,35 @@ export function PromotionsManager({
                   ))}
                 </tbody>
               </AdminTable>
+            )}
+            {state.promotions.length > 0 && filteredPromotions.length === 0 && (
+              <p className="management-empty" role="status">
+                No encontramos promociones con esa búsqueda.
+              </p>
+            )}
+            {pageCount > 1 && (
+              <nav
+                className="admin-pagination"
+                aria-label="Páginas de promociones"
+              >
+                <button
+                  type="button"
+                  disabled={currentPage === 0}
+                  onClick={() => setPromotionPage(currentPage - 1)}
+                >
+                  Anterior
+                </button>
+                <span>
+                  Página {currentPage + 1} de {pageCount}
+                </span>
+                <button
+                  type="button"
+                  disabled={currentPage === pageCount - 1}
+                  onClick={() => setPromotionPage(currentPage + 1)}
+                >
+                  Siguiente
+                </button>
+              </nav>
             )}
           </div>
         )}
@@ -348,7 +452,26 @@ export function PromotionsManager({
                 endsAt: data.get("endsAt")
                   ? new Date(String(data.get("endsAt"))).toISOString()
                   : null,
+                imagePath:
+                  kind === "bundle" && !data.has("removeImage")
+                    ? (editing?.imagePath ?? null)
+                    : null,
               };
+              const image = data.get("comboImage");
+              const upload =
+                kind === "bundle" && image instanceof File && image.size > 0
+                  ? new FormData()
+                  : undefined;
+              if (upload) {
+                if (preview) {
+                  setNotice(
+                    "La foto del combo se sube desde el administrador real; esta vista previa es local.",
+                  );
+                  return;
+                }
+                if (image instanceof File) upload.set("file", image);
+                upload.set("promotionId", p.id);
+              }
               if (
                 await commit(
                   editing
@@ -356,8 +479,12 @@ export function PromotionsManager({
                         item.id === editing.id ? p : item,
                       )
                     : [...state.promotions, p],
+                  upload,
                 )
               ) {
+                setPromotionQuery("");
+                if (!editing)
+                  setPromotionPage(Math.floor(state.promotions.length / 10));
                 closeEditor();
               }
             }}
@@ -384,6 +511,8 @@ export function PromotionsManager({
                     onChange={(e) => {
                       setKind(e.target.value as Promotion["kind"]);
                       setComponents([]);
+                      if (!selectedVariant)
+                        setSelectedVariant(variants[0]?.value ?? "");
                     }}
                   >
                     <option value="sale">Rebaja de producto</option>
@@ -392,20 +521,13 @@ export function PromotionsManager({
                   </select>
                 </label>
                 {kind !== "bundle" && (
-                  <label>
-                    Presentación
-                    <select
-                      name="variant"
-                      required
-                      defaultValue={editing?.components[0].variantId}
-                    >
-                      {variants.map((v) => (
-                        <option key={v.value} value={v.value}>
-                          {v.label}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
+                  <SearchableVariantSelect
+                    label="Presentación"
+                    name="variant"
+                    value={selectedVariant}
+                    options={variants}
+                    onChange={setSelectedVariant}
+                  />
                 )}
                 {kind === "quantity" && (
                   <label>
@@ -463,29 +585,42 @@ export function PromotionsManager({
               </div>
               {kind === "bundle" && (
                 <div className="bundle-components">
+                  <label className="combo-image-input">
+                    Foto del combo (opcional, JPEG, PNG o WebP, hasta 5 MB)
+                    <input
+                      type="file"
+                      name="comboImage"
+                      accept="image/jpeg,image/png,image/webp"
+                      disabled={preview}
+                    />
+                  </label>
+                  {editing?.imagePath && imageBase && (
+                    <div className="combo-current-image">
+                      <ProductThumbnail
+                        src={`${imageBase}/${editing.imagePath}`}
+                        alt={`Foto actual de ${editing.name}`}
+                        size={160}
+                      />
+                      <label>
+                        <input type="checkbox" name="removeImage" /> Quitar foto
+                        actual
+                      </label>
+                    </div>
+                  )}
                   {components.map((c, i) => (
                     <div className="checkout-fields" key={i}>
-                      <label>
-                        Presentación del combo {i + 1}
-                        <select
-                          value={c.variantId}
-                          onChange={(e) =>
-                            setComponents(
-                              components.map((x, j) =>
-                                i === j
-                                  ? { ...x, variantId: e.target.value }
-                                  : x,
-                              ),
-                            )
-                          }
-                        >
-                          {variants.map((v) => (
-                            <option key={v.value} value={v.value}>
-                              {v.label}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
+                      <SearchableVariantSelect
+                        label={`Presentación del combo ${i + 1}`}
+                        value={c.variantId}
+                        options={variants}
+                        onChange={(value) =>
+                          setComponents(
+                            components.map((x, j) =>
+                              i === j ? { ...x, variantId: value } : x,
+                            ),
+                          )
+                        }
+                      />
                       <label>
                         Unidades del combo {i + 1}
                         <input

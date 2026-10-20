@@ -10,6 +10,8 @@ export type Promotion = {
   cashPrice: number;
   startsAt: string | null;
   endsAt: string | null;
+  /** Optional photo for a bundle, stored in the existing product-media bucket. */
+  imagePath?: string | null;
 };
 export type Pricing = {
   base: number;
@@ -55,6 +57,13 @@ export function validatePromotions(
       continue;
     }
     ids.add(p.id);
+    if (
+      p.imagePath != null &&
+      (p.kind !== "bundle" ||
+        typeof p.imagePath !== "string" ||
+        !/^promotions\/[0-9a-f-]{36}\/[0-9a-f-]{36}\.(?:jpg|png|webp)$/i.test(p.imagePath) ||
+        !p.imagePath.startsWith(`promotions/${p.id}/`))
+    ) errors.push("La foto del combo no es válida.");
     const variants = new Set<string>();
     for (const c of p.components) {
       if (

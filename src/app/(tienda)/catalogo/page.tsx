@@ -4,6 +4,7 @@ import { getCatalog } from "@/modules/catalog/server";
 import { getEnvironment } from "@/lib/config/server";
 import { CatalogListing } from "@/components/catalog/listing";
 import { publicCatalog } from "@/modules/catalog/model";
+import { readPromotions } from "@/modules/commerce/promotions-server";
 export const metadata: Metadata = { title: "Catálogo" };
 export default async function CatalogPage({
   searchParams,
@@ -13,7 +14,10 @@ export default async function CatalogPage({
   const params = await searchParams;
   const value = (key: string) =>
     typeof params[key] === "string" ? (params[key] as string) : undefined;
-  const { catalog, configured, error } = await getCatalog();
+  const [{ catalog, configured, error }, promotions] = await Promise.all([
+    getCatalog(),
+    readPromotions(),
+  ]);
   const navigation =
     configured && !error
       ? catalog.categories.filter((item) => item.active)
@@ -41,10 +45,12 @@ export default async function CatalogPage({
             brand: value("marca"),
             flavor: value("sabor"),
             availability: value("disponibilidad"),
+            promotion: value("promocion"),
             min: value("min"),
             max: value("max"),
             sort: value("orden"),
           }}
+          promotions={promotions.state.promotions}
           imageBase={
             config ? `${config.url}/storage/v1/object/public/product-media` : ""
           }

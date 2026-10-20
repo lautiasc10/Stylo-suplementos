@@ -1007,18 +1007,70 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--space-8);
 }
+@media (min-width: 801px) {
+  .home-offer-grid[data-count="2"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
 .home-offer {
   display: flex;
   flex-direction: column;
   border-top: 1px solid var(--gold);
   padding-block: var(--space-6);
   gap: var(--space-4);
+  min-width: 0;
 }
-.home-offer > .eyebrow {
-  margin: 0;
-  font-size: var(--text-sm);
-  font-weight: 600;
+.home-offer-media {
+  position: relative;
+  aspect-ratio: 1.3;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(
+      circle at 50% 88%,
+      color-mix(in srgb, var(--gold) 22%, transparent),
+      transparent 44%
+    ),
+    var(--commercial-background);
+  border: 1px solid var(--line);
+}
+.home-offer-media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: var(--space-3);
+}
+.home-offer-media-empty {
   color: var(--gold);
+  opacity: 0.5;
+}
+.home-offer .product-prices dd {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+.home-offer .product-prices dd strong {
+  font-family: var(--font-heading);
+  font-size: clamp(1.65rem, 2vw, 2.25rem);
+  line-height: 1;
+}
+.home-offer .product-prices del {
+  display: inline;
+}
+.home-offer-media > .eyebrow {
+  position: absolute;
+  inset: var(--space-3) auto auto var(--space-3);
+  margin: 0;
+  padding: 0.45rem 0.6rem;
+  background: var(--gold);
+  color: var(--cinematic-background);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  z-index: 1;
 }
 .home-offer h3 {
   font-size: clamp(2rem, 3vw, 3rem);

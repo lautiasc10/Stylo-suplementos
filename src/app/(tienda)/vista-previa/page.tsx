@@ -16,6 +16,7 @@ export default async function PreviewPage({
           brand: params.marca,
           flavor: params.sabor,
           availability: params.disponibilidad,
+          promotion: params.promocion,
           min: params.min,
           max: params.max,
           sort: params.orden,

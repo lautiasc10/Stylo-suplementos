@@ -103,7 +103,13 @@ test("productos se agrupan por marca y se buscan por nombre, sabor o SKU", async
   );
   await page.goto("/vista-previa/gestion");
   const brands = page.locator(".admin-product-brand-heading h3");
-  await expect(brands).toHaveText(["STAR NUTRITION", "ONE FIT", "XBODY"]);
+  await expect(brands).toHaveText("STAR NUTRITION");
+  const pages = page.getByRole("navigation", { name: "Páginas de productos por marca" });
+  await expect(pages.getByRole("button")).toHaveCount(3);
+  await pages.getByRole("button", { name: /2\. ONE FIT/ }).click();
+  await expect(brands).toHaveText("ONE FIT");
+  await pages.getByRole("button", { name: /3\. XBODY/ }).click();
+  await expect(brands).toHaveText("XBODY");
   const search = page.getByRole("searchbox", { name: "Buscar productos" });
   await search.fill("demo-4-a");
   await expect(page.locator(".admin-product-card")).toHaveCount(1);

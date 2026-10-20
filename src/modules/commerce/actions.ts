@@ -12,6 +12,7 @@ import {
 import { cartCookie, readCart, readCartItems } from "./server";
 import { readPromotions } from "./promotions-server";
 import { validatePromotions, type PromotionState } from "./promotions";
+import { inspectImage } from "@/modules/catalog/image";
 import { requireAdmin } from "@/modules/admin/access";
 import { revalidatePath } from "next/cache";
 import { validateManualOrder, type ManualOrderInput } from "./orders";
@@ -78,7 +79,7 @@ export async function reviewCheckoutAndRedirect(form: FormData) {
   await reviewCheckout(form);
   redirect("/checkout");
 }
-export async function savePromotions(state: PromotionState) {
+export async function savePromotions(state: PromotionState, image?: FormData) {
   const { client } = await requireAdmin();
   const { catalog, error } = await getCatalog();
   if (error) return { error: "No pudimos consultar las presentaciones." };
@@ -91,17 +92,48 @@ export async function savePromotions(state: PromotionState) {
     return { error: "La configuración no es válida." };
   const errors = validatePromotions(state.promotions, catalog);
   if (errors.length) return { error: errors.join(" ") };
+  let uploadedPath: string | undefined;
+  if (image) {
+    const file = image.get("file");
+    const promotionId = String(image.get("promotionId") ?? "");
+    const promotion = state.promotions.find((item) => item.id === promotionId);
+    if (!(file instanceof File) || !promotion || promotion.kind !== "bundle")
+      return { error: "Elegí un combo y una imagen válida." };
+    try {
+      const inspected = await inspectImage(file);
+      uploadedPath = `promotions/${promotionId}/${crypto.randomUUID()}.${inspected.extension}`;
+      const uploaded = await client.storage
+        .from("product-media")
+        .upload(uploadedPath, inspected.bytes, {
+          contentType: inspected.mime,
+          upsert: false,
+        });
+      if (uploaded.error)
+        return { error: "No pudimos subir la foto del combo." };
+      state = {
+        ...state,
+        promotions: state.promotions.map((item) =>
+          item.id === promotionId ? { ...item, imagePath: uploadedPath } : item,
+        ),
+      };
+    } catch {
+      return { error: "La foto debe ser JPEG, PNG o WebP de hasta 5 MB." };
+    }
+  }
   const result = await client.rpc("save_commerce_promotions", {
     payload: state.promotions,
     expected_revision: state.revision,
   });
-  if (result.error)
+  if (result.error) {
+    if (uploadedPath)
+      await client.storage.from("product-media").remove([uploadedPath]);
     return {
       error:
         result.error.code === "40001"
           ? "Las promociones cambiaron en otra sesión. Recargá antes de guardar."
           : "No pudimos guardar las promociones.",
     };
+  }
   revalidatePath("/", "layout");
   return { state: { ...state, revision: result.data as number } };
 }

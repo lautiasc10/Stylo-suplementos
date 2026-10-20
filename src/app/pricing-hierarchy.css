@@ -21,6 +21,13 @@
 .editorial-pricing-list strong {
   color: var(--foreground);
 }
+.editorial-pricing del,
+.transfer-pricing del {
+  color: var(--muted);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  white-space: nowrap;
+}
 .editorial-pricing-list > span,
 .editorial-pricing-transfer > span:not(.transfer-saving) {
   font-size: var(--text-sm);

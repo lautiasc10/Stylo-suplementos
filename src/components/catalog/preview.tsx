@@ -8,6 +8,10 @@ import {
   type CatalogFilters,
 } from "@/modules/catalog/model";
 import { inspectImage } from "@/modules/catalog/image";
+import {
+  validatePromotions,
+  type Promotion,
+} from "@/modules/commerce/promotions";
 import { CatalogListing } from "./listing";
 import { ProductDetail } from "./product-detail";
 import { CatalogManager } from "./manager";
@@ -26,6 +30,29 @@ export function CatalogPreview({
 }) {
   const [state, setState] = useState<PreviewState | null>(null),
     [notice, setNotice] = useState("");
+  const [promotions, setPromotions] = useState<Promotion[]>([]);
+  useEffect(() => {
+    const sync = () => {
+      try {
+        const source = localStorage.getItem("stylo.promotions-preview.v1");
+        const data = source ? JSON.parse(source) : null;
+        setPromotions(
+          data && !validatePromotions(data.promotions).length
+            ? data.promotions
+            : [],
+        );
+      } catch {
+        setPromotions([]);
+      }
+    };
+    sync();
+    window.addEventListener("stylo-preview-change", sync);
+    window.addEventListener("storage", sync);
+    return () => {
+      window.removeEventListener("stylo-preview-change", sync);
+      window.removeEventListener("storage", sync);
+    };
+  }, []);
   useEffect(() => {
     try {
       const source = localStorage.getItem(storageKey);
@@ -79,6 +106,7 @@ export function CatalogPreview({
           action="/vista-previa"
           productPrefix="/vista-previa/producto"
           preview
+          promotions={promotions}
           imageUrls={state.images}
         />
       )}
