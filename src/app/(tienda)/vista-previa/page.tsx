@@ -16,6 +16,7 @@ export default async function PreviewPage({
       <CatalogPreview
         mode="catalog"
         filters={{
+          goal: value("objetivo"),
           q: value("q"),
           category: value("categoria"),
           brand: value("marca"),

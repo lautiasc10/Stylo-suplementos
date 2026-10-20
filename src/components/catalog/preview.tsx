@@ -15,6 +15,11 @@ import {
 import { CatalogListing } from "./listing";
 import { ProductDetail } from "./product-detail";
 import { CatalogManager } from "./manager";
+import { CinematicHero } from "@/components/storefront/cinematic-hero";
+import { ReferenceGoals } from "@/components/storefront/reference-goals";
+import { ReferenceProductReveal } from "@/components/storefront/reference-product-reveal";
+import { referenceProduct } from "@/components/storefront/reference-product";
+import { heroDisplay, heroBody } from "@/components/storefront/hero-fonts";
 const storageKey = "stylo.catalog-preview.v1";
 type PreviewState = { catalog: Catalog; images: Record<string, string> };
 export function CatalogPreview({
@@ -23,7 +28,7 @@ export function CatalogPreview({
   slug,
   selectedId,
 }: {
-  mode: "catalog" | "manage" | "product";
+  mode: "catalog" | "manage" | "product" | "reference";
   filters?: CatalogFilters;
   slug?: string;
   selectedId?: string;
@@ -92,6 +97,11 @@ export function CatalogPreview({
   if (!state) return <p role="status">Preparando vista previa…</p>;
   const data = publicCatalog(state.catalog),
     product = data.products.find((item) => item.slug === slug);
+  const spotlight =
+    mode === "reference"
+      ? referenceProduct(data, "", promotions, state.images)
+      : null;
+  if (spotlight) spotlight.href = `/vista-previa${spotlight.href}`;
   return (
     <>
       <p className="preview-notice">
@@ -99,6 +109,15 @@ export function CatalogPreview({
         Los cambios se guardan en este navegador y no modifican la tienda.
       </p>
       {notice && <p role="status">{notice}</p>}
+      {mode === "reference" && (
+        <div
+          className={`reference-landing ${heroDisplay.variable} ${heroBody.variable}`}
+        >
+          <CinematicHero composition="reference" />
+          <ReferenceProductReveal product={spotlight} />
+          <ReferenceGoals />
+        </div>
+      )}
       {mode === "catalog" && (
         <CatalogListing
           catalog={data}

@@ -15,6 +15,7 @@ import { flavorLabel, filterCatalog } from "@/modules/catalog/model";
 import { CatalogPriceRange } from "./catalog-price-range";
 import type { Promotion } from "@/modules/commerce/promotions";
 import { promotedVariantIds } from "@/modules/commerce/product-offers";
+import { CATALOG_GOALS } from "@/modules/catalog/goals";
 
 type FilterProps = {
   catalog: Catalog;
@@ -30,6 +31,10 @@ function selections({
   categories = catalog.categories,
 }: FilterProps) {
   return [
+    {
+      key: "objetivo",
+      label: CATALOG_GOALS.find((goal) => goal.slug === filters.goal)?.name,
+    },
     { key: "q", label: filters.q && `Búsqueda: ${filters.q}` },
     {
       key: "categoria",
@@ -65,6 +70,7 @@ export function CatalogActiveFilters(props: FilterProps) {
   const { filters, action } = props;
   const active = selections(props);
   const parameters = {
+    objetivo: filters.goal,
     q: filters.q,
     categoria: filters.category,
     marca: filters.brand,
@@ -100,6 +106,7 @@ export function CatalogActiveFilters(props: FilterProps) {
 
 function valuesFor(filters: CatalogFilters) {
   return {
+    objetivo: filters.goal,
     q: filters.q,
     categoria: filters.category,
     marca: filters.brand,
@@ -173,6 +180,9 @@ export function CatalogFilterSidebar(props: FilterProps) {
               Limpiar
             </Link>
           </div>
+          {filters.goal && (
+            <input type="hidden" name="objetivo" value={filters.goal} />
+          )}
           <div className="catalog-search">
             <label className="sr-only" htmlFor="catalog-search">
               Buscá por producto o marca

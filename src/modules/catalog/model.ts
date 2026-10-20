@@ -1,3 +1,5 @@
+import { CATALOG_GOALS } from "./goals";
+
 export type CatalogGroup = {
   id: string;
   name: string;
@@ -53,6 +55,7 @@ export type Catalog = {
   products: Product[];
 };
 export type CatalogFilters = {
+  goal?: string;
   q?: string;
   category?: string;
   brand?: string;
@@ -332,6 +335,16 @@ export function filterCatalog(
   promotedVariantIds?: ReadonlySet<string>,
 ) {
   const data = publicCatalog(catalog);
+  const goal = CATALOG_GOALS.find((item) => item.slug === filters.goal);
+  const goalCategories = goal
+    ? new Set(
+        data.categories
+          .filter((category) =>
+            (goal.categories as readonly string[]).includes(category.slug),
+          )
+          .map((category) => category.id),
+      )
+    : null;
   const category = data.categories.find(
     (item) => item.slug === filters.category,
   );
@@ -341,6 +354,12 @@ export function filterCatalog(
   return data.products
     .flatMap((product) => {
       const brand = data.brands.find((item) => item.id === product.brandId)!;
+      if (
+        filters.goal &&
+        (!goalCategories ||
+          !product.categoryIds.some((id) => goalCategories.has(id)))
+      )
+        return [];
       if (
         filters.category &&
         (!category || !product.categoryIds.includes(category.id))

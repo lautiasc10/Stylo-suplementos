@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Anton, Manrope } from "next/font/google";
+import { heroDisplay, heroBody } from "./hero-fonts";
 import { useEffect, useRef, useState } from "react";
 import { HeroCategoryMarquee } from "./hero-category-marquee";
 import { HeroAmbience } from "./hero-ambience";
@@ -21,19 +21,11 @@ const POSTER_URL = "/visuals/stylo-lion-poster-right-v1.webp";
 // Use the supplied source pose and matching poster. Never mirror or redraw it.
 const INITIAL_POSE_TIME = 81 / 96;
 
-const heroDisplay = Anton({
-  subsets: ["latin"],
-  weight: "400",
-  variable: "--font-hero-display",
-  display: "swap",
-});
-const heroBody = Manrope({
-  subsets: ["latin"],
-  variable: "--font-hero-body",
-  display: "swap",
-});
-
-export function CinematicHero() {
+export function CinematicHero({
+  composition = "editorial",
+}: {
+  composition?: "editorial" | "reference";
+}) {
   const { setWaiting, claimIntro } = useHomeIntro();
   const heroRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -302,7 +294,7 @@ export function CinematicHero() {
 
   return (
     <section
-      className={`sport-hero editorial-hero ${heroDisplay.variable} ${heroBody.variable}`}
+      className={`sport-hero ${composition === "reference" ? "reference-hero" : "editorial-hero"} ${heroDisplay.variable} ${heroBody.variable}`}
       ref={heroRef}
       aria-labelledby="hero-title"
       data-navigation="ready"
@@ -336,14 +328,16 @@ export function CinematicHero() {
               </span>
             </span>
           </h1>
-          <div className="hero-actions">
-            <Link href="/catalogo" className="hero-pill hero-pill-primary">
-              Explorar tienda
-            </Link>
-            <a href="#destacados" className="hero-pill hero-pill-secondary">
-              Destacados
-            </a>
-          </div>
+          {composition !== "reference" && (
+            <div className="hero-actions">
+              <Link href="/catalogo" className="hero-pill hero-pill-primary">
+                Explorar tienda
+              </Link>
+              <a href="#destacados" className="hero-pill hero-pill-secondary">
+                Destacados
+              </a>
+            </div>
+          )}
         </div>
         <div
           className="sport-hero-visual"
@@ -376,6 +370,19 @@ export function CinematicHero() {
           </div>
         </div>
       </div>
+      {composition === "reference" && (
+        <div className="reference-hero-footer">
+          <p>Proteínas, creatinas y pre-entrenos para acompañar tu rutina.</p>
+          <div className="hero-actions">
+            <Link href="/catalogo" className="hero-pill hero-pill-primary">
+              Explorar tienda
+            </Link>
+            <a href="#destacados" className="hero-pill hero-pill-secondary">
+              Destacados
+            </a>
+          </div>
+        </div>
+      )}
       <HeroCategoryMarquee />
       {motionEnabled && (
         <button

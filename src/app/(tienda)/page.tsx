@@ -5,6 +5,11 @@ import { CinematicHero } from "@/components/storefront/cinematic-hero";
 import { HomeProducts } from "@/components/storefront/home-products";
 import { HomePromotions } from "@/components/storefront/home-promotions";
 import { readPromotions } from "@/modules/commerce/promotions-server";
+import { ReferenceProductReveal } from "@/components/storefront/reference-product-reveal";
+import { referenceProduct } from "@/components/storefront/reference-product";
+import { ReferenceGoals } from "@/components/storefront/reference-goals";
+import { heroDisplay, heroBody } from "@/components/storefront/hero-fonts";
+import "../reference-home.css";
 
 export default async function HomePage() {
   const [{ catalog, error }, promotions] = await Promise.all([
@@ -28,8 +33,14 @@ export default async function HomePage() {
     )
     .slice(0, 4);
   return (
-    <>
-      <CinematicHero />
+    <div
+      className={`reference-landing ${heroDisplay.variable} ${heroBody.variable}`}
+    >
+      <CinematicHero composition="reference" />
+      <ReferenceProductReveal
+        product={referenceProduct(data, imageBase, promotions.state.promotions)}
+      />
+      <ReferenceGoals />
       <HomeProducts
         id="destacados"
         title="Productos destacados"
@@ -53,6 +64,6 @@ export default async function HomePage() {
         imageBase={imageBase}
         catalog={data}
       />
-    </>
+    </div>
   );
 }

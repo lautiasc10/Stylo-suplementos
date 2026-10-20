@@ -42,6 +42,7 @@ export default async function CatalogPage({
             slug: item.slug,
           }))}
           filters={{
+            goal: value("objetivo"),
             q: value("q"),
             category: value("categoria"),
             brand: value("marca"),

@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("las fuentes de la referencia quedan limitadas al hero", async ({
+test("el hero de la referencia usa Anton y Manrope y conserva la identidad de la cabecera", async ({
   page,
 }) => {
   await page.goto("/");
@@ -15,7 +15,7 @@ test("las fuentes de la referencia quedan limitadas al hero", async ({
   await expect(page.locator(".site-header")).toHaveCSS("font-family", /Inter/);
 });
 
-test("el titular queda legible a la izquierda y el león a la derecha en escritorio", async ({
+test("la prueba centra el león delante de la frase y deja las acciones debajo del escenario", async ({
   page,
 }, info) => {
   test.skip(info.project.name !== "desktop");
@@ -26,7 +26,14 @@ test("el titular queda legible a la izquierda y el león a la derecha en escrito
   expect(title).not.toBeNull();
   expect(actions).not.toBeNull();
   expect(lion).not.toBeNull();
-  expect(title!.x + title!.width + 16).toBeLessThan(lion!.x);
+  expect(title!.x + title!.width / 2).toBeCloseTo(
+    page.viewportSize()!.width / 2,
+    0,
+  );
+  expect(lion!.x + lion!.width / 2).toBeCloseTo(
+    page.viewportSize()!.width / 2,
+    0,
+  );
   expect(actions!.y).toBeGreaterThan(title!.y + title!.height);
   expect(lion!.x + lion!.width).toBeLessThanOrEqual(page.viewportSize()!.width);
 });
@@ -36,7 +43,9 @@ test("la frase sigue al cursor en sentido inverso y se detiene al pausar", async
 }, info) => {
   test.skip(info.project.name !== "desktop");
   await page.goto("/");
-  await expect(page.locator(".sport-hero-visual video")).toHaveClass(/is-ready/);
+  await expect(page.locator(".sport-hero-visual video")).toHaveClass(
+    /is-ready/,
+  );
   const title = page.locator(".hero-title-parallax");
   const position = () =>
     title.evaluate((e) => {
@@ -101,7 +110,7 @@ test("una carga lenta del león conserva póster, navegación y compra disponibl
     await expect(page.locator(".sport-hero-poster")).toBeVisible();
     await expect(page.locator(".hero-title")).toBeVisible();
     await expect(page.locator(".site-header")).not.toHaveAttribute("inert");
-    await page.locator(".hero-pill-primary").click();
+    await page.locator(".sport-hero .hero-pill-primary").click();
     await expect(page).toHaveURL(/\/catalogo$/);
   } finally {
     release();
@@ -116,7 +125,7 @@ test("el error del video conserva la foto y no interrumpe las acciones", async (
   await page.goto("/");
   await expect(page.locator(".sport-hero-visual video")).toHaveCount(0);
   await expect(page.locator(".sport-hero-poster")).toBeVisible();
-  await page.locator(".hero-pill-primary").click();
+  await page.locator(".sport-hero .hero-pill-primary").click();
   await expect(page).toHaveURL(/\/catalogo$/);
 });
 
@@ -370,7 +379,12 @@ test("movimiento reducido y navegación sin JavaScript conservan el hero", async
       "inert",
     );
     if (testInfo.project.name === "desktop")
-      await expect(plainPage.locator(".category-navigation")).toBeVisible();
+      await expect(
+        plainPage.getByRole("navigation", {
+          name: "Categorías de la tienda",
+          exact: true,
+        }),
+      ).toBeVisible();
     else await expect(plainPage.locator(".mobile-menu summary")).toBeVisible();
     await expect(plainPage.locator(".hero-title")).toHaveText(
       "Potenciá tu mejor versión.",

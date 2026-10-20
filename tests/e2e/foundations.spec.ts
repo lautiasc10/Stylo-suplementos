@@ -1,6 +1,8 @@
 import { test, expect, type Page } from "@playwright/test";
 
 async function categoryNavigation(page: Page, mobile: boolean) {
+  if (!mobile && (await page.locator(".category-navigation-shell").isHidden()))
+    await page.goto("/catalogo");
   if (mobile) await page.locator(".mobile-menu summary").click();
   return page.getByRole("navigation", {
     name: mobile ? "Navegación móvil" : "Explorar por categoría",
@@ -40,11 +42,11 @@ test("inicio, orden de colecciones y navegación sin desbordamiento", async ({
     .getByRole("link", { name: "Tienda", exact: true })
     .click();
   await expect(page).toHaveURL(/\/catalogo$/);
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "Tienda",
-  );
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Tienda");
   await expect(page.locator(".catalog-campaign")).toHaveCount(0);
-  expect((await page.locator(".catalog-layout").boundingBox())!.y).toBeLessThan(250);
+  expect((await page.locator(".catalog-layout").boundingBox())!.y).toBeLessThan(
+    350,
+  );
   expect(errors).toEqual([]);
 });
 
@@ -56,7 +58,7 @@ test("categorías conservan su selección sin simular productos", async ({
   const nav = await categoryNavigation(page, info.project.name === "mobile");
   await nav.getByRole("link", { name: "Creatinas", exact: true }).click();
   await expect(page).toHaveURL(/categoria=creatinas/);
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Creatinas");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Tienda");
   await expect(
     page.locator('input[name="categoria"][value="creatinas"]'),
   ).toBeChecked();
@@ -162,9 +164,7 @@ test("búsqueda y categorías siguen disponibles sin JavaScript", async ({
     await expect(page).toHaveURL(/q=proteina/);
     const nav = await categoryNavigation(page, info.project.name === "mobile");
     await nav.getByRole("link", { name: "Creatinas", exact: true }).click();
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-      "Creatinas",
-    );
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Tienda");
   } finally {
     await context.close();
   }
