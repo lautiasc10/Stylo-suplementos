@@ -7,6 +7,7 @@ import {
   quoteCart,
   validateGuest,
   merchandiseTotal,
+  type CartItem,
   type PaymentMethod,
 } from "./cart";
 import { cartCookie, readCart, readCartItems } from "./server";
@@ -16,6 +17,17 @@ import { inspectImage } from "@/modules/catalog/image";
 import { requireAdmin } from "@/modules/admin/access";
 import { revalidatePath } from "next/cache";
 import { validateManualOrder, type ManualOrderInput } from "./orders";
+import { addPromotionToCart } from "./promotion-cart";
+
+async function writeCart(items: CartItem[]) {
+  (await cookies()).set(cartCookie, JSON.stringify(items), {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production" && process.env.APP_ENV !== "local",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 30,
+  });
+}
 
 export async function refreshCart() {
   return readCart();
@@ -36,20 +48,36 @@ export async function updateCart(form: FormData) {
     String(form.get("operation") ?? ""),
     Number(form.get("quantity")),
   );
-  if (!result.error)
-    (await cookies()).set(cartCookie, JSON.stringify(result.items), {
-      httpOnly: true,
-      secure:
-        process.env.NODE_ENV === "production" &&
-        process.env.APP_ENV !== "local",
-      sameSite: "lax",
-      path: "/",
-      maxAge: 60 * 60 * 24 * 30,
-    });
+  if (!result.error) await writeCart(result.items);
   return {
     quote: quoteCart(catalog, result.items, promotions.state.promotions),
     error: result.error,
   };
+}
+export async function addPromotion(form: FormData) {
+  const [{ catalog, configured, error }, promotions, items] = await Promise.all([
+    getCatalog(),
+    readPromotions(),
+    readCartItems(),
+  ]);
+  if (!configured || error || promotions.error)
+    return { quote: await readCart(), error: "El catálogo no está disponible. Intentá más tarde." };
+  const result = addPromotionToCart(
+    catalog,
+    items,
+    promotions.state.promotions,
+    String(form.get("promotionId") ?? ""),
+  );
+  if (!result.error) await writeCart(result.items);
+  return {
+    quote: quoteCart(catalog, result.items, promotions.state.promotions),
+    error: result.error,
+  };
+}
+
+export async function addPromotionAndRedirect(form: FormData) {
+  const result = await addPromotion(form);
+  redirect(result.error ? "/carrito?error=carrito" : "/carrito");
 }
 export async function updateCartAndRedirect(form: FormData) {
   const result = await updateCart(form);

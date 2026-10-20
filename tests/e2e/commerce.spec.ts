@@ -211,6 +211,8 @@ test("admin configura cantidad con dos precios y checkout revalida sin guardar d
     .getByRole("button", { name: "Aumentar cantidad de Proteína de prueba" })
     .click();
   await dialog.getByRole("link", { name: "Continuar al checkout" }).click();
+  await expect(page.locator(".checkout-total")).toContainText("70.000,00");
+  await page.getByLabel("Mercado Pago", { exact: true }).check();
   await expect(page.locator(".checkout-total")).toContainText("80.000,00");
   await expect(page.getByRole("radio")).toHaveCount(2);
   await expect(page.getByLabel(/Efectivo al retirar/)).toHaveCount(0);

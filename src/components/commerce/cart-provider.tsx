@@ -21,7 +21,8 @@ import {
   type CartItem,
   type CartSuggestion,
 } from "@/modules/commerce/cart";
-import { refreshCart, updateCart } from "@/modules/commerce/actions";
+import { refreshCart, updateCart, addPromotion as addPromotionAction } from "@/modules/commerce/actions";
+import { addPromotionToCart } from "@/modules/commerce/promotion-cart";
 import { CartContents } from "./cart-contents";
 import {
   validatePromotions,
@@ -62,6 +63,7 @@ const CartContext = createContext<{
     operation: string,
     quantity?: number,
   ) => Promise<boolean>;
+  addPromotion: (promotionId: string) => Promise<boolean>;
   openCart: () => void;
   closeCart: () => void;
   updateQuote: (quote: CartQuote) => void;
@@ -93,7 +95,7 @@ export function CartProvider({
   const [localCatalog, setLocalCatalog] = useState(demoCatalog);
   const [localPromotions, setLocalPromotions] = useState<Promotion[]>([]);
   const [localImages, setLocalImages] = useState<Record<string, string>>({});
-  const [paymentMethod, setPaymentMethod] = useState<"mercado-pago" | "transferencia">("mercado-pago");
+  const [paymentMethod, setPaymentMethod] = useState<"mercado-pago" | "transferencia">("transferencia");
   const [busy, setBusy] = useState(false),
     [error, setError] = useState("");
   const lock = useRef(false);
@@ -228,6 +230,45 @@ export function CartProvider({
       setBusy(false);
     }
   }
+  async function addPromotion(promotionId: string) {
+    if (lock.current) return false;
+    lock.current = true;
+    ++refreshSequence.current;
+    setRefreshing(false);
+    setBusy(true);
+    setError("");
+    try {
+      if (preview) {
+        const catalog = previewCatalog();
+        const promotions = previewPromotions();
+        const items = parseCart(JSON.parse(localStorage.getItem(previewKey) ?? "[]"));
+        const result = addPromotionToCart(catalog, items, promotions, promotionId);
+        if (result.error) {
+          setError(result.error);
+          return false;
+        }
+        localStorage.setItem(previewKey, JSON.stringify(result.items));
+        setLocalQuote(quoteCart(catalog, result.items, promotions));
+      } else {
+        const form = new FormData();
+        form.set("promotionId", promotionId);
+        const result = await addPromotionAction(form);
+        setRealQuote(result.quote);
+        if (result.error) {
+          setError(result.error);
+          return false;
+        }
+      }
+      // Quick-add stays in the collection, with confirmation on its own button.
+      return true;
+    } catch {
+      setError("No pudimos agregar la promoción. Intentá otra vez.");
+      return false;
+    } finally {
+      lock.current = false;
+      setBusy(false);
+    }
+  }
   return (
     <CartContext.Provider
       value={{
@@ -243,6 +284,7 @@ export function CartProvider({
         paymentMethod,
         setPaymentMethod,
         change,
+        addPromotion,
         openCart,
         closeCart,
         updateQuote: preview ? setLocalQuote : setRealQuote,
