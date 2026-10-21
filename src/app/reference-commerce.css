@@ -1,0 +1,845 @@
+/* Lovable dfc06c8: SiteHeader, search, fly-to-bag and shop hover.
+   Presentation only: STYLO remains responsible for stock, prices and checkout. */
+.reference-gold-text {
+  color: var(--gold);
+  background: var(--brand-gold-gradient);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.header-actions .cart-trigger {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: 9999px;
+  border: 1px solid color-mix(in oklab, var(--gold) 50%, transparent);
+  color: var(--gold);
+  background: transparent;
+  transition:
+    color 180ms,
+    background-color 180ms;
+}
+.header-actions .cart-trigger:hover {
+  color: var(--background);
+  background: var(--gold);
+}
+.header-actions .cart-trigger .icon {
+  width: 20px;
+  height: 20px;
+}
+.cart-trigger .cart-count {
+  top: -6px;
+  right: -6px;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+}
+.reference-search-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 1px solid color-mix(in oklab, var(--gold) 18%, transparent);
+  border-radius: 9999px;
+  color: var(--muted);
+  font-size: 14px;
+  transition:
+    border-color 180ms,
+    color 180ms;
+}
+.reference-search-trigger:hover {
+  color: var(--gold);
+  border-color: var(--gold);
+}
+.reference-search-trigger .icon {
+  width: 18px;
+  height: 18px;
+}
+.reference-search-trigger kbd {
+  padding: 0 6px;
+  font: inherit;
+  font-size: 12px;
+  border: 1px solid var(--action-border);
+  border-radius: 3px;
+}
+.cart-fly-dot {
+  position: fixed;
+  left: -8px;
+  top: -8px;
+  z-index: 100;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: var(--brand-gold-gradient);
+  box-shadow:
+    0 0 24px 6px var(--gold-glow),
+    0 0 4px var(--gold-light);
+}
+.cart-arrival[data-visible="true"] {
+  position: fixed;
+  z-index: 60;
+  inset: auto 24px 24px auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: calc(100vw - 32px);
+  padding: 12px 16px;
+  border: 1px solid var(--action-border);
+  border-radius: 4px;
+  background: var(--reference-surface);
+  color: var(--foreground);
+  font-size: 14px;
+}
+.cart-arrival button {
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--gold);
+  font-weight: 600;
+}
+.cart-drawer.reference-bag {
+  width: min(448px, 100vw);
+  border-color: color-mix(in oklab, var(--gold) 18%, transparent);
+  background: var(--background);
+  font-family: var(--font-hero-body), var(--font-sans);
+}
+.reference-bag[open] {
+  animation: reference-bag-enter 500ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.reference-bag[open][data-closing="true"] {
+  animation: reference-bag-exit 300ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+@keyframes reference-bag-enter {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@keyframes reference-bag-exit {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+.reference-bag .cart-heading {
+  padding: 24px;
+  border-color: var(--action-border);
+}
+.reference-bag .cart-heading h2 {
+  display: block;
+  font:
+    400 30px/1.2 var(--font-hero-display),
+    var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+.reference-bag .cart-heading .icon-button {
+  width: 36px;
+  height: 36px;
+  min-height: 36px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+}
+.bag-contents {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  font-size: 14px;
+}
+.bag-feedback:has(> .sr-only:only-child) {
+  display: none;
+}
+.bag-feedback .preview-notice {
+  margin: 0;
+  padding: 8px 24px;
+  font-size: 12px;
+}
+.bag-empty {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 32px;
+  text-align: center;
+}
+.bag-empty > .icon {
+  width: 40px;
+  height: 40px;
+  color: color-mix(in oklab, var(--gold) 50%, transparent);
+}
+.bag-empty h3 {
+  margin: 0;
+  font:
+    400 16px/1.5 var(--font-hero-body),
+    var(--font-sans);
+  color: var(--muted);
+}
+.bag-empty > a {
+  padding: 12px 0;
+  color: var(--gold);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+}
+.bag-lines {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+  padding: 0 24px;
+  margin: 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gold) transparent;
+}
+.bag-line {
+  display: flex;
+  gap: 16px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--action-border);
+}
+.bag-line:last-child {
+  border-bottom: 0;
+}
+.bag-photo {
+  flex: 0 0 80px;
+  align-self: flex-start;
+}
+.bag-photo .product-thumbnail {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  background: var(--reference-surface);
+  border-radius: 3px;
+}
+.bag-photo .product-thumbnail img {
+  width: 64px;
+  height: 64px;
+  min-width: 0;
+  min-height: 0;
+  object-fit: contain;
+  padding: 0;
+}
+.bag-line-copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+.bag-line-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 8px;
+}
+.bag-brand {
+  color: var(--gold);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin: 0 0 4px;
+}
+.bag-name {
+  display: block;
+  font-weight: 600;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.bag-name:hover {
+  color: var(--gold);
+}
+.bag-line .cart-variant {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 4px 0 12px;
+  overflow-wrap: anywhere;
+}
+.bag-remove {
+  flex: none;
+  display: grid;
+  place-items: center;
+  min-width: 32px;
+  min-height: 36px;
+  margin: -8px -8px 0 0;
+  padding: 8px;
+  background: transparent;
+  border: 0;
+  color: var(--muted);
+}
+.bag-remove .icon {
+  width: 16px;
+  height: 16px;
+}
+.bag-remove:hover {
+  color: var(--gold);
+}
+.bag-line-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto;
+}
+.bag-quantity {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--action-border);
+  border-radius: 9999px;
+}
+.bag-quantity button {
+  width: 36px;
+  min-height: 36px;
+  border: 0;
+  background: transparent;
+  color: var(--foreground);
+  padding: 4px;
+}
+.bag-quantity button:hover:not(:disabled) {
+  color: var(--gold);
+}
+.bag-quantity span {
+  min-width: 24px;
+  text-align: center;
+}
+.bag-line-price {
+  font:
+    400 20px/1.1 var(--font-hero-display),
+    var(--font-heading);
+  white-space: nowrap;
+}
+.bag-summary {
+  flex: none;
+  padding: 20px 24px max(16px, env(safe-area-inset-bottom));
+  border-top: 1px solid var(--action-border);
+}
+.bag-payment {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding: 0;
+  border: 0;
+}
+.bag-payment legend {
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+.bag-payment label {
+  display: block;
+  position: relative;
+  flex: 1;
+  cursor: pointer;
+}
+.bag-payment input {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  cursor: pointer;
+}
+.bag-payment span {
+  display: block;
+  padding: 10px 8px;
+  border: 1px solid var(--action-border);
+  border-radius: 9999px;
+  text-align: center;
+  font-size: 14px;
+}
+.bag-payment input:checked + span {
+  color: var(--gold);
+  border-color: var(--gold);
+  background: var(--gold-glow);
+}
+.bag-payment input:focus-visible + span {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+.bag-summary dl {
+  margin: 0;
+}
+.bag-summary dl > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+.bag-summary dt {
+  color: var(--muted);
+}
+.bag-summary dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+.bag-summary .bag-total {
+  align-items: end;
+  padding-top: 8px;
+}
+.bag-total dt {
+  color: var(--foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 12px;
+}
+.bag-total dd {
+  font:
+    400 36px/1 var(--font-hero-display),
+    var(--font-heading);
+}
+.bag-promotion,
+.bag-delivery,
+.bag-help {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+.bag-discount,
+.bag-promotion {
+  color: var(--gold);
+}
+.bag-checkout {
+  display: block;
+  margin-top: 20px;
+  padding: 16px;
+  border-radius: 3px;
+  background: var(--gold);
+  color: var(--background);
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.16em;
+}
+.bag-help {
+  text-align: center;
+}
+.bag-undo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 24px;
+  border-top: 1px solid var(--action-border);
+  font-size: 12px;
+}
+.bag-undo button {
+  padding: 8px;
+  min-height: 44px;
+  border: 0;
+  color: var(--gold);
+  background: transparent;
+}
+.search-dialog.reference-search-dialog {
+  inset: 12vh 0 auto;
+  margin: 0 auto;
+  height: auto;
+  width: min(672px, calc(100vw - 32px));
+  max-height: calc(88dvh - 16px);
+  background: transparent;
+  font-family: var(--font-hero-body), var(--font-sans);
+  overflow: visible;
+}
+.reference-search-dialog::backdrop {
+  background: color-mix(in oklab, var(--background) 80%, transparent);
+  /* The dark overlay carries the reference look. A smaller blur avoids
+     repainting an expensive full-desktop filter over the live catalog. */
+  backdrop-filter: blur(4px);
+}
+.reference-search-panel {
+  border: 1px solid var(--action-border);
+  border-radius: 3px;
+  background: var(--reference-surface);
+  box-shadow: 0 40px 120px -20px var(--gold-glow);
+  overflow: hidden;
+  animation: reference-search-enter 450ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  font-size: 14px;
+}
+.reference-search-dialog[data-closing="true"] .reference-search-panel {
+  animation: search-panel-out 160ms ease both;
+}
+.reference-search-input {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--action-border);
+}
+.reference-search-input > .icon {
+  width: 20px;
+  height: 20px;
+  color: var(--gold);
+  flex: none;
+}
+.reference-search-input input {
+  min-width: 0;
+  flex: 1;
+  padding: 20px 0;
+  border: 0;
+  background: transparent;
+  color: var(--foreground);
+  font-size: 18px;
+  outline: 0;
+}
+.reference-search-input:focus-within {
+  border-color: var(--gold);
+}
+.reference-search-input input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+.reference-search-input input::placeholder {
+  color: var(--muted);
+}
+.reference-search-close {
+  flex: none;
+  min-width: 44px;
+  min-height: 44px;
+  background: transparent;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 12px;
+  border: 0;
+  padding: 0;
+}
+.reference-search-close .icon {
+  display: none;
+}
+.reference-search-close:hover {
+  color: var(--gold);
+}
+.reference-search-body {
+  max-height: 50dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gold) transparent;
+}
+.reference-search-results {
+  padding: 8px;
+  margin: 0;
+  list-style: none;
+}
+.reference-search-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  border-radius: 3px;
+  transition: background-color 180ms;
+}
+.reference-search-row:is(:hover, :focus-within),
+.reference-search-row[data-active="true"] {
+  background: var(--reference-muted);
+}
+.reference-search-product {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+  min-width: 0;
+}
+.reference-search-thumbnail {
+  display: grid;
+  position: relative;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  flex: none;
+  color: color-mix(in oklab, var(--gold) 45%, transparent);
+}
+.reference-search-thumbnail img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0;
+}
+.reference-search-thumbnail[data-loaded="true"] img {
+  opacity: 1;
+}
+.reference-search-thumbnail[data-loaded="true"] > .icon {
+  visibility: hidden;
+}
+.reference-search-product > span:last-child {
+  min-width: 0;
+}
+.reference-search-product strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.reference-search-product small {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.reference-search-product:hover {
+  color: var(--gold);
+}
+.reference-search-row .add-to-cart {
+  flex: none;
+  margin: 0;
+}
+.reference-search-row .add-to-cart .button {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--gold);
+  border-radius: 3px;
+  color: var(--gold);
+  background: transparent;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.reference-search-row .add-to-cart .button:not(:disabled):hover {
+  color: var(--background);
+  background: var(--gold);
+}
+.reference-search-row .add-to-cart .button:not(:disabled) span::before {
+  content: "+ ";
+}
+.reference-search-empty {
+  padding: 24px;
+  text-align: center;
+  color: var(--muted);
+}
+.reference-search-empty h3 {
+  font:
+    400 16px/1.5 var(--font-hero-body),
+    var(--font-sans);
+}
+.reference-search-empty a,
+.reference-search-empty button {
+  display: inline-block;
+  min-height: 44px;
+  padding: 12px;
+  border: 0;
+  background: transparent;
+  color: var(--gold);
+}
+.reference-search-all {
+  display: block;
+  padding: 16px 24px;
+  border-top: 1px solid var(--action-border);
+  color: var(--gold);
+}
+.reference-search-skeleton {
+  padding: 8px 20px;
+}
+.reference-search-skeleton > div {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 80px;
+}
+.reference-search-skeleton span {
+  width: 45%;
+  height: 12px;
+  border-radius: 3px;
+  background: var(--reference-muted);
+}
+.reference-search-skeleton span:first-child {
+  width: 48px;
+  height: 48px;
+}
+.reference-search-skeleton span:last-child {
+  width: 70px;
+  margin-left: auto;
+}
+.product-card {
+  border-color: color-mix(in oklab, var(--gold) 18%, transparent);
+  transition:
+    transform 500ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-color 300ms;
+}
+.product-card::before {
+  inset: 0;
+  padding: 0;
+  background: transparent;
+  -webkit-mask: none;
+  mask: none;
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklab, var(--gold) 60%, transparent),
+    0 30px 60px -30px var(--gold-glow);
+  transition: opacity 500ms;
+}
+.product-card .product-image-stage::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 24px;
+  pointer-events: none;
+  background: radial-gradient(closest-side, var(--gold-glow), transparent);
+  opacity: 0;
+  transition: opacity 700ms;
+}
+.product-card .product-frame-link {
+  transition: transform 700ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.product-card:focus-within {
+  box-shadow: none;
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: none;
+    border-color: color-mix(in oklab, var(--gold) 60%, transparent);
+  }
+  .product-card:is(:hover, :focus-within) .product-image-stage::before {
+    opacity: 1;
+  }
+  .product-card:is(:hover, :focus-within) .product-frame-link {
+    transform: translateY(-8px) scale(1.05) rotate(-2deg);
+  }
+}
+@keyframes reference-search-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .reference-search-row {
+    animation: reference-result-enter 450ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    animation-delay: var(--result-delay, 0ms);
+  }
+}
+@keyframes reference-result-enter {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (max-width: 1100px) {
+  .reference-search-trigger > span,
+  .reference-search-trigger > kbd {
+    display: none;
+  }
+  .reference-search-trigger {
+    width: 44px;
+    padding: 10px;
+  }
+}
+@media (max-width: 600px) {
+  .search-dialog.reference-search-dialog {
+    width: calc(100vw - 32px);
+    inset: 12dvh 0 auto;
+    max-height: 80dvh;
+  }
+  .reference-search-input {
+    padding-inline: 16px;
+    gap: 8px;
+  }
+  .reference-search-input input {
+    font-size: 16px;
+  }
+  .reference-search-row {
+    gap: 8px;
+    padding: 10px 4px;
+  }
+  .reference-search-product {
+    gap: 8px;
+  }
+  .reference-search-thumbnail {
+    width: 40px;
+    height: 48px;
+  }
+  .reference-search-row .add-to-cart .button {
+    padding-inline: 8px;
+    font-size: 12px;
+    letter-spacing: 0;
+  }
+  .reference-search-close span {
+    display: none;
+  }
+  .reference-search-close .icon {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+  }
+  .reference-search-body {
+    max-height: min(60dvh, calc(80dvh - 80px));
+  }
+  .cart-arrival[data-visible="true"] {
+    inset: auto 16px calc(92px + env(safe-area-inset-bottom)) 16px;
+    justify-content: space-between;
+  }
+  .bag-lines {
+    padding-inline: 16px;
+  }
+  .bag-line {
+    gap: 12px;
+  }
+  .bag-summary {
+    padding-inline: 16px;
+  }
+}
+@media (max-height: 650px) {
+  .reference-bag .cart-heading {
+    padding-block: 12px;
+  }
+  .bag-summary {
+    padding-block: 12px;
+  }
+  .bag-payment {
+    margin-bottom: 8px;
+  }
+  .bag-payment legend {
+    display: none;
+  }
+  .bag-payment span {
+    padding-block: 6px;
+  }
+  .bag-delivery,
+  .bag-help {
+    display: none;
+  }
+  .bag-checkout {
+    margin-top: 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reference-search-panel,
+  .reference-search-row,
+  .reference-bag[open] {
+    animation: none !important;
+  }
+  .reference-search-dialog::backdrop {
+    animation: none !important;
+  }
+  .product-card,
+  .product-card .product-frame-link {
+    transform: none !important;
+    transition: none;
+  }
+  .product-card .product-image-stage::before,
+  .product-card::before {
+    transition: none;
+  }
+}

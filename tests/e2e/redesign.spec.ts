@@ -244,13 +244,13 @@ test("un carrito largo conserva el resumen, el foco y el acceso a cada producto"
   });
   await opener.click();
   const dialog = page.getByRole("dialog");
-  await expect(dialog.locator(".cart-line")).toHaveCount(items.length);
-  const action = dialog.getByRole("link", { name: "Continuar al checkout" });
+  await expect(dialog.locator(".bag-line")).toHaveCount(items.length);
+  const action = dialog.getByRole("link", { name: "Finalizar compra" });
   await expect(action).toBeInViewport();
   await dialog
-    .locator(".cart-products")
+    .locator(".bag-lines")
     .evaluate((el) => (el.scrollTop = el.scrollHeight));
-  await expect(dialog.locator(".cart-line").last()).toBeInViewport();
+  await expect(dialog.locator(".bag-line").last()).toBeInViewport();
   await expect(action).toBeInViewport();
   await page.keyboard.press("Escape");
   await expect(opener).toBeFocused();
@@ -258,8 +258,8 @@ test("un carrito largo conserva el resumen, el foco y el acceso a cada producto"
   await opener.click();
   await action.scrollIntoViewIfNeeded();
   await expect(action).toBeInViewport();
-  await dialog.locator(".cart-line").first().scrollIntoViewIfNeeded();
-  await expect(dialog.locator(".cart-line").first()).toBeInViewport();
+  await dialog.locator(".bag-line").first().scrollIntoViewIfNeeded();
+  await expect(dialog.locator(".bag-line").first()).toBeInViewport();
 });
 
 test("la navegación administrativa abre la tarea elegida y la edición conserva sus secciones", async ({

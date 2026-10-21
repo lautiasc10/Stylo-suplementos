@@ -2,7 +2,7 @@
 
 @theme {
   --color-stylo-black: #050505;
-  --color-stylo-gold: #d8b474;
+  --color-stylo-gold: oklch(0.8 0.15 75);
   --color-stylo-white: #ece9e1;
   --font-sans: var(--font-body), Arial, Helvetica, sans-serif;
   --font-heading: var(--font-display), "Arial Narrow", Arial, sans-serif;
@@ -14,14 +14,19 @@
   --cinematic-background: #000000;
   --commercial-background: #080808;
   --foreground: #ece9e1;
-  --gold: #d8b474;
+  --gold: oklch(0.8 0.15 75);
+  --gold-accent: oklch(0.72 0.16 60);
+  --gold-light: oklch(0.93 0.09 88);
+  --gold-glow: color-mix(in oklab, var(--gold) 22%, transparent);
+  --reference-surface: oklch(0.15 0.006 70);
+  --reference-muted: oklch(0.2 0.008 70);
   --brand-gold-gradient: linear-gradient(
-    125deg,
-    #a97532 0%,
-    #c58d42 30%,
-    #f2bc65 60%,
-    #ffd788 82%,
-    #bd8640 100%
+    100deg,
+    var(--gold-accent) 0%,
+    var(--gold) 35%,
+    var(--gold-light) 50%,
+    var(--gold) 65%,
+    var(--gold-accent) 100%
   );
   --muted: #92928d;
   --image-background: #ffffff;
@@ -59,7 +64,7 @@
   --surface-raised: #191919;
   --surface-hover: #232323;
   --control-border: #737373;
-  --action-border: #aa8c58;
+  --action-border: color-mix(in oklab, var(--gold) 40%, transparent);
   --border-strong: #484848;
   --radius-panel: 0px;
   --motion-control: 180ms;

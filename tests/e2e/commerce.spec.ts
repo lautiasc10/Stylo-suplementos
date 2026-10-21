@@ -1,21 +1,44 @@
 import { test, expect } from "@playwright/test";
 import { demoCatalog } from "../../src/modules/catalog/demo";
 
-test("avisa del stock agotado y permite guardar un cupo promocional", async ({ page }) => {
+test("avisa del stock agotado y permite guardar un cupo promocional", async ({
+  page,
+}) => {
   const catalog = demoCatalog();
   catalog.products[0].variants[0].stock = 0;
-  await page.addInitScript((data) => {
-    localStorage.setItem("stylo.catalog-preview.v1", JSON.stringify(data));
-  }, { catalog });
+  await page.addInitScript(
+    (data) => {
+      localStorage.setItem("stylo.catalog-preview.v1", JSON.stringify(data));
+    },
+    { catalog },
+  );
   await page.goto("/vista-previa/promociones");
   await page.getByRole("button", { name: "Crear promoción" }).click();
-  await expect(page.getByText("Esta promoción no aparecerá en la tienda mientras falte stock:")).toBeVisible();
-  await page.getByRole("textbox", { name: "Nombre de promoción" }).fill("Cupo de prueba");
-  await page.getByRole("textbox", { name: "Precio final de lista (ARS)" }).fill("40000");
-  await page.getByRole("textbox", { name: "Precio final efectivo / transferencia (ARS)" }).fill("35000");
-  await page.getByRole("spinbutton", { name: "Cupo de unidades promocionadas (opcional)" }).fill("10");
+  await expect(
+    page.getByText(
+      "Esta promoción no aparecerá en la tienda mientras falte stock:",
+    ),
+  ).toBeVisible();
+  await page
+    .getByRole("textbox", { name: "Nombre de promoción" })
+    .fill("Cupo de prueba");
+  await page
+    .getByRole("textbox", { name: "Precio final de lista (ARS)" })
+    .fill("40000");
+  await page
+    .getByRole("textbox", {
+      name: "Precio final efectivo / transferencia (ARS)",
+    })
+    .fill("35000");
+  await page
+    .getByRole("spinbutton", {
+      name: "Cupo de unidades promocionadas (opcional)",
+    })
+    .fill("10");
   await page.getByRole("button", { name: "Guardar promoción" }).click();
-  await expect(page.getByText("Sin stock suficiente: no aparece en la tienda.")).toBeVisible();
+  await expect(
+    page.getByText("Sin stock suficiente: no aparece en la tienda."),
+  ).toBeVisible();
   await expect(page.getByText("Cupo: 0 de 10 usados")).toBeVisible();
 });
 
@@ -78,6 +101,7 @@ test("carrito lateral conserva SKU y cantidades, restaura foco y persiste sin me
     exact: true,
   });
   await add.click();
+  await page.locator(".cart-trigger").click();
   const dialog = page.getByRole("dialog");
   await expect(dialog).toBeVisible();
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -85,14 +109,14 @@ test("carrito lateral conserva SKU y cantidades, restaura foco y persiste sin me
   await expect(dialog.locator(".cart-variant")).toHaveText(
     "Chocolate · 1 kg · Envase",
   );
-  await expect(dialog.locator(".cart-unit-price")).toContainText("/ unidad");
+  await expect(dialog.locator(".bag-line-price")).toHaveText("$ 41.000");
   await dialog
     .getByRole("button", { name: "Aumentar cantidad de Proteína de prueba" })
     .click();
   await expect(dialog.getByLabel("Cantidad: 2", { exact: true })).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(dialog).not.toBeVisible();
-  await expect(add).toBeFocused();
+  await expect(page.locator(".cart-trigger")).toBeFocused();
   await page.reload();
   await page.getByRole("link", { name: "Abrir carrito, 2 unidades" }).click();
   await expect(dialog.getByLabel("Cantidad: 2", { exact: true })).toBeVisible();
@@ -102,17 +126,29 @@ test("carrito lateral conserva SKU y cantidades, restaura foco y persiste sin me
     page.locator(".cart-page").getByText("Tu próxima elección empieza acá."),
   ).toBeVisible();
 });
-test("el carrito recomienda un accesorio real y conserva el precio elegido al ir al checkout", async ({ page }) => {
+test("la página del carrito conserva accesorios y el precio elegido al ir al checkout", async ({
+  page,
+}) => {
   await page.goto("/vista-previa/producto/proteina-de-prueba");
-  await page.getByRole("button", { name: "Agregar al carrito", exact: true }).click();
-  const dialog = page.getByRole("dialog");
-  await expect(dialog.locator(".cart-suggestion")).toContainText("Shaker de prueba");
-  await dialog.locator(".cart-suggestion").getByRole("button", { name: "Agregar" }).click();
+  await page
+    .getByRole("button", { name: "Agregar al carrito", exact: true })
+    .click();
+  await page.goto("/vista-previa/carrito");
+  const dialog = page.locator(".cart-page");
+  await expect(dialog.locator(".cart-suggestion")).toContainText(
+    "Shaker de prueba",
+  );
+  await dialog
+    .locator(".cart-suggestion")
+    .getByRole("button", { name: "Agregar" })
+    .click();
   await expect(dialog.getByLabel("Cantidad: 1")).toHaveCount(2);
   await dialog.locator(".cart-price-switch label").first().click();
   await expect(dialog.locator('input[value="transferencia"]')).toBeChecked();
   await dialog.getByRole("link", { name: /Continuar al checkout/ }).click();
-  await expect(page.getByRole("radio", { name: "Con transferencia" })).toBeChecked();
+  await expect(
+    page.getByRole("radio", { name: "Con transferencia" }),
+  ).toBeChecked();
 });
 test("una variante agotada no se agrega y las cantidades no superan la existencia", async ({
   page,
@@ -131,6 +167,7 @@ test("una variante agotada no se agrega y las cantidades no superan la existenci
   await page
     .getByRole("button", { name: "Agregar al carrito", exact: true })
     .click();
+  await page.locator(".cart-trigger").click();
   const dialog = page.getByRole("dialog"),
     increase = dialog.getByRole("button", {
       name: "Aumentar cantidad de Proteína de prueba",
@@ -139,13 +176,11 @@ test("una variante agotada no se agrega y las cantidades no superan la existenci
   await expect(increase).toBeDisabled();
   await expect(dialog.getByLabel("Cantidad: 8", { exact: true })).toBeVisible();
   await dialog.getByLabel("Quitar Proteína de prueba", { exact: true }).click();
-  await expect(
-    dialog.getByText("Tu próxima elección empieza acá."),
-  ).toBeVisible();
+  await expect(dialog.getByText("Tu carrito está vacío.")).toBeVisible();
   await dialog.getByRole("button", { name: "Deshacer" }).click();
   await expect(dialog.getByLabel("Cantidad: 8", { exact: true })).toBeVisible();
   await dialog.getByLabel("Quitar Proteína de prueba", { exact: true }).click();
-  await expect(dialog.getByText("Tu próxima elección empieza acá.")).toBeVisible();
+  await expect(dialog.getByText("Tu carrito está vacío.")).toBeVisible();
 });
 test("admin configura cantidad con dos precios y checkout revalida sin guardar datos personales", async ({
   page,
@@ -206,13 +241,18 @@ test("admin configura cantidad con dos precios y checkout revalida sin guardar d
   await page
     .getByRole("button", { name: "Agregar al carrito", exact: true })
     .click();
+  await page.locator(".cart-trigger").click();
   const dialog = page.getByRole("dialog");
   await dialog
     .getByRole("button", { name: "Aumentar cantidad de Proteína de prueba" })
     .click();
-  await dialog.getByRole("link", { name: "Continuar al checkout" }).click();
+  await dialog.getByRole("link", { name: "Finalizar compra" }).click();
   await expect(page.locator(".checkout-total")).toContainText("70.000,00");
-  await page.getByLabel("Mercado Pago", { exact: true }).check();
+  await expect(dialog).not.toBeVisible();
+  await page
+    .locator(".checkout-form")
+    .getByLabel("Mercado Pago", { exact: true })
+    .check();
   await expect(page.locator(".checkout-total")).toContainText("80.000,00");
   await expect(page.getByRole("radio")).toHaveCount(2);
   await expect(page.getByLabel(/Efectivo al retirar/)).toHaveCount(0);
@@ -338,6 +378,7 @@ test("gestión permite editar un combo y registra un retiro una vez sin desconta
   await page
     .getByRole("button", { name: "Agregar al carrito", exact: true })
     .click();
+  await page.locator(".cart-trigger").click();
   await expect(
     page
       .getByRole("dialog")

@@ -45,7 +45,10 @@ test("panel, búsqueda tolerante, teclado y foco sin consultas por letra", async
     "dialog",
   );
   await page.keyboard.press("Control+k");
-  const panel = page.getByRole("dialog", { name: "Encontrá tu próximo STYLO" }),
+  const panel = page.getByRole("dialog", {
+      name: "Buscar productos",
+      exact: true,
+    }),
     input = panel.getByRole("combobox", { name: "Buscar productos" });
   await expect(panel).toBeVisible();
   await expect(input).toBeFocused();
@@ -54,14 +57,12 @@ test("panel, búsqueda tolerante, teclado y foco sin consultas por letra", async
   );
   const box = await panel.boundingBox();
   if (info.project.name === "mobile") {
-    expect(box!.x).toBe(0);
-    expect(box!.y).toBe(0);
-    expect(box!.width).toBe(page.viewportSize()!.width);
-  } else expect(box!.width).toBeLessThanOrEqual(860);
+    expect(box!.x).toBe(16);
+    expect(box!.y).toBeGreaterThan(0);
+    expect(box!.width).toBe(page.viewportSize()!.width - 32);
+  } else expect(box!.width).toBeLessThanOrEqual(672);
   await input.fill("protiena");
-  await expect(
-    panel.getByRole("group", { name: "Productos" }).getByRole("option"),
-  ).toHaveCount(1);
+  await expect(panel.getByRole("option")).toHaveCount(1);
   await expect(panel.getByRole("option").first()).toContainText(
     "Proteína de prueba",
   );
@@ -129,53 +130,32 @@ test("el panel contiene el foco y cierra con X o con el fondo", async ({
   }
 });
 
-test("las búsquedas recientes guardan cinco entradas y permiten borrar una o todas", async ({
+test("el estado inicial muestra productos y Enter sin selección abre los resultados completos", async ({
   page,
 }) => {
   await fixture(page);
   await page.goto("/catalogo");
-  for (let i = 0; i < 6; i++) {
-    await page
-      .getByRole("link", { name: "Buscar productos", exact: true })
-      .click();
-    const input = page.getByRole("combobox", {
-      name: "Buscar productos",
-      exact: true,
-    });
-    await input.fill(`busqueda ${i}`);
-    await input.press("Enter");
-    await expect(page).toHaveURL(new RegExp(`q=busqueda(?:%20|\\+)${i}`));
-  }
-  const saved = await page.evaluate(() =>
-    JSON.parse(localStorage.getItem("stylo.search-recents.v1")!),
-  );
-  expect(saved).toEqual([
-    "busqueda 5",
-    "busqueda 4",
-    "busqueda 3",
-    "busqueda 2",
-    "busqueda 1",
-  ]);
   await page
     .getByRole("link", { name: "Buscar productos", exact: true })
     .click();
-  await page
-    .getByRole("button", { name: "Limpiar búsqueda", exact: true })
-    .click();
-  await page
-    .getByRole("button", { name: "Borrar búsqueda busqueda 5", exact: true })
-    .click();
+  await expect(page.locator(".search-dialog").getByRole("option")).toHaveCount(
+    4,
+  );
   await expect(
-    page.getByRole("button", {
-      name: "Borrar búsqueda busqueda 5",
-      exact: true,
-    }),
+    page.getByRole("button", { name: "Borrar todo", exact: true }),
   ).toHaveCount(0);
-  await page.getByRole("button", { name: "Borrar todo", exact: true }).click();
-  await expect(page.locator(".search-recents li")).toHaveCount(0);
+  const input = page.getByRole("combobox", {
+    name: "Buscar productos",
+    exact: true,
+  });
+  await input.fill("busqueda sin coincidencias");
+  await input.press("Enter");
+  await expect(page).toHaveURL(
+    /q=busqueda(?:%20|\+)sin(?:%20|\+)coincidencias/,
+  );
 });
 
-test("error de carga permite reintentar y resultados agrupan categorías y marcas", async ({
+test("error de carga permite reintentar y encuentra productos por categoría y marca", async ({
   page,
 }) => {
   let attempts = 0;
@@ -195,9 +175,13 @@ test("error de carga permite reintentar y resultados agrupan categorías y marca
   await expect(panel.getByRole("alert")).toHaveCount(0);
   const input = panel.getByRole("combobox", { name: "Buscar productos" });
   await input.fill("proteínas");
-  await expect(panel.getByRole("group", { name: "Categorías" })).toBeVisible();
+  await expect(panel.getByRole("option").first()).toContainText(
+    "Proteína de prueba",
+  );
   await input.fill("marca prueba a");
-  await expect(panel.getByRole("group", { name: "Marcas" })).toBeVisible();
+  await expect(panel.getByRole("option").first()).toContainText(
+    "Marca de prueba A",
+  );
   await expect(input).toHaveAttribute("aria-expanded", "true");
   await page.keyboard.press("Escape");
   await expect(panel).not.toBeVisible();
@@ -402,6 +386,6 @@ test("el precio sugerido respeta rebajas y no anticipa un descuento por cantidad
     .getByRole("combobox", { name: "Buscar productos" })
     .fill("proteina");
   await expect(
-    page.locator(".search-option-product .search-option-price"),
+    page.locator(".reference-search-product small").first(),
   ).toContainText("40.000");
 });

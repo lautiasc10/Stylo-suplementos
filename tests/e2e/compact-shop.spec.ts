@@ -101,11 +101,10 @@ test("el + agrega la variante visible sin navegar y respeta el stock y los preci
   );
   await add.click();
   await expect(page).toHaveURL(/vista-previa\?categoria=proteinas$/);
+  await page.locator(".cart-trigger").click();
   const cart = page.getByRole("dialog", { name: /Tu carrito/ });
   await expect(cart).toContainText("Vainilla");
-  await expect(
-    cart.locator('input[value="transferencia"] + span strong'),
-  ).toHaveText("$ 43.000");
+  await expect(cart.locator(".bag-total dd")).toHaveText("$ 43.000");
   await page.keyboard.press("Escape");
   await add.click();
   await page.keyboard.press("Escape");

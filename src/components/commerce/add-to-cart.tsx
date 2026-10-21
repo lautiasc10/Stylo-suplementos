@@ -54,7 +54,10 @@ export function AddToCart({
       onSubmit={(event) => {
         event.preventDefault();
         setSubmitted(variantId);
-        void change(variantId, "add", quantityControl ? quantity : 1);
+        const origin = event.currentTarget
+          .querySelector('button[type="submit"]')
+          ?.getBoundingClientRect();
+        void change(variantId, "add", quantityControl ? quantity : 1, origin);
       }}
     >
       <input type="hidden" name="variantId" value={variantId} />
@@ -95,11 +98,7 @@ export function AddToCart({
       <button
         type="submit"
         className={`button button-gold${quantityControl ? " premium-cta" : ""}`}
-        disabled={
-          busy ||
-          stock === 0 ||
-          ((quantityControl || iconOnly) && available === 0)
-        }
+        disabled={busy || available === 0}
         aria-label={
           accessibleLabel && stock === 0
             ? `${accessibleLabel} (sin stock)`
@@ -119,9 +118,7 @@ export function AddToCart({
         </span>
         {illustrated && <Icon name="arrow" />}
       </button>
-      {error && (!iconOnly || submitted === variantId) && (
-        <p role="alert">{error}</p>
-      )}
+      {error && submitted === variantId && <p role="alert">{error}</p>}
       {preview && (
         <noscript>
           <p>El carrito de prueba requiere JavaScript.</p>

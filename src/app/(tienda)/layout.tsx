@@ -9,6 +9,7 @@ import { readCart } from "@/modules/commerce/server";
 import { cartSuggestions } from "@/modules/commerce/cart";
 import "../commerce.css";
 import "../search.css";
+import "../reference-commerce.css";
 import { getEnvironment } from "@/lib/config/server";
 import { navigationCategories } from "@/components/storefront/navigation-model";
 

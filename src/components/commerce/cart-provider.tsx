@@ -21,9 +21,19 @@ import {
   type CartItem,
   type CartSuggestion,
 } from "@/modules/commerce/cart";
-import { refreshCart, updateCart, addPromotion as addPromotionAction } from "@/modules/commerce/actions";
+import {
+  refreshCart,
+  updateCart,
+  addPromotion as addPromotionAction,
+} from "@/modules/commerce/actions";
 import { addPromotionToCart } from "@/modules/commerce/promotion-cart";
-import { CartContents } from "./cart-contents";
+import { BagContents } from "./bag-contents";
+import {
+  CartArrival,
+  announceCartAddition,
+  type CartOrigin,
+} from "./cart-arrival";
+import { heroDisplay, heroBody } from "@/components/storefront/hero-fonts";
 import {
   validatePromotions,
   type Promotion,
@@ -62,8 +72,9 @@ const CartContext = createContext<{
     variantId: string,
     operation: string,
     quantity?: number,
+    origin?: CartOrigin,
   ) => Promise<boolean>;
-  addPromotion: (promotionId: string) => Promise<boolean>;
+  addPromotion: (promotionId: string, origin?: CartOrigin) => Promise<boolean>;
   openCart: () => void;
   closeCart: () => void;
   updateQuote: (quote: CartQuote) => void;
@@ -95,13 +106,17 @@ export function CartProvider({
   const [localCatalog, setLocalCatalog] = useState(demoCatalog);
   const [localPromotions, setLocalPromotions] = useState<Promotion[]>([]);
   const [localImages, setLocalImages] = useState<Record<string, string>>({});
-  const [paymentMethod, setPaymentMethod] = useState<"mercado-pago" | "transferencia">("transferencia");
+  const [paymentMethod, setPaymentMethod] = useState<
+    "mercado-pago" | "transferencia"
+  >("transferencia");
   const [busy, setBusy] = useState(false),
     [error, setError] = useState("");
   const lock = useRef(false);
   const dialog = useRef<HTMLDialogElement>(null);
   const opener = useRef<HTMLElement | null>(null);
   const [opened, setOpened] = useState(false);
+  const [closing, setClosing] = useState(false);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const refreshSequence = useRef(0);
   const quote = preview ? localQuote : realQuote;
@@ -146,20 +161,44 @@ export function CartProvider({
   useEffect(() => {
     if (!opened) return;
     const previous = document.body.style.overflow;
+    const padding = document.body.style.paddingRight;
+    const gap = innerWidth - document.documentElement.clientWidth;
+    if (gap > 0)
+      document.body.style.paddingRight = `${parseFloat(getComputedStyle(document.body).paddingRight) + gap}px`;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = previous;
+      document.body.style.paddingRight = padding;
     };
   }, [opened]);
-  function closeCart() {
+  useEffect(
+    () => () => {
+      if (closeTimer.current) clearTimeout(closeTimer.current);
+    },
+    [],
+  );
+  function finishClose() {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
     ++refreshSequence.current;
     setRefreshing(false);
     dialog.current?.close();
     setOpened(false);
-    opener.current?.focus({ preventScroll: true });
+    setClosing(false);
+    const target = opener.current?.isConnected
+      ? opener.current
+      : document.querySelector<HTMLElement>(".cart-trigger");
+    target?.focus({ preventScroll: true });
+  }
+  function closeCart() {
+    if (!dialog.current?.open || closing) return;
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches)
+      return finishClose();
+    setClosing(true);
+    closeTimer.current = setTimeout(finishClose, 300);
   }
   function openCart() {
     if (dialog.current?.open) return;
+    setClosing(false);
     opener.current =
       document.activeElement instanceof HTMLElement
         ? document.activeElement
@@ -182,7 +221,12 @@ export function CartProvider({
         });
     }
   }
-  async function change(variantId: string, operation: string, quantity = 1) {
+  async function change(
+    variantId: string,
+    operation: string,
+    quantity = 1,
+    origin?: CartOrigin,
+  ) {
     if (lock.current) return false;
     lock.current = true;
     ++refreshSequence.current;
@@ -220,7 +264,7 @@ export function CartProvider({
           return false;
         }
       }
-      if (operation === "add") openCart();
+      if (operation === "add") announceCartAddition(origin);
       return true;
     } catch {
       setError("No pudimos guardar el carrito. Intentá otra vez.");
@@ -230,7 +274,7 @@ export function CartProvider({
       setBusy(false);
     }
   }
-  async function addPromotion(promotionId: string) {
+  async function addPromotion(promotionId: string, origin?: CartOrigin) {
     if (lock.current) return false;
     lock.current = true;
     ++refreshSequence.current;
@@ -241,8 +285,15 @@ export function CartProvider({
       if (preview) {
         const catalog = previewCatalog();
         const promotions = previewPromotions();
-        const items = parseCart(JSON.parse(localStorage.getItem(previewKey) ?? "[]"));
-        const result = addPromotionToCart(catalog, items, promotions, promotionId);
+        const items = parseCart(
+          JSON.parse(localStorage.getItem(previewKey) ?? "[]"),
+        );
+        const result = addPromotionToCart(
+          catalog,
+          items,
+          promotions,
+          promotionId,
+        );
         if (result.error) {
           setError(result.error);
           return false;
@@ -260,6 +311,7 @@ export function CartProvider({
         }
       }
       // Quick-add stays in the collection, with confirmation on its own button.
+      announceCartAddition(origin);
       return true;
     } catch {
       setError("No pudimos agregar la promoción. Intentá otra vez.");
@@ -280,7 +332,9 @@ export function CartProvider({
         error,
         imageBase: preview ? "" : imageBase,
         imageUrls: preview ? localImages : {},
-        suggestions: preview ? cartSuggestions(localCatalog) : initialSuggestions,
+        suggestions: preview
+          ? cartSuggestions(localCatalog)
+          : initialSuggestions,
         paymentMethod,
         setPaymentMethod,
         change,
@@ -291,11 +345,16 @@ export function CartProvider({
       }}
     >
       {children}
+      <CartArrival openCart={openCart} />
       <dialog
         ref={dialog}
-        className="cart-drawer"
+        className={`cart-drawer reference-bag ${heroDisplay.variable} ${heroBody.variable}`}
         aria-labelledby="cart-title"
-        onCancel={closeCart}
+        data-closing={closing}
+        onCancel={(event) => {
+          event.preventDefault();
+          closeCart();
+        }}
         onClose={() => setOpened(false)}
         onClick={(event) => {
           if (event.target === event.currentTarget) closeCart();
@@ -305,7 +364,7 @@ export function CartProvider({
           <div className="cart-heading">
             <div>
               <h2 id="cart-title">
-                Tu carrito <span aria-hidden="true">·</span> {quote.quantity}
+                Tu <span className="reference-gold-text">carrito</span>
               </h2>
             </div>
             <button
@@ -317,7 +376,7 @@ export function CartProvider({
               <Icon name="close" />
             </button>
           </div>
-          <CartContents compact />
+          <BagContents />
         </div>
       </dialog>
     </CartContext.Provider>
@@ -344,10 +403,12 @@ export function CartLink() {
         openCart();
       }}
     >
-      <Icon name="cart" />
-      <span className="cart-count" aria-hidden="true">
-        {quote.quantity}
-      </span>
+      <Icon name="shoppingBag" />
+      {quote.quantity > 0 && (
+        <span className="cart-count" aria-hidden="true">
+          {quote.quantity}
+        </span>
+      )}
     </Link>
   );
 }

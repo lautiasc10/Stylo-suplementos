@@ -296,8 +296,11 @@ export function HomePromotions({
                             addingRef.current = true;
                             setAdding(offer.id);
                             setMessage("");
+                            const origin = event.currentTarget
+                              .querySelector('button[type="submit"]')
+                              ?.getBoundingClientRect();
                             try {
-                              if (await addPromotion(offer.id)) {
+                              if (await addPromotion(offer.id, origin)) {
                                 setAdded(offer.id);
                                 setMessage(
                                   `Promoción ${offer.name} agregada al carrito.`,

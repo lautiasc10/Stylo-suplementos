@@ -15,6 +15,8 @@ const paths = {
 
 // Simple outlined actions drawn locally to match the existing 24 px icon system.
 const actionPaths = {
+  shoppingBag:
+    "M64 32H192L224 80V224H32V80Z M32 80H224 M88 112V128A40 40 0 0 0 168 128V112",
   search: "M176 104A72 72 0 1 1 32 104A72 72 0 1 1 176 104 M160 160 224 224",
   edit: "M48 176 176 48 208 80 80 208 48 208Z M152 72 184 104",
   trash:

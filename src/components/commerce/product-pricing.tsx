@@ -47,7 +47,7 @@ function ProductOfferDetails({
   appliedId?: string | null;
   preview: boolean;
 }) {
-  const { paymentMethod, addPromotion, openCart, busy, error } = useCart();
+  const { paymentMethod, addPromotion, busy, error } = useCart();
   const [adding, setAdding] = useState(false);
   const [failed, setFailed] = useState("");
   const [ready, setReady] = useState(false);
@@ -118,9 +118,12 @@ function ProductOfferDetails({
                     if (adding || busy) return;
                     setFailed("");
                     setAdding(true);
+                    const origin = event.currentTarget
+                      .querySelector('button[type="submit"]')
+                      ?.getBoundingClientRect();
                     try {
-                      if (await addPromotion(offer.id)) openCart();
-                      else setFailed(offer.id);
+                      if (!(await addPromotion(offer.id, origin)))
+                        setFailed(offer.id);
                     } finally {
                       setAdding(false);
                     }

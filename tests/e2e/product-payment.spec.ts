@@ -82,6 +82,7 @@ test("ficha: un precio por medio de pago, sin ahorro ni sabor duplicado; cantida
   await page
     .getByRole("button", { name: "Agregar al carrito", exact: true })
     .click();
+  await page.locator(".cart-trigger").click();
   const dialog = page.getByRole("dialog", { name: /Tu carrito/ });
   await expect(dialog.getByLabel("Cantidad: 3", { exact: true })).toBeVisible();
   await expect(dialog.locator('input[value="mercado-pago"]')).toBeChecked();
@@ -138,11 +139,10 @@ test("la cantidad elegida y el carrito determinan el precio por unidad y respeta
   await page
     .getByRole("button", { name: "Agregar al carrito", exact: true })
     .click();
-  await expect(
-    page
-      .getByRole("dialog")
-      .locator('input[value="transferencia"] + span strong'),
-  ).toHaveText("$ 70.000");
+  await page.locator(".cart-trigger").click();
+  await expect(page.getByRole("dialog").locator(".bag-total dd")).toHaveText(
+    "$ 70.000",
+  );
   await page.keyboard.press("Escape");
   // Two units already in the cart + another two would exceed the three-unit cap.
   await expect(price).toHaveText("$ 41.000");
@@ -210,11 +210,10 @@ test("el combo es opcional, tiene un solo total identificado y agrega todos sus 
   await page
     .getByRole("button", { name: "Agregar combo completo", exact: true })
     .click();
+  await page.locator(".cart-trigger").click();
   const cart = page.getByRole("dialog", { name: /Tu carrito/ });
   await expect(cart).toBeVisible();
-  await expect(
-    cart.locator('input[value="mercado-pago"] + span strong'),
-  ).toHaveText("$ 50.000");
+  await expect(cart.locator(".bag-total dd")).toHaveText("$ 50.000");
   await expect(cart.getByLabel("Cantidad: 1", { exact: true })).toHaveCount(2);
 });
 
