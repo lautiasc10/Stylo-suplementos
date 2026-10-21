@@ -4,7 +4,9 @@ Para cambios de interfaz, leer `docs/diseno.md` y aplicar la adaptación de AI D
 
 El manual de marca en `docs/Manual_de_Marca_STYLO_SUPLEMENTOS_v1_1.pdf` y las instrucciones del usuario prevalecen sobre las recomendaciones externas. Conservar los logos oficiales y no inventar datos comerciales.
 
-Consultar `docs/fase-1.md` y `docs/fase-2.md` para el alcance y pendientes. Fase 2 está autorizada sin Supabase; la vista previa local no habilita administración real. Trabajar sin gastos ni dominio contratado. No avanzar a Fase 3 ni integrar la rama de Fase 2 sin la validación acordada con el usuario.
+Consultar `docs/fase-1.md`, `docs/fase-2.md` y `docs/fase-3.md` para el alcance, las autorizaciones y los pendientes. La Fase 3 ya fue autorizada y se desarrolla en ramas separadas; la vista previa local no habilita administración real. Trabajar sin gastos ni dominio contratado. No integrar una rama de fase o de prueba a `main` sin la validación acordada con el usuario.
+
+Las skills propias de Codex están en `.agents/skills/`: `stylo-feature` para funcionalidades de alcance significativo, `stylo-debug` para fallos reproducibles, `stylo-ui-review` para comprobaciones visuales, `stylo-security-review` para auditorías solicitadas y `stylo-db-migration` para futuros cambios de esquema. Son guías de trabajo; no amplían el alcance ni la autorización de una tarea. Su adaptación y procedencia están en `docs/shipkit-codex.md`.
 
 En PowerShell usar `npm.cmd`. Verificar la compilación y los recorridos de navegador afectados; las preferencias de movimiento reducido y la navegación sin JavaScript deben conservarse.
 
