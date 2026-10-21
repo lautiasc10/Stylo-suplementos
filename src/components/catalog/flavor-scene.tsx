@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { preload } from "react-dom";
 
 import {
   sceneIngredients,
@@ -16,12 +17,30 @@ export {
 export function IngredientLayer({
   flavor,
   outgoing,
+  priority = false,
 }: {
   flavor: SceneFlavor;
   outgoing: boolean;
+  priority?: boolean;
 }) {
   const [ready, setReady] = useState(false);
   const sources = sceneIngredients(flavor);
+  if (priority) {
+    // Discover the LCP decoration in the server head, before hydration and
+    // secondary work. Media conditions match the picture sources exactly.
+    preload(compactSceneIngredient(sources[0]), {
+      as: "image",
+      crossOrigin: "anonymous",
+      fetchPriority: "high",
+      media: "(max-width: 767px)",
+    });
+    preload(sources[0], {
+      as: "image",
+      crossOrigin: "anonymous",
+      fetchPriority: "high",
+      media: "(min-width: 768px)",
+    });
+  }
   return (
     <div
       className="flavor-scene-layer"
@@ -42,7 +61,8 @@ export function IngredientLayer({
               width={768}
               height={512}
               decoding="async"
-              fetchPriority="low"
+              crossOrigin="anonymous"
+              fetchPriority={priority && index === 0 ? "high" : "low"}
               onLoad={() => setReady(true)}
               onError={(event) => {
                 event.currentTarget.style.visibility = "hidden";

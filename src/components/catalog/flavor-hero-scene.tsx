@@ -26,7 +26,9 @@ export function FlavorHeroScene({
   const incoming = useRef<HTMLDivElement>(null);
   const content = useRef<HTMLDivElement>(null);
   const [expired, setExpired] = useState<number | null>(null);
-  const [ambientFlavor, setAmbientFlavor] = useState<SceneFlavor | null>(flavor);
+  const [ambientFlavor, setAmbientFlavor] = useState<SceneFlavor | null>(
+    flavor,
+  );
   const [visible, setVisible] = useState(false);
   const [documentVisible, setDocumentVisible] = useState(true);
   const reduced = useMotionPreference();
@@ -45,7 +47,8 @@ export function FlavorHeroScene({
     document.addEventListener("visibilitychange", updateVisibility);
     if (!window.IntersectionObserver) {
       setVisible(true);
-      return () => document.removeEventListener("visibilitychange", updateVisibility);
+      return () =>
+        document.removeEventListener("visibilitychange", updateVisibility);
     }
     const observer = new IntersectionObserver(([entry]) =>
       setVisible(entry.isIntersecting),
@@ -66,17 +69,22 @@ export function FlavorHeroScene({
       const scene = element.getBoundingClientRect(),
         info = copy.getBoundingClientRect();
       element.style.setProperty(
-        "--flavor-copy-x",
-        `${info.left - scene.left - 64}px`,
+        "--flavor-copy-center-x",
+        `${info.left - scene.left + info.width / 2}px`,
       );
       element.style.setProperty(
-        "--flavor-copy-y",
-        `${info.top - scene.top - 80}px`,
+        "--flavor-copy-center-y",
+        `${info.top - scene.top + info.height / 2}px`,
       );
-      element.style.setProperty("--flavor-copy-width", `${info.width + 128}px`);
+      // Match the previous farthest-corner ellipse, but paint it inside a
+      // fixed full-size surface. Hydration never moves/resizes the veil box.
       element.style.setProperty(
-        "--flavor-copy-height",
-        `${info.height + 160}px`,
+        "--flavor-copy-radius-x",
+        `${(info.width + 128) / Math.SQRT2}px`,
+      );
+      element.style.setProperty(
+        "--flavor-copy-radius-y",
+        `${(info.height + 160) / Math.SQRT2}px`,
       );
     };
     positionVeil();
@@ -194,7 +202,13 @@ export function FlavorHeroScene({
               ref={active ? content : undefined}
               className="flavor-hero-background-content"
             >
-              {value && <IngredientLayer flavor={value} outgoing={!active} />}
+              {value && (
+                <IngredientLayer
+                  flavor={value}
+                  outgoing={!active}
+                  priority={active}
+                />
+              )}
               <div className="flavor-hero-readability" />
             </div>
           </div>

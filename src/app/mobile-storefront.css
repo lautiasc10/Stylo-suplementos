@@ -1,4 +1,8 @@
 /* A single mounted filter form: native modal on touch layouts, inline on desktop. */
+.catalog-filter-panel:not([data-enhanced="true"]) > .catalog-panel-toggle {
+  /* Native disclosure stays reachable on desktop without JavaScript too. */
+  display: flex;
+}
 .catalog-filter-dialog {
   position: static;
   inset: auto;

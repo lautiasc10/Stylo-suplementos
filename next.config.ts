@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 
 const mediaUrl = process.env.SUPABASE_URL?.trim();
 const mediaHost = mediaUrl ? new URL(mediaUrl) : null;
+const immutableMediaHeaders = [
+  { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+];
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
@@ -27,12 +30,24 @@ const nextConfig: NextConfig = {
         // Public cinematic assets use versioned filenames. Reuse their bytes
         // on return visits; publish any edit under a new versioned name.
         source: "/visuals/:path*",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "public, max-age=31536000, immutable",
-          },
-        ],
+        headers: immutableMediaHeaders,
+      },
+      {
+        // Only versioned WebP derivatives; originals and reports keep their
+        // revalidation policy. Any edited decoration needs a new vN filename.
+        source: "/sabores/:asset([a-z-]+-decor-v[0-9]+\\.webp)",
+        headers: immutableMediaHeaders,
+      },
+      {
+        source: "/sabores/mobile/:asset([a-z-]+-decor-v[0-9]+\\.webp)",
+        headers: immutableMediaHeaders,
+      },
+      {
+        // The normalization pipeline hashes the original and never overwrites
+        // an export. Keep report.json outside this immutable rule.
+        source:
+          "/media/:collection(normalization-trial-v1|products-normalized-v1|onefit-normalized-v1)/:asset([a-z0-9-]+\\.webp)",
+        headers: immutableMediaHeaders,
       },
       {
         source: "/:path*",

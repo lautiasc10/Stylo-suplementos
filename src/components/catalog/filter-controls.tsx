@@ -51,6 +51,7 @@ export function AutomaticFilterForm({
   const pendingQuery = useRef<string | null>(null);
   const requestedQuery = useRef<string | null>(null);
   const composing = useRef(false);
+  const hydrated = useRef(false);
   const appliedQuery = filterQuery(Object.entries(values));
 
   function cancelTimer() {
@@ -80,6 +81,12 @@ export function AutomaticFilterForm({
   }
 
   useEffect(() => {
+    // SSR already supplied the initial values. Do not erase native input made
+    // while scripts were loading; only later server navigations need syncing.
+    if (!hydrated.current) {
+      hydrated.current = true;
+      return;
+    }
     // An earlier response must not overwrite a newer choice or unfinished typing.
     if (
       !form.current ||
@@ -206,11 +213,22 @@ export function FilterPanel({
   const desktop = useRef(true);
   const wasModal = useRef(false);
   const [modal, setModal] = useState(false);
+  const [enhanced, setEnhanced] = useState(false);
   const titleId = useId();
   useEffect(() => {
     const media = window.matchMedia("(min-width: 960px)");
+    let initial = true;
     const update = () => {
       desktop.current = media.matches;
+      setEnhanced(true);
+      // A user can open the native disclosure before hydration finishes.
+      // Adopt that interaction instead of closing a form they already use.
+      if (initial && !media.matches && panel.current?.open) {
+        initial = false;
+        setModal(true);
+        return;
+      }
+      initial = false;
       wasModal.current = false;
       setModal(false);
       dialog.current?.close();
@@ -240,13 +258,14 @@ export function FilterPanel({
   }, [modal]);
 
   const close = () => dialog.current?.close();
-  // The complete GET form is initially open and usable without JavaScript.
+  // Start collapsed on the server: mobile results never jump when JS arrives.
+  // Native details exposes the complete GET form even if hydration fails.
   // The same form stays mounted across desktop, mobile and resize transitions.
   return (
     <details
       className="catalog-filter-panel"
       ref={panel}
-      open
+      data-enhanced={enhanced || undefined}
       onToggle={() => {
         if (!desktop.current) setModal(Boolean(panel.current?.open));
       }}
@@ -267,7 +286,9 @@ export function FilterPanel({
         aria-labelledby={modal ? titleId : undefined}
         data-modal={modal || undefined}
         onClose={() => {
-          if (desktop.current) return;
+          // Closing an inline dialog to promote it with showModal queues a
+          // close event. Ignore it if the dialog has already reopened.
+          if (desktop.current || dialog.current?.open) return;
           if (panel.current) panel.current.open = false;
           setModal(false);
           if (wasModal.current)

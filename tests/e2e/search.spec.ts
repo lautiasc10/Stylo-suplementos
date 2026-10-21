@@ -328,6 +328,8 @@ test("sin JavaScript la lupa, la búsqueda y los filtros conservan navegación r
       .fill("creatina");
     await page.getByRole("button", { name: "Buscar", exact: true }).click();
     await expect(page).toHaveURL(/q=creatina/);
+    // The native disclosure is collapsed from SSR, including without JS.
+    await page.locator(".catalog-panel-toggle").click();
     await page.getByLabel("Solo con stock", { exact: true }).check();
     await page.getByRole("button", { name: "Aplicar filtros" }).click();
     await expect(page).toHaveURL(/stock=1/);

@@ -1,5 +1,7 @@
 # Diseño de STYLO
 
+La Fase 3X estabiliza filtros y legibilidad durante la hidratación y prioriza las imágenes visibles antes de precargar sabores vecinos. Conserva la composición, los recursos, el reveal y el movimiento ambiente; mantiene los filtros nativos sin JavaScript. Alcance, caché de archivos versionados, pruebas y medición de producción local: [estabilidad y rendimiento](estabilidad-rendimiento-fase-3x.md).
+
 La revisión 3W quita el desenfoque de pantalla completa detrás de la bolsa y el buscador para evitar cuadros lentos en escritorio. Conserva el oscurecimiento y los paneles de la referencia. En la portada, el hero suspende su repintado de partículas cuando hay un diálogo abierto y retoma al cerrarlo. Medidas antes/después, límite durante la entrada inicial y verificación: [bolsa y buscador de Fase 3V](bolsa-buscador-fase-3v.md).
 
 La prueba de Fase 3V copia del proyecto conectado de Lovable la bolsa circular, vuelo dorado y rebote al agregar, panel lateral, buscador con productos y acción Agregar, y hover con elevación, escala y giro leve del envase. Usa el dorado y degradado de esa referencia en tokens compartidos; conserva los logos oficiales, datos y checkout de STYLO. El agregado confirma en el mismo lugar y la bolsa se abre a pedido. No copia condiciones de envío ni compras simuladas. Alcance, capturas y verificación: [bolsa y buscador de Fase 3V](bolsa-buscador-fase-3v.md).

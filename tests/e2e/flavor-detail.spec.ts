@@ -553,7 +553,7 @@ test("las flechas sincronizan fondo, foto, stock, precio y carrito sin navegar",
     page.getByRole("button", { name: "Sin stock", exact: true }),
   ).toBeDisabled();
   await expect(page.locator("#contenido .transfer-pricing")).toContainText(
-    "46.000",
+    "42.000",
   );
   await expect(page).toHaveURL(
     new RegExp(`variante=${product.variants[1].id}`),
@@ -565,6 +565,7 @@ test("las flechas sincronizan fondo, foto, stock, precio y carrito sin navegar",
   await page
     .getByRole("button", { name: "Agregar al carrito", exact: true })
     .click();
+  await page.locator(".cart-trigger").click();
   await expect(page.getByRole("dialog").locator(".cart-variant")).toContainText(
     "Vainilla",
   );

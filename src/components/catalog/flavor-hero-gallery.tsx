@@ -9,8 +9,13 @@ import {
   type RefObject,
 } from "react";
 import { Icon } from "@/components/ui/icon";
-import { flavorLabel, variantLabel, type Variant } from "@/modules/catalog/model";
+import {
+  flavorLabel,
+  variantLabel,
+  type Variant,
+} from "@/modules/catalog/model";
 import { createGalleryPhotoCache } from "./gallery-photo-cache";
+import { scheduleMediaWarmup } from "./media-warmup";
 import type { GalleryImage } from "./product-gallery";
 import {
   elementPoint,
@@ -54,6 +59,7 @@ export function FlavorHeroGallery({
   latest.current = { activeId, variants, photo, onPrepareImage };
 
   const warm = useCallback(() => {
+    if (document.hidden) return;
     const {
       activeId: id,
       variants: list,
@@ -61,8 +67,13 @@ export function FlavorHeroGallery({
       onPrepareImage: prepare,
     } = latest.current;
     const index = list.findIndex((item) => item.id === id);
-    for (const offset of [0, -1, 1]) {
+    // The active pack/ingredients already exist in the DOM. Loading them again
+    // as detached Images can compete with LCP and duplicate a cold request.
+    const visited = new Set([id]);
+    for (const offset of [-1, 1]) {
       const item = list[(index + offset + list.length) % list.length];
+      if (visited.has(item.id)) continue;
+      visited.add(item.id);
       const image = find(item.id);
       if (image?.src)
         void cache.current?.load(image.src, "low", image).catch(() => {});
@@ -74,6 +85,7 @@ export function FlavorHeroGallery({
     cache.current = createGalleryPhotoCache();
     if (preload)
       preload.current = (id) => {
+        if (id === latest.current.activeId) return;
         const image = latest.current.photo(id);
         if (image?.src)
           void cache.current?.load(image.src, "low", image).catch(() => {});
@@ -83,17 +95,17 @@ export function FlavorHeroGallery({
       };
     const hero = root.current?.closest(".product-detail");
     hero?.addEventListener("pointerenter", warm);
-    const idle = setTimeout(warm, m.idlePreload);
+    hero?.addEventListener("focusin", warm);
     return () => {
       hero?.removeEventListener("pointerenter", warm);
+      hero?.removeEventListener("focusin", warm);
       if (preload) preload.current = null;
-      clearTimeout(idle);
       cache.current?.dispose();
     };
   }, [warm, preload]);
   useEffect(() => {
-    const idle = setTimeout(warm, m.idlePreload);
-    return () => clearTimeout(idle);
+    const hero = root.current?.closest(".product-detail");
+    if (hero) return scheduleMediaWarmup(hero, warm, m.idlePreload);
   }, [activeId, warm]);
 
   useLayoutEffect(() => {
