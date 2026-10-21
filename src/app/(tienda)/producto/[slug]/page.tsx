@@ -4,24 +4,29 @@ import { getCatalog } from "@/modules/catalog/server";
 import { publicCatalog } from "@/modules/catalog/model";
 import { getEnvironment } from "@/lib/config/server";
 import { ProductDetail } from "@/components/catalog/product-detail";
+import { StructuredData } from "@/components/seo/structured-data";
+import { productMetadata, productStructuredData } from "@/modules/seo/product";
+import { readPromotions } from "@/modules/commerce/promotions-server";
 export async function generateMetadata({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ variante?: string }>;
 }): Promise<Metadata> {
   const { slug } = await params,
+    { variante } = await searchParams,
     { catalog } = await getCatalog();
-  const product = publicCatalog(catalog).products.find(
-    (item) => item.slug === slug,
-  );
-  return product
-    ? {
-        title: product.seoTitle || product.name,
-        description:
-          product.seoDescription || product.description.slice(0, 160),
-        alternates: { canonical: `/producto/${product.slug}` },
-      }
-    : { title: "Producto no encontrado" };
+  const config = getEnvironment();
+  return productMetadata({
+    catalog,
+    slug,
+    selectedId: variante,
+    siteUrl: config.siteUrl,
+    imageBase: config.supabase
+      ? `${config.supabase.url}/storage/v1/object/public/product-media`
+      : "",
+  });
 }
 export default async function ProductPage({
   params,
@@ -44,9 +49,22 @@ export default async function ProductPage({
           product.categoryIds.includes(item.id),
       ) ??
       data.categories.find((item) => product.categoryIds.includes(item.id)),
-    config = getEnvironment().supabase;
+    config = getEnvironment();
+  const imageBase = config.supabase
+    ? `${config.supabase.url}/storage/v1/object/public/product-media`
+    : "";
+  const promotions = await readPromotions();
   return (
     <section className="container interior-page product-flavor-page">
+      <StructuredData
+        value={productStructuredData({
+          catalog: data,
+          slug,
+          promotions: promotions.error ? [] : promotions.state.promotions,
+          siteUrl: config.siteUrl,
+          imageBase,
+        })}
+      />
       <ProductDetail
         key={product.id}
         product={product}
@@ -57,10 +75,8 @@ export default async function ProductPage({
           data.brands.find((item) => item.id === product.brandId)!.logo
         }
         category={category?.slug ?? ""}
-        selectedId={variante}
-        imageBase={
-          config ? `${config.url}/storage/v1/object/public/product-media` : ""
-        }
+        selectedId={product.variants.find((item) => item.id === variante)?.id}
+        imageBase={imageBase}
       />
     </section>
   );

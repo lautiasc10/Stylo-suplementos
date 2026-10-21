@@ -1,11 +1,19 @@
-import type { Metadata } from "next";
 import { categories } from "@/modules/catalog/categories";
 import { getCatalog } from "@/modules/catalog/server";
 import { getEnvironment } from "@/lib/config/server";
 import { CatalogListing } from "@/components/catalog/listing";
 import { publicCatalog } from "@/modules/catalog/model";
 import { readPromotions } from "@/modules/commerce/promotions-server";
-export const metadata: Metadata = { title: "Tienda" };
+import { pageMetadata } from "@/modules/seo/metadata";
+export function generateMetadata() {
+  return pageMetadata({
+    title: "Tienda",
+    description:
+      "Explorá los productos de STYLO Suplementos. Filtrá por categoría, marca, sabor, precio y disponibilidad.",
+    path: "/catalogo",
+    siteUrl: getEnvironment().siteUrl,
+  });
+}
 export default async function CatalogPage({
   searchParams,
 }: {

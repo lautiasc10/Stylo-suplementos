@@ -15,6 +15,16 @@ async function delayHydration(page: Page) {
   return release;
 }
 
+async function paintedHtml(page: Page) {
+  // fonts.ready may resolve before a delayed stylesheet is even parsed.
+  // A pre-paint DOM measurement would include the browser's default margins,
+  // not a layout that the visitor could have seen.
+  await page.waitForFunction(
+    () => performance.getEntriesByName("first-contentful-paint").length > 0,
+  );
+  await page.evaluate(() => document.fonts.ready);
+}
+
 test("los filtros móviles no desplazan los resultados cuando llega JavaScript", async ({
   page,
 }, info) => {
@@ -25,7 +35,7 @@ test("los filtros móviles no desplazan los resultados cuando llega JavaScript",
   try {
     await page.goto("/catalogo", { waitUntil: "commit" });
     await expect(page.locator(".catalog-results")).toBeVisible();
-    await page.evaluate(() => document.fonts.ready);
+    await paintedHtml(page);
     before = (await page.locator(".catalog-results").boundingBox())!.y;
   } finally {
     release();
@@ -51,6 +61,10 @@ test("la capa de legibilidad conserva su caja al hidratar la ficha", async ({
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   const release = await delayHydration(page);
+  await page.route(/\/_next\/static\/.*\.css(?:\?|$)/, async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    await route.continue();
+  });
   const veil = page.locator(".flavor-hero-readability");
   let before!: NonNullable<Awaited<ReturnType<typeof veil.boundingBox>>>;
   try {
@@ -59,7 +73,7 @@ test("la capa de legibilidad conserva su caja al hidratar la ficha", async ({
       { waitUntil: "commit" },
     );
     await expect(veil).toBeAttached();
-    await page.evaluate(() => document.fonts.ready);
+    await paintedHtml(page);
     before = (await veil.boundingBox())!;
   } finally {
     release();

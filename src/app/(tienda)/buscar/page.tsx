@@ -2,7 +2,12 @@ import type { Metadata } from "next";
 import { SearchResults } from "@/components/catalog/search-results";
 import { getCatalog } from "@/modules/catalog/server";
 import { getEnvironment } from "@/lib/config/server";
-export const metadata: Metadata = { title: "Buscar productos" };
+export const metadata: Metadata = {
+  title: "Buscar productos",
+  description:
+    "Buscá productos por nombre, marca, categoría o sabor en STYLO Suplementos.",
+  robots: { index: false, follow: false },
+};
 export default async function SearchPage({
   searchParams,
 }: {

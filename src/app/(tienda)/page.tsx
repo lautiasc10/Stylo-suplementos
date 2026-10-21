@@ -10,6 +10,21 @@ import { referenceProduct } from "@/components/storefront/reference-product";
 import { ReferenceGoals } from "@/components/storefront/reference-goals";
 import { heroDisplay, heroBody } from "@/components/storefront/hero-fonts";
 import "../reference-home.css";
+import {
+  pageMetadata,
+  SITE_DESCRIPTION,
+  SITE_TITLE,
+} from "@/modules/seo/metadata";
+
+export function generateMetadata() {
+  return pageMetadata({
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    path: "/",
+    siteUrl: getEnvironment().siteUrl,
+    home: true,
+  });
+}
 
 export default async function HomePage() {
   const [{ catalog, error }, promotions] = await Promise.all([

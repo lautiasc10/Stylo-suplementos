@@ -1,8 +1,17 @@
-import type { Metadata } from "next";
 import Image from "next/image";
 import { Reveal } from "@/components/ui/Reveal";
 
-export const metadata: Metadata = { title: "Sobre STYLO" };
+import { pageMetadata } from "@/modules/seo/metadata";
+import { getEnvironment } from "@/lib/config/server";
+export function generateMetadata() {
+  return pageMetadata({
+    title: "Sobre STYLO",
+    description:
+      "Conocé STYLO Suplementos, una marca de Rosario vinculada al deporte, el bienestar y la constancia.",
+    path: "/nosotros",
+    siteUrl: getEnvironment().siteUrl,
+  });
+}
 export default function AboutPage() {
   return (
     <section className="container interior-page about-grid">

@@ -15,6 +15,7 @@ import "./mobile-storefront.css";
 import "./purchase-pricing.css";
 import "./catalog-compact.css";
 import { getEnvironment } from "@/lib/config/server";
+import { SITE_DESCRIPTION, SITE_TITLE } from "@/modules/seo/metadata";
 
 const display = Barlow_Condensed({
   subsets: ["latin"],
@@ -38,11 +39,10 @@ export function generateMetadata(): Metadata {
   return {
     metadataBase: config.siteUrl,
     title: {
-      default: "STYLO Suplementos | Potenciá tu mejor versión",
+      default: SITE_TITLE,
       template: "%s | STYLO Suplementos",
     },
-    description:
-      "Suplementación deportiva, accesorios y bienestar. Conocé STYLO Suplementos en Rosario, Argentina.",
+    description: SITE_DESCRIPTION,
     robots: { index: false, follow: false },
     icons: {
       icon: "/branding/logo-principal.webp",

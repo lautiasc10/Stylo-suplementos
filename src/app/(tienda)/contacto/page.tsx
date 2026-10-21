@@ -1,8 +1,17 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { Reveal } from "@/components/ui/Reveal";
 
-export const metadata: Metadata = { title: "Contacto" };
+import { pageMetadata } from "@/modules/seo/metadata";
+import { getEnvironment } from "@/lib/config/server";
+export function generateMetadata() {
+  return pageMetadata({
+    title: "Contacto",
+    description:
+      "STYLO Suplementos, Rosario, Argentina. Los canales oficiales y las condiciones de retiro se publicarán antes de la apertura.",
+    path: "/contacto",
+    siteUrl: getEnvironment().siteUrl,
+  });
+}
 export default function ContactPage() {
   return (
     <Reveal as="section" enterOnMount className="container interior-page">
