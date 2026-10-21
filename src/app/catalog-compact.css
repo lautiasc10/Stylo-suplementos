@@ -293,7 +293,12 @@
     border: 1px solid var(--line);
   }
   .catalog-store .product-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    /* Keep two columns normally; enlarged text can use one without clipping
+       prices. The percentage minimum prevents a third column on wider phones. */
+    grid-template-columns: repeat(
+      auto-fit,
+      minmax(min(100%, max(8.5rem, calc((100% - var(--space-3)) / 2))), 1fr)
+    );
     gap: var(--space-3);
   }
   .catalog-store .catalog-results-heading {
@@ -301,6 +306,8 @@
   }
   .catalog-sort {
     margin-left: auto;
+    flex-wrap: wrap;
+    max-width: 100%;
   }
   .catalog-sort select {
     font-size: 16px;
@@ -337,5 +344,13 @@
   .product-card .product-card-action {
     padding-inline: 0;
     font-weight: 500;
+  }
+}
+@media (max-width: 959px) {
+  .search-page .search-product-grid {
+    grid-template-columns: repeat(
+      auto-fit,
+      minmax(min(100%, max(8.5rem, calc((100% - var(--space-3)) / 2))), 1fr)
+    );
   }
 }

@@ -1,5 +1,7 @@
 # Diseño de STYLO
 
+La Fase 3AA adapta la reserva de compra a su altura real y mantiene el contenido accesible con texto ampliado. En pantallas bajas o sin JavaScript la compra queda en el flujo; tienda y búsqueda conservan dos columnas habituales y admiten una cuando las letras necesitan espacio. Títulos, etiquetas de pago y enlaces del pie permiten reflow. Alcance, pruebas y límites: [accesibilidad y reflow](accesibilidad-reflow-fase-3aa.md).
+
 La Fase 3Y separa título y león en el hero desde tablet, conserva su movimiento y refuerza el contorno de la frase. La compra móvil incorpora el precio y medio de pago en su barra fija, con las mismas reglas de promociones, y los placeholders alinean su nombre accesible con el mensaje visible. Inventario de fotografías pendientes, alcance y verificación: [legibilidad y compra](legibilidad-compra-fase-3y.md).
 
 La Fase 3X estabiliza filtros y legibilidad durante la hidratación y prioriza las imágenes visibles antes de precargar sabores vecinos. Conserva la composición, los recursos, el reveal y el movimiento ambiente; mantiene los filtros nativos sin JavaScript. Alcance, caché de archivos versionados, pruebas y medición de producción local: [estabilidad y rendimiento](estabilidad-rendimiento-fase-3x.md).

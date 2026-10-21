@@ -244,6 +244,8 @@
 .reference-section-heading h2,
 .reference-showcase-empty h2 {
   margin: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
   text-transform: uppercase;
   font:
     400 clamp(3rem, 5.5vw, 6rem)/0.95 var(--font-hero-display),
@@ -363,6 +365,11 @@
   align-items: end;
   gap: var(--space-8);
   margin-bottom: 56px;
+}
+.reference-section-heading > * {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 .reference-section-heading > p {
   max-width: 370px;

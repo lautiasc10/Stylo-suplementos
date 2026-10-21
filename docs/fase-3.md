@@ -1,5 +1,7 @@
 # Fase 3 — Comercio
 
+La continuación 3AA corrige contenido cubierto o recortado con texto ampliado, conserva los recorridos de compra actuales y no habilita pagos ni escrituras reales. Se entrega en `fase-3aa-accesibilidad-reflow`: [comprobaciones y límites](accesibilidad-reflow-fase-3aa.md).
+
 La continuación de la auditoría incorpora [SEO técnico en Fase 3Z](seo-tecnico-fase-3z.md): metadatos por página, datos estructurados por SKU y sitemap público. Conserva los bloqueos de indexación y no habilita pagos, logística, dominio ni despliegue. Se entrega en `fase-3z-seo-tecnico`, pendiente de revisión e integración autorizada.
 
 Autorizada por el usuario el 11 de octubre de 2026. Rama: `fase-3-comercio`, creada desde la última entrega de `fase-2-catalogo` sin integrarla a `main`. Desarrollo sin gastos, dominio ni servicios nuevos. La vista previa sigue separada de la tienda y del administrador real.

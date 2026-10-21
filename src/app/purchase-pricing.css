@@ -344,7 +344,21 @@
     white-space: nowrap;
   }
   body:has(.product-detail .purchase-action) {
-    padding-bottom: calc(136px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: max(
+      calc(136px + env(safe-area-inset-bottom, 0px)),
+      var(--purchase-bar-height, 0px)
+    );
+  }
+  html:has(.product-detail .purchase-action) {
+    scroll-padding-bottom: var(
+      --purchase-bar-height,
+      calc(136px + env(safe-area-inset-bottom, 0px))
+    );
+  }
+  .product-detail .purchase-action {
+    container-name: purchase;
+    container-type: inline-size;
+    font-size: var(--text-sm);
   }
   .product-detail.flavor-product-detail .purchase-action {
     background: var(--flavor-background);
@@ -354,6 +368,31 @@
   }
   .product-detail .product-payment-prices .product-price-main > strong {
     font-size: clamp(2.75rem, 10vw, 3.5rem);
+  }
+}
+@container purchase (max-width: 20em) {
+  .product-detail.unified-product-detail .product-purchase-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .product-quantity {
+    width: min(100%, max(120px, 8rem));
+  }
+}
+@media (max-width: 959px) and (max-height: 500px) {
+  /* A short landscape/zoomed viewport must not be filled by the fixed bar. */
+  .product-detail .purchase-action {
+    position: static;
+    padding-inline: 0;
+    border-top: 0;
+  }
+  .product-detail .purchase-price-summary {
+    display: none;
+  }
+  body:has(.product-detail .purchase-action) {
+    padding-bottom: 0;
+  }
+  html:has(.product-detail .purchase-action) {
+    scroll-padding-bottom: 0;
   }
 }
 @media (prefers-reduced-motion: reduce) {

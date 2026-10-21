@@ -517,10 +517,13 @@
 }
 .footer-inner {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: center;
   gap: var(--space-8);
   padding-block: var(--space-8);
+}
+.footer-inner > * {
+  min-width: 0;
 }
 .footer-inner > div {
   display: flex;
@@ -534,6 +537,7 @@
 }
 .footer-inner nav {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   gap: var(--space-6);
   font-size: var(--text-sm);
@@ -897,6 +901,10 @@
   gap: var(--space-6);
   margin-bottom: var(--space-10);
 }
+.home-section-heading > * {
+  min-width: 0;
+  max-width: 100%;
+}
 .home-section-heading .eyebrow {
   margin: 0 0 var(--space-3);
   font: 600 var(--text-sm)/1.5 var(--font-sans);
@@ -907,6 +915,7 @@
   margin: 0;
   font-size: clamp(2.5rem, 4.5vw, 4.5rem);
   line-height: 1.05;
+  overflow-wrap: anywhere;
 }
 .home-section-heading-action {
   flex-shrink: 0;
@@ -1057,6 +1066,12 @@
   color: var(--color-stylo-white);
   font-size: var(--text-sm);
   cursor: pointer;
+}
+.offer-payment label > span {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  text-align: center;
 }
 .offer-payment input {
   position: absolute;

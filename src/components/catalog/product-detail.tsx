@@ -38,6 +38,7 @@ import { useFlavorChoreography } from "./use-flavor-choreography";
 import { useFlavorDetailsMotion } from "./use-flavor-details-motion";
 import { elementPoint } from "./flavor-motion";
 import { NeutralProductScene } from "./neutral-product-scene";
+import { usePurchaseBarSpace } from "./use-purchase-bar-space";
 export type ProductDetailProps = {
   product: Product;
   brandName: string;
@@ -61,6 +62,7 @@ export function ProductDetail({
   preview = false,
 }: ProductDetailProps) {
   const heroRoot = useRef<HTMLDivElement>(null);
+  usePurchaseBarSpace(heroRoot);
   const preloadGallery = useRef<((id: string) => void) | null>(null);
   const ingredientCache = useRef<ReturnType<
     typeof createGalleryPhotoCache
@@ -435,6 +437,20 @@ export function ProductDetail({
           />
         </RevealItem>
         <RevealItem className="purchase-action" direction="none">
+          <noscript>
+            <style>{`
+              @media (max-width: 959px) {
+                .product-detail .purchase-action {
+                  position: static;
+                  padding-inline: 0;
+                  border-top: 0;
+                }
+                .product-detail .purchase-price-summary { display: none; }
+                body:has(.product-detail .purchase-action) { padding-bottom: 0; }
+                html:has(.product-detail .purchase-action) { scroll-padding-bottom: 0; }
+              }
+            `}</style>
+          </noscript>
           <ProductPricing
             variant={variant}
             selectable
