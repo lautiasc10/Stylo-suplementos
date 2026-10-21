@@ -15,27 +15,39 @@ test("el hero de la referencia usa Anton y Manrope y conserva la identidad de la
   await expect(page.locator(".site-header")).toHaveCSS("font-family", /Inter/);
 });
 
-test("la prueba centra el león delante de la frase y deja las acciones debajo del escenario", async ({
+test("el título queda legible a la izquierda del león y las acciones debajo del escenario", async ({
   page,
 }, info) => {
   test.skip(info.project.name !== "desktop");
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
-  const title = await page.locator(".hero-title").boundingBox();
-  const actions = await page.locator(".hero-actions").boundingBox();
-  const lion = await page.locator(".sport-hero-visual").boundingBox();
-  expect(title).not.toBeNull();
-  expect(actions).not.toBeNull();
-  expect(lion).not.toBeNull();
-  expect(title!.x + title!.width / 2).toBeCloseTo(
-    page.viewportSize()!.width / 2,
-    0,
-  );
-  expect(lion!.x + lion!.width / 2).toBeCloseTo(
-    page.viewportSize()!.width / 2,
-    0,
-  );
-  expect(actions!.y).toBeGreaterThan(title!.y + title!.height);
-  expect(lion!.x + lion!.width).toBeLessThanOrEqual(page.viewportSize()!.width);
+  await page.evaluate(() => document.fonts.ready);
+  for (const width of [541, 768, 1024, 1440, 1920]) {
+    await page.setViewportSize({ width, height: 900 });
+    const title = await page.locator(".hero-title").boundingBox();
+    const actions = await page.locator(".hero-actions").boundingBox();
+    const lion = await page.locator(".sport-hero-visual").boundingBox();
+    const textRight = await page
+      .locator(".hero-title-line")
+      .evaluateAll((lines) =>
+        Math.max(
+          ...lines.map((line) => {
+            const range = document.createRange();
+            range.selectNodeContents(line);
+            return range.getBoundingClientRect().right;
+          }),
+        ),
+      );
+    // Reserve the maximum 30px title parallax as well as the static gap.
+    expect(textRight + 30).toBeLessThan(lion!.x);
+    expect(actions!.y).toBeGreaterThan(title!.y + title!.height);
+    expect(lion!.x + lion!.width).toBeLessThanOrEqual(width);
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+  }
 });
 
 test("la frase sigue al cursor en sentido inverso y se detiene al pausar", async ({

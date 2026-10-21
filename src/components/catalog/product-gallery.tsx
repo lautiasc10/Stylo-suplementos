@@ -644,7 +644,7 @@ function LegacyProductGallery({
           <span
             className="product-frame product-frame-current product-no-photo"
             role="img"
-            aria-label={current.alt}
+            aria-label={`Imagen del producto pendiente · ${current.alt}`}
           >
             <Icon name="bag" />
             <span>Imagen del producto pendiente</span>
@@ -770,7 +770,11 @@ function LegacyProductGallery({
           <Link
             href={current.href ?? href}
             className="product-frame-link"
-            aria-label={linkLabel}
+            aria-label={
+              current.src
+                ? linkLabel
+                : `Imagen del producto pendiente · ${linkLabel ?? current.alt}`
+            }
           >
             {frames}
           </Link>

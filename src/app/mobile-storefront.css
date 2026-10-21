@@ -30,6 +30,14 @@
 }
 .product-placeholder span {
   color: var(--foreground);
+  font-size: var(--text-sm);
+}
+.product-image-gallery-card .product-no-photo {
+  padding: 26% var(--space-4) 30%;
+  color: var(--foreground);
+  font-size: var(--text-sm);
+  line-height: 1.4;
+  text-align: center;
 }
 .cart-photo,
 .cart-photo .product-thumbnail,

@@ -206,7 +206,7 @@ export function ProductCard({
         ) : (
           <Link
             href={href}
-            aria-label={`Ver ${product.name}`}
+            aria-label={`${preview ? "Ilustración · datos de prueba" : "Imagen pendiente"} · Ver ${product.name}`}
             className="product-placeholder"
           >
             <CategoryIllustration kind={category?.slug ?? "proteinas"} />

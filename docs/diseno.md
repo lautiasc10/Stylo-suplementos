@@ -1,5 +1,7 @@
 # Diseño de STYLO
 
+La Fase 3Y separa título y león en el hero desde tablet, conserva su movimiento y refuerza el contorno de la frase. La compra móvil incorpora el precio y medio de pago en su barra fija, con las mismas reglas de promociones, y los placeholders alinean su nombre accesible con el mensaje visible. Inventario de fotografías pendientes, alcance y verificación: [legibilidad y compra](legibilidad-compra-fase-3y.md).
+
 La Fase 3X estabiliza filtros y legibilidad durante la hidratación y prioriza las imágenes visibles antes de precargar sabores vecinos. Conserva la composición, los recursos, el reveal y el movimiento ambiente; mantiene los filtros nativos sin JavaScript. Alcance, caché de archivos versionados, pruebas y medición de producción local: [estabilidad y rendimiento](estabilidad-rendimiento-fase-3x.md).
 
 La revisión 3W quita el desenfoque de pantalla completa detrás de la bolsa y el buscador para evitar cuadros lentos en escritorio. Conserva el oscurecimiento y los paneles de la referencia. En la portada, el hero suspende su repintado de partículas cuando hay un diálogo abierto y retoma al cerrarlo. Medidas antes/después, límite durante la entrada inicial y verificación: [bolsa y buscador de Fase 3V](bolsa-buscador-fase-3v.md).

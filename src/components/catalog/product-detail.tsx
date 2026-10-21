@@ -435,6 +435,12 @@ export function ProductDetail({
           />
         </RevealItem>
         <RevealItem className="purchase-action" direction="none">
+          <ProductPricing
+            variant={variant}
+            selectable
+            summaryOnly
+            quantity={Math.max(1, Math.min(variant.stock, quantity + inCart))}
+          />
           <AddToCart
             variantId={variant.id}
             stock={variant.stock}

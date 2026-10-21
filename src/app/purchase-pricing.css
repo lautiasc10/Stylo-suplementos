@@ -1,4 +1,7 @@
 /* Shared price counter and restrained CTA light for product and offer views. */
+.purchase-price-summary {
+  display: none;
+}
 .animated-amount {
   position: relative;
   display: inline-block;
@@ -322,6 +325,27 @@
   margin: 0;
 }
 @media (max-width: 959px) {
+  .product-detail .purchase-price-summary {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-2);
+    margin: 0 0 var(--space-2);
+    color: var(--foreground);
+    font-size: var(--text-sm);
+    line-height: 1.4;
+  }
+  .product-detail.flavor-product-detail .purchase-price-summary {
+    color: var(--flavor-ink);
+  }
+  .purchase-price-summary strong {
+    font-size: var(--text-xl);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  body:has(.product-detail .purchase-action) {
+    padding-bottom: calc(136px + env(safe-area-inset-bottom, 0px));
+  }
   .product-detail.flavor-product-detail .purchase-action {
     background: var(--flavor-background);
   }

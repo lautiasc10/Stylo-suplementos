@@ -58,6 +58,8 @@
 .reference-hero .hero-stage {
   min-height: 430px;
   flex: 1;
+  width: min(100%, 1440px);
+  margin-inline: auto;
 }
 .reference-hero .hero-stage-copy {
   position: absolute;
@@ -78,7 +80,7 @@
 }
 .reference-hero .hero-title-outline {
   -webkit-text-stroke: 1px
-    color-mix(in oklab, var(--hero-primary) 45%, transparent);
+    color-mix(in oklab, var(--hero-primary) 72%, transparent);
 }
 .reference-hero .hero-title-gold {
   font-size: 10.5vw;
@@ -90,6 +92,26 @@
   width: min(78vw, 640px, 65svh);
   z-index: 2;
   perspective: 1200px;
+}
+/* Keep the title clear of the opaque lion, including its cursor movement. */
+@media (min-width: 541px) {
+  .reference-hero .hero-stage-copy {
+    inset-inline: var(--page-gutter) auto;
+    width: 52%;
+    z-index: 3;
+  }
+  .reference-hero .hero-title {
+    font-size: clamp(44px, 8.3vw, 120px);
+    text-align: left;
+  }
+  .reference-hero .hero-title-gold {
+    font-size: clamp(32px, 5.8vw, 84px);
+  }
+  .reference-hero .sport-hero-visual {
+    inset-inline: auto 1%;
+    width: min(46vw, 640px, 65svh);
+    transform: translateY(-50%);
+  }
 }
 .reference-lion-poses img {
   transition: opacity 700ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -525,7 +547,7 @@
     min-height: 380px;
   }
   .reference-hero .sport-hero-visual {
-    width: min(78vw, 540px);
+    width: min(46vw, 540px);
   }
   .reference-hero-footer {
     align-items: start;

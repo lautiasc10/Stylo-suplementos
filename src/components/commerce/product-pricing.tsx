@@ -193,6 +193,7 @@ export function ProductPricing({
   listFirst = false,
   selectable = false,
   quantity = 1,
+  summaryOnly = false,
 }: {
   variant: Variant;
   compact?: boolean;
@@ -201,6 +202,8 @@ export function ProductPricing({
   listFirst?: boolean;
   selectable?: boolean;
   quantity?: number;
+  /** Compact purchase-bar view, using the same promotion and quantity rules. */
+  summaryOnly?: boolean;
 }) {
   const { offers, now, preview } = useOffers(variant);
   const { paymentMethod } = useCart();
@@ -235,6 +238,16 @@ export function ProductPricing({
   const original =
     paymentMethod === "mercado-pago" ? variant.listPrice : variant.cashPrice;
   const saving = Math.max(0, original - selected.total);
+  if (summaryOnly)
+    return (
+      <p className="purchase-price-summary">
+        <strong>{formatPrice(selected.total, 0)}</strong>
+        <span>
+          por unidad con{" "}
+          {paymentMethod === "mercado-pago" ? "Mercado Pago" : "transferencia"}
+        </span>
+      </p>
+    );
   const prices = selectable ? (
     <div
       className="transfer-pricing product-payment-prices"

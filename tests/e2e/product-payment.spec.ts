@@ -43,6 +43,17 @@ test("ficha: un precio por medio de pago, sin ahorro ni sabor duplicado; cantida
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/vista-previa/producto/proteina-de-prueba");
   const pricing = page.locator(".product-payment-prices");
+  const summary = page.locator(".purchase-price-summary");
+  await expect(summary.locator("strong")).toHaveText("$ 30.000");
+  await expect(summary).toContainText("por unidad con transferencia");
+  if (test.info().project.name === "mobile") {
+    await expect(summary).toBeInViewport();
+    expect((await summary.boundingBox())!.y).toBeLessThan(
+      (await page.locator(".product-purchase-form").boundingBox())!.y,
+    );
+  } else {
+    await expect(summary).toBeHidden();
+  }
   await expect(pricing.locator(".product-price-main > strong")).toHaveText(
     "$ 30.000",
   );
@@ -67,6 +78,8 @@ test("ficha: un precio por medio de pago, sin ahorro ni sabor duplicado; cantida
     "$ 34.000",
   );
   await expect(pricing.locator("del")).toHaveText("$ 45.000");
+  await expect(summary.locator("strong")).toHaveText("$ 34.000");
+  await expect(summary).toContainText("por unidad con Mercado Pago");
   await expect(pricing.locator(".product-price-label")).toHaveText(
     "Precio por unidad con Mercado Pago",
   );
@@ -94,6 +107,7 @@ test("ficha: un precio por medio de pago, sin ahorro ni sabor duplicado; cantida
   await expect(
     page.locator('.product-purchase-form input[name="quantity"]'),
   ).toHaveValue("1");
+  await expect(summary.locator("strong")).toHaveText("$ 47.000");
   const information = page.getByRole("region", {
     name: "Información del producto",
     exact: true,
@@ -132,10 +146,13 @@ test("la cantidad elegida y el carrito determinan el precio por unidad y respeta
   await page.goto("/vista-previa/producto/proteina-de-prueba");
   const price = page.locator(".product-price-main > strong");
   await expect(price).toHaveText("$ 41.000");
+  const summary = page.locator(".purchase-price-summary strong");
+  await expect(summary).toHaveText("$ 41.000");
   await page
     .getByRole("button", { name: "Aumentar cantidad", exact: true })
     .click();
   await expect(price).toHaveText("$ 35.000");
+  await expect(summary).toHaveText("$ 35.000");
   await page
     .getByRole("button", { name: "Agregar al carrito", exact: true })
     .click();
@@ -146,10 +163,12 @@ test("la cantidad elegida y el carrito determinan el precio por unidad y respeta
   await page.keyboard.press("Escape");
   // Two units already in the cart + another two would exceed the three-unit cap.
   await expect(price).toHaveText("$ 41.000");
+  await expect(summary).toHaveText("$ 41.000");
   await page
     .getByRole("button", { name: "Disminuir cantidad", exact: true })
     .click();
   await expect(price).toHaveText("$ 35.000");
+  await expect(summary).toHaveText("$ 35.000");
 });
 
 test("el combo es opcional, tiene un solo total identificado y agrega todos sus componentes", async ({

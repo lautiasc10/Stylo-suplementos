@@ -4,7 +4,11 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Icon } from "@/components/ui/icon";
 import { useMotionPreference } from "@/components/ui/use-motion-preference";
-import { flavorLabel, variantLabel, type Variant } from "@/modules/catalog/model";
+import {
+  flavorLabel,
+  variantLabel,
+  type Variant,
+} from "@/modules/catalog/model";
 import { createGalleryPhotoCache } from "./gallery-photo-cache";
 import { ProductThumbnailRail } from "./product-thumbnail-rail";
 import type { GalleryImage } from "./product-gallery";
@@ -542,7 +546,7 @@ export function VariantSpinner(props: VariantSpinnerProps) {
               <span
                 className={`product-frame product-no-photo${active ? " product-frame-current" : ""}`}
                 role="img"
-                aria-label={photo.alt}
+                aria-label={`Imagen del producto pendiente · ${photo.alt}`}
               >
                 Imagen del producto pendiente
               </span>
@@ -616,7 +620,11 @@ export function VariantSpinner(props: VariantSpinnerProps) {
           <Link
             className="product-frame-link"
             href={main.href ?? props.href}
-            aria-label={props.linkLabel}
+            aria-label={
+              main.src
+                ? props.linkLabel
+                : `Imagen del producto pendiente · ${props.linkLabel ?? main.alt}`
+            }
           >
             {frames}
           </Link>
