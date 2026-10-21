@@ -13,7 +13,7 @@ const { chromium } = require("@playwright/test");
     await page
       .locator('.reference-showcase[data-scroll-enhanced="true"]')
       .waitFor();
-    await page.locator(".sport-hero-visual video.is-ready").waitFor();
+    await page.locator('.reference-lion-poses[data-left-ready="true"]').waitFor();
     const cdp = await page.context().newCDPSession(page);
     await cdp.send("Performance.enable");
     const before = await cdp.send("Performance.getMetrics");

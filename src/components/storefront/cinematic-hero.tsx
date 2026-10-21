@@ -6,6 +6,7 @@ import { heroDisplay, heroBody } from "./hero-fonts";
 import { useEffect, useRef, useState } from "react";
 import { HeroCategoryMarquee } from "./hero-category-marquee";
 import { HeroAmbience } from "./hero-ambience";
+import { ReferenceLion } from "./reference-lion";
 import { Icon } from "@/components/ui/icon";
 import { HERO_COPY } from "./hero-copy";
 import { useHomeIntro } from "./home-intro";
@@ -65,7 +66,9 @@ export function CinematicHero({
         !connection?.saveData &&
         !["slow-2g", "2g", "3g"].includes(connection?.effectiveType ?? "");
       setMotionEnabled(eligible);
-      setVideoEnabled(eligible && desktop.matches);
+      setVideoEnabled(
+        composition !== "reference" && eligible && desktop.matches,
+      );
       if (!eligible || !desktop.matches) setVideoReady(false);
       if (firstPass) {
         setPresentation(
@@ -89,7 +92,7 @@ export function CinematicHero({
       desktop.removeEventListener("change", updateEligibility);
       reduced.removeEventListener("change", updateEligibility);
     };
-  }, [setWaiting, claimIntro]);
+  }, [setWaiting, claimIntro, composition]);
 
   useEffect(() => {
     if (!videoEnabled || videoFailed) return;
@@ -346,16 +349,20 @@ export function CinematicHero({
         >
           <div className="hero-lion-tilt">
             <div className="hero-lion-ambient">
-              <div className="sport-hero-poster">
-                <Image
-                  src={POSTER_URL}
-                  alt=""
-                  fill
-                  priority
-                  unoptimized
-                  sizes="(max-width: 800px) 150vw, 1200px"
-                />
-              </div>
+              {composition === "reference" ? (
+                <ReferenceLion />
+              ) : (
+                <div className="sport-hero-poster">
+                  <Image
+                    src={POSTER_URL}
+                    alt=""
+                    fill
+                    priority
+                    unoptimized
+                    sizes="(max-width: 800px) 150vw, 1200px"
+                  />
+                </div>
+              )}
               {videoEnabled && !videoFailed && (
                 <video
                   ref={videoRef}

@@ -43,8 +43,9 @@ test("la frase sigue al cursor en sentido inverso y se detiene al pausar", async
 }, info) => {
   test.skip(info.project.name !== "desktop");
   await page.goto("/");
-  await expect(page.locator(".sport-hero-visual video")).toHaveClass(
-    /is-ready/,
+  await expect(page.locator(".reference-lion-poses")).toHaveAttribute(
+    "data-left-ready",
+    "true",
   );
   const title = page.locator(".hero-title-parallax");
   const position = () =>
@@ -101,12 +102,12 @@ test("una carga lenta del león conserva póster, navegación y compra disponibl
   const gate = new Promise<void>((r) => {
     release = r;
   });
-  await page.route("**/stylo-lion-motion-v3.mp4", async (route) => {
+  await page.route("**/stylo-lion-poster-left-v1.webp", async (route) => {
     await gate;
     await route.continue().catch(() => {});
   });
   try {
-    await page.goto("/");
+    await page.goto("/", { waitUntil: "domcontentloaded" });
     await expect(page.locator(".sport-hero-poster")).toBeVisible();
     await expect(page.locator(".hero-title")).toBeVisible();
     await expect(page.locator(".site-header")).not.toHaveAttribute("inert");
@@ -117,28 +118,15 @@ test("una carga lenta del león conserva póster, navegación y compra disponibl
   }
 });
 
-test("el error del video conserva la foto y no interrumpe las acciones", async ({
-  page,
-}, info) => {
-  test.skip(info.project.name !== "desktop");
-  await page.route("**/stylo-lion-motion-v3.mp4", (route) => route.abort());
-  await page.goto("/");
-  await expect(page.locator(".sport-hero-visual video")).toHaveCount(0);
-  await expect(page.locator(".sport-hero-poster")).toBeVisible();
-  await page.locator(".sport-hero .hero-pill-primary").click();
-  await expect(page).toHaveURL(/\/catalogo$/);
-});
-
 test("la luz acompaña el cursor y la pausa detiene luz, partículas y carrusel", async ({
   page,
 }, info) => {
   test.skip(info.project.name !== "desktop");
   await page.goto("/");
   const hero = page.locator(".sport-hero");
-  await expect(hero.locator("video")).toHaveClass(/is-ready/);
-  await expect(hero.locator(".sport-hero-poster")).toHaveCSS(
-    "visibility",
-    "hidden",
+  await expect(hero.locator(".reference-lion-poses")).toHaveAttribute(
+    "data-left-ready",
+    "true",
   );
   const light = hero.locator(".hero-cursor-light");
   await page.mouse.move(300, 350);
@@ -219,7 +207,10 @@ test("el mate negro del león no oculta el fondo", async ({ page }, info) => {
   );
   await page.goto("/");
   const visual = page.locator(".sport-hero-visual");
-  await expect(visual.locator("video")).toHaveClass(/is-ready/);
+  await expect(visual.locator(".reference-lion-poses")).toHaveAttribute(
+    "data-left-ready",
+    "true",
+  );
   await expect(visual).toHaveCSS("mix-blend-mode", "normal");
   await expect(visual).toHaveCSS("mask-image", /radial-gradient/);
   await page.addStyleTag({
@@ -227,7 +218,7 @@ test("el mate negro del león no oculta el fondo", async ({ page }, info) => {
       ".sport-hero{background:rgb(72,48,16)} .hero-dust,.hero-title,.hero-cursor-light,.sport-hero-inner{visibility:hidden} .sport-hero::after{background:none} .sport-hero-visual::after{background:none} .hero-lion-ambient{animation:none!important}",
   });
   const root = await page.locator(".sport-hero").boundingBox();
-  const media = await visual.locator("video").boundingBox();
+  const media = await visual.locator(".reference-lion-right").boundingBox();
   const png = await page.locator(".sport-hero").screenshot();
   const rgb = await page.evaluate(
     async ({ source, x, y }) => {
@@ -251,26 +242,6 @@ test("el mate negro del león no oculta el fondo", async ({ page }, info) => {
     expect(Math.abs(rgb[i] - value)).toBeLessThan(6);
 });
 
-test("el decoder conserva respaldo si se omite un callback", async ({
-  page,
-}, info) => {
-  test.skip(info.project.name !== "desktop");
-  await page.addInitScript(() => {
-    sessionStorage.setItem("stylo.home-intro-seen.v1", "1");
-    HTMLVideoElement.prototype.requestVideoFrameCallback = () => 1;
-    HTMLVideoElement.prototype.cancelVideoFrameCallback = () => {};
-  });
-  await page.goto("/");
-  const lion = page.locator(".sport-hero-visual video");
-  await expect(lion).toHaveClass(/is-ready/);
-  await page.mouse.move(page.viewportSize()!.width * 0.05, 300);
-  await expect
-    .poll(() =>
-      lion.evaluate((element) => (element as HTMLVideoElement).currentTime),
-    )
-    .toBeGreaterThan(3);
-});
-
 test("el hero conserva accesos y muestra un fotograma mientras carga", async ({
   page,
 }, testInfo) => {
@@ -285,6 +256,7 @@ test("el hero conserva accesos y muestra un fotograma mientras carga", async ({
     .poll(() =>
       hero
         .locator(".sport-hero-visual img")
+        .first()
         .evaluate((image) => (image as HTMLImageElement).naturalWidth),
     )
     .toBeGreaterThan(0);
@@ -304,48 +276,6 @@ test("el hero conserva accesos y muestra un fotograma mientras carga", async ({
       () => document.documentElement.scrollWidth <= window.innerWidth,
     ),
   ).toBe(true);
-});
-
-test("la mirada sigue la posición del cursor y vuelve al mismo fotograma", async ({
-  page,
-}, testInfo) => {
-  test.skip(
-    testInfo.project.name === "mobile",
-    "El celular muestra un fotograma fijo",
-  );
-  await page.goto("/");
-  const video = page.locator(".sport-hero-visual video");
-  await expect(video).toHaveClass(/is-ready/, { timeout: 15000 });
-  await page.keyboard.press("Tab");
-  const width = page.viewportSize()!.width;
-  const currentTime = () =>
-    video.evaluate((element) => (element as HTMLVideoElement).currentTime);
-  const duration = await video.evaluate(
-    (element) => (element as HTMLVideoElement).duration,
-  );
-  await page.mouse.move(width * 0.1, 300);
-  await expect.poll(currentTime).toBeGreaterThan(duration * 0.7);
-  await page.mouse.move(width * 0.95, 300);
-  await expect.poll(currentTime).toBeLessThan(duration * 0.3);
-  // Absolute positioning must not drift after a quick reversal.
-  await page.mouse.move(width * 0.15, 300);
-  await page.mouse.move(width * 0.85, 300);
-  await page.mouse.move(width * 0.5, 300);
-  await expect.poll(currentTime).toBeCloseTo(duration / 2, 1);
-  await expect(video).toHaveJSProperty("paused", true);
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await expect(video).toHaveCount(0);
-  await expect(page.locator(".hero-dust canvas")).toHaveCount(0);
-  await page.emulateMedia({ reducedMotion: "no-preference" });
-  await expect(page.locator(".sport-hero-visual video")).toHaveClass(
-    /is-ready/,
-  );
-  await expect(page.locator(".hero-dust canvas")).toBeVisible();
-  await expect(page.locator(".hero-atmosphere")).toHaveCount(0);
-  await expect(page.locator(".sport-hero")).toHaveAttribute(
-    "data-presentation",
-    "static",
-  );
 });
 
 test("movimiento reducido y navegación sin JavaScript conservan el hero", async ({
@@ -435,99 +365,4 @@ test("Tab antes de hidratar conserva la navegación accesible", async ({
   } finally {
     release();
   }
-});
-
-test("el cruce frontal sigue presentando fotogramas sin cambios de sentido", async ({
-  page,
-}, testInfo) => {
-  test.skip(testInfo.project.name === "mobile", "El seguimiento utiliza mouse");
-  await page.goto("/");
-  const video = page.locator(".sport-hero-visual video");
-  await expect(video).toHaveClass(/is-ready/);
-  await page.keyboard.press("Tab");
-  const width = page.viewportSize()!.width;
-  await page.mouse.move(width * 0.4, 300);
-  await expect
-    .poll(() =>
-      video.evaluate((element) => (element as HTMLVideoElement).currentTime),
-    )
-    .toBeCloseTo(2.29, 1);
-  await video.evaluate((element) => {
-    const media = element as HTMLVideoElement & { presented: number[] };
-    media.presented = [];
-    media.addEventListener("seeked", () =>
-      media.presented.push(media.currentTime),
-    );
-  });
-  for (let step = 1; step <= 40; step++) {
-    await page.mouse.move(width * (0.4 + step * 0.005), 300);
-    await page.waitForTimeout(35);
-  }
-  await expect
-    .poll(() =>
-      video.evaluate((element) => (element as HTMLVideoElement).currentTime),
-    )
-    .toBeLessThan(1.75);
-  const frames = await video.evaluate(
-    (element) =>
-      (element as HTMLVideoElement & { presented: number[] }).presented,
-  );
-  // Parallel browser load may coalesce destinations; the frontal pose must
-  // still be presented between the two sides, rather than skipped.
-  expect(frames.some((time) => Math.abs(time - 2.02) < 0.07)).toBe(true);
-  for (let i = 1; i < frames.length; i++) {
-    expect(frames[i]).toBeLessThanOrEqual(frames[i - 1] + 0.001);
-    expect(frames[i - 1] - frames[i]).toBeLessThan(0.2);
-  }
-});
-
-test("la mirada lenta atraviesa el frente con poses intermedias", async ({
-  page,
-}, testInfo) => {
-  test.skip(testInfo.project.name === "mobile", "El seguimiento utiliza mouse");
-  await page.goto("/");
-  const video = page.locator(".sport-hero-visual video");
-  await expect(video).toHaveClass(/is-ready/);
-  await page.keyboard.press("Tab");
-  const width = page.viewportSize()!.width;
-  await page.mouse.move(width * 0.47, 300);
-  await expect
-    .poll(() =>
-      video.evaluate((element) => (element as HTMLVideoElement).currentTime),
-    )
-    .toBeGreaterThan(2.05);
-  await page.waitForTimeout(400);
-  await video.evaluate((element) => {
-    const media = element as HTMLVideoElement & { slowFrames: number[] };
-    media.slowFrames = [];
-    media.addEventListener("seeked", () =>
-      media.slowFrames.push(media.currentTime),
-    );
-  });
-  // Just six percent of the viewport over almost six seconds: the previous
-  // 24 fps clip held only five poses during this same slow central sweep.
-  for (let step = 1; step <= 160; step++) {
-    await page.mouse.move(width * (0.47 + step * 0.000375), 300);
-    await page.waitForTimeout(35);
-  }
-  await expect
-    .poll(() =>
-      video.evaluate((element) => (element as HTMLVideoElement).currentTime),
-    )
-    .toBeLessThan(1.94);
-  const frames = await video.evaluate(
-    (element) =>
-      (element as HTMLVideoElement & { slowFrames: number[] }).slowFrames,
-  );
-  expect(new Set(frames).size).toBeGreaterThan(12);
-  for (let i = 1; i < frames.length; i++) {
-    expect(frames[i]).toBeLessThanOrEqual(frames[i - 1] + 0.001);
-    expect(frames[i - 1] - frames[i]).toBeLessThan(0.032);
-  }
-  await page.mouse.move(width * 0.5, 300);
-  await expect
-    .poll(() =>
-      video.evaluate((element) => (element as HTMLVideoElement).currentTime),
-    )
-    .toBeCloseTo(2, 1);
 });

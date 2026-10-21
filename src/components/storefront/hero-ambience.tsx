@@ -42,6 +42,9 @@ export function HeroAmbience({
     if (!context) return;
     const text = root.querySelector<HTMLElement>(".hero-title-parallax");
     const lion = root.querySelector<HTMLElement>(".hero-lion-tilt");
+    const poses = root.querySelector<HTMLElement>(".reference-lion-poses");
+    const pointerTarget = poses ? root : window;
+    let facingLeft = false;
     const fine = matchMedia("(hover: hover) and (pointer: fine)");
     const target = { x: 0.5, y: 0.5 };
     const current = { ...target };
@@ -70,6 +73,13 @@ export function HeroAmbience({
         text.style.transform = `translate3d(${-30 * dx}px, ${-20 * dy}px, 0)`;
       if (lion)
         lion.style.transform = `rotateX(${-8 * dy}deg) rotateY(${10 * dx}deg)`;
+      // Match the reference's 40% / 60% dead zone. Keep the current pose
+      // through the center so slow mouse movement cannot make it flicker.
+      const left = target.x < 0.4;
+      if (poses && left !== facingLeft && (target.x < 0.4 || target.x > 0.6)) {
+        facingLeft = left;
+        poses.dataset.facing = left ? "left" : "right";
+      }
       light!.style.transform = `translate3d(${current.x * width - 600}px, ${current.y * height - 600}px, 0)`;
       context!.clearRect(0, 0, width, height);
       for (const p of particles) {
@@ -166,7 +176,9 @@ export function HeroAmbience({
     measure();
     resize.observe(root);
     observer.observe(root);
-    window.addEventListener("pointermove", move, { passive: true });
+    pointerTarget.addEventListener("pointermove", move as EventListener, {
+      passive: true,
+    });
     window.addEventListener("scroll", scroll, { passive: true });
     fine.addEventListener("change", measure);
     document.addEventListener("visibilitychange", sync);
@@ -175,12 +187,13 @@ export function HeroAmbience({
       syncRef.current = () => {};
       observer.disconnect();
       resize.disconnect();
-      window.removeEventListener("pointermove", move);
+      pointerTarget.removeEventListener("pointermove", move as EventListener);
       window.removeEventListener("scroll", scroll);
       fine.removeEventListener("change", measure);
       document.removeEventListener("visibilitychange", sync);
       if (text) text.style.transform = "";
       if (lion) lion.style.transform = "";
+      if (poses) poses.dataset.facing = "right";
       light.style.transform = "";
     };
   }, [containerRef, enabled, onActivityChange]);

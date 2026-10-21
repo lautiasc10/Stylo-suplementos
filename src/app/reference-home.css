@@ -89,6 +89,44 @@
   transform: translate(-50%, -50%);
   width: min(78vw, 640px, 65svh);
   z-index: 2;
+  perspective: 1200px;
+}
+.reference-lion-poses img {
+  transition: opacity 700ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.reference-lion-left {
+  opacity: 0;
+}
+.reference-lion-poses[data-left-ready="true"][data-facing="left"]
+  .reference-lion-left {
+  opacity: 1;
+}
+.reference-lion-poses[data-left-ready="true"][data-facing="left"]
+  .reference-lion-right {
+  opacity: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .reference-hero[data-presentation="animated"] .hero-lion-ambient {
+    animation-name: reference-lion-arrive;
+    animation-delay: 300ms;
+  }
+}
+@keyframes reference-lion-arrive {
+  from {
+    opacity: 0;
+    transform: scale(1.08);
+    filter: blur(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+    filter: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reference-lion-poses img {
+    transition: none;
+  }
 }
 .reference-hero-footer {
   position: relative;
