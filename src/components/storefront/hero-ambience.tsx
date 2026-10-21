@@ -52,6 +52,7 @@ export function HeroAmbience({
     let height = 0;
     let bounds = root.getBoundingClientRect();
     let inView = false;
+    let covered = document.querySelector("dialog[open]") !== null;
     let frame: number | null = null;
     let previous = 0;
     let seed = 3032;
@@ -101,13 +102,13 @@ export function HeroAmbience({
     }
     function tick(now: number) {
       frame = null;
-      if (!inView || document.hidden || pausedRef.current) return;
+      if (!inView || document.hidden || pausedRef.current || covered) return;
       paint(previous ? Math.min((now - previous) / 1000, 0.05) : 1 / 60);
       previous = now;
       frame = requestAnimationFrame(tick);
     }
     function sync() {
-      const active = inView && !document.hidden;
+      const active = inView && !document.hidden && !covered;
       onActivityChange(active);
       if (!active || pausedRef.current) {
         if (frame !== null) cancelAnimationFrame(frame);
@@ -146,6 +147,7 @@ export function HeroAmbience({
       if (
         !inView ||
         document.hidden ||
+        covered ||
         pausedRef.current ||
         !fine.matches ||
         event.pointerType !== "mouse"
@@ -172,10 +174,23 @@ export function HeroAmbience({
       { threshold: [0, 0.15] },
     );
     const resize = new ResizeObserver(measure);
+    // The modal's dark backdrop hides the hero. Keep its last painted frame
+    // and suspend canvas/parallax work until the shopper closes the dialog.
+    const dialogs = new MutationObserver((records) => {
+      if (!records.some(({ target }) => target instanceof HTMLDialogElement))
+        return;
+      covered = document.querySelector("dialog[open]") !== null;
+      sync();
+    });
     syncRef.current = sync;
     measure();
     resize.observe(root);
     observer.observe(root);
+    dialogs.observe(document.body, {
+      attributes: true,
+      attributeFilter: ["open"],
+      subtree: true,
+    });
     pointerTarget.addEventListener("pointermove", move as EventListener, {
       passive: true,
     });
@@ -187,6 +202,7 @@ export function HeroAmbience({
       syncRef.current = () => {};
       observer.disconnect();
       resize.disconnect();
+      dialogs.disconnect();
       pointerTarget.removeEventListener("pointermove", move as EventListener);
       window.removeEventListener("scroll", scroll);
       fine.removeEventListener("change", measure);

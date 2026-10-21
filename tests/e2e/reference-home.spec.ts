@@ -2,6 +2,43 @@ import { test, expect } from "@playwright/test";
 import { demoCatalog } from "../../src/modules/catalog/demo";
 import { readFileSync } from "node:fs";
 
+test("el hero deja de pintar partículas bajo los diálogos y reanuda al cerrarlos", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    const clear = CanvasRenderingContext2D.prototype.clearRect;
+    CanvasRenderingContext2D.prototype.clearRect = function (x, y, w, h) {
+      if (this.canvas.closest(".reference-hero")) {
+        const counter = window as Window & { __heroDraws?: number };
+        counter.__heroDraws = (counter.__heroDraws ?? 0) + 1;
+      }
+      return clear.call(this, x, y, w, h);
+    };
+  });
+  const draws = () =>
+    page.evaluate(() => (window as Window & { __heroDraws?: number }).__heroDraws ?? 0);
+  await page.goto("/");
+  const hero = page.locator(".reference-hero");
+  await expect.poll(draws).toBeGreaterThan(2);
+
+  for (const [trigger, dialog] of [
+    [".search-trigger", ".reference-search-dialog"],
+    [".cart-trigger", ".reference-bag"],
+  ]) {
+    await page.locator(trigger).click();
+    await expect(page.locator(dialog)).toBeVisible();
+    await expect(hero).toHaveAttribute("data-ambient-paused", "true");
+    await page.waitForTimeout(80);
+    const stoppedAt = await draws();
+    await page.waitForTimeout(220);
+    expect(await draws()).toBe(stoppedAt);
+    await page.keyboard.press("Escape");
+    await expect(page.locator(dialog)).not.toBeVisible();
+    await expect(hero).toHaveAttribute("data-ambient-paused", "false");
+    await expect.poll(draws).toBeGreaterThan(stoppedAt);
+  }
+});
+
 test("las tres fotos, los objetivos y la navegación de compra usan el catálogo real", async ({
   page,
 }) => {

@@ -107,6 +107,10 @@
   background: var(--background);
   font-family: var(--font-hero-body), var(--font-sans);
 }
+.cart-drawer.reference-bag::backdrop {
+  /* The opaque overlay already separates the bag from the catalog. */
+  backdrop-filter: none;
+}
 .reference-bag[open] {
   animation: reference-bag-enter 500ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
@@ -456,9 +460,8 @@
 }
 .reference-search-dialog::backdrop {
   background: color-mix(in oklab, var(--background) 80%, transparent);
-  /* The dark overlay carries the reference look. A smaller blur avoids
-     repainting an expensive full-desktop filter over the live catalog. */
-  backdrop-filter: blur(4px);
+  /* A full-viewport blur stalls desktop frames over the live catalog. */
+  backdrop-filter: none;
 }
 .reference-search-panel {
   border: 1px solid var(--action-border);

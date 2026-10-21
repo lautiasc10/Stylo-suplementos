@@ -22,9 +22,19 @@ La partícula aparece solo si el guardado fue confirmado; no aparece al fallar. 
 
 Los diálogos nativos conservan Escape, cierre exterior, retorno de foco y bloqueo de scroll sin cambiar el ancho de la página. El buscador mantiene combobox, navegación con flechas/Enter, anuncios y contención de foco. En celular se conserva el panel de la referencia dentro de los márgenes, con cierre visible; la bolsa ocupa el ancho disponible. En horizontal, la lista sigue desplazándose mientras el checkout permanece accesible.
 
-El desenfoque del buscador se reduce a 4 px sobre la capa oscura al 80%. Una comparación local aislada sobre el catálogo de producción dio p95 de 50 ms con 12 px y 16,8 ms con 4 px. Se preserva el aspecto oscuro sin el costo del filtro mayor. Solo se animan transform y opacity en los movimientos; halo y sombras son estáticos y se revelan mediante opacidad.
+En la revisión 3W se eliminó el `backdrop-filter` de los dos diálogos de referencia. La capa negra conserva su opacidad, borde y colores. El filtro de pantalla completa era el costo dominante al abrir el buscador, agregar desde él y abrir la bolsa sobre el catálogo vivo. El halo y las sombras del panel siguen estáticos; las entradas animan transform y opacidad.
 
-La mejora aislada del filtro no garantiza 60 fps en todo el recorrido. Medición final del agregado completo sobre el catálogo público, con fotos visibles ya decodificadas y 90 intervalos: escritorio 1440 × 1000, mediana 16,8 ms, p95 50,1 ms y 44 intervalos superiores a 32 ms; emulación iPhone 13, mediana 16,7 ms, p95 16,8 ms y dos intervalos superiores a 32 ms. Scripting acumulado: 92,0 y 84,1 ms respectivamente. Chromium automatizado en esta máquina todavía muestra cuadros lentos en escritorio. No se declara rendimiento constante a 60 fps ni equivalencia con un teléfono físico.
+Medición A/B local con `next build` + `next start`, Chromium automatizado, escritorio 1440 × 1000 y 90 intervalos `requestAnimationFrame` por acción. Se abrió una vez el buscador para calentar resultados e imágenes visibles antes de medir. El control A usó el CSS anterior; el control B desactivó el filtro temporalmente desde el navegador; el resultado final se midió de nuevo tras compilar el cambio:
+
+| Acción | Antes: p95 / cuadros >32 ms | Final: p95 / cuadros >32 ms |
+| --- | --- | --- |
+| Abrir buscador | 33,4 ms / 21 | 16,8 ms / 0 |
+| Agregar desde buscador | 50,0 ms / 55 | 16,7 ms / 0 |
+| Abrir bolsa | 33,4 ms / 37 | 16,7 ms / 0 |
+
+Con emulación iPhone 13 sobre el build final, las tres acciones dieron p95 entre 16,7 y 16,8 ms, sin intervalos superiores a 32 ms ni errores de página. La prueba refleja esta máquina y estas interacciones; no acredita 60 fps constantes en otros dispositivos ni sustituye una medición en teléfono físico.
+
+En la portada, abrir un diálogo detiene el repintado de partículas y los desplazamientos del hero que quedan detrás del panel; al cerrarlo, se reanudan desde su posición anterior. Una prueba de navegador contó los repintados: fallaba antes del ajuste y pasó después en escritorio y móvil. Con la animación inicial ya asentada, abrir buscador, agregar y abrir bolsa dieron p95 de 16,7 ms y cero intervalos superiores a 32 ms en escritorio. Si se abre el buscador durante la entrada inicial del hero, todavía pueden aparecer algunos intervalos de unos 33 ms; no se atribuyen al filtro de los diálogos.
 
 ## Verificación
 

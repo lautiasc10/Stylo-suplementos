@@ -1,5 +1,7 @@
 # Diseño de STYLO
 
+La revisión 3W quita el desenfoque de pantalla completa detrás de la bolsa y el buscador para evitar cuadros lentos en escritorio. Conserva el oscurecimiento y los paneles de la referencia. En la portada, el hero suspende su repintado de partículas cuando hay un diálogo abierto y retoma al cerrarlo. Medidas antes/después, límite durante la entrada inicial y verificación: [bolsa y buscador de Fase 3V](bolsa-buscador-fase-3v.md).
+
 La prueba de Fase 3V copia del proyecto conectado de Lovable la bolsa circular, vuelo dorado y rebote al agregar, panel lateral, buscador con productos y acción Agregar, y hover con elevación, escala y giro leve del envase. Usa el dorado y degradado de esa referencia en tokens compartidos; conserva los logos oficiales, datos y checkout de STYLO. El agregado confirma en el mismo lugar y la bolsa se abre a pedido. No copia condiciones de envío ni compras simuladas. Alcance, capturas y verificación: [bolsa y buscador de Fase 3V](bolsa-buscador-fase-3v.md).
 
 La rama de prueba `prueba-diseno-protein-powerhouse` adapta los tres bloques de la referencia nueva del usuario: hero centrado con tipografía gigante, producto que aparece con el polvo al hacer scroll y tarjetas fotográficas de objetivos. Se reutilizan el león actual por confirmación expresa, las tres fotos adjuntas y datos reales del catálogo; se conservan el ecommerce y los logos oficiales. La revisión es una prueba de Fase 3U y no implica integrar a main. Alcance, decisiones, capturas y medición: [prueba de portada](prueba-portada-fase-3u.md).
