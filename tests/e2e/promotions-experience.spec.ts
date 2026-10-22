@@ -88,3 +88,41 @@ test("la página conserva títulos y compra dentro del ancho en 320, 375, 768 y 
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   }
 });
+
+test("Promociones y las particulas usan la tipografia y el dorado de la referencia", async ({ page }) => {
+  await page.goto("/vista-previa/escena-promociones");
+  const style = await page.evaluate(() => {
+    const scene = document.querySelector(".promo-page")!;
+    const particles = document.querySelector(".store-particles")!;
+    const sample = document.createElement("span");
+    sample.style.color = "oklch(0.78 0.15 70)";
+    document.body.append(sample);
+    const expectedGold = getComputedStyle(sample).color;
+    sample.style.color = "var(--promo-reference-primary)";
+    const gold = getComputedStyle(sample).color;
+    sample.remove();
+    const colorPixel = (color: string) => {
+      const canvas = document.createElement("canvas");
+      canvas.width = canvas.height = 1;
+      const context = canvas.getContext("2d")!;
+      context.fillStyle = color;
+      context.fillRect(0, 0, 1, 1);
+      return Array.from(context.getImageData(0, 0, 1, 1).data);
+    };
+    return {
+      gold: colorPixel(gold),
+      expectedGold: colorPixel(expectedGold),
+      bodyFont: getComputedStyle(scene).fontFamily,
+      displayFont: getComputedStyle(scene.querySelector("h1")!).fontFamily,
+      particleOpacity: getComputedStyle(particles).opacity,
+      particleLayer: getComputedStyle(particles).zIndex,
+      marqueeDuration: getComputedStyle(scene.querySelector(".promo-marquee > div")!).animationDuration,
+    };
+  });
+  expect(style.gold).toEqual(style.expectedGold);
+  expect(style.bodyFont).toContain("Barlow");
+  expect(style.displayFont).toContain("Anton");
+  expect(style.particleOpacity).toBe("0.5");
+  expect(style.particleLayer).toBe("10");
+  expect(style.marqueeDuration).toBe("25s");
+});

@@ -28,6 +28,7 @@
     var(--gold) 65%,
     var(--gold-accent) 100%
   );
+  --promo-reference-primary: oklch(0.78 0.15 70);
   --muted: #92928d;
   --image-background: #ffffff;
   --line: #ffffff20;

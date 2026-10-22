@@ -14,7 +14,7 @@ export function StoreParticles() {
     if (!canvas || reduced.matches) return;
     const context = canvas.getContext("2d", { alpha: true });
     if (!context) return;
-    const gold = getComputedStyle(document.documentElement).getPropertyValue("--gold").trim() || "#e5b858";
+    const gold = getComputedStyle(document.documentElement).getPropertyValue("--promo-reference-primary").trim() || "oklch(0.78 0.15 70)";
 
     let width = 0;
     let height = 0;
@@ -23,7 +23,6 @@ export function StoreParticles() {
     let phase = 0;
     let visible = !document.hidden;
     let particles: Particle[] = [];
-    const compact = window.matchMedia("(max-width: 700px)");
 
     function resize() {
       if (!canvas || !context) return;
@@ -33,12 +32,12 @@ export function StoreParticles() {
       canvas.width = Math.ceil(width * ratio);
       canvas.height = Math.ceil(height * ratio);
       context.setTransform(ratio, 0, 0, ratio, 0, 0);
-      particles = Array.from({ length: compact.matches ? 55 : 150 }, () => ({
+      particles = Array.from({ length: 160 }, () => ({
         x: Math.random(),
         y: Math.random(),
         angle: Math.random() * Math.PI * 2,
         radius: 0.15 + Math.random() * 0.35,
-        size: 0.4 + Math.random() * 1.3,
+        size: 0.4 + Math.random() * 1.6,
       }));
     }
 

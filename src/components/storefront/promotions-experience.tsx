@@ -11,6 +11,7 @@ import { promotionPrice } from "@/modules/commerce/promotion-cart";
 import { formatPrice, variantLabel, type Catalog } from "@/modules/catalog/model";
 import { galleryPhotos } from "@/components/catalog/gallery-images";
 import { catalogMediaSource } from "@/modules/catalog/media-source";
+import { promoBody } from "@/components/storefront/hero-fonts";
 
 type Offer = ReturnType<typeof productOffers>[number];
 
@@ -202,7 +203,7 @@ export function PromotionsExperience({ catalog: initialCatalog, imageBase = "", 
   const availableKinds = [...new Set(offers.map((offer) => offer.kind))].map((kind) => kind === "sale" ? "Precios rebajados" : kind === "quantity" ? "Ofertas por cantidad" : "Combos");
   const ticker = availableKinds.length ? availableKinds : ["Promociones STYLO", "Explorá la tienda"];
 
-  return <div className="promo-page">
+  return <div className={`promo-page ${promoBody.variable}`}>
     <section className="promo-hero" aria-labelledby="promo-title">
       <Image src="/reference/promotions-scoop.webp" alt="" fill sizes="100vw" quality={85} priority className="promo-hero-image" />
       <div className="promo-hero-scrim" />
