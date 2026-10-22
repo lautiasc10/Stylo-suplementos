@@ -11,7 +11,10 @@ import { priceLines, type Promotion } from "@/modules/commerce/promotions";
 
 export type ReferenceProduct = {
   id: string;
+  variantId: string;
   name: string;
+  displayName: string;
+  flavor: string;
   title: string[];
   brand: string;
   description: string;
@@ -65,7 +68,10 @@ export function referenceProduct(
       const cash = priceLines(lines, offers, "transferencia");
       return {
         id: product.id,
+        variantId: variant.id,
         name,
+        displayName: product.name.match(/["“]([^"”]+)["”]/)?.[1] ?? name,
+        flavor: flavorLabel(variant.flavor),
         title:
           /whey/i.test(name) && /protein/i.test(name)
             ? ["Whey", "Protein"]

@@ -115,15 +115,14 @@ test("el destacado se revela al hacer scroll, se detiene al salir y con movimien
     { catalog, images: { [path]: image } },
   );
   await page.goto("/vista-previa/portada");
-  const section = page.locator(".reference-showcase");
+  const section = page.locator("#mas-vendidos");
   await expect(section).toHaveCount(1);
-  await expect(section.locator(".reference-showcase-fact")).toHaveCount(4);
   await expect(section).not.toContainText("Proteína por porción");
   if (info.project.name === "desktop") {
     await expect(section).toHaveAttribute("data-scroll-enhanced", "true");
     await section.evaluate((el) =>
       scrollTo({
-        top: scrollY + el.getBoundingClientRect().top + innerHeight * 1.95,
+        top: scrollY + el.getBoundingClientRect().top + ((el as HTMLElement).offsetHeight - innerHeight) * 0.7,
         behavior: "instant",
       }),
     );
@@ -131,25 +130,19 @@ test("el destacado se revela al hacer scroll, se detiene al salir y con movimien
       .poll(() =>
         section.evaluate((el) =>
           Number(
-            (el as HTMLElement).style.getPropertyValue("--reference-progress"),
+            (el as HTMLElement).style.getPropertyValue("--seller-progress"),
           ),
         ),
       )
-      .toBeGreaterThan(0.95);
-    await expect(section.locator(".reference-showcase-buy")).toHaveCSS(
-      "opacity",
-      "1",
-    );
+      .toBeGreaterThan(0.4);
+    await expect(section.locator(".scroll-sellers-product a")).toHaveCount(1);
   } else {
     await expect(section).not.toHaveAttribute("data-scroll-enhanced", "true");
   }
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(section).not.toHaveAttribute("data-scroll-enhanced", "true");
-  await expect(section.locator(".reference-showcase-pack img")).toHaveCSS(
-    "transform",
-    "none",
-  );
-  await section.getByRole("link", { name: "Comprar ahora" }).click();
+  await expect(section.locator(".scroll-sellers-fallback a")).toHaveCount(1);
+  await section.locator(".scroll-sellers-fallback a").click();
   await expect(page).toHaveURL(
     new RegExp(
       `/vista-previa/producto/${product.slug}\\?variante=${product.variants[0].id}`,
@@ -172,7 +165,7 @@ test("sin JavaScript la portada conserva fotos, texto y enlaces sin una sección
     await expect(page.locator(".hero-title")).toBeVisible();
     await expect(page.locator(".reference-goal-card")).toHaveCount(3);
     await expect(
-      page.locator(".reference-showcase[data-scroll-enhanced]"),
+      page.locator("#mas-vendidos[data-scroll-enhanced]"),
     ).toHaveCount(0);
     await page.locator(".reference-goal-card").nth(1).click();
     await expect(page).toHaveURL(/objetivo=rendir-mas/);

@@ -5,11 +5,14 @@ import { CinematicHero } from "@/components/storefront/cinematic-hero";
 import { HomeProducts } from "@/components/storefront/home-products";
 import { HomePromotions } from "@/components/storefront/home-promotions";
 import { readPromotions } from "@/modules/commerce/promotions-server";
-import { ReferenceProductReveal } from "@/components/storefront/reference-product-reveal";
-import { referenceProduct } from "@/components/storefront/reference-product";
+import { ScrollBestSellers } from "@/components/storefront/scroll-best-sellers";
+import { bestSellerExamples } from "@/modules/catalog/best-seller-examples";
+import { CustomComboBuilder } from "@/components/storefront/custom-combo-builder";
+import { comboOptions } from "@/modules/catalog/combo-options";
 import { ReferenceGoals } from "@/components/storefront/reference-goals";
 import { heroDisplay, heroBody } from "@/components/storefront/hero-fonts";
 import "../reference-home.css";
+import "../home-scroll-combos.css";
 import {
   pageMetadata,
   SITE_DESCRIPTION,
@@ -38,7 +41,7 @@ export default async function HomePage() {
     : "";
   const featured = data.products.filter((p) => p.featured);
   // There is no creation date in the catalog. Editorial tags control this section.
-  const arrivals = data.products
+  const taggedArrivals = data.products
     .filter((p) =>
       p.tags.some((tag) =>
         /^(nuevo|novedad|novedades)$/.test(
@@ -47,13 +50,19 @@ export default async function HomePage() {
       ),
     )
     .slice(0, 4);
+  const arrivalsAreExamples = taggedArrivals.length === 0;
+  const arrivals = arrivalsAreExamples
+    ? data.products
+        .filter((product) => product.images.length && product.variants.some((variant) => variant.stock > 0))
+        .slice(-4)
+    : taggedArrivals;
   return (
     <div
       className={`reference-landing ${heroDisplay.variable} ${heroBody.variable}`}
     >
       <CinematicHero composition="reference" />
-      <ReferenceProductReveal
-        product={referenceProduct(data, imageBase, promotions.state.promotions)}
+      <ScrollBestSellers
+        products={bestSellerExamples(data, imageBase, promotions.state.promotions)}
       />
       <ReferenceGoals />
       <HomeProducts
@@ -68,12 +77,13 @@ export default async function HomePage() {
       <HomeProducts
         id="novedades"
         title="Novedades"
-        eyebrow="PARA TU PRÓXIMA RUTINA"
+        eyebrow={arrivalsAreExamples ? "SELECCIÓN DE EJEMPLO · STYLO" : "PARA TU PRÓXIMA RUTINA"}
         products={arrivals}
         catalog={data}
         imageBase={imageBase}
         unavailable={error}
       />
+      <CustomComboBuilder categories={comboOptions(data, imageBase)} />
       <HomePromotions
         unavailable={promotions.error}
         imageBase={imageBase}

@@ -16,6 +16,7 @@ import {
   parseCart,
   quoteCart,
   changeCart,
+  addCustomCombo,
   cartSuggestions,
   type CartQuote,
   type CartItem,
@@ -25,6 +26,7 @@ import {
   refreshCart,
   updateCart,
   addPromotion as addPromotionAction,
+  addCustomComboAction,
 } from "@/modules/commerce/actions";
 import { addPromotionToCart } from "@/modules/commerce/promotion-cart";
 import { BagContents } from "./bag-contents";
@@ -75,6 +77,7 @@ const CartContext = createContext<{
     origin?: CartOrigin,
   ) => Promise<boolean>;
   addPromotion: (promotionId: string, origin?: CartOrigin) => Promise<boolean>;
+  addCustomCombo: (variantIds: string[], origin?: CartOrigin) => Promise<boolean>;
   openCart: () => void;
   closeCart: () => void;
   updateQuote: (quote: CartQuote) => void;
@@ -321,6 +324,42 @@ export function CartProvider({
       setBusy(false);
     }
   }
+  async function addCustomComboToCart(variantIds: string[], origin?: CartOrigin) {
+    if (lock.current) return false;
+    lock.current = true;
+    ++refreshSequence.current;
+    setRefreshing(false);
+    setBusy(true);
+    setError("");
+    try {
+      if (preview) {
+        const catalog = previewCatalog();
+        const items = parseCart(JSON.parse(localStorage.getItem(previewKey) ?? "[]"));
+        const result = addCustomCombo(
+          catalog,
+          items,
+          variantIds.map((variantId) => ({ variantId, quantity: 1 })),
+        );
+        if (result.error) { setError(result.error); return false; }
+        localStorage.setItem(previewKey, JSON.stringify(result.items));
+        setLocalQuote(quoteCart(catalog, result.items, previewPromotions()));
+      } else {
+        const form = new FormData();
+        variantIds.forEach((id) => form.append("variantId", id));
+        const result = await addCustomComboAction(form);
+        setRealQuote(result.quote);
+        if (result.error) { setError(result.error); return false; }
+      }
+      announceCartAddition(origin);
+      return true;
+    } catch {
+      setError("No pudimos agregar el combo. Intentá otra vez.");
+      return false;
+    } finally {
+      lock.current = false;
+      setBusy(false);
+    }
+  }
   return (
     <CartContext.Provider
       value={{
@@ -339,6 +378,7 @@ export function CartProvider({
         setPaymentMethod,
         change,
         addPromotion,
+        addCustomCombo: addCustomComboToCart,
         openCart,
         closeCart,
         updateQuote: preview ? setLocalQuote : setRealQuote,

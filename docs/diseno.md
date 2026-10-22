@@ -1,5 +1,7 @@
 # Diseño de STYLO
 
+La Fase 3AC adapta las partículas y la cinta por scroll de Lovable, conserva las tarjetas de objetivos y añade un combo personalizado con variantes reales y total sin descuentos inventados: [scroll y combos](scroll-y-combos-fase-3ac.md).
+
 La Fase 3AB mejora la lectura de las fichas con fondos por sabor sin reemplazar sus escenas. El regreso a la tienda, logos sobre escenas claras y estados agotados tienen superficies de contraste estables. El aviso de reposición por email queda preparado y desactivado hasta configurar Resend y la migración privada: [legibilidad y avisos](legibilidad-y-avisos-fase-3ab.md).
 
 La Fase 3AA adapta la reserva de compra a su altura real y mantiene el contenido accesible con texto ampliado. En pantallas bajas o sin JavaScript la compra queda en el flujo; tienda y búsqueda conservan dos columnas habituales y admiten una cuando las letras necesitan espacio. Títulos, etiquetas de pago y enlaces del pie permiten reflow. Alcance, pruebas y límites: [accesibilidad y reflow](accesibilidad-reflow-fase-3aa.md).

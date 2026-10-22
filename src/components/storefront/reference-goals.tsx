@@ -66,6 +66,9 @@ export function ReferenceGoals() {
             </RevealItem>
           ))}
         </RevealGroup>
+        <Reveal className="reference-goal-combo-link">
+          <Link href="#tu-combo">También podés armar un combo a tu gusto <span aria-hidden="true">→</span></Link>
+        </Reveal>
       </div>
     </section>
   );

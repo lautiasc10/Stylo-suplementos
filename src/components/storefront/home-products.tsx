@@ -4,6 +4,8 @@ import { Icon } from "@/components/ui/icon";
 import { Reveal, RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { SectionHeading } from "./section-heading";
 import { HomeProductCarousel } from "./home-product-carousel";
+import { ScrollProductRail } from "./scroll-product-rail";
+import { ArrivalCard } from "./arrival-card";
 import type { Catalog, Product } from "@/modules/catalog/model";
 
 export function HomeProducts({
@@ -23,6 +25,17 @@ export function HomeProducts({
   imageBase: string;
   unavailable?: boolean;
 }) {
+  if (id === "novedades" && products.length) {
+    return (
+      <section id={id} className="home-collection home-collection-rail" aria-label="Novedades">
+        <ScrollProductRail count={products.length} example={eyebrow.includes("EJEMPLO")}>
+          {products.map((product) => (
+            <ArrivalCard key={product.id} product={product} catalog={catalog} imageBase={imageBase} example={eyebrow.includes("EJEMPLO")} />
+          ))}
+        </ScrollProductRail>
+      </section>
+    );
+  }
   const cards = products.map((product, index) => (
     <RevealItem key={product.id} className="reveal-card">
       <ProductCard

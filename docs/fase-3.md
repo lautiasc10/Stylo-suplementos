@@ -1,5 +1,7 @@
 # Fase 3 — Comercio
 
+La continuación 3AC queda en `fase-3ac-scroll-combos`: [secciones con scroll y combo personalizado](scroll-y-combos-fase-3ac.md). «Más vendidos» y, si faltan etiquetas, «Novedades» muestran selecciones de ejemplo hasta contar con datos reales; no se integran descuentos ficticios de Lovable.
+
 La continuación 3AB conserva el diseño por sabor y prepara [legibilidad y avisos reales de reposición](legibilidad-y-avisos-fase-3ab.md) en la rama `fase-3ab-legibilidad-sabores`. No envía correos ni modifica Supabase real hasta aplicar la migración y habilitar el remitente verificado. No integrar a `main` sin validación del usuario.
 
 La continuación 3AA corrige contenido cubierto o recortado con texto ampliado, conserva los recorridos de compra actuales y no habilita pagos ni escrituras reales. Se entrega en `fase-3aa-accesibilidad-reflow`: [comprobaciones y límites](accesibilidad-reflow-fase-3aa.md).

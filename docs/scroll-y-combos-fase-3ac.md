@@ -1,0 +1,13 @@
+# Fase 3AC: secciones con scroll y combo personalizado
+
+La composición sigue el video y la referencia de Lovable: Anton en peso 400 para títulos, Manrope para información, escenario de ancho completo con indicador vertical, cinta de novedades con avance dorado y combo dividido entre imagen y resumen. La cinta omite los números detrás de los envases por pedido del dueño. Las cajas del escenario usan precios y atributos comprobables del catálogo, sin inventar cifras nutricionales ni ventas.
+
+Esta rama adapta los componentes `ProductReveal`, `ShopStrip` y `ComboBuilder` del proyecto **Protein Powerhouse** de la cuenta Lovable del dueño a la portada existente de STYLO. Conserva el hero, «Elegí tu objetivo», los logos, el catálogo, las promociones, los precios y la bolsa actuales. No se copia la lista ficticia de ventas ni el descuento del prototipo.
+
+«Los más vendidos» usa tres productos **de ejemplo**, elegidos del catálogo público con foto y stock, preferentemente de proteínas, creatinas y pre-entrenos. La leyenda visible «Selección de ejemplo» evita presentarlos como un ranking real; no se muestran unidades vendidas. En escritorio, un escenario fijo reúne partículas doradas y hace aparecer un producto por tramo de scroll. En móvil, con movimiento reducido, ahorro de datos o sin JavaScript, los productos quedan en una lista normal y navegable. Cuando se registren ventas cobradas verificables, se puede sustituir esta selección editorial por una consulta agregada sin cambiar la animación.
+
+«Novedades» conserva las etiquetas editoriales existentes. Mientras no haya productos marcados como nuevo/novedad, muestra cuatro productos reales disponibles con la leyenda «Selección de ejemplo». En escritorio la fila avanza horizontalmente con el scroll vertical; en celular y con teclado usa una fila táctil/nativa. Si el navegador no ejecuta JavaScript, la fila sigue siendo desplazable horizontalmente.
+
+«Tu objetivo, tu combo» añade tres presets basados en las mismas categorías que «Elegí tu objetivo» y una opción «A mi gusto». El usuario elige dos o tres presentaciones con stock. Los importes de transferencia y Mercado Pago son la suma habitual de las variantes reales; las promociones que correspondan se calculan en la bolsa. No se promete porcentaje de descuento por armar el conjunto. El agregado del conjunto es atómico: valida los IDs y el stock del lado servidor y solo guarda la bolsa si entran todos. No crea una promoción ni cambia inventario. En la vista previa local usa el catálogo y bolsa ficticios.
+
+Antes de integrar, revisar con el dueño el ritmo visual del scroll y las selecciones de ejemplo. No se modifican ventas ni datos de Supabase, ni se integra a `main` sin la validación acordada.

@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { getCatalog } from "@/modules/catalog/server";
 import {
   changeCart,
+  addCustomCombo,
   quoteCart,
   validateGuest,
   merchandiseTotal,
@@ -73,6 +74,32 @@ export async function addPromotion(form: FormData) {
     quote: quoteCart(catalog, result.items, promotions.state.promotions),
     error: result.error,
   };
+}
+
+export async function addCustomComboAction(form: FormData) {
+  const ids = form.getAll("variantId").map(String);
+  const [{ catalog, configured, error }, promotions, items] = await Promise.all([
+    getCatalog(),
+    readPromotions(),
+    readCartItems(),
+  ]);
+  if (!configured || error || promotions.error)
+    return { quote: await readCart(), error: "El catálogo no está disponible. Intentá más tarde." };
+  const result = addCustomCombo(
+    catalog,
+    items,
+    ids.map((variantId) => ({ variantId, quantity: 1 })),
+  );
+  if (!result.error) await writeCart(result.items);
+  return {
+    quote: quoteCart(catalog, result.items, promotions.state.promotions),
+    error: result.error,
+  };
+}
+
+export async function addCustomComboAndRedirect(form: FormData) {
+  const result = await addCustomComboAction(form);
+  redirect(result.error ? "/carrito?error=carrito" : "/carrito");
 }
 
 export async function addPromotionAndRedirect(form: FormData) {

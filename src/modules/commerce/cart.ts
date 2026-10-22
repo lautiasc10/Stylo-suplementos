@@ -183,6 +183,29 @@ export function changeCart(
   };
 }
 
+/** Add a small custom set as one cart mutation; no partial combo is persisted. */
+export function addCustomCombo(
+  catalog: Catalog,
+  items: CartItem[],
+  additions: CartItem[],
+): { items: CartItem[]; error?: string } {
+  if (
+    !Array.isArray(additions) ||
+    additions.length < 2 ||
+    additions.length > 3 ||
+    new Set(additions.map((item) => item.variantId)).size !== additions.length ||
+    additions.some((item) => item.quantity !== 1)
+  )
+    return { items, error: "Elegí dos o tres presentaciones diferentes." };
+  let next = items;
+  for (const item of additions) {
+    const result = changeCart(catalog, next, item.variantId, "add", 1);
+    if (result.error) return { items, error: result.error };
+    next = result.items;
+  }
+  return { items: next };
+}
+
 export type PaymentMethod = "mercado-pago" | "transferencia" | "efectivo";
 export function merchandiseTotal(quote: CartQuote, method: PaymentMethod) {
   return method === "mercado-pago"
