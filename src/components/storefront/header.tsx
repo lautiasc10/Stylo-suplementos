@@ -19,7 +19,7 @@ const links = [
   { href: "/catalogo", label: "Tienda" },
   { href: "/promociones", label: "Promociones" },
   { href: "/nosotros", label: "Sobre STYLO" },
-  { href: "/contacto", label: "Contacto" },
+  { href: "/#atletas", label: "Atletas" },
 ];
 const HOVER_DELAY = 180;
 

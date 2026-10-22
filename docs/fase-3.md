@@ -1,5 +1,7 @@
 # Fase 3 — Comercio
 
+La rama `fase-3ai-sobre-stylo` desarrolla la [página editorial Sobre STYLO y el acceso a Atletas](sobre-stylo-fase-3ai.md). Queda separada de `main` hasta su validación.
+
 La rama `fase-3ag-admin-premium` adapta Resumen, Productos, Ventas y retiros y Promociones al proyecto Premium Admin Studio de Lovable. El resumen consulta ventas cobradas mensuales y reposición, sin escrituras de producción ni cambios de esquema: [alcance y verificación](admin-premium-fase-3ag.md).
 
 La continuación 3AE se desarrolla en `fase-3ae-identidad-y-productos`: [identidad y escenas de producto](identidad-y-productos-fase-3ae.md). Se extiende la identidad de Promociones, se prueban reflejos en Destacados y Novedades y se comparte el scroll de ofertas. Pendiente de validación antes de integrar a `main`.

@@ -1,5 +1,7 @@
 # Diseño de STYLO
 
+La Fase 3AI renueva «Sobre STYLO» con fotografías reales del equipo y enlaza «Atletas» desde el nav: [composición y validación](sobre-stylo-fase-3ai.md).
+
 La Fase 3AG adapta el panel **Premium Admin Studio** de Lovable al administrador real, con resumen de ventas cobradas y reposición: [Admin Premium](admin-premium-fase-3ag.md).
 
 La Fase 3AF consolida el dorado de botones y etiquetas comerciales, retira el bloque antiguo de promociones del Home y asegura un recorrido horizontal visible en Novedades: [ajustes de portada](ajustes-home-fase-3af.md).
