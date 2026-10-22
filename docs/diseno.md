@@ -1,5 +1,7 @@
 # Diseño de STYLO
 
+La Fase 3AD incorpora una página independiente de promociones con la composición del proyecto Lovable conectado y una sola capa de partículas que converge y se dispersa en la web pública. Los precios, porcentajes, plazos y combos vienen de ofertas comprables existentes: [página de promociones](promociones-fase-3ad.md).
+
 La Fase 3AC adapta las partículas y la cinta por scroll de Lovable, conserva las tarjetas de objetivos y añade un combo personalizado con variantes reales y total sin descuentos inventados: [scroll y combos](scroll-y-combos-fase-3ac.md).
 
 La revisión de 3AC conserva el título original al cerrar Más vendidos, unifica la cabecera pública con la del Home y corrige el vuelo hacia la bolsa incluso fuera de pantalla. Añade Por qué STYLO con conteos reales del catálogo, una cinta continua de logos y ¿Sos atleta? como demostración explícita autorizada, sin envío ni persistencia de postulaciones. Los tiempos y decisiones de fidelidad respecto a Lovable están en el mismo documento.

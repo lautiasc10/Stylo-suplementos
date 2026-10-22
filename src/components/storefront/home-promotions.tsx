@@ -97,8 +97,8 @@ export function HomePromotions({
           </RevealItem>
           <RevealItem className="home-promotions-tools" direction="none">
             <PaymentSelector label="Ver promociones con" />
-            <Link href={preview ? prefix : "/catalogo"} className="text-link">
-              Explorar tienda <Icon name="arrow" />
+            <Link href={preview ? `${prefix}/escena-promociones` : "/promociones"} className="text-link">
+              Ver todas las promociones <Icon name="arrow" />
             </Link>
           </RevealItem>
         </RevealGroup>

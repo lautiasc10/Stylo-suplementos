@@ -1,5 +1,7 @@
 # Fase 3 — Comercio
 
+La continuación 3AD crea `/promociones` a partir del proyecto Lovable conectado, con ofertas y porcentajes reales, scoop de referencia y partículas compartidas en la tienda pública: [página de promociones](promociones-fase-3ad.md). Se desarrolla en `fase-3ad-promociones`, pendiente de validación antes de integrar a `main`.
+
 La continuación 3AC queda en `fase-3ac-scroll-combos`: [secciones con scroll y combo personalizado](scroll-y-combos-fase-3ac.md). «Más vendidos» y, si faltan etiquetas, «Novedades» muestran selecciones de ejemplo hasta contar con datos reales; no se integran descuentos ficticios de Lovable.
 
 La continuación 3AB conserva el diseño por sabor y prepara [legibilidad y avisos reales de reposición](legibilidad-y-avisos-fase-3ab.md) en la rama `fase-3ab-legibilidad-sabores`. No envía correos ni modifica Supabase real hasta aplicar la migración y habilitar el remitente verificado. No integrar a `main` sin validación del usuario.

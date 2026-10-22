@@ -17,6 +17,7 @@ import { navigationCategories, type MenuCategory } from "./navigation-model";
 
 const links = [
   { href: "/catalogo", label: "Tienda" },
+  { href: "/promociones", label: "Promociones" },
   { href: "/nosotros", label: "Sobre STYLO" },
   { href: "/contacto", label: "Contacto" },
 ];
