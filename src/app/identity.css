@@ -1,0 +1,16 @@
+/* Promotions is the shared type and color reference. Logos remain image/SVG assets. */
+h1,h2,h3,h4{font-weight:400;letter-spacing:normal;font-synthesis:none}
+.product-card h2,.home-product-track .product-card h2,.unified-product-detail .product-information h2{font-weight:400}
+.catalog-store-heading h1{font-weight:400;letter-spacing:normal}
+.home-section-heading h2{font:400 clamp(2.5rem,4.5vw,4.5rem)/1.05 var(--font-heading);letter-spacing:normal}
+.product-detail.unified-product-detail .gainer-product-copy h1,.gainer-product-detail .gainer-product-copy h1{font:400 clamp(2.1rem,3.2vw,3.75rem)/1.06 var(--font-heading);letter-spacing:normal}
+.flavor-product-detail .product-detail-copy h1 strong{font-weight:400}
+.product-detail .product-payment-prices .product-price-main>strong{font-weight:400;letter-spacing:normal}
+.editorial-pricing-list strong,.editorial-pricing-transfer strong,.transfer-pricing-primary strong{font-weight:400}
+.button,.hero-pill,.home-athlete-cta,.custom-combo-summary button[type=submit],.scroll-sellers-purchase button{font-family:var(--font-display),Impact,sans-serif;font-weight:400;letter-spacing:.05em}
+.reference-eyebrow{font-size:12px;font-weight:600;letter-spacing:.3em}
+.reference-text-gold{background-size:100% auto}
+.custom-combo-heading h2,.custom-combo-slot legend,.custom-combo-summary h3,.custom-combo-total strong,.scroll-sellers-count{font-weight:400}
+.sport-hero{--hero-primary:var(--gold);--hero-accent:var(--gold-accent);--hero-gold-light:var(--gold-light);--hero-gradient:var(--brand-gold-gradient)}
+.product-card[data-media-style=reflection] .product-placeholder{background:#000}
+@media(max-width:600px){.product-detail.unified-product-detail .gainer-product-copy h1{font-size:clamp(2rem,8vw,2.8rem)}.home-section-heading h2{font-size:clamp(2.25rem,8vw,3rem)}}

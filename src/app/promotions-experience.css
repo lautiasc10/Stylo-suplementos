@@ -45,11 +45,8 @@
 .promo-feature form button:disabled,.promo-bundle form button:disabled,.promo-horizontal-actions button:disabled{opacity:.55;cursor:default;transform:none}
 .promo-feature-visual{display:block;width:320px;max-width:100%;aspect-ratio:4/5;margin:auto;position:relative;overflow:hidden;border-radius:2px;text-decoration:none;background:#000}
 .promo-feature-visual .promo-product-art{animation:promo-float 5s ease-in-out infinite}
-.promo-product-art{position:absolute;inset:0 0 auto;display:block;width:100%;aspect-ratio:1;transition:transform .7s cubic-bezier(.4,0,.2,1)}
-.promo-product-art img{position:absolute;inset:0;width:100%;height:100%;padding:0;object-fit:contain}
-.promo-product-art .promo-product-reflection{top:80%;opacity:.25;transform:scaleY(-1);mask-image:linear-gradient(to top,#000 8%,transparent 45%);pointer-events:none}
 .promo-photo-pending{display:grid;place-items:center;aspect-ratio:1;width:100%;color:var(--promo-gold);background:radial-gradient(circle,var(--promo-card),var(--promo-background));font-family:var(--font-hero-display),Impact,sans-serif;font-size:32px}
-.promo-horizontal{height:calc(100svh + var(--promo-travel,0px));min-height:700px}
+.promo-horizontal{height:calc(100svh + var(--showcase-travel,0px));min-height:700px}
 .promo-horizontal-stage{position:sticky;top:0;display:flex;flex-direction:column;justify-content:center;height:100svh;min-height:680px;overflow:hidden;padding-block:18px;background:var(--promo-background)}
 .promo-section-heading{padding-inline:clamp(24px,3vw,50px)}
 .promo-section-heading h2 em{font-style:normal;background:var(--promo-gradient);background-clip:text;color:transparent}
@@ -75,7 +72,7 @@
 .promo-horizontal-actions a{color:var(--promo-gold);font-size:14px;text-decoration:none}
 .promo-horizontal-actions button{min-height:42px;padding:7px 14px;border:1px solid var(--promo-gold);background:var(--promo-gradient);color:var(--promo-ink);cursor:pointer;font-size:15px}
 .promo-horizontal-progress{height:2px;margin:22px clamp(24px,3vw,50px) 0;background:var(--promo-border)}
-.promo-horizontal-progress span{display:block;width:calc(var(--promo-progress,0) * 100%);height:100%;background:var(--promo-gold)}
+.promo-horizontal-progress span{display:block;width:100%;height:100%;background:var(--promo-gold);transform:scaleX(var(--showcase-progress,0));transform-origin:left}
 .promo-bundles{max-width:1152px;margin:auto;padding:128px 32px}
 .promo-bundles .promo-section-heading h2{font-size:60px}
 .promo-bundles .promo-section-heading{padding:0}

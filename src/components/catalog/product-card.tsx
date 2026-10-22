@@ -13,6 +13,7 @@ import { galleryPhotos } from "./gallery-images";
 import { BrandLogo } from "./brand-logo";
 import { catalogMediaSource } from "@/modules/catalog/media-source";
 import { AddToCart } from "@/components/commerce/add-to-cart";
+import { ProductArtwork } from "./product-artwork";
 import {
   type CatalogGroup,
   type Product,
@@ -78,6 +79,7 @@ export function ProductCard({
   imageBase,
   imageUrls,
   preview,
+  mediaStyle = "gallery",
 }: {
   product: Product;
   variants: Variant[];
@@ -89,6 +91,7 @@ export function ProductCard({
   imageBase: string;
   imageUrls: Record<string, string>;
   preview: boolean;
+  mediaStyle?: "gallery" | "reflection";
 }) {
   const router = useRouter();
   const [variantId, setVariantId] = useState(initialVariantId);
@@ -154,6 +157,7 @@ export function ProductCard({
   return (
     <article
       className="product-card"
+      data-media-style={mediaStyle}
       data-out-of-stock={variant.stock === 0 || undefined}
       onClick={(event) => {
         if (
@@ -191,7 +195,11 @@ export function ProductCard({
             </span>
           )}
         </div>
-        {photos.length ? (
+        {mediaStyle === "reflection" && photos[0]?.src ? (
+          <Link href={href} className="product-reflection-stage" aria-label={`Ver ${product.name}`}>
+            <ProductArtwork photo={photos[0]} alt={product.name} sizes="(max-width: 700px) 76vw, 300px" priority={index < 2} />
+          </Link>
+        ) : photos.length ? (
           <ProductGallery
             images={photos}
             variants={variants}

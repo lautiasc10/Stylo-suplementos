@@ -2,36 +2,32 @@
 
 @theme {
   --color-stylo-black: #050505;
-  --color-stylo-gold: oklch(0.8 0.15 75);
-  --color-stylo-white: #ece9e1;
+  --color-stylo-gold: oklch(0.78 0.15 70);
+  --color-stylo-white: oklch(0.96 0.01 80);
   --font-sans: var(--font-body), Arial, Helvetica, sans-serif;
   --font-heading: var(--font-display), "Arial Narrow", Arial, sans-serif;
 }
 
 :root {
+  --font-display: var(--font-hero-display);
+  --font-hero-body: var(--font-body);
+  --font-promo-body: var(--font-body);
   color-scheme: dark;
-  --background: #050505;
+  --background: oklch(0.12 0.005 60);
   --cinematic-background: #000000;
-  --commercial-background: #080808;
-  --foreground: #ece9e1;
-  --gold: oklch(0.8 0.15 75);
+  --commercial-background: oklch(0.12 0.005 60);
+  --foreground: oklch(0.96 0.01 80);
+  --gold: oklch(0.78 0.15 70);
   --gold-accent: oklch(0.72 0.16 60);
-  --gold-light: oklch(0.93 0.09 88);
+  --gold-light: oklch(0.86 0.13 85);
   --gold-glow: color-mix(in oklab, var(--gold) 22%, transparent);
-  --reference-surface: oklch(0.15 0.006 70);
-  --reference-muted: oklch(0.2 0.008 70);
-  --brand-gold-gradient: linear-gradient(
-    100deg,
-    var(--gold-accent) 0%,
-    var(--gold) 35%,
-    var(--gold-light) 50%,
-    var(--gold) 65%,
-    var(--gold-accent) 100%
-  );
-  --promo-reference-primary: oklch(0.78 0.15 70);
-  --muted: #92928d;
+  --reference-surface: oklch(0.16 0.006 60);
+  --reference-muted: oklch(0.2 0.008 60);
+  --brand-gold-gradient: linear-gradient(120deg, var(--gold-light), var(--gold-accent));
+  --promo-reference-primary: var(--gold);
+  --muted: oklch(0.62 0.02 70);
   --image-background: #ffffff;
-  --line: #ffffff20;
+  --line: oklch(0.26 0.01 60);
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
   --text-base: 1rem;
@@ -61,7 +57,7 @@
   --radius-pill: 9999px;
   --motion-ease: cubic-bezier(0.32, 0.72, 0, 1);
   --motion-duration: 700ms;
-  --surface: #111111;
+  --surface: oklch(0.16 0.006 60);
   --surface-raised: #191919;
   --surface-hover: #232323;
   --control-border: #737373;
@@ -82,6 +78,7 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+  font-synthesis: none;
   font-size: var(--text-base);
   line-height: 1.5;
 }
@@ -202,7 +199,7 @@ h3,
 h4 {
   font-family: var(--font-heading);
   line-height: 1.08;
-  font-weight: 600;
+  font-weight: 400;
   letter-spacing: -0.015em;
   text-wrap: balance;
 }

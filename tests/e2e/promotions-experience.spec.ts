@@ -66,7 +66,7 @@ test("el recorrido horizontal responde al scroll y conserva el movimiento reduci
     await expect.poll(() => firstCard.evaluate((el) => el.style.transform)).not.toBe(before);
     await firstCard.locator(".promo-horizontal-image").hover({ position: { x: 160, y: 100 } });
     await expect.poll(() => firstCard.locator(".promo-product-art").evaluate((el) => getComputedStyle(el).transform)).not.toBe("none");
-    await expect(firstCard.locator(".promo-product-reflection")).toHaveAttribute("aria-hidden", "true");
+    await expect(firstCard.locator(".product-artwork-reflection")).toHaveAttribute("aria-hidden", "true");
     const art = await firstCard.locator(".promo-product-art").boundingBox();
     const frame = await firstCard.locator(".promo-horizontal-image").boundingBox();
     expect(art && frame && art.height < frame.height).toBe(true);

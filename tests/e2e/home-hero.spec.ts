@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("el hero de la referencia usa Anton y Manrope y conserva la identidad de la cabecera", async ({
+test("el hero y la cabecera comparten la identidad Anton y Barlow de Promociones", async ({
   page,
 }) => {
   await page.goto("/");
@@ -9,10 +9,10 @@ test("el hero de la referencia usa Anton y Manrope y conserva la identidad de la
   await expect(page.locator(".hero-title")).toHaveCSS("font-weight", "400");
   await expect(page.locator(".hero-actions")).toHaveCSS(
     "font-family",
-    /Manrope/,
+    /Barlow/,
   );
   await expect(page.locator(".hero-subtitle")).toHaveCount(0);
-  await expect(page.locator(".site-header")).toHaveCSS("font-family", /Inter/);
+  await expect(page.locator(".site-header")).toHaveCSS("font-family", /Barlow/);
 });
 
 test("el título queda legible a la izquierda del león y las acciones debajo del escenario", async ({

@@ -16,6 +16,8 @@ export function HomeProducts({
   catalog,
   imageBase,
   unavailable = false,
+  imageUrls = {},
+  preview = false,
 }: {
   id: string;
   title: string;
@@ -24,13 +26,15 @@ export function HomeProducts({
   catalog: Catalog;
   imageBase: string;
   unavailable?: boolean;
+  imageUrls?: Record<string, string>;
+  preview?: boolean;
 }) {
   if (id === "novedades" && products.length) {
     return (
       <section id={id} className="home-collection home-collection-rail" aria-label="Novedades">
         <ScrollProductRail count={products.length} example={eyebrow.includes("EJEMPLO")}>
           {products.map((product) => (
-            <ArrivalCard key={product.id} product={product} catalog={catalog} imageBase={imageBase} example={eyebrow.includes("EJEMPLO")} />
+            <ArrivalCard key={product.id} product={product} catalog={catalog} imageBase={imageBase} imageUrls={imageUrls} prefix={preview ? "/vista-previa" : ""} example={eyebrow.includes("EJEMPLO")} />
           ))}
         </ScrollProductRail>
       </section>
@@ -49,10 +53,11 @@ export function HomeProducts({
           product.categoryIds.includes(c.id),
         )}
         index={index}
-        productPrefix="/producto"
+        productPrefix={preview ? "/vista-previa/producto" : "/producto"}
         imageBase={imageBase}
-        imageUrls={{}}
-        preview={false}
+        imageUrls={imageUrls}
+        preview={preview}
+        mediaStyle={id === "destacados" ? "reflection" : "gallery"}
       />
     </RevealItem>
   ));

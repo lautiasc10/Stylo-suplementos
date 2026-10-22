@@ -12,6 +12,8 @@ import { formatPrice, variantLabel, type Catalog } from "@/modules/catalog/model
 import { galleryPhotos } from "@/components/catalog/gallery-images";
 import { catalogMediaSource } from "@/modules/catalog/media-source";
 import { promoBody } from "@/components/storefront/hero-fonts";
+import { ProductArtwork } from "@/components/catalog/product-artwork";
+import { useScrollShowcase } from "./use-scroll-showcase";
 
 type Offer = ReturnType<typeof productOffers>[number];
 
@@ -31,10 +33,7 @@ function OfferImage({ offer, imageBase, imageUrls, priority = false }: {
 }) {
   const photo = offerImage(offer, imageBase, imageUrls);
   return photo ? (
-    <span className="promo-product-art">
-      <Image className="promo-product-front" src={photo.src} alt={photo.alt || offer.name} width={600} height={600} sizes="(max-width: 700px) 78vw, 370px" unoptimized priority={priority} />
-      <Image className="promo-product-reflection" src={photo.src} alt="" aria-hidden="true" width={600} height={600} sizes="(max-width: 700px) 78vw, 370px" unoptimized loading="lazy" />
-    </span>
+    <ProductArtwork className="promo-product-art" photo={photo} alt={photo.alt || offer.name} priority={priority} />
   ) : (
     <span className="promo-photo-pending" role="img" aria-label={`Imagen pendiente de ${offer.name}`}>STYLO</span>
   );
@@ -102,63 +101,8 @@ function HorizontalOffers({ catalog, offers, imageBase, imageUrls, prefix }: { c
   const { paymentMethod } = useCart();
   const section = useRef<HTMLElement>(null);
   const rail = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const root = section.current;
-    const track = rail.current;
-    const reduced = matchMedia("(prefers-reduced-motion: reduce)");
-    const desktop = matchMedia("(min-width: 801px)");
-    if (!root || !track) return;
-    let distance = 0;
-    let raf = 0;
-    let enhanced = false;
-    let visible = false;
-    const cards = Array.from(track.querySelectorAll<HTMLElement>(".promo-horizontal-card"));
-    const reset = () => {
-      track.style.transform = "";
-      cards.forEach((card) => card.style.removeProperty("transform"));
-      root.style.setProperty("--promo-progress", "0");
-    };
-    const measure = () => {
-      const overflow = Math.max(0, track.scrollWidth - window.innerWidth + 48);
-      enhanced = desktop.matches && !reduced.matches && offers.length > 2 && overflow > 64;
-      root.dataset.enhanced = enhanced ? "true" : "false";
-      distance = enhanced ? overflow : 0;
-      root.style.setProperty("--promo-travel", `${enhanced ? Math.max(distance, window.innerHeight * 2.2) : 0}px`);
-      if (!enhanced) reset();
-      update();
-    };
-    const update = () => {
-      raf = 0;
-      if (!enhanced || !visible) return;
-      const rect = root.getBoundingClientRect();
-      const range = Math.max(1, rect.height - window.innerHeight);
-      const progress = Math.min(1, Math.max(0, -rect.top / range));
-      track.style.transform = `translate3d(${-distance * progress}px, 0, 0)`;
-      cards.forEach((card, index) => { card.style.transform = `translate3d(0, ${Math.sin(progress * 6 + index) * 18}px, 0)`; });
-      root.style.setProperty("--promo-progress", String(progress));
-    };
-    const schedule = () => { if (!raf && enhanced && visible) raf = requestAnimationFrame(update); };
-    const observer = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; if (visible) schedule(); }, { rootMargin: "100px" });
-    const resize = new ResizeObserver(measure);
-    observer.observe(root);
-    resize.observe(track);
-    window.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("resize", measure, { passive: true });
-    reduced.addEventListener("change", measure);
-    desktop.addEventListener("change", measure);
-    measure();
-    return () => {
-      cancelAnimationFrame(raf);
-      observer.disconnect();
-      resize.disconnect();
-      window.removeEventListener("scroll", schedule);
-      window.removeEventListener("resize", measure);
-      reduced.removeEventListener("change", measure);
-      desktop.removeEventListener("change", measure);
-      reset();
-    };
-  }, [offers.length]);
+  const viewport = useRef<HTMLDivElement>(null);
+  useScrollShowcase({ root: section, track: rail, viewport, count: offers.length });
 
   return <section className="promo-horizontal" ref={section} aria-labelledby="promo-horizontal-title">
     <div className="promo-horizontal-stage">
@@ -166,7 +110,7 @@ function HorizontalOffers({ catalog, offers, imageBase, imageUrls, prefix }: { c
         <p className="promo-eyebrow">OFERTAS VIGENTES</p>
         <h2 id="promo-horizontal-title">Ofertas <em>imperdibles</em></h2>
       </header>
-      <div className="promo-horizontal-viewport">
+      <div className="promo-horizontal-viewport" ref={viewport}>
         <div className="promo-horizontal-track" ref={rail}>
           {offers.map((offer, index) => {
             const price = promotionPrice(offer, paymentMethod);

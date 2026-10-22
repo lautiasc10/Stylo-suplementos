@@ -1,8 +1,8 @@
 ﻿/* Adaptation of the owner's LionHero.tsx/styles.css. Header rules stay shared. */
 .sport-hero {
-  --hero-primary: oklch(0.8 0.15 75);
+  --hero-primary: var(--gold);
   --hero-accent: oklch(0.72 0.16 60);
-  --hero-gold-light: oklch(0.93 0.09 88);
+  --hero-gold-light: var(--gold-light);
   --hero-gradient: linear-gradient(
     100deg,
     var(--hero-accent) 0%,

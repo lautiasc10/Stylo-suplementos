@@ -25,6 +25,7 @@ import { WhyStylo } from "@/components/storefront/why-stylo";
 import { BrandMarquee } from "@/components/storefront/brand-marquee";
 import { AthleteCall } from "@/components/storefront/athlete-call";
 import { homeStoryData } from "@/components/storefront/home-story-data";
+import { HomeProducts } from "@/components/storefront/home-products";
 import { heroDisplay, heroBody } from "@/components/storefront/hero-fonts";
 const storageKey = "stylo.catalog-preview.v1";
 type PreviewState = { catalog: Catalog; images: Record<string, string> };
@@ -118,6 +119,8 @@ export function CatalogPreview({
           <CinematicHero composition="reference" />
           <ScrollBestSellers products={bestSellerExamples(data, "", promotions, state.images, "/vista-previa")} />
           <ReferenceGoals />
+          <HomeProducts id="destacados" title="Productos destacados" eyebrow="LA SELECCIÓN STYLO" products={data.products.filter((item) => item.featured)} catalog={data} imageBase="" imageUrls={state.images} preview />
+          <HomeProducts id="novedades" title="Novedades" eyebrow="SELECCIÓN DE EJEMPLO · STYLO" products={data.products.slice(-4)} catalog={data} imageBase="" imageUrls={state.images} preview />
           <CustomComboBuilder categories={comboOptions(data, "", state.images)} />
           {story && <WhyStylo stats={story.stats} />}
           {story && <BrandMarquee brands={story.brands} catalogHref="/vista-previa" />}

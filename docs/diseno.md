@@ -1,5 +1,7 @@
 # Diseño de STYLO
 
+La Fase 3AE extiende Anton y Barlow, los pesos y colores de Promociones a toda la web. Destacados y Novedades comparten escena negra con reflejo, zoom y destello; Novedades usa la misma coreografía por scroll de Ofertas imperdibles: [identidad y escenas](identidad-y-productos-fase-3ae.md).
+
 La Fase 3AD incorpora una página independiente de promociones con la composición del proyecto Lovable conectado y una sola capa de partículas que converge y se dispersa en la web pública. Los precios, porcentajes, plazos y combos vienen de ofertas comprables existentes: [página de promociones](promociones-fase-3ad.md).
 
 La Fase 3AC adapta las partículas y la cinta por scroll de Lovable, conserva las tarjetas de objetivos y añade un combo personalizado con variantes reales y total sin descuentos inventados: [scroll y combos](scroll-y-combos-fase-3ac.md).
