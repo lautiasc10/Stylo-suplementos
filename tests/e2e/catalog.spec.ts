@@ -108,9 +108,9 @@ test("productos se agrupan por marca y se buscan por nombre, sabor o SKU", async
     name: "Páginas de productos por marca",
   });
   await expect(pages.getByRole("button")).toHaveCount(3);
-  await pages.getByRole("button", { name: /2\. ONE FIT/ }).click();
+  await pages.getByRole("button", { name: /ONE FIT/ }).click();
   await expect(brands).toHaveText("ONE FIT");
-  await pages.getByRole("button", { name: /3\. XBODY/ }).click();
+  await pages.getByRole("button", { name: /XBODY/ }).click();
   await expect(brands).toHaveText("XBODY");
   const search = page.getByRole("searchbox", { name: "Buscar productos" });
   await search.fill("demo-4-a");

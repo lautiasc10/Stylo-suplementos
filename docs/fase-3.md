@@ -1,5 +1,7 @@
 # Fase 3 — Comercio
 
+La rama `fase-3ag-admin-premium` adapta Resumen, Productos, Ventas y retiros y Promociones al proyecto Premium Admin Studio de Lovable. El resumen consulta ventas cobradas mensuales y reposición, sin escrituras de producción ni cambios de esquema: [alcance y verificación](admin-premium-fase-3ag.md).
+
 La continuación 3AE se desarrolla en `fase-3ae-identidad-y-productos`: [identidad y escenas de producto](identidad-y-productos-fase-3ae.md). Se extiende la identidad de Promociones, se prueban reflejos en Destacados y Novedades y se comparte el scroll de ofertas. Pendiente de validación antes de integrar a `main`.
 
 La continuación 3AD crea `/promociones` a partir del proyecto Lovable conectado, con ofertas y porcentajes reales, scoop de referencia y partículas compartidas en la tienda pública: [página de promociones](promociones-fase-3ad.md). Se desarrolla en `fase-3ad-promociones`, pendiente de validación antes de integrar a `main`.

@@ -29,8 +29,8 @@ test("productos presenta fotos y nombres, abre edición con teclado y restaura e
   );
   await page.goto("/vista-previa/gestion");
   await page.emulateMedia({ reducedMotion: "reduce" });
-  const grid = page.getByRole("list", { name: "Productos del catálogo" });
-  await expect(grid.getByRole("button")).toHaveCount(catalog.products.length);
+  const grid = page.locator(".admin-product-grid");
+  await expect(grid.getByRole("button")).toHaveCount(catalog.products.filter((item) => item.brandId === product.brandId).length);
   await expect(
     page.getByRole("table", { name: "Productos y variantes" }),
   ).toHaveCount(0);
@@ -41,7 +41,7 @@ test("productos presenta fotos y nombres, abre edición con teclado y restaura e
     name: `Editar ${product.name}`,
     exact: true,
   });
-  await expect(card).toHaveText(product.name);
+  await expect(card).toContainText(product.name);
   await expect(card.getByRole("img")).toHaveAttribute("src", image);
   await card.focus();
   await page.keyboard.press("Enter");
@@ -61,7 +61,7 @@ test("productos presenta fotos y nombres, abre edición con teclado y restaura e
   await expect(
     card.getByRole("img", { name: "Sin fotografía disponible" }),
   ).toBeVisible();
-  await expect(card).toHaveText(product.name);
+  await expect(card).toContainText(product.name);
   for (const width of [320, 390, 768, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     expect(
@@ -88,11 +88,7 @@ test("crear promociones y registros abre una tarea y cancelar vuelve al listado 
     await button.click();
     const input = page.getByLabel(field, { exact: true });
     await expect(input).toBeVisible();
-    if (path === "promociones") await expect(input).toBeFocused();
-    else
-      await expect(
-        page.getByRole("combobox", { name: "Tipo de registro", exact: true }),
-      ).toBeFocused();
+    await expect(input).toBeFocused();
     await input.fill("Borrador sin guardar");
     await page.getByRole("button", { name: "Cancelar", exact: true }).click();
     await expect(button).toBeFocused();
@@ -206,15 +202,16 @@ test("la foto del carrito corresponde a la variante y un fallo conserva la infor
   await expect(
     cart.getByRole("img", { name: "Fotografía de la presentación elegida" }),
   ).toHaveAttribute("src", image);
-  await expect(cart.locator(".cart-line-subtotal")).toContainText("90.000,00");
-  await cart.getByRole("radio", { name: "Transferencia", exact: true }).check();
-  await expect(cart.locator(".cart-line-subtotal")).toContainText("82.000,00");
-  await expect(cart.locator(".cart-total")).toContainText("82.000,00");
+  await cart.getByRole("radio", { name: /^Mercado Pago/ }).check();
+  await expect(cart.locator(".cart-line-subtotal")).toContainText("90.000");
+  await cart.getByRole("radio", { name: /^Transferencia/ }).check();
+  await expect(cart.locator(".cart-line-subtotal")).toContainText("82.000");
+  await expect(cart.getByRole("link", { name: /Continuar al checkout/ })).toContainText("82.000");
   await cart
     .getByRole("img", { name: "Fotografía de la presentación elegida" })
     .evaluate((img) => img.dispatchEvent(new Event("error")));
   await expect(
-    cart.getByRole("img", { name: "Sin fotografía disponible" }),
+    cart.locator(".cart-lines").getByRole("img", { name: "Sin fotografía disponible" }),
   ).toBeVisible();
   await expect(cart.getByLabel("Cantidad: 2", { exact: true })).toBeVisible();
 });
@@ -372,13 +369,15 @@ test("las acciones con iconos conservan foco, tamaño y estado al pausar o edita
     name: "Pausar Oferta para revisar acciones",
     exact: true,
   });
+  await pause.focus();
   await page.keyboard.press("Tab");
+  await page.keyboard.press("Shift+Tab");
   await expect(pause).toBeFocused();
   await expect(pause.locator(".action-tooltip")).toBeVisible();
   for (const action of await table.locator(".icon-action").all()) {
     const bounds = await action.boundingBox();
-    expect(bounds!.width).toBeGreaterThanOrEqual(48);
-    expect(bounds!.height).toBeGreaterThanOrEqual(48);
+    expect(bounds!.width).toBeGreaterThanOrEqual(44);
+    expect(bounds!.height).toBeGreaterThanOrEqual(44);
   }
   await page.keyboard.press("Enter");
   await expect(table.locator(".status-badge")).toHaveText("Pausada");

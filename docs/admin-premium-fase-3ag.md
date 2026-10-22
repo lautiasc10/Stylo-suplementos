@@ -1,0 +1,17 @@
+# Fase 3AG — Admin Premium
+
+La referencia visual es el proyecto conectado de Lovable **Premium Admin Studio** (código y captura del 22 de octubre de 2026). El panel de STYLO adapta su barra lateral de 256 px, tarjetas oscuras redondeadas, tipografía Barlow Condensed y Manrope, jerarquía, espaciados y acento dorado. El logo oficial reemplaza el monograma ficticio. Las funciones existentes de productos, promociones y ventas siguen usando los datos y permisos de STYLO.
+
+El resumen muestra únicamente **Ventas del mes**, **Cantidad de ventas** y **Reponer**. Ventas del mes suma `snapshot.total` de pedidos `commerce_orders` con `payment_status = 'paid'` creados durante el mes calendario de Buenos Aires; cantidad cuenta esos pedidos. La consulta privada pagina para no truncar los totales en 50 pedidos. En el modelo actual solo las ventas presenciales cobradas se marcan como pagadas al crearse. Cuando se incorpore el cobro online diferido habrá que registrar la fecha efectiva de pago para atribuir ingresos al mes correcto.
+
+Reponer cuenta presentaciones activas de productos publicados con stock igual o inferior al umbral configurado. La lista muestra hasta seis presentaciones, con marca, sabor o tamaño, y enlaza al catálogo. Si las ventas o el catálogo no se pueden consultar, el indicador muestra indisponibilidad en vez de un cero falso.
+
+La ruta `/vista-previa/resumen` permite revisar el diseño con el catálogo de prueba local; allí las ventas aparecen indisponibles porque la vista previa no consulta pedidos privados ni inventa importes. La vista previa no habilita administración real.
+
+Productos incorpora las tarjetas de la referencia con foto, marca, dos precios, estado de publicación y unidades disponibles; conserva las páginas por marca y añade filtros de reposición y ocultos. El editor mantiene los datos, SKU, fotos y fichas existentes en una composición de secciones con navegación lateral. Los accesos para cargar desde Resumen abren directamente el producto nuevo.
+
+Ventas y retiros y Promociones presentan registros en tarjetas y editores laterales nativos con trampa de foco, cierre con Escape, bloqueo de scroll y restauración de foco. Los selectores de tipo usan tarjetas con radios accesibles. Las promociones conservan cupos, fechas, advertencias de stock, subida de foto de combo y guardado versionado. Los indicadores de Ventas y retiros describen explícitamente los registros cargados (hasta 50); los totales mensuales completos se consultan por separado en Resumen.
+
+Los importes se conservan internamente en centavos y se muestran mediante `formatPrice`, igual que en el ecommerce. No se replican escrituras simuladas de Lovable, confirmaciones ficticias de entrega ni datos comerciales de ejemplo en el administrador real.
+
+Verificación: lint y typecheck correctos, build de producción correcto tras el recordatorio de seguridad pendiente de Next.js 16.4.0, seis pruebas unitarias de resumen y navegación, y 98 escenarios de navegador comprobados entre la ejecución inicial y las reejecuciones de los casos ajustados. La pasada final de navegación y revisión visual comprende 16 escenarios correctos en escritorio y móvil. Incluye teclado, restauración de foco, navegación sin JavaScript, confirmación de efectivo, stock, imágenes, variantes, CSV, promociones y checkout local. Las capturas se revisaron con datos ficticios; no se ejecutaron operaciones administrativas de producción.

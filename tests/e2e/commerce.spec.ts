@@ -198,8 +198,8 @@ test("admin configura cantidad con dos precios y checkout revalida sin guardar d
     .getByLabel("Nombre de promoción", { exact: true })
     .fill("Cantidad de prueba");
   await page
-    .getByRole("combobox", { name: "Tipo", exact: true })
-    .selectOption("quantity");
+    .getByRole("radio", { name: "Por cantidad", exact: true })
+    .check();
   await page
     .getByLabel("Precio final de lista (ARS)", { exact: true })
     .fill("40000");
@@ -288,8 +288,8 @@ test("gestión permite editar un combo y registra un retiro una vez sin desconta
     .getByLabel("Nombre de promoción", { exact: true })
     .fill("Combo de prueba");
   await page
-    .getByRole("combobox", { name: "Tipo", exact: true })
-    .selectOption("bundle");
+    .getByRole("radio", { name: "Combo", exact: true })
+    .check();
   await page
     .getByRole("button", { name: "Agregar componente", exact: true })
     .click();
@@ -415,8 +415,8 @@ test("venta presencial requiere confirmar cobro y entrega, y descuenta stock una
     .getByRole("button", { name: "Crear venta o retiro", exact: true })
     .click();
   await page
-    .getByRole("combobox", { name: "Tipo de registro", exact: true })
-    .selectOption("cash-sale");
+    .getByRole("radio", { name: "Venta presencial en efectivo", exact: true })
+    .check();
   await page
     .getByLabel("Nombre del cliente", { exact: true })
     .fill("Venta ficticia");
@@ -449,8 +449,8 @@ test("venta presencial requiere confirmar cobro y entrega, y descuenta stock una
     page.getByLabel("Nombre del cliente", { exact: true }),
   ).toHaveValue("");
   await expect(
-    page.getByRole("combobox", { name: "Tipo de registro", exact: true }),
-  ).toHaveValue("pickup");
+    page.getByRole("radio", { name: "Pedido pendiente de retiro", exact: true }),
+  ).toBeChecked();
   await page.getByRole("button", { name: "Cancelar", exact: true }).click();
   await expect(
     page.locator(".promotions-table tbody tr, .orders-table tbody tr"),

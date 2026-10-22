@@ -21,6 +21,7 @@ import { ConfirmAction } from "@/components/ui/confirm-action";
 import { AdminTable } from "@/components/admin/data-table";
 import { IconAction } from "@/components/admin/icon-action";
 import { Icon } from "@/components/ui/icon";
+import { AdminDrawer } from "@/components/admin/drawer";
 import { ProductThumbnail } from "@/components/ui/product-thumbnail";
 import { SearchableVariantSelect } from "./searchable-variant-select";
 function localDate(value?: string | null) {
@@ -55,6 +56,7 @@ export function PromotionsManager({
   const [editing, setEditing] = useState<Promotion | null>(null);
   const [editorOpen, setEditorOpen] = useState(false);
   const createButton = useRef<HTMLButtonElement>(null);
+  const editorOpener = useRef<HTMLButtonElement | null>(null);
   const editor = useRef<HTMLFormElement>(null);
   const [components, setComponents] = useState<
     { variantId: string; quantity: number }[]
@@ -78,7 +80,7 @@ export function PromotionsManager({
     setKind("sale");
     setSelectedVariant("");
     setMinimum(2);
-    requestAnimationFrame(() => createButton.current?.focus());
+    requestAnimationFrame(() => (editorOpener.current?.isConnected ? editorOpener.current : createButton.current)?.focus());
   }
   useEffect(() => {
     if (!preview) return;
@@ -201,7 +203,8 @@ export function PromotionsManager({
             type="button"
             className="button button-gold"
             disabled={busy}
-            onClick={() => {
+            onClick={(event) => {
+              editorOpener.current = event.currentTarget;
               setNotice("");
               setEditing(null);
               setKind("sale");
@@ -225,13 +228,13 @@ export function PromotionsManager({
         de pago. Las rebajas y ofertas por cantidad usan precio final por
         unidad; los combos usan precio final del conjunto.
       </p>
-      {notice && (
+      {notice && !editorOpen && (
         <p className="ui-notice" role="status">
           {notice}
         </p>
       )}
       <div className="management-layout management-create-flow">
-        {!editorOpen && (
+        {(
           <div className="promotions-list">
             <h2
               className="management-section-title"
@@ -345,10 +348,9 @@ export function PromotionsManager({
                         data-label="Precios finales"
                         className="admin-prices"
                       >
-                        <small>Lista</small>
-                        <strong>{formatPrice(p.listPrice)}</strong>
                         <small>Efectivo / transferencia</small>
                         <strong>{formatPrice(p.cashPrice)}</strong>
+                        <small>Lista {formatPrice(p.listPrice)}</small>
                       </td>
                       <td role="cell" data-label="Acciones">
                         <div className="admin-row-actions">
@@ -370,7 +372,8 @@ export function PromotionsManager({
                             label={`Editar ${p.name}`}
                             icon="edit"
                             disabled={busy}
-                            onClick={() => {
+                            onClick={(event) => {
+                              editorOpener.current = event.currentTarget;
                               setEditing(p);
                               setKind(p.kind);
                               setSelectedVariant(
@@ -438,6 +441,7 @@ export function PromotionsManager({
           </div>
         )}
         {editorOpen && (
+          <AdminDrawer title={editing ? "Editar promoción" : "Nueva promoción"} onClose={closeEditor} busy={busy}>
           <form
             ref={editor}
             method="post"
@@ -519,10 +523,14 @@ export function PromotionsManager({
               }
             }}
           >
+            {notice && <p className="ui-notice" role="status">{notice}</p>}
             <fieldset disabled={busy}>
               <legend>
                 {editing ? "Editar promoción" : "Nueva promoción"}
               </legend>
+              <fieldset className="admin-type-options"><legend>¿Qué tipo de promoción?</legend>
+                {([['sale', 'Rebaja', 'Bajás el precio de un producto.'], ['quantity', 'Por cantidad', 'Mejor precio al llevar varias unidades.'], ['bundle', 'Combo', 'Varios productos juntos a un precio.']] as const).map(([value, label, detail]) => <label className="admin-choice-card" key={value}><input type="radio" name="kind" value={value} aria-label={label} checked={kind === value} onChange={() => { setKind(value); setComponents([]); setMinimum(2); if (!selectedVariant) setSelectedVariant(variants[0]?.value ?? ""); }} /><Icon name={value === "bundle" ? "bag" : "bolt"} /><strong>{label}</strong><small>{detail}</small></label>)}
+              </fieldset>
               <div className="checkout-fields">
                 <label>
                   Nombre de promoción
@@ -532,24 +540,6 @@ export function PromotionsManager({
                     required
                     defaultValue={editing?.name}
                   />
-                </label>
-                <label>
-                  Tipo
-                  <select
-                    name="kind"
-                    value={kind}
-                    onChange={(e) => {
-                      setKind(e.target.value as Promotion["kind"]);
-                      setComponents([]);
-                      setMinimum(2);
-                      if (!selectedVariant)
-                        setSelectedVariant(variants[0]?.value ?? "");
-                    }}
-                  >
-                    <option value="sale">Rebaja de producto</option>
-                    <option value="quantity">Por cantidad</option>
-                    <option value="bundle">Combo</option>
-                  </select>
                 </label>
                 {kind !== "bundle" && (
                   <SearchableVariantSelect
@@ -751,6 +741,7 @@ export function PromotionsManager({
               </button>
             </div>
           </form>
+          </AdminDrawer>
         )}
       </div>
     </section>

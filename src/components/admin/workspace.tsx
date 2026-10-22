@@ -25,6 +25,7 @@ const emptyData: AdminWorkspaceData = {
   catalog: null,
   promotions: null,
   orders: null,
+  monthlySales: null,
 };
 
 export function AdminWorkspace({
@@ -77,10 +78,11 @@ export function AdminWorkspace({
               ? next.promotions
               : previous.promotions,
           orders: next.orders ?? previous.orders,
+          monthlySales: next.monthlySales,
         }));
         updatedAt.current = Date.now();
         setNotice(
-          next.catalog && next.promotions && next.orders
+          next.catalog && next.promotions && next.orders && next.monthlySales
             ? ""
             : "No pudimos actualizar todos los datos. Reintentá para ver los últimos cambios.",
         );
@@ -128,6 +130,7 @@ export function AdminWorkspace({
           ? initial.promotions
           : previous.promotions,
       orders: initial.orders ?? previous.orders,
+      monthlySales: initial.monthlySales,
     }));
     updatedAt.current = Date.now();
   }, [initial]);
@@ -204,7 +207,7 @@ export function AdminWorkspace({
         )}
         {available ? (
           <>
-            {task === 3 && <AdminOverview catalog={data.catalog} />}
+            {task === 3 && <AdminOverview catalog={data.catalog} monthlySales={data.monthlySales} preview={preview} />}
             {task === 0 &&
               (preview ? (
                 <CatalogPreview mode="manage" />

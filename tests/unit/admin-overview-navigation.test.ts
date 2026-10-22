@@ -28,6 +28,10 @@ vi.mock("@/components/admin/workspace-navigation", async (original) => ({
   useWorkspaceNavigation: () => ({ ready: state.ready }),
 }));
 vi.mock("@/modules/admin/actions", () => ({ signOut: vi.fn() }));
+vi.mock("next/font/google", () => ({
+  Barlow_Condensed: () => ({ variable: "admin-display" }),
+  Manrope: () => ({ variable: "admin-body" }),
+}));
 import { AdminNavigation } from "../../src/components/admin/navigation";
 import { AdminOverview } from "../../src/components/admin/overview";
 import { demoCatalog } from "../../src/modules/catalog/demo";
@@ -73,7 +77,6 @@ test("los accesos del Resumen también cambian de tarea en el panel cargado", ()
   for (const href of [
     "/admin/catalogo",
     "/admin/promociones",
-    "/admin/pedidos",
   ]) {
     const pushState = vi.fn();
     vi.stubGlobal("window", {
@@ -88,6 +91,19 @@ test("los accesos del Resumen también cambian de tarea en el panel cargado", ()
       `http://127.0.0.1:3000${href}`,
     );
   }
+});
+
+test("Resumen presenta ingreso cobrado, ventas y reposición sin usar pedidos pendientes", () => {
+  const html = renderToStaticMarkup(createElement(AdminOverview, {
+    catalog: demoCatalog(),
+    monthlySales: { amount: 2750000, count: 2 },
+  }));
+  expect(html).toContain("Ventas del mes");
+  expect(html).toContain("Cantidad de ventas");
+  expect(html).toContain("Reponer");
+  expect(html).toContain("27.500");
+  expect(html).toContain("Pedidos cobrados este mes");
+  expect(html).not.toContain("Productos publicados");
 });
 
 test("antes de cargar el panel, Resumen conserva la navegación normal protegida", () => {

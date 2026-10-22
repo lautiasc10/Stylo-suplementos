@@ -25,6 +25,7 @@ export function workspacePaths(preview = false) {
         "/vista-previa/gestion",
         "/vista-previa/promociones",
         "/vista-previa/pedidos",
+        "/vista-previa/resumen",
       ]
     : ["/admin/catalogo", "/admin/promociones", "/admin/pedidos", "/admin"];
 }
@@ -32,7 +33,9 @@ export function workspacePaths(preview = false) {
 export function navigateWorkspace(href: string, section?: string) {
   const next = new URL(window.location.href);
   const previousPath = next.pathname;
-  next.pathname = href;
+  const target = new URL(href, next);
+  next.pathname = target.pathname;
+  if (target.search) next.search = target.search;
   next.hash = "";
   if (section) next.searchParams.set("seccion", section);
   else next.searchParams.delete("seccion");

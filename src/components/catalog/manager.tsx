@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { useSearchParams } from "next/navigation";
 import { catalogSection } from "./section-navigation";
 import { ProductThumbnail } from "@/components/ui/product-thumbnail";
@@ -28,6 +28,10 @@ import {
   type ProductImage,
 } from "@/modules/catalog/model";
 
+function newVariant() {
+  return { id: crypto.randomUUID(), sku: "", flavor: "", size: "", presentation: "", listPrice: 0, cashPrice: 0, stock: 0, active: true };
+}
+
 export function CatalogManager({
   catalog,
   commit,
@@ -55,6 +59,7 @@ export function CatalogManager({
     [plan, setPlan] = useState<ImportPlan | null>(null);
   const [approvedCategories, setApprovedCategories] = useState<string[]>([]);
   const [productQuery, setProductQuery] = useState("");
+  const [productFilter, setProductFilter] = useState<"all" | "restock" | "hidden">("all");
   const [productBrandPage, setProductBrandPage] = useState(0);
   const [busy, setBusy] = useState(false),
     [message, setMessage] = useState("");
@@ -129,7 +134,7 @@ export function CatalogManager({
       setBusy(false);
     }
   }
-  function newProduct() {
+  const newProduct = useCallback(() => {
     if (!catalog.brands.length || !catalog.categories.length) {
       setMessage("Cargá una marca y una categoría antes de crear productos.");
       return;
@@ -152,20 +157,14 @@ export function CatalogManager({
       variants: [newVariant()],
       images: [],
     });
-  }
-  function newVariant() {
-    return {
-      id: crypto.randomUUID(),
-      sku: "",
-      flavor: "",
-      size: "",
-      presentation: "",
-      listPrice: 0,
-      cashPrice: 0,
-      stock: 0,
-      active: true,
-    };
-  }
+  }, [catalog]);
+  useEffect(() => {
+    if (params.get("nuevo") !== "1") return;
+    newProduct();
+    const url = new URL(window.location.href);
+    url.searchParams.delete("nuevo");
+    window.history.replaceState(null, "", url);
+  }, [params, newProduct]);
   function updateDraft(key: keyof Product, value: Product[keyof Product]) {
     setDraft((previous) => (previous ? { ...previous, [key]: value } : null));
   }
@@ -351,6 +350,7 @@ export function CatalogManager({
       brand,
       products: catalog.products
         .filter((product) => product.brandId === brand.id)
+        .filter((product) => productFilter === "all" || (productFilter === "hidden" ? !product.active : product.variants.some((variant) => variant.active && variant.stock <= (catalog.lowStockThreshold ?? 0))))
         .filter((product) => {
           const searchable = normalizeSearch(
             [
@@ -397,9 +397,9 @@ export function CatalogManager({
   );
   return (
     <div className="catalog-manager">
-      <p className="form-message" role="status" ref={messageRef} tabIndex={-1}>
+      {!draft && <p className="form-message" role="status" ref={messageRef} tabIndex={-1}>
         {busy ? "Procesando…" : message}
-      </p>
+      </p>}
       <fieldset
         className="manager-controls"
         disabled={busy}
@@ -408,7 +408,7 @@ export function CatalogManager({
         {tab === "products" && !draft && (
           <>
             <div className="manager-toolbar">
-              <h2>Productos</h2>
+              <div className="admin-products-heading"><p className="eyebrow">CATÁLOGO</p><h1>Productos</h1><p>Tocá un producto para editarlo. Usá el buscador o los filtros para encontrarlo más rápido.</p></div>
               {dispatchPending && (
                 <button
                   type="button"
@@ -471,11 +471,14 @@ export function CatalogManager({
                     }
                     onClick={() => setProductBrandPage(index)}
                   >
-                    {index + 1}. {brand.name} <span>({products.length})</span>
+                    {brand.name} <span>({products.length})</span>
                   </button>
                 ))}
               </nav>
             )}
+            <div className="admin-product-filter-chips" aria-label="Estado de productos">
+              {([['all', 'Todos'], ['restock', 'Para reponer'], ['hidden', 'Ocultos']] as const).map(([value, label]) => <button type="button" key={value} aria-pressed={productFilter === value} onClick={() => { setProductFilter(value); setProductBrandPage(0); }}>{label}</button>)}
+            </div>
             {productGroups
               .slice(currentBrandPage, currentBrandPage + 1)
               .map(({ brand, products }) => (
@@ -496,6 +499,8 @@ export function CatalogManager({
                     aria-label={`Productos de ${brand.name}`}
                   >
                     {products.map((product) => {
+                      const firstVariant = product.variants.find((variant) => variant.active) ?? product.variants[0];
+                      const units = product.variants.filter((variant) => variant.active).reduce((total, variant) => total + variant.stock, 0);
                       const image =
                         variantImages(
                           product,
@@ -521,14 +526,16 @@ export function CatalogManager({
                               setMessage("");
                             }}
                           >
-                            <ProductThumbnail
+                            <span className="admin-product-photo"><ProductThumbnail
                               src={src}
                               alt={`Foto de ${product.name}`}
                               size={320}
-                            />
+                            /><span className="admin-product-flags">{product.featured && <span>Destacado</span>}{!product.active && <span>Oculto</span>}</span></span>
+                            <span className="admin-product-brand-label">{brand.name}</span>
                             <span className="admin-product-name">
                               {product.name}
                             </span>
+                            <span className="admin-product-card-footer"><span><strong>{formatPrice(firstVariant?.cashPrice ?? 0, 0)}</strong><small>Efectivo · Lista {formatPrice(firstVariant?.listPrice ?? 0, 0)}</small></span><span className="admin-units" data-low={units <= (catalog.lowStockThreshold ?? 0)} data-empty={units === 0}>{units === 0 ? "Sin stock" : `${units} u.`}</span></span>
                           </button>
                         </li>
                       );
@@ -614,6 +621,7 @@ export function CatalogManager({
             }}
             key={draft.id}
           >
+            <p className="form-message" role="status" ref={messageRef} tabIndex={-1}>{busy ? "Procesando…" : message}</p>
             <div className="manager-toolbar">
               <h2>
                 {catalog.products.some((item) => item.id === draft.id)

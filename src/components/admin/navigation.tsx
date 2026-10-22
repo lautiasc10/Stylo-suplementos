@@ -3,6 +3,9 @@ import { useEffect, useRef, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Icon } from "@/components/ui/icon";
+import { BrandMark } from "@/components/storefront/brand-mark";
+import { signOut } from "@/modules/admin/actions";
+import { adminDisplay, adminBody } from "./admin-fonts";
 import {
   AdminWorkspaceScope,
   useWorkspaceNavigation,
@@ -87,22 +90,22 @@ export function AdminNavigation({ preview = false }: { preview?: boolean }) {
         <summary>
           Menú de administración <Icon name="menu" />
         </summary>
-        {!preview && (
-          <Link
-            href="/admin"
+        <div className="admin-nav-content">
+        <div className="admin-premium-brand"><BrandMark /><span>Panel de administración</span></div>
+        <Link
+            href={preview ? "/vista-previa/resumen" : "/admin"}
             prefetch={ready ? false : undefined}
             onNavigate={(event) => {
               if (ready) {
                 event.preventDefault();
-                navigateWorkspace("/admin");
+                navigateWorkspace(preview ? "/vista-previa/resumen" : "/admin");
               }
             }}
-            aria-current={pathname === "/admin" ? "page" : undefined}
+            aria-current={pathname === (preview ? "/vista-previa/resumen" : "/admin") ? "page" : undefined}
           >
             <Icon name="shield" />
             Resumen
-          </Link>
-        )}
+        </Link>
         {groups.map((group) => (
           <div className="admin-nav-group" key={group.label}>
             <p className="admin-nav-label">{group.label}</p>
@@ -143,11 +146,12 @@ export function AdminNavigation({ preview = false }: { preview?: boolean }) {
             ))}
           </div>
         ))}
-        <p className="admin-navigation-help">
-          {preview
-            ? "Panel de prueba. Datos guardados en este navegador."
-            : "Acceso privado · Administrador STYLO"}
-        </p>
+        <div className="admin-premium-sidebar-bottom">
+          {preview && <p className="admin-navigation-help">Panel de prueba. Datos guardados en este navegador.</p>}
+          <Link href="/" className="admin-premium-store-link"><Icon name="bag" /> Ver la tienda</Link>
+          {!preview && <form action={signOut}><button type="submit"><Icon name="back" /> Cerrar sesión</button></form>}
+        </div>
+        </div>
       </details>
     </nav>
   );
@@ -159,9 +163,10 @@ export function PreviewFrame({ children }: { children: ReactNode }) {
     "/vista-previa/gestion",
     "/vista-previa/promociones",
     "/vista-previa/pedidos",
+    "/vista-previa/resumen",
   ].includes(pathname);
   return management ? (
-    <div className="admin-shell admin-preview">
+    <div className={`admin-shell admin-preview ${adminDisplay.variable} ${adminBody.variable}`}>
       <AdminWorkspaceScope>
         <div className="admin-workspace">
           <AdminNavigation preview />

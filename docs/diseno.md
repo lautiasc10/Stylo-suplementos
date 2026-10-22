@@ -1,5 +1,7 @@
 # Diseño de STYLO
 
+La Fase 3AG adapta el panel **Premium Admin Studio** de Lovable al administrador real, con resumen de ventas cobradas y reposición: [Admin Premium](admin-premium-fase-3ag.md).
+
 La Fase 3AF consolida el dorado de botones y etiquetas comerciales, retira el bloque antiguo de promociones del Home y asegura un recorrido horizontal visible en Novedades: [ajustes de portada](ajustes-home-fase-3af.md).
 
 La Fase 3AE extiende Anton y Barlow, los pesos y colores de Promociones a toda la web. Destacados y Novedades comparten escena negra con reflejo, zoom y destello; Novedades usa la misma coreografía por scroll de Ofertas imperdibles: [identidad y escenas](identidad-y-productos-fase-3ae.md).

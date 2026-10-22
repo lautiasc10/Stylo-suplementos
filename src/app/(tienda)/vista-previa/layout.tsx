@@ -27,6 +27,7 @@ export default async function PreviewLayout({
       <nav className="preview-links" aria-label="Vista previa">
         <Link href="/vista-previa">Catálogo de prueba</Link>
         <Link href="/vista-previa/gestion">Gestión de prueba</Link>
+        <Link href="/vista-previa/resumen">Resumen de administración</Link>
         <Link href="/vista-previa/promociones">Promociones de prueba</Link>
         <Link href="/vista-previa/ofertas">Vista de promociones</Link>
         <Link href="/vista-previa/escena-promociones">Nueva página de promociones</Link>

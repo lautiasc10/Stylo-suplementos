@@ -17,6 +17,7 @@ import type { Promotion } from "@/modules/commerce/promotions";
 import { AdminTable } from "@/components/admin/data-table";
 import { IconAction } from "@/components/admin/icon-action";
 import { Icon } from "@/components/ui/icon";
+import { AdminDrawer } from "@/components/admin/drawer";
 const noOrders: OrderRecord[] = [];
 const noPromotions: Promotion[] = [];
 
@@ -38,6 +39,7 @@ export function ManualOrders({
   const [rows, setRows] = useState(orders),
     [notice, setNotice] = useState(""),
     [busy, setBusy] = useState(false);
+  const [filter, setFilter] = useState<"all" | "pending" | "paid">("all");
   const attempt = useRef<string | null>(null),
     lock = useRef(false);
   const [kind, setKind] = useState<"pickup" | "cash-sale">("pickup");
@@ -82,6 +84,10 @@ export function ManualOrders({
         name: `${p.name} · ${variantLabel(v)} · ${v.sku}`,
       })),
   );
+  const visibleRows = rows.filter((row) => filter === "all" || (filter === "paid" ? row.payment_status === "paid" : row.payment_status !== "paid"));
+  const localDay = (date: Date) => new Intl.DateTimeFormat("en-CA", { timeZone: "America/Argentina/Buenos_Aires" }).format(date);
+  const paidToday = rows.filter((row) => row.payment_status === "paid" && localDay(new Date(row.created_at)) === localDay(new Date()));
+  const pendingRows = rows.filter((row) => row.payment_status !== "paid");
   return (
     <section className="manual-orders">
       <p className="eyebrow">RETIROS MANUALES</p>
@@ -118,15 +124,20 @@ export function ManualOrders({
         pendientes de retiro. Las compras de la tienda usarán transferencia o
         Mercado Pago.
       </p>
-      {notice && (
+      {notice && !editorOpen && (
         <p className="ui-notice" role="status">
           {notice}
         </p>
       )}
       <div className="management-layout management-create-flow">
-        {!editorOpen && (
+        <dl className="admin-overview admin-sales-stats">
+          <div className="admin-stat"><dt>Cobrado hoy</dt><dd>{formatPrice(paidToday.reduce((total, row) => total + row.snapshot.total, 0), 0)}</dd><small>{paidToday.length} operaciones en los registros cargados</small></div>
+          <div className="admin-stat admin-stat-alert"><dt>Esperando retiro</dt><dd>{pendingRows.length}</dd><small>{formatPrice(pendingRows.reduce((total, row) => total + row.snapshot.total, 0), 0)} a cobrar en estos registros</small></div>
+          <div className="admin-stat"><dt>Entregados</dt><dd>{rows.length - pendingRows.length}</dd><small>Entre los {rows.length} registros cargados</small></div>
+        </dl>
+        {(
           <div className="promotions-list">
-            <h2 className="management-section-title">Últimos registros</h2>
+            <div className="admin-records-toolbar"><h2 className="management-section-title">Últimos registros</h2><div className="admin-product-filter-chips">{([['all', 'Todos'], ['pending', 'Esperando retiro'], ['paid', 'Entregados']] as const).map(([value, label]) => <button type="button" key={value} aria-pressed={filter === value} onClick={() => setFilter(value)}>{label}</button>)}</div></div>
             {!rows.length && (
               <p className="management-empty">
                 Todavía no hay registros. Usá «Crear venta o retiro» para cargar
@@ -148,7 +159,7 @@ export function ManualOrders({
                   </tr>
                 </thead>
                 <tbody role="rowgroup">
-                  {rows.map((row) => (
+                  {visibleRows.map((row) => (
                     <tr role="row" key={row.id}>
                       <td
                         role="cell"
@@ -224,9 +235,11 @@ export function ManualOrders({
                 </tbody>
               </AdminTable>
             )}
+            {rows.length > 0 && visibleRows.length === 0 && <p className="management-empty">No hay registros con este estado.</p>}
           </div>
         )}
         {editorOpen && (
+          <AdminDrawer title="Nuevo registro" onClose={closeEditor} busy={busy}>
           <form
             ref={editor}
             method="post"
@@ -358,23 +371,12 @@ export function ManualOrders({
               }
             }}
           >
+            {notice && <p className="ui-notice" role="status">{notice}</p>}
             <fieldset disabled={busy}>
               <legend>Nuevo registro</legend>
-              <label>
-                Tipo de registro
-                <select
-                  value={kind}
-                  onChange={(e) => {
-                    setKind(e.target.value as typeof kind);
-                    setReceived(false);
-                  }}
-                >
-                  <option value="pickup">Pedido pendiente de retiro</option>
-                  <option value="cash-sale">
-                    Venta presencial en efectivo
-                  </option>
-                </select>
-              </label>
+              <fieldset className="admin-type-options admin-type-options-two"><legend>¿Qué querés anotar?</legend>
+                {([['cash-sale', 'Venta presencial en efectivo', 'Ya pagó y se lleva el producto. Se descuenta del stock.'], ['pickup', 'Pedido pendiente de retiro', 'Lo anotás ahora y lo cobrás cuando venga. No reserva stock.']] as const).map(([value, label, detail]) => <label className="admin-choice-card" key={value}><input type="radio" name="recordKind" value={value} aria-label={label} checked={kind === value} onChange={() => { setKind(value); setReceived(false); }} /><Icon name={value === "cash-sale" ? "cart" : "bag"} /><strong>{label}</strong><small>{detail}</small></label>)}
+              </fieldset>
               <div className="checkout-fields">
                 <label>
                   Nombre del cliente
@@ -517,6 +519,7 @@ export function ManualOrders({
               </button>
             </div>
           </form>
+          </AdminDrawer>
         )}
       </div>
     </section>

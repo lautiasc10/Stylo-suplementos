@@ -3,7 +3,10 @@ import Link from "next/link";
 import { BrandMark } from "@/components/storefront/brand-mark";
 import { AdminNavigation } from "@/components/admin/navigation";
 import { AdminWorkspaceScope } from "@/components/admin/workspace-navigation";
+import { adminDisplay, adminBody } from "@/components/admin/admin-fonts";
 import "../commerce.css";
+import "../admin-premium.css";
+
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
@@ -16,7 +19,7 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="admin-shell">
+    <div className={`admin-shell ${adminDisplay.variable} ${adminBody.variable}`}>
       <header className="admin-header">
         <Link
           href="/"

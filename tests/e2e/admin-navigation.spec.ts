@@ -105,8 +105,8 @@ test("volver a otra tarea conserva promociones, ventas y el stock actualizado", 
     .getByRole("button", { name: "Crear venta o retiro", exact: true })
     .click();
   await page
-    .getByRole("combobox", { name: "Tipo de registro", exact: true })
-    .selectOption("cash-sale");
+    .getByRole("radio", { name: "Venta presencial en efectivo", exact: true })
+    .check();
   await page
     .getByLabel("Nombre del cliente", { exact: true })
     .fill("Venta de navegación");
