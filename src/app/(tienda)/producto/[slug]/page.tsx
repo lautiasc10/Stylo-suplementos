@@ -7,6 +7,7 @@ import { ProductDetail } from "@/components/catalog/product-detail";
 import { StructuredData } from "@/components/seo/structured-data";
 import { productMetadata, productStructuredData } from "@/modules/seo/product";
 import { readPromotions } from "@/modules/commerce/promotions-server";
+import { restockMailConfig } from "@/modules/commerce/restock-mail";
 export async function generateMetadata({
   params,
   searchParams,
@@ -77,6 +78,7 @@ export default async function ProductPage({
         category={category?.slug ?? ""}
         selectedId={product.variants.find((item) => item.id === variante)?.id}
         imageBase={imageBase}
+        restockAvailable={Boolean(restockMailConfig())}
       />
     </section>
   );

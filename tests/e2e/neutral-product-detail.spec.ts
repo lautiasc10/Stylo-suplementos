@@ -77,6 +77,10 @@ for (const slug of slugs) {
     await scene
       .getByRole("button", { name: "Agregar al carrito", exact: true })
       .click();
+    // The current bag interaction confirms the add in place. Opening the bag
+    // is a separate, deliberate action.
+    await expect(page.getByRole("link", { name: /Abrir carrito, 1 unidades/ })).toBeVisible();
+    await page.getByRole("link", { name: /Abrir carrito, 1 unidades/ }).click();
     await expect(page.getByRole("dialog")).toBeVisible();
     await expect(
       page.getByRole("dialog").locator(".cart-variant"),

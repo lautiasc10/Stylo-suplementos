@@ -48,6 +48,7 @@ export type ProductDetailProps = {
   imageBase?: string;
   imageUrls?: Record<string, string>;
   preview?: boolean;
+  restockAvailable?: boolean;
 };
 const emptyImages: Record<string, string> = {};
 
@@ -60,6 +61,7 @@ export function ProductDetail({
   imageBase = "",
   imageUrls = emptyImages,
   preview = false,
+  restockAvailable = false,
 }: ProductDetailProps) {
   const heroRoot = useRef<HTMLDivElement>(null);
   usePurchaseBarSpace(heroRoot);
@@ -299,7 +301,14 @@ export function ProductDetail({
         enterOnMount
       >
         <RevealItem>
-          <p className="gainer-brand product-brand">
+          <p
+            className="gainer-brand product-brand"
+            data-logo-backplate={
+              /one\s*fit|star\s*nutrition|x\s*body/i.test(brandName)
+                ? "dark"
+                : undefined
+            }
+          >
             {logoSrc ? (
               <BrandLogo src={logoSrc} name={brandName} detail />
             ) : (
@@ -457,16 +466,25 @@ export function ProductDetail({
             summaryOnly
             quantity={Math.max(1, Math.min(variant.stock, quantity + inCart))}
           />
-          <AddToCart
-            variantId={variant.id}
-            stock={variant.stock}
-            slug={product.slug}
-            quantityControl
-            selectedQuantity={quantity}
-            onQuantityChange={(amount) =>
-              setPurchaseSelection({ variantId: variant.id, quantity: amount })
-            }
-          />
+          {variant.stock === 0 && restockAvailable && !preview ? (
+            <Link
+              href={`/avisos/solicitar?variante=${encodeURIComponent(variant.id)}`}
+              className="button restock-cta"
+            >
+              Avisarme cuando vuelva
+            </Link>
+          ) : (
+            <AddToCart
+              variantId={variant.id}
+              stock={variant.stock}
+              slug={product.slug}
+              quantityControl
+              selectedQuantity={quantity}
+              onQuantityChange={(amount) =>
+                setPurchaseSelection({ variantId: variant.id, quantity: amount })
+              }
+            />
+          )}
           {choreographed && (
             <span
               className="flavor-motion-accent flavor-button-accent"

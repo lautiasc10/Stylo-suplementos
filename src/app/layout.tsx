@@ -14,6 +14,7 @@ import "./neutral-product.css";
 import "./mobile-storefront.css";
 import "./purchase-pricing.css";
 import "./catalog-compact.css";
+import "./flavor-legibility.css";
 import { getEnvironment } from "@/lib/config/server";
 import { SITE_DESCRIPTION, SITE_TITLE } from "@/modules/seo/metadata";
 

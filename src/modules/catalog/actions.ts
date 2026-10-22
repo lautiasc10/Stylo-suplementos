@@ -3,6 +3,9 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/modules/admin/access";
 import { validateCatalog, type Catalog } from "./model";
 import { inspectImage } from "./image";
+import { after } from "next/server";
+import { restockMailConfig } from "@/modules/commerce/restock-mail";
+import { dispatchRestockAlerts } from "@/modules/commerce/restock-dispatch";
 
 export async function saveCatalog(
   catalog: Catalog,
@@ -28,9 +31,36 @@ export async function saveCatalog(
             : "No pudimos guardar. Revisá SKU, URLs e imágenes; el lote completo quedó sin aplicar.",
       };
     revalidatePath("/", "layout");
+    if (restockMailConfig()) {
+      after(async () => {
+        try {
+          await dispatchRestockAlerts(client);
+        } catch {
+          // The catalog save succeeded; pending alerts remain in the private
+          // queue for a retry on the next authenticated stock edit.
+          console.error("No pudimos procesar los avisos de reposición.");
+        }
+      });
+    }
     return { catalog: { ...catalog, revision } };
   } catch {
     return { error: "Los datos no tienen el formato esperado." };
+  }
+}
+
+export async function processRestockAlerts(): Promise<{ message: string }> {
+  const { client } = await requireAdmin();
+  if (!restockMailConfig())
+    return { message: "Los avisos por email todavía no están habilitados." };
+  try {
+    const { sent, failed } = await dispatchRestockAlerts(client);
+    return {
+      message: failed
+        ? `Se enviaron ${sent} avisos; ${failed} quedaron pendientes para reintentar.`
+        : `Se enviaron ${sent} avisos pendientes.`,
+    };
+  } catch {
+    return { message: "No pudimos procesar los avisos pendientes." };
   }
 }
 

@@ -1,16 +1,18 @@
 "use client";
 import { useEffect, useState } from "react";
-import { saveCatalog, uploadCatalogImage } from "@/modules/catalog/actions";
+import { processRestockAlerts, saveCatalog, uploadCatalogImage } from "@/modules/catalog/actions";
 import type { Catalog } from "@/modules/catalog/model";
 import { CatalogManager } from "./manager";
 export function CatalogManagement({
   initial,
   imageBase,
   onSaved,
+  restockAvailable = false,
 }: {
   initial: Catalog;
   imageBase: string;
   onSaved?: (catalog: Catalog) => void;
+  restockAvailable?: boolean;
 }) {
   const [catalog, setCatalog] = useState(initial);
   useEffect(() => {
@@ -20,6 +22,7 @@ export function CatalogManagement({
     <CatalogManager
       catalog={catalog}
       imageBase={imageBase}
+      dispatchPending={restockAvailable ? processRestockAlerts : undefined}
       commit={async (next) => {
         const result = await saveCatalog(next);
         if (result.catalog) {

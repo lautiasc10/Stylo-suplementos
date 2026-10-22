@@ -1,0 +1,17 @@
+# Fase 3AB: legibilidad por sabor y aviso de reposición
+
+Esta rama conserva los fondos, logos oficiales, tipografía, precios, selección de variantes y animaciones. En las fichas con escena por sabor, el regreso a la tienda tiene una superficie clara estable y un área táctil de 44 px; los logos que pierden contraste sobre sabores claros usan una base oscura local. Se amplió suavemente la zona de lectura de la escena sin sustituir la ilustración. El chip seleccionado y la información del producto ganan contraste. El botón agotado se ve como estado deshabilitado mientras el servicio de avisos no esté habilitado.
+
+Para productos agotados se preparó un aviso real por correo, vinculado al **ID de la variante**: el cliente deja su email, confirma la solicitud mediante un enlace de un solo uso y recibe un único mensaje cuando el stock pasa de cero a positivo. El correo de confirmación incluye un enlace para cancelar. La dirección permanece en una tabla privada con RLS; ni el catálogo ni el navegador obtienen la clave de Resend o la de servicio de Supabase. Los enlaces de confirmación y cancelación requieren una acción POST para evitar confirmaciones provocadas por lectores automáticos de correo. La entrega posterior usa una clave de idempotencia por aviso y conserva una cola con reintentos limitados. El administrador con MFA puede procesar avisos pendientes manualmente. Los datos comerciales y el stock existentes no cambian por la solicitud.
+
+## Activación, todavía pendiente
+
+1. Probar y aplicar `supabase/migrations/202610210001_restock_alerts.sql` en el proyecto Supabase correspondiente. **No se aplicó a la base real** durante esta fase.
+2. Configurar en el servidor, sin subir valores al repositorio: `APP_ENV=staging` o `production`, `NEXT_PUBLIC_SITE_URL` con HTTPS, `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, `RESEND_FROM_EMAIL` con remitente verificado, y `RESTOCK_ALERTS_ENABLED=true`. Hasta entonces el botón de ficha conserva el estado «Sin stock» y el formulario explica que el servicio no está habilitado. En vista previa local no se envían mensajes.
+3. Hacer una prueba de extremo a extremo con un email de prueba y una variante de prueba: solicitar, confirmar, reponer stock, recibir y cancelar. No se enviaron correos reales durante la implementación.
+
+El alta pública depende de la acción de servidor, un campo trampa, formato de email y un límite de 15 minutos por dirección y variante. Antes de publicar el formulario conviene agregar control de tasa por origen en la infraestructura de despliegue y política de privacidad/retención para los emails. La cola procesa hasta 20 avisos por pasada al guardar catálogo; la acción manual del administrador procesa pendientes adicionales o reintentos. Un trabajo programado de servidor sería recomendable si el volumen supera esa capacidad. No se agrega ese servicio ni se crea ningún gasto en esta fase.
+
+## Verificación
+
+La migración se ejecutó en PostgreSQL local en memoria. Las pruebas cubren acceso privado, confirmación, cambio de stock, envío único, cancelación, reintento y liberación tras fallo del proveedor. Las fichas se revisaron en escritorio y móvil con las 16 escenas de sabor de la aplicación, además de productos reales de One Fit, Star Nutrition y XBody con lecturas públicas. No se modificaron esos registros. Compilación, lint y typecheck se ejecutaron en esta rama.

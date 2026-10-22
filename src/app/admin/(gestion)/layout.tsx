@@ -1,5 +1,6 @@
 import { AdminWorkspace } from "@/components/admin/workspace";
 import { readAdminWorkspace } from "@/modules/admin/workspace";
+import { restockMailConfig } from "@/modules/commerce/restock-mail";
 import { getEnvironment } from "@/lib/config/server";
 
 export default async function ManagementLayout({
@@ -10,7 +11,7 @@ export default async function ManagementLayout({
   const initial = await readAdminWorkspace();
   const imageBase = `${getEnvironment().supabase!.url}/storage/v1/object/public/product-media`;
   return (
-    <AdminWorkspace initial={initial} imageBase={imageBase}>
+    <AdminWorkspace initial={initial} imageBase={imageBase} restockAvailable={Boolean(restockMailConfig())}>
       {children}
     </AdminWorkspace>
   );

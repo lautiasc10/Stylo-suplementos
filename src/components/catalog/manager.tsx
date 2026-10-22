@@ -34,6 +34,7 @@ export function CatalogManager({
   upload,
   imageUrls = {},
   imageBase = "",
+  dispatchPending,
 }: {
   catalog: Catalog;
   commit: (next: Catalog) => Promise<{ error?: string }>;
@@ -43,6 +44,7 @@ export function CatalogManager({
   ) => Promise<{ path?: string; error?: string }>;
   imageUrls?: Record<string, string>;
   imageBase?: string;
+  dispatchPending?: () => Promise<{ message: string }>;
 }) {
   const params = useSearchParams();
   const tab = catalogSection(params.get("seccion"));
@@ -407,6 +409,24 @@ export function CatalogManager({
           <>
             <div className="manager-toolbar">
               <h2>Productos</h2>
+              {dispatchPending && (
+                <button
+                  type="button"
+                  className="button button-outline"
+                  onClick={async () => {
+                    setBusy(true);
+                    try {
+                      setMessage((await dispatchPending()).message);
+                    } catch {
+                      setMessage("No pudimos procesar los avisos pendientes.");
+                    } finally {
+                      setBusy(false);
+                    }
+                  }}
+                >
+                  Procesar avisos pendientes
+                </button>
+              )}
               <button
                 type="button"
                 className="button button-gold"

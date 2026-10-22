@@ -31,11 +31,13 @@ export function AdminWorkspace({
   initial = emptyData,
   imageBase = "",
   preview = false,
+  restockAvailable = false,
   children,
 }: {
   initial?: AdminWorkspaceData;
   imageBase?: string;
   preview?: boolean;
+  restockAvailable?: boolean;
   children: ReactNode;
 }) {
   const pathname = usePathname();
@@ -210,6 +212,7 @@ export function AdminWorkspace({
                 <CatalogManagement
                   initial={data.catalog!}
                   imageBase={imageBase}
+                  restockAvailable={restockAvailable}
                   onSaved={(catalog) => {
                     generation.current++;
                     setData((previous) => ({ ...previous, catalog }));

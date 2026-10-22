@@ -9,6 +9,9 @@ vi.mock("@/modules/catalog/server", () => ({ getCatalog: source.catalog }));
 vi.mock("@/modules/commerce/promotions-server", () => ({
   readPromotions: source.promotions,
 }));
+vi.mock("@/modules/commerce/restock-mail", () => ({
+  restockMailConfig: () => null,
+}));
 vi.mock("@/lib/config/server", () => ({
   getEnvironment: () => ({
     siteUrl: new URL("https://stylo.example"),

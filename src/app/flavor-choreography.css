@@ -96,8 +96,8 @@
     ellipse var(--flavor-copy-radius-x, 35.355%)
       var(--flavor-copy-radius-y, 70.711%) at var(--flavor-copy-center-x, 80%)
       var(--flavor-copy-center-y, 50%),
-    var(--flavor-nav-background) 48%,
-    transparent 72%
+    var(--flavor-nav-background) 57%,
+    transparent 82%
   );
 }
 .product-image-gallery.variant-spinner[data-transition="choreography"]

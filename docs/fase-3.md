@@ -1,5 +1,7 @@
 # Fase 3 — Comercio
 
+La continuación 3AB conserva el diseño por sabor y prepara [legibilidad y avisos reales de reposición](legibilidad-y-avisos-fase-3ab.md) en la rama `fase-3ab-legibilidad-sabores`. No envía correos ni modifica Supabase real hasta aplicar la migración y habilitar el remitente verificado. No integrar a `main` sin validación del usuario.
+
 La continuación 3AA corrige contenido cubierto o recortado con texto ampliado, conserva los recorridos de compra actuales y no habilita pagos ni escrituras reales. Se entrega en `fase-3aa-accesibilidad-reflow`: [comprobaciones y límites](accesibilidad-reflow-fase-3aa.md).
 
 La continuación de la auditoría incorpora [SEO técnico en Fase 3Z](seo-tecnico-fase-3z.md): metadatos por página, datos estructurados por SKU y sitemap público. Conserva los bloqueos de indexación y no habilita pagos, logística, dominio ni despliegue. Se entrega en `fase-3z-seo-tecnico`, pendiente de revisión e integración autorizada.
