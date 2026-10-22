@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { useCart } from "@/components/commerce/cart-provider";
 import { PaymentSelector } from "@/components/commerce/payment-selector";
 import { addPromotionAndRedirect } from "@/modules/commerce/actions";
@@ -31,7 +31,10 @@ function OfferImage({ offer, imageBase, imageUrls, priority = false }: {
 }) {
   const photo = offerImage(offer, imageBase, imageUrls);
   return photo ? (
-    <Image src={photo.src} alt={photo.alt || offer.name} width={600} height={600} sizes="(max-width: 700px) 78vw, 370px" unoptimized priority={priority} />
+    <span className="promo-product-art">
+      <Image className="promo-product-front" src={photo.src} alt={photo.alt || offer.name} width={600} height={600} sizes="(max-width: 700px) 78vw, 370px" unoptimized priority={priority} />
+      <Image className="promo-product-reflection" src={photo.src} alt="" aria-hidden="true" width={600} height={600} sizes="(max-width: 700px) 78vw, 370px" unoptimized loading="lazy" />
+    </span>
   ) : (
     <span className="promo-photo-pending" role="img" aria-label={`Imagen pendiente de ${offer.name}`}>STYLO</span>
   );
@@ -95,7 +98,7 @@ function Countdown({ end }: { end: string }) {
   </div>;
 }
 
-function HorizontalOffers({ offers, imageBase, imageUrls, prefix }: { offers: Offer[]; imageBase: string; imageUrls: Record<string, string>; prefix: string }) {
+function HorizontalOffers({ catalog, offers, imageBase, imageUrls, prefix }: { catalog: Catalog; offers: Offer[]; imageBase: string; imageUrls: Record<string, string>; prefix: string }) {
   const { paymentMethod } = useCart();
   const section = useRef<HTMLElement>(null);
   const rail = useRef<HTMLDivElement>(null);
@@ -110,13 +113,19 @@ function HorizontalOffers({ offers, imageBase, imageUrls, prefix }: { offers: Of
     let raf = 0;
     let enhanced = false;
     let visible = false;
+    const cards = Array.from(track.querySelectorAll<HTMLElement>(".promo-horizontal-card"));
+    const reset = () => {
+      track.style.transform = "";
+      cards.forEach((card) => card.style.removeProperty("transform"));
+      root.style.setProperty("--promo-progress", "0");
+    };
     const measure = () => {
       const overflow = Math.max(0, track.scrollWidth - window.innerWidth + 48);
       enhanced = desktop.matches && !reduced.matches && offers.length > 2 && overflow > 64;
       root.dataset.enhanced = enhanced ? "true" : "false";
       distance = enhanced ? overflow : 0;
-      root.style.setProperty("--promo-travel", `${distance}px`);
-      if (!enhanced) track.style.transform = "";
+      root.style.setProperty("--promo-travel", `${enhanced ? Math.max(distance, window.innerHeight * 2.2) : 0}px`);
+      if (!enhanced) reset();
       update();
     };
     const update = () => {
@@ -126,6 +135,7 @@ function HorizontalOffers({ offers, imageBase, imageUrls, prefix }: { offers: Of
       const range = Math.max(1, rect.height - window.innerHeight);
       const progress = Math.min(1, Math.max(0, -rect.top / range));
       track.style.transform = `translate3d(${-distance * progress}px, 0, 0)`;
+      cards.forEach((card, index) => { card.style.transform = `translate3d(0, ${Math.sin(progress * 6 + index) * 18}px, 0)`; });
       root.style.setProperty("--promo-progress", String(progress));
     };
     const schedule = () => { if (!raf && enhanced && visible) raf = requestAnimationFrame(update); };
@@ -146,7 +156,7 @@ function HorizontalOffers({ offers, imageBase, imageUrls, prefix }: { offers: Of
       window.removeEventListener("resize", measure);
       reduced.removeEventListener("change", measure);
       desktop.removeEventListener("change", measure);
-      track.style.transform = "";
+      reset();
     };
   }, [offers.length]);
 
@@ -169,7 +179,7 @@ function HorizontalOffers({ offers, imageBase, imageUrls, prefix }: { offers: Of
                 {price.percentage > 0 && <span className="promo-percent">−{price.percentage}%</span>}
               </Link>
               <div className="promo-horizontal-info">
-                <div><small>{first.product!.name}</small><h3>{offer.name}</h3><p>{variantLabel(first.variant!)}</p></div>
+                <div><small>{catalog.brands.find((brand) => brand.id === first.product!.brandId)?.name}</small><h3>{offer.name}</h3><p>{variantLabel(first.variant!)}</p></div>
                 <div className="promo-horizontal-price">{price.saving > 0 && <del>{formatPrice(price.original, 0)}</del>}<strong>{formatPrice(price.price, 0)}</strong></div>
               </div>
               <div className="promo-horizontal-actions"><Link href={href}>Ver promoción →</Link><OfferAction offer={offer} /></div>
@@ -183,6 +193,7 @@ function HorizontalOffers({ offers, imageBase, imageUrls, prefix }: { offers: Of
 }
 
 export function PromotionsExperience({ catalog: initialCatalog, imageBase = "", unavailable = false }: { catalog?: Catalog; imageBase?: string; unavailable?: boolean }) {
+  const pageRef = useRef<HTMLDivElement>(null);
   const { promotions, imageUrls, paymentMethod, error, preview, catalog: cartCatalog } = useCart();
   const catalog = initialCatalog ?? cartCatalog;
   const prefix = preview ? "/vista-previa" : "";
@@ -200,10 +211,31 @@ export function PromotionsExperience({ catalog: initialCatalog, imageBase = "", 
   const featured = offers.slice().sort((a, b) => promotionPrice(b, paymentMethod).percentage - promotionPrice(a, paymentMethod).percentage)[0];
   const highest = featured ? promotionPrice(featured, paymentMethod).percentage : 0;
   const bundles = offers.filter((offer) => offer.kind === "bundle");
+  useLayoutEffect(() => {
+    const root = pageRef.current;
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+    if (!root || reduced.matches || !window.IntersectionObserver) return;
+    const elements = Array.from(root.querySelectorAll<HTMLElement>(".promo-reveal"));
+    const observer = new IntersectionObserver((entries) => entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        (entry.target as HTMLElement).dataset.entered = "true";
+        observer.unobserve(entry.target);
+      }
+    }), { threshold: .15 });
+    elements.forEach((element) => {
+      if (element.getBoundingClientRect().top >= innerHeight) {
+        element.dataset.entered = "false";
+        observer.observe(element);
+      }
+    });
+    const show = () => { if (reduced.matches) elements.forEach((element) => { element.dataset.entered = "true"; }); };
+    reduced.addEventListener("change", show);
+    return () => { observer.disconnect(); reduced.removeEventListener("change", show); };
+  }, [offers.length]);
   const availableKinds = [...new Set(offers.map((offer) => offer.kind))].map((kind) => kind === "sale" ? "Precios rebajados" : kind === "quantity" ? "Ofertas por cantidad" : "Combos");
   const ticker = availableKinds.length ? availableKinds : ["Promociones STYLO", "Explorá la tienda"];
 
-  return <div className={`promo-page ${promoBody.variable}`}>
+  return <div ref={pageRef} className={`promo-page ${promoBody.variable}`}>
     <section className="promo-hero" aria-labelledby="promo-title">
       <Image src="/reference/promotions-scoop.webp" alt="" fill sizes="100vw" quality={85} priority className="promo-hero-image" />
       <div className="promo-hero-scrim" />
@@ -223,19 +255,19 @@ export function PromotionsExperience({ catalog: initialCatalog, imageBase = "", 
     {error && <p className="ui-notice" role="alert">{error}</p>}
     {featured ? <>
       <section className="promo-feature" id="oferta-destacada" aria-labelledby="promo-feature-title">
-        <div className="promo-feature-copy">
+        <div className="promo-feature-copy promo-reveal">
           <p className="promo-eyebrow">OFERTA DESTACADA · {featured.kind === "bundle" ? "COMBO" : featured.kind === "quantity" ? "POR CANTIDAD" : "PRECIO REBAJADO"}</p>
-          <h2 id="promo-feature-title">{featured.name}</h2>
+          <h2 id="promo-feature-title">{featured.name.split(/\s+/).slice(0, -1).join(" ")} <em>{featured.name.split(/\s+/).at(-1)}</em></h2>
           <p>{featured.components.map((part) => `${part.quantity} × ${part.product!.name} · ${variantLabel(part.variant!)}`).join(" + ")}</p>
           {featured.endsAt && <><p className="promo-countdown-label">Esta oferta finaliza en</p><Countdown end={featured.endsAt} /></>}
           <div className="promo-feature-prices"><del>{formatPrice(promotionPrice(featured, paymentMethod).original, 0)}</del><strong>{formatPrice(promotionPrice(featured, paymentMethod).price, 0)}</strong><small>{paymentMethod === "transferencia" ? "Con transferencia" : "Con Mercado Pago"}</small></div>
           <OfferAction offer={featured} />
         </div>
-        <Link className="promo-feature-visual" href={`${prefix}/producto/${featured.components[0].product!.slug}?variante=${featured.components[0].variantId}`} aria-label={`Ver ${featured.name}`}>
+        <Link className="promo-feature-visual promo-reveal" href={`${prefix}/producto/${featured.components[0].product!.slug}?variante=${featured.components[0].variantId}`} aria-label={`Ver ${featured.name}`}>
           <OfferImage offer={featured} imageBase={imageBase} imageUrls={imageUrls} priority />
         </Link>
       </section>
-      <HorizontalOffers offers={offers} imageBase={imageBase} imageUrls={imageUrls} prefix={prefix} />
+      <HorizontalOffers catalog={catalog} offers={offers} imageBase={imageBase} imageUrls={imageUrls} prefix={prefix} />
       <section className="promo-bundles" aria-labelledby="promo-bundles-title">
         <header className="promo-section-heading"><p className="promo-eyebrow">ELEGÍ TU COMBINACIÓN</p><h2 id="promo-bundles-title">Combos <em>power</em></h2></header>
         {bundles.length ? <div className="promo-bundle-grid">{bundles.map((offer) => {
