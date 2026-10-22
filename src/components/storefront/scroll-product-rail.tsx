@@ -8,7 +8,7 @@ export function ScrollProductRail({ children, count, example }: { children: Reac
   const viewport = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLDivElement>(null);
   const [keyboard, setKeyboard] = useState(false);
-  useScrollShowcase({ root, viewport, track, count, native: keyboard });
+  useScrollShowcase({ root, viewport, track, count, native: keyboard, allowNarrowScreens: true });
   return <div ref={root} className="scroll-product-rail" data-keyboard={keyboard}>
     <div className="scroll-product-rail-stage">
       <header className="scroll-product-rail-heading">

@@ -3,18 +3,21 @@
 import { useEffect, type RefObject } from "react";
 
 /** Scroll-driven translation + the reference's 18px wave, without React updates per frame. */
-export function useScrollShowcase({ root, viewport, track, count, native = false }: {
+export function useScrollShowcase({ root, viewport, track, count, native = false, allowNarrowScreens = false }: {
   root: RefObject<HTMLElement | null>;
   viewport: RefObject<HTMLElement | null>;
   track: RefObject<HTMLElement | null>;
   count: number;
   native?: boolean;
+  allowNarrowScreens?: boolean;
 }) {
   useEffect(() => {
     const section = root.current, view = viewport.current, row = track.current;
     if (!section || !view || !row) return;
     const reduced = matchMedia("(prefers-reduced-motion: reduce)");
-    const desktop = matchMedia("(min-width: 801px) and (min-height: 650px)");
+    const roomy = matchMedia(allowNarrowScreens
+      ? "(min-height: 600px)"
+      : "(min-width: 801px) and (min-height: 650px)");
     const saver = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
     const cards = Array.from(row.children) as HTMLElement[];
     let distance = 0, frame = 0, visible = false, enhanced = false;
@@ -34,7 +37,7 @@ export function useScrollShowcase({ root, viewport, track, count, native = false
     };
     const measure = () => {
       distance = Math.max(0, row.scrollWidth - view.clientWidth + 32);
-      enhanced = desktop.matches && !reduced.matches && !saver && !native && count > 1 && distance > 64;
+      enhanced = roomy.matches && !reduced.matches && !saver && !native && count > 1 && distance > 64;
       section.dataset.enhanced = String(enhanced);
       section.dataset.scrollEnhanced = String(enhanced);
       section.style.setProperty("--showcase-travel", `${enhanced ? Math.max(distance, innerHeight * 2.2) : 0}px`);
@@ -50,7 +53,7 @@ export function useScrollShowcase({ root, viewport, track, count, native = false
     window.addEventListener("resize", measure, { passive: true });
     document.addEventListener("visibilitychange", schedule);
     reduced.addEventListener("change", measure);
-    desktop.addEventListener("change", measure);
+    roomy.addEventListener("change", measure);
     measure();
     return () => {
       cancelAnimationFrame(frame);
@@ -60,9 +63,9 @@ export function useScrollShowcase({ root, viewport, track, count, native = false
       window.removeEventListener("resize", measure);
       document.removeEventListener("visibilitychange", schedule);
       reduced.removeEventListener("change", measure);
-      desktop.removeEventListener("change", measure);
+      roomy.removeEventListener("change", measure);
       reset();
       section.dataset.enhanced = section.dataset.scrollEnhanced = "false";
     };
-  }, [root, viewport, track, count, native]);
+  }, [root, viewport, track, count, native, allowNarrowScreens]);
 }

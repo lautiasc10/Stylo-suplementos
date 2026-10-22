@@ -39,7 +39,6 @@ test("la identidad de Promociones acompaña tienda, búsqueda, ficha y portada",
   }
   expect(errors).toEqual([]);
 });
-
 test("destacados conserva todos los productos y usa reflejo, zoom y destello", async ({ page, isMobile }, info) => {
   if (!isMobile) await page.setViewportSize({ width: 1440, height: 1080 });
   await page.goto("/vista-previa/portada");
@@ -74,30 +73,24 @@ test("novedades comparte el avance y la onda de Ofertas y mantiene una fila nati
   const section = page.locator("#novedades .scroll-product-rail");
   await expect(section.locator(".arrival-card")).toHaveCount(4);
   await expect(section.locator(".product-artwork-reflection")).toHaveCount(4);
-  if (!isMobile) {
-    await page.setViewportSize({ width: 1920, height: 900 });
-    await expect(section).toHaveAttribute("data-scroll-enhanced", "true");
-    const positions: string[] = [];
-    for (const progress of [.15, .45]) {
-      await section.evaluate((node, value) => {
-        scrollTo({ top: scrollY + node.getBoundingClientRect().top + (node.clientHeight - innerHeight) * value, behavior: "instant" });
-      }, progress);
-      await expect.poll(() => section.evaluate((node) => Number(node.style.getPropertyValue("--showcase-progress")))).toBeCloseTo(progress, 1);
-      positions.push(await section.locator(".arrival-card").first().evaluate((node) => node.style.transform));
-    }
-    expect(positions[0]).not.toBe(positions[1]);
-    await page.screenshot({ path: info.outputPath("arrivals-scroll-desktop.png"), animations: "disabled" });
-    await section.locator(".scroll-product-rail-viewport").focus();
-    await page.keyboard.press("Tab");
-    await expect(section).toHaveAttribute("data-scroll-enhanced", "false");
-  } else {
-    await expect(section).toHaveAttribute("data-scroll-enhanced", "false");
-    await section.scrollIntoViewIfNeeded();
-    const view = section.locator(".scroll-product-rail-viewport");
-    await view.evaluate((node) => node.scrollTo({ left: 320, behavior: "instant" }));
-    expect(await view.evaluate((node) => node.scrollLeft)).toBeGreaterThan(100);
-    await page.screenshot({ path: info.outputPath("arrivals-mobile.png"), animations: "disabled" });
+  if (!isMobile) await page.setViewportSize({ width: 1366, height: 600 });
+  await expect(section).toHaveAttribute("data-scroll-enhanced", "true");
+  const positions: string[] = [];
+  for (const progress of [.15, .45]) {
+    await section.evaluate((node, value) => {
+      scrollTo({ top: scrollY + node.getBoundingClientRect().top + (node.clientHeight - innerHeight) * value, behavior: "instant" });
+    }, progress);
+    await expect.poll(() => section.evaluate((node) => Number(node.style.getPropertyValue("--showcase-progress")))).toBeCloseTo(progress, 1);
+    positions.push(await section.locator(".arrival-card").first().evaluate((node) => node.style.transform));
   }
+  expect(positions[0]).not.toBe(positions[1]);
+  await page.screenshot({ path: info.outputPath(`arrivals-scroll-${isMobile ? "mobile" : "small-desktop"}.png`), animations: "disabled" });
+  await section.locator(".scroll-product-rail-viewport").focus();
+  await page.keyboard.press("Tab");
+  await expect(section).toHaveAttribute("data-scroll-enhanced", "false");
+  const view = section.locator(".scroll-product-rail-viewport");
+  await view.evaluate((node) => node.scrollTo({ left: 320, behavior: "instant" }));
+  expect(await view.evaluate((node) => node.scrollLeft)).toBeGreaterThan(100);
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(section).toHaveAttribute("data-scroll-enhanced", "false");
   await expect(section.locator(".scroll-product-rail-track")).toHaveCSS("transform", "none");

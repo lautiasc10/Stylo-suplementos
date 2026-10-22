@@ -1,6 +1,19 @@
 import { expect, test } from "@playwright/test";
 import { demoCatalog } from "../../src/modules/catalog/demo";
 
+test("las marcas hidratan sin errores y el control se muestra solo al activar el movimiento", async ({ page }) => {
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.goto("/vista-previa/portada");
+  const brands = page.locator(".brand-marquee");
+  await expect(brands).toHaveAttribute("data-enhanced", "true");
+  await expect(brands.getByRole("button", { name: "Pausar marcas" })).toBeVisible();
+  expect(errors).toEqual([]);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(brands).toHaveAttribute("data-enhanced", "false");
+  await expect(brands.getByRole("button", { name: "Pausar marcas", includeHidden: true })).not.toBeVisible();
+});
+
 test("la cabecera comparte medidas y tipografía entre portada y páginas interiores", async ({
   page,
 }) => {

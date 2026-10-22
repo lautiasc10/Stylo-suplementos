@@ -11,6 +11,7 @@
 .brand-marquee-heading { position: relative; display: flex; align-items: center; justify-content: center; min-height: 44px; margin: 0 var(--page-gutter) 24px; }
 .brand-marquee-heading h2 { margin: 0; color: var(--muted); font: 500 12px/1.5 var(--font-hero-body); text-transform: uppercase; letter-spacing: .3em; }
 .brand-marquee-heading button { position: absolute; right: 0; width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid var(--action-border); border-radius: 50%; color: var(--gold); background: transparent; }
+.brand-marquee:not([data-enhanced="true"]) .brand-marquee-heading button { display: none; }
 .brand-marquee-heading .icon { width: 16px; height: 16px; }
 .brand-marquee-viewport { overflow-x: auto; }
 .brand-marquee-track { display: flex; width: max-content; }

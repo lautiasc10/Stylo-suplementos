@@ -55,16 +55,14 @@ export function BrandMarquee({
     >
       <div className="brand-marquee-heading">
         <h2 id="brands-title">Marcas en STYLO</h2>
-        {reduced === false && (
-          <button
-            type="button"
-            onClick={() => setPaused((value) => !value)}
-            aria-label={paused ? "Reanudar marcas" : "Pausar marcas"}
-            aria-pressed={paused}
-          >
-            <Icon name={paused ? "play" : "pause"} />
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={() => setPaused((value) => !value)}
+          aria-label={paused ? "Reanudar marcas" : "Pausar marcas"}
+          aria-pressed={paused}
+        >
+          <Icon name={paused ? "play" : "pause"} />
+        </button>
       </div>
       <div className="brand-marquee-viewport">
         <div className="brand-marquee-track">
