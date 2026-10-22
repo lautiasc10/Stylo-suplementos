@@ -287,8 +287,8 @@ img {
   color: var(--background);
 }
 .button-gold:hover:not(:disabled) {
-  border-color: #ffd788;
-  box-shadow: 0 4px 22px #c58d4226;
+  border-color: var(--gold-light);
+  box-shadow: 0 4px 22px var(--gold-glow);
 }
 .button-outline {
   border-color: var(--action-border);
@@ -297,7 +297,7 @@ img {
 }
 .button-outline:hover:not(:disabled) {
   border-color: var(--gold);
-  background: #d8b47409;
+  background: color-mix(in oklab, var(--gold) 8%, transparent);
   color: var(--gold);
 }
 .button .icon,

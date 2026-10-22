@@ -710,9 +710,9 @@
   max-width: 100%;
   gap: var(--space-1);
   padding: var(--space-1) var(--space-2);
-  border: 1px solid #f2d59f;
-  border-left: 3px solid #fff1c5;
-  background: var(--gold);
+  border: 1px solid var(--gold);
+  border-left: 3px solid var(--gold-light);
+  background: var(--brand-gold-gradient);
   color: var(--background);
   box-shadow:
     0 8px 22px #000a,
@@ -768,9 +768,9 @@
   min-height: 32px;
   padding: var(--space-1) var(--space-3);
   flex-shrink: 0;
-  background: #ece9e1ed;
-  color: #17130b;
-  border-color: #fff4;
+  background: var(--brand-gold-gradient);
+  color: var(--background);
+  border-color: var(--gold);
   box-shadow: 0 8px 20px #0008;
   font-weight: 700;
   align-self: start;

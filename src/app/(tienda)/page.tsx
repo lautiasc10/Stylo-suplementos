@@ -3,7 +3,6 @@ import { publicCatalog } from "@/modules/catalog/model";
 import { getEnvironment } from "@/lib/config/server";
 import { CinematicHero } from "@/components/storefront/cinematic-hero";
 import { HomeProducts } from "@/components/storefront/home-products";
-import { HomePromotions } from "@/components/storefront/home-promotions";
 import { readPromotions } from "@/modules/commerce/promotions-server";
 import { ScrollBestSellers } from "@/components/storefront/scroll-best-sellers";
 import { bestSellerExamples } from "@/modules/catalog/best-seller-examples";
@@ -90,11 +89,6 @@ export default async function HomePage() {
         unavailable={error}
       />
       <CustomComboBuilder categories={comboOptions(data, imageBase)} />
-      <HomePromotions
-        unavailable={promotions.error}
-        imageBase={imageBase}
-        catalog={data}
-      />
       <WhyStylo stats={story.stats} />
       <BrandMarquee brands={story.brands} />
       <AthleteCall />

@@ -138,7 +138,7 @@
 .scroll-product-rail-heading > p:last-child { max-width: 48ch; color: var(--muted); font-size: 16px; line-height: 1.5; }
 .scroll-product-rail-viewport { flex-shrink: 0; overflow-x: auto; overscroll-behavior-inline: contain; scroll-snap-type: x mandatory; margin-top: 24px; }
 .scroll-product-rail-track { display: flex; width: max-content; gap: 32px; padding: 32px var(--page-gutter) 48px; }
-.scroll-product-rail-track > * { width: 320px; flex: 0 0 auto; scroll-snap-align: start; }
+.scroll-product-rail-track > * { width: clamp(320px, 28vw, 520px); flex: 0 0 auto; scroll-snap-align: start; }
 .scroll-product-rail-progress { height: 1px; margin: 24px var(--page-gutter) 0; background: var(--line); }
 .scroll-product-rail-progress span { display: block; width: 100%; height: 100%; background: var(--brand-gold-gradient); transform: scaleX(var(--showcase-progress, 0)); transform-origin: left; }
 .scroll-product-rail[data-scroll-enhanced=true] { height: calc(100svh + var(--showcase-travel, 0px)); }

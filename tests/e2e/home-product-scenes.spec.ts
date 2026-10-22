@@ -16,6 +16,17 @@ test.beforeEach(async ({ page }) => {
   await page.addInitScript((data) => localStorage.setItem("stylo.catalog-preview.v1", JSON.stringify(data)), { catalog, images });
 });
 
+test("la portada usa la página independiente de promociones y un solo dorado para acciones y etiquetas", async ({ page, isMobile }) => {
+  await page.goto("/");
+  await expect(page.locator("#promociones")).toHaveCount(0);
+  if (isMobile) await page.getByLabel("Menú de navegación").click();
+  await expect(page.getByRole("link", { name: "Promociones" }).first()).toHaveAttribute("href", "/promociones");
+  await page.goto("/vista-previa/portada");
+  const gold = await page.locator(":root").evaluate((node) => getComputedStyle(node).getPropertyValue("--brand-gold-gradient").trim());
+  await expect(page.locator("#novedades .arrival-card-badge").first()).toHaveCSS("background-image", /linear-gradient/);
+  expect(gold).toContain("linear-gradient");
+});
+
 test("la identidad de Promociones acompaña tienda, búsqueda, ficha y portada", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
@@ -64,6 +75,7 @@ test("novedades comparte el avance y la onda de Ofertas y mantiene una fila nati
   await expect(section.locator(".arrival-card")).toHaveCount(4);
   await expect(section.locator(".product-artwork-reflection")).toHaveCount(4);
   if (!isMobile) {
+    await page.setViewportSize({ width: 1920, height: 900 });
     await expect(section).toHaveAttribute("data-scroll-enhanced", "true");
     const positions: string[] = [];
     for (const progress of [.15, .45]) {
