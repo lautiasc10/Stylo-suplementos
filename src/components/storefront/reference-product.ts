@@ -66,12 +66,18 @@ export function referenceProduct(
       ];
       const list = priceLines(lines, offers, "mercado-pago");
       const cash = priceLines(lines, offers, "transferencia");
+      const flavor = flavorLabel(variant.flavor);
+      const rawDisplayName = product.name.match(/["“]([^"”]+)["”]/)?.[1] ?? name;
+      const withoutSize = rawDisplayName.replace(/\s+[x×]\s*\d+(?:[.,]\d+)?\s*(?:grs?|g|kg|lbs?|capsulas|cápsulas|ml)\b.*$/i, "");
+      const displayName = flavor && withoutSize.toLocaleLowerCase("es-AR").endsWith(` ${flavor.toLocaleLowerCase("es-AR")}`)
+        ? withoutSize.slice(0, -(flavor.length + 1)).trim()
+        : withoutSize.trim();
       return {
         id: product.id,
         variantId: variant.id,
         name,
-        displayName: product.name.match(/["“]([^"”]+)["”]/)?.[1] ?? name,
-        flavor: flavorLabel(variant.flavor),
+        displayName: displayName || name,
+        flavor,
         title:
           /whey/i.test(name) && /protein/i.test(name)
             ? ["Whey", "Protein"]

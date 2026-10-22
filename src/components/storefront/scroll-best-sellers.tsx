@@ -6,11 +6,47 @@ import { useMotionPreference } from "@/components/ui/use-motion-preference";
 import { useCart } from "@/components/commerce/cart-provider";
 import type { ReferenceProduct } from "./reference-product";
 
+let finishedThisVisit = false;
+
+function SellersPodium({ products, className }: { products: ReferenceProduct[]; className: string }) {
+  const { change, busy } = useCart();
+  return (
+    <div className={className}>
+      <div className="scroll-sellers-podium-heading">
+        <div>
+          <p className="reference-eyebrow">SELECCIÓN DE EJEMPLO · STYLO</p>
+          <h2>Los más <span className="reference-text-gold">vendidos</span></h2>
+        </div>
+        <p>Explorá tres presentaciones del catálogo.</p>
+      </div>
+      <div className="scroll-sellers-podium-grid">
+        {products.map((item, index) => (
+          <article className="scroll-sellers-podium-card" data-rank={index + 1} key={item.id}>
+            <span className="scroll-sellers-podium-number" aria-hidden="true">{index + 1}</span>
+            {index === 0 && <span className="scroll-sellers-podium-badge">Ejemplo destacado</span>}
+            <Link className="scroll-sellers-podium-link" href={item.href} aria-label={`Ver ${item.displayName}, ${item.description}`}>
+              <img src={item.image.src} srcSet={item.image.srcSet} sizes="(min-width: 960px) 340px, (min-width: 620px) 40vw, 75vw" width={600} height={600} loading="lazy" decoding="async" alt={item.image.alt} />
+              <span className="scroll-sellers-podium-brand">{item.brand}</span>
+              <h3>{item.displayName}</h3>
+              <span className="scroll-sellers-podium-variant">{item.description}</span>
+            </Link>
+            <div className="scroll-sellers-podium-bottom">
+              <strong>{item.facts[1]?.value}</strong>
+              <button type="button" disabled={busy || item.facts[3]?.value !== "Disponible"} onClick={(event) => change(item.variantId, "add", 1, event.currentTarget.getBoundingClientRect())}>+ Agregar</button>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /** One sticky stage: protein dust forms each pack as the page advances. */
 export function ScrollBestSellers({ products }: { products: ReferenceProduct[] }) {
   const root = useRef<HTMLElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const [active, setActive] = useState(0);
+  const [podiumShown, setPodiumShown] = useState(false);
   const reduced = useMotionPreference();
   const { change, busy } = useCart();
 
@@ -18,7 +54,7 @@ export function ScrollBestSellers({ products }: { products: ReferenceProduct[] }
     const section = root.current;
     const surface = canvas.current;
     if (!section || !surface || products.length === 0) return;
-    if (reduced !== false) {
+    if (reduced !== false || finishedThisVisit) {
       section.dataset.scrollEnhanced = "false";
       return;
     }
@@ -33,6 +69,8 @@ export function ScrollBestSellers({ products }: { products: ReferenceProduct[] }
     let width = 0;
     let height = 0;
     let progress = -1;
+    let shown = false;
+    let frozen = false;
     let seed = 451;
     const random = () => ((seed = (1664525 * seed + 1013904223) >>> 0) / 4294967296);
     const particles = Array.from({ length: 180 }, () => {
@@ -72,20 +110,32 @@ export function ScrollBestSellers({ products }: { products: ReferenceProduct[] }
     };
     const update = () => {
       frame = 0;
-      if (!enabled || !visible || document.hidden) return;
+      if (!enabled || !visible || document.hidden || frozen) return;
       const rect = section.getBoundingClientRect();
       const next = Math.min(0.9999, Math.max(0, -rect.top / Math.max(1, rect.height - innerHeight)));
       if (Math.abs(progress - next) < 0.0003) return;
       progress = next;
-      const segment = Math.min(products.length - 1, Math.floor(next * products.length));
-      const local = Math.min(1, next * products.length - segment);
-      const outgoing = segment < products.length - 1
-        ? Math.min(1, Math.max(0, (local - 0.82) / 0.18))
-        : 0;
+      const position = next * (products.length + 1);
+      const isFinale = position >= products.length;
+      const segment = Math.min(products.length - 1, Math.floor(position));
+      const local = isFinale ? 1 : Math.min(1, position - segment);
+      const finale = Math.min(1, Math.max(0, (position - products.length) / 0.55));
+      const outgoing = isFinale ? finale : Math.min(1, Math.max(0, (local - 0.82) / 0.18));
       section.style.setProperty("--seller-progress", local.toFixed(4));
       section.style.setProperty("--seller-out", outgoing.toFixed(4));
-      paint(local, outgoing);
+      section.style.setProperty("--seller-podium", finale.toFixed(4));
+      if (isFinale) context.clearRect(0, 0, width, height);
+      else paint(local, outgoing);
       if (segment !== index) { index = segment; setActive(segment); }
+      const nextShown = finale >= 0.95;
+      if (nextShown !== shown) { shown = nextShown; setPodiumShown(nextShown); }
+      if (position >= products.length + 0.65) {
+        finishedThisVisit = true;
+        frozen = true;
+        section.style.setProperty("--seller-out", "1");
+        section.style.setProperty("--seller-podium", "1");
+        if (!shown) setPodiumShown(true);
+      }
     };
     const schedule = () => {
       if (enabled && visible && !document.hidden && !frame) frame = requestAnimationFrame(update);
@@ -101,7 +151,7 @@ export function ScrollBestSellers({ products }: { products: ReferenceProduct[] }
       schedule();
     };
     const eligibility = () => {
-      enabled = desktop.matches && !dataSaver && section.getBoundingClientRect().top >= innerHeight - 2;
+      enabled = desktop.matches && !dataSaver && !finishedThisVisit && section.getBoundingClientRect().top >= innerHeight - 2;
       section.dataset.scrollEnhanced = String(enabled);
       if (enabled) resize();
     };
@@ -137,10 +187,6 @@ export function ScrollBestSellers({ products }: { products: ReferenceProduct[] }
       aria-label="Los más vendidos, selección de ejemplo"
       style={{ "--seller-count": products.length } as React.CSSProperties}
     >
-      <div className="reference-container scroll-sellers-mobile-heading">
-        <p className="reference-eyebrow">SELECCIÓN DE EJEMPLO · STYLO</p>
-        <h2>Los más <span className="reference-text-gold">vendidos</span></h2>
-      </div>
       <div className="scroll-sellers-stage">
         <canvas ref={canvas} aria-hidden="true" />
         <div className="scroll-sellers-top">
@@ -152,10 +198,10 @@ export function ScrollBestSellers({ products }: { products: ReferenceProduct[] }
             {products.map((item, index) => <span key={item.id} data-active={index === active}>{String(index + 1).padStart(2, "0")} <i /></span>)}
           </div>
         </div>
-        <div key={product.id} className="scroll-sellers-product">
+        <div key={product.id} className="scroll-sellers-product" inert={podiumShown}>
           <div className="scroll-sellers-copy">
             <p>N.º {active + 1} · {product.brand}</p>
-            <h3>{product.displayName}{product.flavor && <span>{product.flavor}</span>}</h3>
+            <h3>{product.displayName}</h3>
             <span>{product.description}</span>
             <div className="scroll-sellers-product-progress" aria-hidden="true"><i /></div>
             <Link href={product.href}>Ver presentación <span aria-hidden="true">→</span></Link>
@@ -180,16 +226,12 @@ export function ScrollBestSellers({ products }: { products: ReferenceProduct[] }
             </div>
           </div>
         </div>
+        <div className="scroll-sellers-podium-overlay" inert={!podiumShown} aria-hidden={!podiumShown}>
+          <SellersPodium products={products} className="scroll-sellers-podium" />
+        </div>
         <p className="scroll-sellers-hint" aria-hidden="true">Seguí bajando</p>
       </div>
-      <div className="reference-container scroll-sellers-fallback" aria-label="Productos de ejemplo">
-        {products.map((item) => (
-          <Link href={item.href} key={item.id}>
-            <img src={item.image.src} alt="" width={320} height={320} loading="lazy" />
-            <span>{item.name}</span>
-          </Link>
-        ))}
-      </div>
+      <SellersPodium products={products} className="reference-container scroll-sellers-fallback scroll-sellers-podium" />
     </section>
   );
 }

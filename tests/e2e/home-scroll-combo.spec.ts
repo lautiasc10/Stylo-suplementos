@@ -23,7 +23,7 @@ async function seed(page: Page) {
   }, { catalog, images });
 }
 
-test("el escenario de ejemplo avanza por productos con el scroll y conserva los enlaces", async ({ page, isMobile }) => {
+test("el escenario de ejemplo avanza por productos con el scroll y conserva los enlaces", async ({ page, isMobile }, testInfo) => {
   await seed(page);
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
@@ -33,9 +33,10 @@ test("el escenario de ejemplo avanza por productos con el scroll y conserva los 
   await expect(section).toContainText("SELECCIÓN DE EJEMPLO");
   if (isMobile) {
     await expect(section.locator(".scroll-sellers-fallback a")).toHaveCount(3);
+    await section.screenshot({ path: testInfo.outputPath("sellers-mobile.png") });
   } else {
     await expect(section).toHaveAttribute("data-scroll-enhanced", "true");
-    for (const [progress, count] of [[0.15, "01"], [0.5, "02"], [0.82, "03"]] as const) {
+    for (const [progress, count] of [[0.1, "01"], [0.4, "02"], [0.68, "03"]] as const) {
       await page.evaluate((value) => {
         const node = document.getElementById("mas-vendidos")!;
         const top = node.getBoundingClientRect().top + scrollY;
@@ -44,6 +45,19 @@ test("el escenario de ejemplo avanza por productos con el scroll y conserva los 
       await expect(section.locator('.scroll-sellers-index span[data-active="true"]')).toContainText(count);
     }
     await expect(section.locator(".scroll-sellers-product a")).toHaveAttribute("href", /\/vista-previa\/producto\//);
+    await page.evaluate(() => {
+      const node = document.getElementById("mas-vendidos")!;
+      scrollTo(0, node.getBoundingClientRect().top + scrollY + .94 * (node.offsetHeight - innerHeight));
+    });
+    await expect(section.locator(".scroll-sellers-podium-overlay")).toHaveAttribute("aria-hidden", "false");
+    await expect(section.locator(".scroll-sellers-podium-overlay .scroll-sellers-podium-card")).toHaveCount(3);
+    await page.screenshot({ path: testInfo.outputPath("sellers-desktop.png") });
+    await section.locator(".scroll-sellers-podium-overlay .scroll-sellers-podium-link").first().click();
+    await expect(page).toHaveURL(/\/vista-previa\/producto\//);
+    await page.goBack();
+    await expect(page).toHaveURL(/\/vista-previa\/portada/);
+    await expect(section).toHaveAttribute("data-scroll-enhanced", "false");
+    await expect(section.locator(".scroll-sellers-fallback")).toBeVisible();
   }
   expect(errors).toEqual([]);
 });
