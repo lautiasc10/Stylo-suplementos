@@ -7,6 +7,8 @@ import { useCart } from "@/components/commerce/cart-provider";
 import type { ReferenceProduct } from "./reference-product";
 
 let finishedThisVisit = false;
+const FINALE_SPAN = 0.55;
+const PRODUCT_SCROLL_VH = 110;
 
 function SellersPodium({ products, className, showHeading = true }: { products: ReferenceProduct[]; className: string; showHeading?: boolean }) {
   const { change, busy } = useCart();
@@ -71,6 +73,8 @@ export function ScrollBestSellers({ products }: { products: ReferenceProduct[] }
     let progress = -1;
     let shown = false;
     let frozen = false;
+    let releaseFrame = 0;
+    let restoreAnchor: (() => void) | undefined;
     let seed = 451;
     const random = () => ((seed = (1664525 * seed + 1013904223) >>> 0) / 4294967296);
     const particles = Array.from({ length: 180 }, () => {
@@ -108,19 +112,51 @@ export function ScrollBestSellers({ products }: { products: ReferenceProduct[] }
       }
       context.globalAlpha = 1;
     };
+    const finish = () => {
+      if (frozen) return;
+      frozen = true;
+      finishedThisVisit = true;
+      section.style.setProperty("--seller-progress", "1");
+      section.style.setProperty("--seller-out", "1");
+      section.style.setProperty("--seller-podium", "1");
+      section.dataset.sellerFinale = "true";
+      context.clearRect(0, 0, width, height);
+      if (!shown) { shown = true; setPodiumShown(true); }
+
+      // Release only the consumed, off-screen runway. Compensating in the same
+      // frame keeps the sticky stage (or the following section) in place.
+      const before = section.getBoundingClientRect();
+      const scrollBefore = window.scrollY;
+      const documentStyle = document.documentElement.style;
+      const previousAnchor = documentStyle.overflowAnchor;
+      documentStyle.overflowAnchor = "none";
+      restoreAnchor = () => { documentStyle.overflowAnchor = previousAnchor; };
+      section.dataset.scrollComplete = "true";
+      const removed = Math.max(0, before.height - section.getBoundingClientRect().height);
+      const consumed = Math.min(removed, Math.max(0, -before.top));
+      if (consumed > 0) window.scrollTo({ top: scrollBefore - consumed, behavior: "instant" });
+      releaseFrame = requestAnimationFrame(() => {
+        releaseFrame = 0;
+        restoreAnchor?.();
+        restoreAnchor = undefined;
+      });
+    };
     const update = () => {
       frame = 0;
       if (!enabled || !visible || document.hidden || frozen) return;
       const rect = section.getBoundingClientRect();
-      const next = Math.min(0.9999, Math.max(0, -rect.top / Math.max(1, rect.height - innerHeight)));
-      if (Math.abs(progress - next) < 0.0003) return;
+      const next = Math.min(1, Math.max(0, -rect.top / Math.max(1, rect.height - innerHeight)));
+      if (next < 1 && Math.abs(progress - next) < 0.0003) return;
       progress = next;
-      const position = next * (products.length + 1);
+      const position = next * (products.length + FINALE_SPAN);
       const isFinale = position >= products.length;
       const segment = Math.min(products.length - 1, Math.floor(position));
       const local = isFinale ? 1 : Math.min(1, position - segment);
-      const finale = Math.min(1, Math.max(0, (position - products.length) / 0.55));
-      const outgoing = isFinale ? finale : Math.min(1, Math.max(0, (local - 0.82) / 0.18));
+      const finale = Math.min(1, Math.max(0, (position - products.length) / FINALE_SPAN));
+      // The last pack stays visible until its own bar finishes. Its only exit
+      // is the podium transition; there is no fade-out followed by a reset.
+      const outgoing = segment === products.length - 1 ? finale : Math.min(1, Math.max(0, (local - 0.82) / 0.18));
+      section.dataset.sellerFinale = String(isFinale);
       section.style.setProperty("--seller-progress", local.toFixed(4));
       section.style.setProperty("--seller-out", outgoing.toFixed(4));
       section.style.setProperty("--seller-podium", finale.toFixed(4));
@@ -129,16 +165,10 @@ export function ScrollBestSellers({ products }: { products: ReferenceProduct[] }
       if (segment !== index) { index = segment; setActive(segment); }
       const nextShown = finale >= 0.95;
       if (nextShown !== shown) { shown = nextShown; setPodiumShown(nextShown); }
-      if (position >= products.length + 0.65) {
-        finishedThisVisit = true;
-        frozen = true;
-        section.style.setProperty("--seller-out", "1");
-        section.style.setProperty("--seller-podium", "1");
-        if (!shown) setPodiumShown(true);
-      }
+      if (finale >= 0.9999) finish();
     };
     const schedule = () => {
-      if (enabled && visible && !document.hidden && !frame) frame = requestAnimationFrame(update);
+      if (enabled && visible && !document.hidden && !frozen && !frame) frame = requestAnimationFrame(update);
     };
     const resize = () => {
       width = surface.clientWidth;
@@ -158,7 +188,11 @@ export function ScrollBestSellers({ products }: { products: ReferenceProduct[] }
     const observer = new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting;
       if (visible) schedule();
-      else if (frame) { cancelAnimationFrame(frame); frame = 0; }
+      else {
+        if (frame) { cancelAnimationFrame(frame); frame = 0; }
+        // Large wheel/page-down jumps can leave the stage between two frames.
+        if (enabled && entry.boundingClientRect.bottom <= 0) finish();
+      }
     });
     eligibility();
     observer.observe(section);
@@ -168,6 +202,8 @@ export function ScrollBestSellers({ products }: { products: ReferenceProduct[] }
     document.addEventListener("visibilitychange", schedule);
     return () => {
       if (frame) cancelAnimationFrame(frame);
+      if (releaseFrame) cancelAnimationFrame(releaseFrame);
+      restoreAnchor?.();
       observer.disconnect();
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", resize);
@@ -185,7 +221,7 @@ export function ScrollBestSellers({ products }: { products: ReferenceProduct[] }
       id="mas-vendidos"
       className="scroll-sellers"
       aria-label="Los más vendidos, selección de ejemplo"
-      style={{ "--seller-count": products.length } as React.CSSProperties}
+      style={{ "--seller-scroll-vh": 100 + (products.length + FINALE_SPAN) * PRODUCT_SCROLL_VH } as React.CSSProperties}
     >
       <div className="scroll-sellers-stage">
         <canvas ref={canvas} aria-hidden="true" />
