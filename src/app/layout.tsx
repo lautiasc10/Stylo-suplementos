@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Barlow_Condensed, Inter } from "next/font/google";
+import { heroDisplay, heroBody } from "@/components/storefront/hero-fonts";
 import "./globals.css";
 import "./storefront.css";
 import "./hero.css";
@@ -68,7 +69,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es-AR" className={`${display.variable} ${body.variable}`}>
+    <html lang="es-AR" className={`${display.variable} ${body.variable} ${heroDisplay.variable} ${heroBody.variable}`}>
       <body>
         <a href="#contenido" className="skip-link">
           Saltar al contenido

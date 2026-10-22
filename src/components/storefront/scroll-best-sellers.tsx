@@ -8,17 +8,17 @@ import type { ReferenceProduct } from "./reference-product";
 
 let finishedThisVisit = false;
 
-function SellersPodium({ products, className }: { products: ReferenceProduct[]; className: string }) {
+function SellersPodium({ products, className, showHeading = true }: { products: ReferenceProduct[]; className: string; showHeading?: boolean }) {
   const { change, busy } = useCart();
   return (
     <div className={className}>
-      <div className="scroll-sellers-podium-heading">
+      {showHeading && <div className="scroll-sellers-podium-heading">
         <div>
           <p className="reference-eyebrow">SELECCIÓN DE EJEMPLO · STYLO</p>
           <h2>Los más <span className="reference-text-gold">vendidos</span></h2>
         </div>
         <p>Explorá tres presentaciones del catálogo.</p>
-      </div>
+      </div>}
       <div className="scroll-sellers-podium-grid">
         {products.map((item, index) => (
           <article className="scroll-sellers-podium-card" data-rank={index + 1} key={item.id}>
@@ -227,7 +227,7 @@ export function ScrollBestSellers({ products }: { products: ReferenceProduct[] }
           </div>
         </div>
         <div className="scroll-sellers-podium-overlay" inert={!podiumShown} aria-hidden={!podiumShown}>
-          <SellersPodium products={products} className="scroll-sellers-podium" />
+          <SellersPodium products={products} className="scroll-sellers-podium" showHeading={false} />
         </div>
         <p className="scroll-sellers-hint" aria-hidden="true">Seguí bajando</p>
       </div>

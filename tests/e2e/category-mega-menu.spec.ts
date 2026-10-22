@@ -35,15 +35,18 @@ test("agregar desde el mega menú conserva variante, aislamiento y regreso del f
   const add = card.getByRole("button", { name: /Agregar/ });
   await add.click();
   const cart = page.getByRole("dialog");
+  await expect(cart).not.toBeVisible();
+  await expect(page.locator(".cart-count")).toHaveText("1");
+  await expect(add).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(trigger).toBeFocused();
+  await page.locator(".cart-trigger").click();
   await expect(cart).toBeVisible();
   await expect(cart).toContainText(product.name);
   await expect(cart).toContainText("Chocolate");
   await page.keyboard.press("Escape");
   await expect(cart).not.toBeVisible();
-  await expect(add).toBeFocused();
-  await expect(panel).toHaveAttribute("data-open", "true");
-  await page.keyboard.press("Escape");
-  await expect(trigger).toBeFocused();
+  await expect(page.locator(".cart-trigger")).toBeFocused();
   expect(writes).toEqual([]);
 });
 
@@ -70,7 +73,7 @@ test("el panel de categorías sigue al hover y conserva enlaces reales", async (
   page,
 }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop");
-  await page.goto("/");
+  await page.goto("/catalogo");
   const navigation = page.getByRole("navigation", {
     name: "Explorar por categoría",
   });
@@ -83,7 +86,8 @@ test("el panel de categorías sigue al hover y conserva enlaces reales", async (
   await expect(panel.getByRole("heading", { name: "Creatinas" })).toBeVisible();
   await panel.getByRole("link", { name: "Ver categoría" }).click();
   await expect(page).toHaveURL(/categoria=creatinas/);
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Creatinas");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Tienda");
+  await expect(page.locator('input[name="categoria"][value="creatinas"]')).toBeChecked();
   await expect(panel.locator(".category-dust canvas")).toHaveCount(0);
 });
 
@@ -91,13 +95,13 @@ test("el panel se puede recorrer y cerrar con teclado", async ({
   page,
 }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop");
-  await page.goto("/");
+  await page.goto("/catalogo");
   const navigation = page.getByRole("navigation", {
     name: "Explorar por categoría",
   });
   const trigger = navigation.getByRole("link", { name: "Proteínas" });
   const panel = page.locator(".category-mega-menu");
-  // Keyboard users can reveal the header immediately during the home intro.
+  // The contextual category bar is available in the store, outside the home.
   await page.keyboard.press("Tab");
   await expect(page.locator(".site-header")).not.toHaveAttribute("inert");
   await trigger.focus();

@@ -10,9 +10,14 @@ import { bestSellerExamples } from "@/modules/catalog/best-seller-examples";
 import { CustomComboBuilder } from "@/components/storefront/custom-combo-builder";
 import { comboOptions } from "@/modules/catalog/combo-options";
 import { ReferenceGoals } from "@/components/storefront/reference-goals";
+import { WhyStylo } from "@/components/storefront/why-stylo";
+import { BrandMarquee } from "@/components/storefront/brand-marquee";
+import { AthleteCall } from "@/components/storefront/athlete-call";
+import { homeStoryData } from "@/components/storefront/home-story-data";
 import { heroDisplay, heroBody } from "@/components/storefront/hero-fonts";
 import "../reference-home.css";
 import "../home-scroll-combos.css";
+import "../home-story.css";
 import {
   pageMetadata,
   SITE_DESCRIPTION,
@@ -40,6 +45,7 @@ export default async function HomePage() {
     ? `${config.url}/storage/v1/object/public/product-media`
     : "";
   const featured = data.products.filter((p) => p.featured);
+  const story = homeStoryData(data, imageBase);
   // There is no creation date in the catalog. Editorial tags control this section.
   const taggedArrivals = data.products
     .filter((p) =>
@@ -89,6 +95,9 @@ export default async function HomePage() {
         imageBase={imageBase}
         catalog={data}
       />
+      <WhyStylo stats={story.stats} />
+      <BrandMarquee brands={story.brands} />
+      <AthleteCall />
     </div>
   );
 }

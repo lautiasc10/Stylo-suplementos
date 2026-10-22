@@ -1,0 +1,39 @@
+/* One primary header on every storefront route, based on the home reference. */
+.site-header {
+  position: relative;
+  z-index: 30;
+  background: transparent;
+  color: var(--foreground);
+  font-family: var(--font-hero-body), var(--font-sans);
+}
+.site-header .header-inner { min-height: 88px; gap: var(--space-6); }
+.site-header .brand-link { flex-shrink: 0; gap: 12px; }
+.site-header .brand-official { width: 150px; }
+.site-header .brand-isotype { width: 44px; height: 44px; }
+.site-header .desktop-nav { gap: var(--space-10); text-transform: uppercase; letter-spacing: .18em; font-size: 14px; font-weight: 600; }
+.site-header .header-actions { align-items: center; gap: 12px; flex-shrink: 0; }
+.site-header .menu-toggle { width: 44px; height: 44px; border-radius: 50%; color: var(--gold); border-color: var(--action-border); }
+.site-header .menu-glyph { width: 20px; height: 20px; }
+.site-header .menu-glyph > span { width: 20px; height: 2px; top: 9px; }
+.site-header .menu-glyph > span:first-child { transform: translateY(-6px); }
+.site-header .menu-glyph > span:last-child { transform: translateY(6px); }
+.site-header .mobile-menu[open] .menu-glyph > span:first-child { transform: rotate(45deg); }
+.site-header .mobile-menu[open] .menu-glyph > span:last-child { transform: rotate(-45deg); }
+@media (max-width: 1100px) {
+  .site-header .desktop-nav { gap: var(--space-6); letter-spacing: .12em; }
+}
+@media (max-width: 800px) {
+  .site-header .header-inner { gap: 8px; }
+  .site-header .header-actions { gap: 8px; }
+  .site-header .reference-search-trigger,
+  .site-header .cart-trigger,
+  .site-header .menu-toggle { width: 44px; min-width: 44px; height: 44px; margin: 0; padding: 0; }
+  .site-header .reference-search-trigger .icon { width: 20px; height: 20px; }
+  .site-header .mobile-nav { max-height: calc(100svh - 88px); }
+  .site-header .brand-official { width: 120px; }
+}
+@media (max-width: 540px) {
+  .site-header .brand-link { gap: 6px; }
+  .site-header .brand-official { width: 90px; }
+  .site-header .brand-isotype { width: 28px; height: 28px; }
+}

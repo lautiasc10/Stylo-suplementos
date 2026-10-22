@@ -26,33 +26,12 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
-:root:has(.reference-landing) .site-header {
-  position: absolute;
-  inset: 0 0 auto;
-  background: transparent;
-  z-index: 30;
-}
-:root:has(.reference-landing) .header-inner {
-  min-height: 88px;
-}
 :root:has(.reference-landing) .category-navigation-shell {
   display: none;
 }
-:root:has(.reference-landing) .desktop-nav {
-  gap: var(--space-10);
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  font-weight: 600;
-}
-:root:has(.reference-landing) .site-header .brand-official {
-  width: 150px;
-}
-:root:has(.reference-landing) .site-header .brand-isotype {
-  width: 44px;
-  height: 44px;
-}
 .reference-hero {
   min-height: 100svh;
+  margin-top: -88px;
   padding-top: 88px;
 }
 .reference-hero .hero-stage {
@@ -619,16 +598,6 @@
   }
 }
 @media (max-width: 540px) {
-  :root:has(.reference-landing) .header-inner {
-    gap: var(--space-2);
-  }
-  :root:has(.reference-landing) .site-header .brand-official {
-    width: 90px;
-  }
-  :root:has(.reference-landing) .site-header .brand-isotype {
-    width: 28px;
-    height: 28px;
-  }
   .reference-hero .hero-stage {
     min-height: 340px;
   }

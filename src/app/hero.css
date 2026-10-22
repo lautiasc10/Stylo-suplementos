@@ -302,14 +302,10 @@
   color: var(--hero-primary);
 }
 @media (min-width: 801px) {
-  :root:has(.editorial-hero) .site-header,
   :root:has(.editorial-hero) .category-navigation-shell {
     position: absolute;
     inset-inline: 0;
     background: transparent;
-  }
-  :root:has(.editorial-hero) .site-header {
-    top: 0;
   }
   :root:has(.editorial-hero) .category-navigation-shell {
     top: 96px;

@@ -50,6 +50,8 @@ test("el escenario de ejemplo avanza por productos con el scroll y conserva los 
       scrollTo(0, node.getBoundingClientRect().top + scrollY + .94 * (node.offsetHeight - innerHeight));
     });
     await expect(section.locator(".scroll-sellers-podium-overlay")).toHaveAttribute("aria-hidden", "false");
+    await expect(section.locator(".scroll-sellers-top h2")).toBeVisible();
+    await expect(section.locator(".scroll-sellers-podium-overlay h2")).toHaveCount(0);
     await expect(section.locator(".scroll-sellers-podium-overlay .scroll-sellers-podium-card")).toHaveCount(3);
     await page.screenshot({ path: testInfo.outputPath("sellers-desktop.png") });
     await section.locator(".scroll-sellers-podium-overlay .scroll-sellers-podium-link").first().click();

@@ -21,6 +21,10 @@ import { ScrollBestSellers } from "@/components/storefront/scroll-best-sellers";
 import { CustomComboBuilder } from "@/components/storefront/custom-combo-builder";
 import { bestSellerExamples } from "@/modules/catalog/best-seller-examples";
 import { comboOptions } from "@/modules/catalog/combo-options";
+import { WhyStylo } from "@/components/storefront/why-stylo";
+import { BrandMarquee } from "@/components/storefront/brand-marquee";
+import { AthleteCall } from "@/components/storefront/athlete-call";
+import { homeStoryData } from "@/components/storefront/home-story-data";
 import { heroDisplay, heroBody } from "@/components/storefront/hero-fonts";
 const storageKey = "stylo.catalog-preview.v1";
 type PreviewState = { catalog: Catalog; images: Record<string, string> };
@@ -99,6 +103,7 @@ export function CatalogPreview({
   if (!state) return <p role="status">Preparando vista previa…</p>;
   const data = publicCatalog(state.catalog),
     product = data.products.find((item) => item.slug === slug);
+  const story = mode === "reference" ? homeStoryData(data, "", state.images) : null;
   return (
     <>
       <p className="preview-notice">
@@ -114,6 +119,9 @@ export function CatalogPreview({
           <ScrollBestSellers products={bestSellerExamples(data, "", promotions, state.images, "/vista-previa")} />
           <ReferenceGoals />
           <CustomComboBuilder categories={comboOptions(data, "", state.images)} />
+          {story && <WhyStylo stats={story.stats} />}
+          {story && <BrandMarquee brands={story.brands} catalogHref="/vista-previa" />}
+          <AthleteCall />
         </div>
       )}
       {mode === "catalog" && (
