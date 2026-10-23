@@ -772,12 +772,24 @@ test("filtros públicos conservan navegación sin JavaScript", async ({
     await chooseFilter(page, "categoria", "creatinas", false);
     await chooseFilter(page, "orden", "price-asc", false);
     await page.getByLabel("Buscá por producto o marca").fill("creatina");
-    await page.getByLabel("Hasta (ARS)").fill("46000");
+    await expect(page.getByLabel("Hasta (ARS)")).toHaveCount(0);
+    await page.getByLabel("Solo con stock", { exact: true }).check();
+    await page.getByLabel("Solo promociones", { exact: true }).check();
     await page.getByRole("button", { name: "Filtrar", exact: true }).click();
     await expect(page).toHaveURL(/q=creatina/);
     expect(new URL(page.url()).searchParams.get("categoria")).toBe("creatinas");
     expect(new URL(page.url()).searchParams.get("orden")).toBe("price-asc");
-    expect(new URL(page.url()).searchParams.get("max")).toBe("46000");
+    expect(new URL(page.url()).searchParams.get("max")).toBeNull();
+    expect(new URL(page.url()).searchParams.get("disponibilidad")).toBe(
+      "in-stock",
+    );
+    expect(new URL(page.url()).searchParams.get("promocion")).toBe("active");
+    await expect(
+      page.getByLabel("Solo con stock", { exact: true }),
+    ).toBeChecked();
+    await expect(
+      page.getByLabel("Solo promociones", { exact: true }),
+    ).toBeChecked();
     await expect(page.getByLabel("Buscá por producto o marca")).toHaveValue(
       "creatina",
     );
@@ -859,7 +871,9 @@ test("el panel lateral conserva selección con teclado y al cambiar a celular", 
   await chooseFilter(page, "disponibilidad", "in-stock");
   await page.getByLabel("Desde (ARS)").fill("40000");
   await expect(page.getByRole("slider")).toHaveCount(0);
-  await expect.poll(() => new URL(page.url()).searchParams.get("min")).toBe("40000");
+  await expect
+    .poll(() => new URL(page.url()).searchParams.get("min"))
+    .toBe("40000");
   await expect(page.locator(".product-card")).toHaveCount(1);
   expect(Object.fromEntries(new URL(page.url()).searchParams)).toMatchObject({
     categoria: "proteinas",
@@ -912,7 +926,16 @@ test("el giro automático cambia de variante y la ficha abre el sabor elegido si
   await expect(card.locator(".stock-badge")).toHaveText("Sin stock");
   await expect(
     card.getByRole("link", { name: "Ver variantes", exact: true }),
-  ).toHaveAttribute("href", /variante=00000000-0000-4000-8000-000000000051$/);
+  ).toHaveAttribute(
+    "href",
+    /variante=00000000-0000-4000-8000-000000000051(?:&|$)/,
+  );
+  const href = await card
+    .getByRole("link", { name: "Ver variantes", exact: true })
+    .getAttribute("href");
+  expect(new URL(href!, page.url()).searchParams.get("volver")).toBe(
+    "/vista-previa?q=proteina",
+  );
   await expect(card.locator(".variant-spinner")).toHaveAttribute(
     "data-spinner-phase",
     "idle",
