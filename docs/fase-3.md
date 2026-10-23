@@ -1,6 +1,6 @@
 # Fase 3 — Comercio
 
-Las entregas hasta 3AK quedaron integradas a `main` por autorización del usuario, en `398b6f0`. La continuación 3AL prepara la [actualización de seguridad de Next.js](seguridad-next-fase-3al.md) en una copia separada, sin cambios de diseño, base de datos ni despliegue.
+Las entregas hasta 3AK y la [actualización de seguridad de Next.js](seguridad-next-fase-3al.md) quedaron integradas a `main` por autorización del usuario, en `151f9f7`. La continuación 3AM prepara las [fotos transparentes de XBODY](imagenes-xbody-fase-3am.md) en una rama separada: normaliza dos envases y reduce sus copias de tarjeta y detalle sin cambiar datos comerciales ni originales.
 
 La rama `fase-3aj-navegacion-y-combos` prepara [cinta continua, navegación de Atletas, regreso filtrado y combos publicados](navegacion-combos-fase-3aj.md), usando las promociones y validaciones existentes. No modifica datos reales ni integra cambios a `main`.
 

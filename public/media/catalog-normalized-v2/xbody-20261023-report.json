@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "pipeline": "sharp/existing-alpha",
+  "canvas": [
+    1000,
+    1000
+  ],
+  "targetHeight": 800,
+  "baseline": 900,
+  "records": [
+    {
+      "id": "xbody-creatina-1kg-20261023",
+      "sourcePath": "d624fcf6-4c81-49bf-8dba-fb96a26fe00c/be4bbead-df45-49e9-8799-b8e0035f6aaf.png",
+      "sku": "XBO-0012",
+      "slug": "xbody-creatina-micronizada-x-1kg",
+      "status": "ready",
+      "sourceHash": "a46e9dae386b9224bc2572501b7592eb5c9a9afc21ec949ccff8c31cffe0d723",
+      "sourceBytes": 1036926,
+      "source": {
+        "width": 1254,
+        "height": 1254
+      },
+      "bounds": [
+        318,
+        113,
+        937,
+        1173
+      ],
+      "placement": {
+        "left": 266,
+        "top": 100,
+        "width": 467,
+        "height": 800,
+        "baseline": 900
+      },
+      "outputs": {
+        "320": {
+          "filename": "xbody-creatina-1kg-20261023-a46e9dae386b-v1-320.webp",
+          "bytes": 17666
+        },
+        "600": {
+          "filename": "xbody-creatina-1kg-20261023-a46e9dae386b-v1-600.webp",
+          "bytes": 41168
+        },
+        "1000": {
+          "filename": "xbody-creatina-1kg-20261023-a46e9dae386b-v1-1000.webp",
+          "bytes": 86982
+        }
+      }
+    },
+    {
+      "id": "xbody-vitalmag-frutos-rojos-20261023",
+      "sourcePath": "38586942-817f-476c-8451-a949689924fa/6dd596b4-cf09-428b-b622-0d30555f4158.png",
+      "sku": "XBO-0017",
+      "slug": "xbody-tri-magnesio-vitalmag-citrato-malato-glicinato-300g",
+      "flavor": "Frutos rojos",
+      "status": "ready",
+      "sourceHash": "2701ede7a6f93a980615ae9c01c7f4eb9369a0faa2c81138fff236fbe30747d0",
+      "sourceBytes": 957506,
+      "source": {
+        "width": 1254,
+        "height": 1254
+      },
+      "bounds": [
+        247,
+        166,
+        1007,
+        1111
+      ],
+      "placement": {
+        "left": 178,
+        "top": 100,
+        "width": 643,
+        "height": 800,
+        "baseline": 900
+      },
+      "outputs": {
+        "320": {
+          "filename": "xbody-vitalmag-frutos-rojos-20261023-2701ede7a6f9-v1-320.webp",
+          "bytes": 18790
+        },
+        "600": {
+          "filename": "xbody-vitalmag-frutos-rojos-20261023-2701ede7a6f9-v1-600.webp",
+          "bytes": 42588
+        },
+        "1000": {
+          "filename": "xbody-vitalmag-frutos-rojos-20261023-2701ede7a6f9-v1-1000.webp",
+          "bytes": 81134
+        }
+      }
+    }
+  ]
+}
