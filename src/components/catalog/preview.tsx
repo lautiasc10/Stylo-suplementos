@@ -7,7 +7,7 @@ import {
   type Catalog,
   type CatalogFilters,
 } from "@/modules/catalog/model";
-import { inspectImage } from "@/modules/catalog/image";
+import { preparePreviewImage } from "@/modules/catalog/preview-image-actions";
 import {
   validatePromotions,
   type Promotion,
@@ -190,26 +190,23 @@ export function CatalogPreview({
               catalog: { ...catalog, revision: state.catalog.revision + 1 },
             })
           }
-          upload={async (file, productId) => {
+          upload={async (file, productId, purpose) => {
             try {
-              const { extension } = await inspectImage(file);
-              const path = `${productId}/${crypto.randomUUID()}.${extension}`;
-              const dataUrl = await new Promise<string>((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(String(reader.result));
-                reader.onerror = () =>
-                  reject(new Error("No pudimos leer la imagen."));
-                reader.readAsDataURL(file);
-              });
+              const form = new FormData();
+              form.set("file", file);
+              form.set("productId", productId);
+              form.set("purpose", purpose);
+              const prepared = await preparePreviewImage(form);
+              if (prepared.error || !prepared.path || !prepared.files) return { error: prepared.error || "No pudimos preparar la imagen." };
               const latestSource = localStorage.getItem(storageKey),
                 latest = latestSource
                   ? (JSON.parse(latestSource) as PreviewState)
                   : state;
               const result = store({
                 ...latest,
-                images: { ...latest.images, [path]: dataUrl },
+                images: { ...latest.images, ...prepared.files },
               });
-              return result.error ? result : { path };
+              return result.error ? result : { path: prepared.path, notice: prepared.notice };
             } catch (error) {
               return {
                 error:

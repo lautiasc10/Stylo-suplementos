@@ -1428,6 +1428,9 @@ label.editor-check {
   border-radius: var(--radius-control);
   background: #fff;
 }
+.image-editor img.image-preview-product {
+  background: url("/media/normalization-trial-v1/rock-square-v1.webp") center / cover, var(--commercial-background);
+}
 .image-editor label {
   flex: 1 1 180px;
 }

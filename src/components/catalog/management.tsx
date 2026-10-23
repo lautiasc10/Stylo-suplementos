@@ -31,10 +31,11 @@ export function CatalogManagement({
         }
         return { error: result.error };
       }}
-      upload={async (file, productId) => {
+      upload={async (file, productId, purpose) => {
         const form = new FormData();
         form.set("file", file);
         form.set("productId", productId);
+        form.set("purpose", purpose);
         return uploadCatalogImage(form);
       }}
     />

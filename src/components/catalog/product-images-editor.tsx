@@ -80,7 +80,7 @@ export function ProductImagesEditor({
           type="file"
           multiple
           aria-label={uploadLabel}
-          accept="image/jpeg,image/png,image/webp"
+          accept={purpose === "information" ? "image/jpeg,image/png,image/webp" : "image/png,image/webp"}
           disabled={busy || images.length >= (purpose === "turn" ? 24 : 12)}
           onChange={(event) => {
             onUpload(event.target.files, variantId);
@@ -88,6 +88,11 @@ export function ProductImagesEditor({
           }}
         />
       </div>
+      <p className="field-help">
+        {purpose === "information"
+          ? "Se optimiza la ficha completa, sin recortar los textos. El original se conserva."
+          : "Usá PNG o WebP con fondo transparente. Ajustamos escala y encuadre automáticamente; el original se conserva. Revisá la vista previa antes de guardar."}
+      </p>
       {!scoped.length && (
         <p className="variant-photos-empty">
           {purpose === "information"
@@ -103,6 +108,7 @@ export function ProductImagesEditor({
           <div className="image-editor" key={image.id}>
             {(imageBase || imageUrls[image.path]) && (
               <img
+                className={purpose === "information" ? "image-preview-information" : "image-preview-product"}
                 src={imageUrls[image.path] || `${imageBase}/${image.path}`}
                 alt=""
                 width={96}
@@ -173,7 +179,7 @@ export function ProductImagesEditor({
                 id={`replace-image-${image.id}`}
                 type="file"
                 aria-label={`Archivo de reemplazo de ${itemName} ${number}`}
-                accept="image/jpeg,image/png,image/webp"
+                accept={purpose === "information" ? "image/jpeg,image/png,image/webp" : "image/png,image/webp"}
                 disabled={busy}
                 onChange={(event) => {
                   onReplace(image.id, event.target.files?.[0]);

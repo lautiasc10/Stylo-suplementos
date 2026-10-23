@@ -7,6 +7,7 @@ import { Icon } from "@/components/ui/icon";
 import { IconAction } from "@/components/admin/icon-action";
 import { AdminTable } from "@/components/admin/data-table";
 import { ProductImagesEditor } from "./product-images-editor";
+import type { ImagePurpose, ImageUploadResult } from "@/modules/catalog/image-profile";
 import { normalizeSearch } from "@/modules/catalog/search";
 import {
   importColumns,
@@ -45,7 +46,8 @@ export function CatalogManager({
   upload: (
     file: File,
     productId: string,
-  ) => Promise<{ path?: string; error?: string }>;
+    purpose: ImagePurpose,
+  ) => Promise<ImageUploadResult>;
   imageUrls?: Record<string, string>;
   imageBase?: string;
   dispatchPending?: () => Promise<{ message: string }>;
@@ -214,11 +216,13 @@ export function CatalogManager({
     setBusy(true);
     setMessage("");
     const images: ProductImage[] = [];
+    const notices: string[] = [];
     try {
       for (const file of Array.from(files)) {
-        const result = await upload(file, draft.id);
+        const result = await upload(file, draft.id, field === "informationImages" ? "information" : "product");
         if (result.error || !result.path)
           throw new Error(result.error || "No pudimos subir la imagen.");
+        if (result.notice) notices.push(result.notice);
         images.push({
           id: crypto.randomUUID(),
           path: result.path,
@@ -232,9 +236,11 @@ export function CatalogManager({
         });
       }
       updateDraft(field, [...currentImages, ...images]);
+      setMessage([...new Set(notices)].join(" "));
     } catch (error) {
+      if (images.length) updateDraft(field, [...currentImages, ...images]);
       setMessage(
-        error instanceof Error ? error.message : "No pudimos cargar imágenes.",
+        `${images.length ? `Se prepararon ${images.length} imágenes. ` : ""}${error instanceof Error ? error.message : "No pudimos cargar imágenes."}`,
       );
     } finally {
       setBusy(false);
@@ -245,7 +251,7 @@ export function CatalogManager({
     setBusy(true);
     setMessage("");
     try {
-      const result = await upload(file, group.id);
+      const result = await upload(file, group.id, "brand");
       if (result.error || !result.path)
         throw new Error(result.error || "No pudimos cargar el logo.");
       setGroup((previous) =>
@@ -269,7 +275,7 @@ export function CatalogManager({
     setBusy(true);
     setMessage("");
     try {
-      const result = await upload(file, productId);
+      const result = await upload(file, productId, field === "informationImages" ? "information" : "product");
       if (result.error || !result.path)
         throw new Error(result.error || "No pudimos reemplazar la imagen.");
       setDraft((previous) =>
@@ -282,6 +288,7 @@ export function CatalogManager({
             }
           : previous,
       );
+      if (result.notice) setMessage(result.notice);
     } catch (error) {
       setMessage(
         error instanceof Error
@@ -973,8 +980,8 @@ export function CatalogManager({
             >
               <legend>Fotos compartidas (opcionales)</legend>
               <p className="editor-wide">
-                Se usan en las variantes que no tienen fotos propias. JPEG, PNG
-                o WebP; hasta 12 imágenes en total por producto.
+                Se usan en las variantes que no tienen fotos propias. PNG o WebP
+                sin fondo; hasta 12 imágenes en total por producto.
               </p>
               <ProductImagesEditor
                 images={draft.images}

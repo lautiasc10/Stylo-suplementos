@@ -6,7 +6,11 @@ import {
 } from "@/modules/catalog/model";
 import { catalogMediaSource } from "@/modules/catalog/media-source";
 import type { GalleryImage } from "./product-gallery";
-import { normalizedPhotoProps, informationMediaSource } from "@/modules/catalog/normalized-media";
+import {
+  normalizedPhotoProps,
+  informationMediaSource,
+} from "@/modules/catalog/normalized-media";
+import { imageProfile } from "@/modules/catalog/image-profile";
 
 export function galleryPhotos(
   product: Product,
@@ -69,6 +73,10 @@ export function galleryInformation(
             id: image.id,
             variantId,
             src: informationMediaSource(src, imageBase, image.path),
+            href:
+              imageProfile(image.path) && imageBase
+                ? `${imageBase}/${imageProfile(image.path)!.originalPath}`
+                : undefined,
             alt: image.alt,
             thumbnailSrc: catalogMediaSource(src, imageBase, "thumbnail"),
             information: true,

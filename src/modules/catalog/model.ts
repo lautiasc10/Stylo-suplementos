@@ -1,4 +1,5 @@
 import { CATALOG_GOALS } from "./goals";
+import { validImagePath } from "./image-profile";
 
 export type CatalogGroup = {
   id: string;
@@ -531,9 +532,7 @@ export function validateProduct(product: Product, catalog: Catalog): string[] {
     if (
       !uuid.test(image.id) ||
       imageIds.has(image.id) ||
-      !/^[0-9a-f-]{36}\/[0-9a-f-]{36}\.(?:jpg|jpeg|png|webp)$/.test(
-        image.path,
-      ) ||
+      !validImagePath(image.path) ||
       !image.path.startsWith(`${product.id}/`) ||
       typeof image.alt !== "string" ||
       !image.alt.trim() ||

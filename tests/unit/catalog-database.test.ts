@@ -43,6 +43,12 @@ describe("migración de catálogo, transacciones y permisos", () => {
     await db.exec(
       readFileSync("supabase/migrations/202610100002_catalog.sql", "utf8"),
     );
+    await db.exec(
+      readFileSync(
+        "supabase/migrations/202610230001_catalog_media_profiles.sql",
+        "utf8",
+      ),
+    );
     await db.query("insert into auth.users values($1),($2)", [admin, other]);
     await db.query("insert into public.admin_users(user_id) values($1)", [
       admin,
@@ -57,6 +63,60 @@ describe("migración de catálogo, transacciones y permisos", () => {
   }, 30000);
   afterAll(async () => {
     await db.close();
+  });
+  it("acepta perfiles procesados sin alterar variantes y limita la capacidad a admin con MFA", async () => {
+    await asRole(admin, "aal2", async () => {
+      const data = await snapshot();
+      const product = data.products[0];
+      const variants = structuredClone(product.variants);
+      product.images = [
+        {
+          id: "00000000-0000-4000-8000-000000000701",
+          path: `${product.id}/00000000-0000-4000-8000-000000000801-normalized-v1-png-1000.webp`,
+          alt: "Frente procesado",
+          position: 0,
+          variantId: product.variants[0].id,
+        },
+      ];
+      await save(data);
+      const saved = (await snapshot()).products.find(
+        (p) => p.id === product.id,
+      )!;
+      expect(saved.images).toEqual(product.images);
+      expect(saved.variants).toEqual(variants);
+      const capability = await db.query<{
+        catalog_media_capabilities: { normalizedUploads: boolean };
+      }>("select public.catalog_media_capabilities()");
+      expect(
+        capability.rows[0].catalog_media_capabilities.normalizedUploads,
+      ).toBe(true);
+    });
+    for (const [id, aal] of [
+      [null, ""],
+      [other, "aal2"],
+      [admin, "aal1"],
+    ] as const)
+      await expect(
+        asRole(id, aal, () =>
+          db.query("select public.catalog_media_capabilities()"),
+        ),
+      ).rejects.toMatchObject({ code: "42501" });
+    await expect(
+      asRole(admin, "aal2", async () => {
+        const data = await snapshot();
+        const product = data.products[0];
+        product.images = [
+          {
+            id: "00000000-0000-4000-8000-000000000701",
+            path: `${product.id}/../../bad.webp`,
+            alt: "No válido",
+            position: 0,
+            variantId: null,
+          },
+        ];
+        await save(data);
+      }),
+    ).rejects.toMatchObject({ code: "23514" });
   });
   it("conserva fichas compartidas en el documento sin agregarlas a la galería", async () => {
     await asRole(admin, "aal2", async () => {
