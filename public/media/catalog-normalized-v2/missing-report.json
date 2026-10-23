@@ -1,0 +1,445 @@
+{
+  "version": 1,
+  "pipeline": "rembg/u2netp + Pillow",
+  "tools": {
+    "rembg": "2.0.85",
+    "Pillow": "12.3.0",
+    "scipy": "1.18.1"
+  },
+  "canvas": [
+    1000,
+    1000
+  ],
+  "targetHeight": 800,
+  "baseline": 900,
+  "records": [
+    {
+      "id": "1U_OfUEx6o_Wva0JYQgIyLeZih3Tfv1wC",
+      "sourcePath": "drive:1U_OfUEx6o_Wva0JYQgIyLeZih3Tfv1wC",
+      "sku": "XBO-0001",
+      "source": {
+        "width": 995,
+        "height": 796
+      },
+      "bounds": [
+        305,
+        137,
+        669,
+        688
+      ],
+      "placement": {
+        "left": 236,
+        "top": 100,
+        "width": 528,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [
+        "Original menor de 800 px: ampliar no recupera detalle."
+      ],
+      "sourceHash": "befcd34a29d4fd1a06b8b2f30ff2f9a1a0c69570eb520d1a96f922ef98052dae",
+      "sourceBytes": 280733,
+      "matteMode": "rembg",
+      "outputs": {
+        "320": {
+          "filename": "1U_OfUEx6o_Wva0JYQgIyLeZih3Tfv1wC-befcd34a29d4-v1-320.webp",
+          "bytes": 16350
+        },
+        "600": {
+          "filename": "1U_OfUEx6o_Wva0JYQgIyLeZih3Tfv1wC-befcd34a29d4-v1-600.webp",
+          "bytes": 39918
+        },
+        "1000": {
+          "filename": "1U_OfUEx6o_Wva0JYQgIyLeZih3Tfv1wC-befcd34a29d4-v1-1000.webp",
+          "bytes": 76130
+        }
+      },
+      "status": "review"
+    },
+    {
+      "id": "1es1YSsyZPlWOPRS1jRK62xz0DCSUNOz7",
+      "sourcePath": "drive:1es1YSsyZPlWOPRS1jRK62xz0DCSUNOz7",
+      "sku": "XBO-0002",
+      "source": {
+        "width": 995,
+        "height": 796
+      },
+      "bounds": [
+        305,
+        136,
+        669,
+        691
+      ],
+      "placement": {
+        "left": 237,
+        "top": 100,
+        "width": 525,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [
+        "Original menor de 800 px: ampliar no recupera detalle."
+      ],
+      "sourceHash": "f4eda28dfacab9e669b1d1d778c6c7404344221c440371b16cddd318eb4d7e8a",
+      "sourceBytes": 356864,
+      "matteMode": "rembg",
+      "outputs": {
+        "320": {
+          "filename": "1es1YSsyZPlWOPRS1jRK62xz0DCSUNOz7-f4eda28dfaca-v1-320.webp",
+          "bytes": 15806
+        },
+        "600": {
+          "filename": "1es1YSsyZPlWOPRS1jRK62xz0DCSUNOz7-f4eda28dfaca-v1-600.webp",
+          "bytes": 39172
+        },
+        "1000": {
+          "filename": "1es1YSsyZPlWOPRS1jRK62xz0DCSUNOz7-f4eda28dfaca-v1-1000.webp",
+          "bytes": 72638
+        }
+      },
+      "status": "review"
+    },
+    {
+      "id": "18n_bZ98BKaMNVUhkR_5XhZxTC5PLFvUc",
+      "sourcePath": "drive:18n_bZ98BKaMNVUhkR_5XhZxTC5PLFvUc",
+      "sku": "XBO-0004",
+      "source": {
+        "width": 995,
+        "height": 796
+      },
+      "bounds": [
+        305,
+        136,
+        669,
+        691
+      ],
+      "placement": {
+        "left": 237,
+        "top": 100,
+        "width": 525,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [
+        "Original menor de 800 px: ampliar no recupera detalle."
+      ],
+      "sourceHash": "e990beb01e5b1c07f0224581e0aade156946847ab1c880fa5bfb4cb191be5cc5",
+      "sourceBytes": 347219,
+      "matteMode": "rembg",
+      "outputs": {
+        "320": {
+          "filename": "18n_bZ98BKaMNVUhkR_5XhZxTC5PLFvUc-e990beb01e5b-v1-320.webp",
+          "bytes": 15924
+        },
+        "600": {
+          "filename": "18n_bZ98BKaMNVUhkR_5XhZxTC5PLFvUc-e990beb01e5b-v1-600.webp",
+          "bytes": 39550
+        },
+        "1000": {
+          "filename": "18n_bZ98BKaMNVUhkR_5XhZxTC5PLFvUc-e990beb01e5b-v1-1000.webp",
+          "bytes": 73596
+        }
+      },
+      "status": "review"
+    },
+    {
+      "id": "1-bk1s-jpLu45tvEbIn1QkgBT8VU8SLV5-clean",
+      "sourcePath": "drive:1-bk1s-jpLu45tvEbIn1QkgBT8VU8SLV5",
+      "sku": "FIX-BCAA",
+      "source": {
+        "width": 876,
+        "height": 701
+      },
+      "bounds": [
+        268,
+        120,
+        589,
+        608
+      ],
+      "placement": {
+        "left": 237,
+        "top": 100,
+        "width": 526,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [
+        "Original menor de 800 px: ampliar no recupera detalle."
+      ],
+      "sourceHash": "771fb67647fe34f6e5ec47abc24998ac416d8ab2de0dc1335ec8b0efabcf7bab",
+      "sourceBytes": 302383,
+      "matteMode": "rembg",
+      "outputs": {
+        "320": {
+          "filename": "1-bk1s-jpLu45tvEbIn1QkgBT8VU8SLV5-clean-771fb67647fe-v1-320.webp",
+          "bytes": 15822
+        },
+        "600": {
+          "filename": "1-bk1s-jpLu45tvEbIn1QkgBT8VU8SLV5-clean-771fb67647fe-v1-600.webp",
+          "bytes": 43540
+        },
+        "1000": {
+          "filename": "1-bk1s-jpLu45tvEbIn1QkgBT8VU8SLV5-clean-771fb67647fe-v1-1000.webp",
+          "bytes": 83036
+        }
+      },
+      "status": "review"
+    },
+    {
+      "id": "1QmnkfCdkenDEh2b4uJ5amQzcxde7HUMp",
+      "sourcePath": "drive:1QmnkfCdkenDEh2b4uJ5amQzcxde7HUMp",
+      "sku": "XBO-0015",
+      "source": {
+        "width": 1600,
+        "height": 2133
+      },
+      "bounds": [
+        346,
+        540,
+        1298,
+        1759
+      ],
+      "placement": {
+        "left": 187,
+        "top": 100,
+        "width": 625,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [],
+      "sourceHash": "29023c6dd89f2b40126a59e712c7e563091dba2bd1c505257db7cc9041d1658e",
+      "sourceBytes": 1759296,
+      "matteMode": "existing-alpha",
+      "outputs": {
+        "320": {
+          "filename": "1QmnkfCdkenDEh2b4uJ5amQzcxde7HUMp-29023c6dd89f-v1-320.webp",
+          "bytes": 17346
+        },
+        "600": {
+          "filename": "1QmnkfCdkenDEh2b4uJ5amQzcxde7HUMp-29023c6dd89f-v1-600.webp",
+          "bytes": 49382
+        },
+        "1000": {
+          "filename": "1QmnkfCdkenDEh2b4uJ5amQzcxde7HUMp-29023c6dd89f-v1-1000.webp",
+          "bytes": 111688
+        }
+      },
+      "status": "ready"
+    },
+    {
+      "id": "17SU7r85YJCYpKNImsL8-ZklbpY7KCkSo",
+      "sourcePath": "drive:17SU7r85YJCYpKNImsL8-ZklbpY7KCkSo",
+      "sku": "XBO-0018",
+      "source": {
+        "width": 1600,
+        "height": 2133
+      },
+      "bounds": [
+        319,
+        450,
+        1308,
+        1702
+      ],
+      "placement": {
+        "left": 184,
+        "top": 100,
+        "width": 632,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [],
+      "sourceHash": "a5cde182eb73e358f91997256e9286af40b12ece65ae9cfb7a390a0495cc7e30",
+      "sourceBytes": 1416150,
+      "matteMode": "existing-alpha",
+      "outputs": {
+        "320": {
+          "filename": "17SU7r85YJCYpKNImsL8-ZklbpY7KCkSo-a5cde182eb73-v1-320.webp",
+          "bytes": 18168
+        },
+        "600": {
+          "filename": "17SU7r85YJCYpKNImsL8-ZklbpY7KCkSo-a5cde182eb73-v1-600.webp",
+          "bytes": 45528
+        },
+        "1000": {
+          "filename": "17SU7r85YJCYpKNImsL8-ZklbpY7KCkSo-a5cde182eb73-v1-1000.webp",
+          "bytes": 91728
+        }
+      },
+      "status": "ready"
+    }
+  ],
+  "review": [
+    {
+      "id": "1U_OfUEx6o_Wva0JYQgIyLeZih3Tfv1wC",
+      "sourcePath": "drive:1U_OfUEx6o_Wva0JYQgIyLeZih3Tfv1wC",
+      "sku": "XBO-0001",
+      "source": {
+        "width": 995,
+        "height": 796
+      },
+      "bounds": [
+        305,
+        137,
+        669,
+        688
+      ],
+      "placement": {
+        "left": 236,
+        "top": 100,
+        "width": 528,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [
+        "Original menor de 800 px: ampliar no recupera detalle."
+      ],
+      "sourceHash": "befcd34a29d4fd1a06b8b2f30ff2f9a1a0c69570eb520d1a96f922ef98052dae",
+      "sourceBytes": 280733,
+      "matteMode": "rembg",
+      "outputs": {
+        "320": {
+          "filename": "1U_OfUEx6o_Wva0JYQgIyLeZih3Tfv1wC-befcd34a29d4-v1-320.webp",
+          "bytes": 16350
+        },
+        "600": {
+          "filename": "1U_OfUEx6o_Wva0JYQgIyLeZih3Tfv1wC-befcd34a29d4-v1-600.webp",
+          "bytes": 39918
+        },
+        "1000": {
+          "filename": "1U_OfUEx6o_Wva0JYQgIyLeZih3Tfv1wC-befcd34a29d4-v1-1000.webp",
+          "bytes": 76130
+        }
+      },
+      "status": "review"
+    },
+    {
+      "id": "1es1YSsyZPlWOPRS1jRK62xz0DCSUNOz7",
+      "sourcePath": "drive:1es1YSsyZPlWOPRS1jRK62xz0DCSUNOz7",
+      "sku": "XBO-0002",
+      "source": {
+        "width": 995,
+        "height": 796
+      },
+      "bounds": [
+        305,
+        136,
+        669,
+        691
+      ],
+      "placement": {
+        "left": 237,
+        "top": 100,
+        "width": 525,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [
+        "Original menor de 800 px: ampliar no recupera detalle."
+      ],
+      "sourceHash": "f4eda28dfacab9e669b1d1d778c6c7404344221c440371b16cddd318eb4d7e8a",
+      "sourceBytes": 356864,
+      "matteMode": "rembg",
+      "outputs": {
+        "320": {
+          "filename": "1es1YSsyZPlWOPRS1jRK62xz0DCSUNOz7-f4eda28dfaca-v1-320.webp",
+          "bytes": 15806
+        },
+        "600": {
+          "filename": "1es1YSsyZPlWOPRS1jRK62xz0DCSUNOz7-f4eda28dfaca-v1-600.webp",
+          "bytes": 39172
+        },
+        "1000": {
+          "filename": "1es1YSsyZPlWOPRS1jRK62xz0DCSUNOz7-f4eda28dfaca-v1-1000.webp",
+          "bytes": 72638
+        }
+      },
+      "status": "review"
+    },
+    {
+      "id": "18n_bZ98BKaMNVUhkR_5XhZxTC5PLFvUc",
+      "sourcePath": "drive:18n_bZ98BKaMNVUhkR_5XhZxTC5PLFvUc",
+      "sku": "XBO-0004",
+      "source": {
+        "width": 995,
+        "height": 796
+      },
+      "bounds": [
+        305,
+        136,
+        669,
+        691
+      ],
+      "placement": {
+        "left": 237,
+        "top": 100,
+        "width": 525,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [
+        "Original menor de 800 px: ampliar no recupera detalle."
+      ],
+      "sourceHash": "e990beb01e5b1c07f0224581e0aade156946847ab1c880fa5bfb4cb191be5cc5",
+      "sourceBytes": 347219,
+      "matteMode": "rembg",
+      "outputs": {
+        "320": {
+          "filename": "18n_bZ98BKaMNVUhkR_5XhZxTC5PLFvUc-e990beb01e5b-v1-320.webp",
+          "bytes": 15924
+        },
+        "600": {
+          "filename": "18n_bZ98BKaMNVUhkR_5XhZxTC5PLFvUc-e990beb01e5b-v1-600.webp",
+          "bytes": 39550
+        },
+        "1000": {
+          "filename": "18n_bZ98BKaMNVUhkR_5XhZxTC5PLFvUc-e990beb01e5b-v1-1000.webp",
+          "bytes": 73596
+        }
+      },
+      "status": "review"
+    },
+    {
+      "id": "1-bk1s-jpLu45tvEbIn1QkgBT8VU8SLV5-clean",
+      "sourcePath": "drive:1-bk1s-jpLu45tvEbIn1QkgBT8VU8SLV5",
+      "sku": "FIX-BCAA",
+      "source": {
+        "width": 876,
+        "height": 701
+      },
+      "bounds": [
+        268,
+        120,
+        589,
+        608
+      ],
+      "placement": {
+        "left": 237,
+        "top": 100,
+        "width": 526,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [
+        "Original menor de 800 px: ampliar no recupera detalle."
+      ],
+      "sourceHash": "771fb67647fe34f6e5ec47abc24998ac416d8ab2de0dc1335ec8b0efabcf7bab",
+      "sourceBytes": 302383,
+      "matteMode": "rembg",
+      "outputs": {
+        "320": {
+          "filename": "1-bk1s-jpLu45tvEbIn1QkgBT8VU8SLV5-clean-771fb67647fe-v1-320.webp",
+          "bytes": 15822
+        },
+        "600": {
+          "filename": "1-bk1s-jpLu45tvEbIn1QkgBT8VU8SLV5-clean-771fb67647fe-v1-600.webp",
+          "bytes": 43540
+        },
+        "1000": {
+          "filename": "1-bk1s-jpLu45tvEbIn1QkgBT8VU8SLV5-clean-771fb67647fe-v1-1000.webp",
+          "bytes": 83036
+        }
+      },
+      "status": "review"
+    }
+  ]
+}

@@ -15,6 +15,7 @@ import {
 } from "@/modules/catalog/model";
 import { galleryPhotos } from "@/components/catalog/gallery-images";
 import { catalogMediaSource } from "@/modules/catalog/media-source";
+import { comboHref } from "@/modules/catalog/navigation";
 import { Icon } from "@/components/ui/icon";
 import { Reveal, RevealGroup, RevealItem } from "@/components/ui/Reveal";
 
@@ -140,7 +141,8 @@ export function HomePromotions({
                   offer.kind === "bundle" && !bundleImage
                     ? offer.components.slice(0, 3)
                     : [first];
-                const href = `${prefix}/producto/${first.product!.slug}?variante=${first.variantId}`;
+                const href = offer.kind === "bundle" ? comboHref(offer.id, preview)
+                  : `${prefix}/producto/${first.product!.slug}?variante=${first.variantId}`;
                 const label =
                   offer.kind === "bundle"
                     ? "Combo"

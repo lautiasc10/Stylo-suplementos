@@ -28,6 +28,20 @@ test.beforeEach(async ({ page }) => {
   }, { catalog, images, promotion });
 });
 
+test("todas las entradas de promociones abren el combo completo", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/vista-previa/escena-promociones");
+  const destination = `/vista-previa/combo/${id}`;
+  await expect(page.locator(".promo-feature-visual")).toHaveAttribute("href", destination);
+  await expect(page.locator(".promo-horizontal-image")).toHaveAttribute("href", destination);
+  await expect(page.locator(".promo-horizontal-actions a")).toHaveAttribute("href", destination);
+  await page.locator(".promo-bundle").getByRole("link", { name: "Ver combo", exact: true }).click();
+  await expect(page).toHaveURL(new RegExp(destination));
+  await expect(page.locator(".combo-detail-info li")).toHaveCount(2);
+  await page.goto("/vista-previa/ofertas");
+  await expect(page.locator(".home-offer-media")).toHaveAttribute("href", destination);
+});
+
 test("la ficha conserva todos los filtros al cambiar de variante, recargar y volver", async ({ page, isMobile }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   const query = "categoria=proteinas&marca=marca-de-prueba-a&q=proteina&orden=price-desc&disponibilidad=in-stock";

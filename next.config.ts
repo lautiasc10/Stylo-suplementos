@@ -46,7 +46,7 @@ const nextConfig: NextConfig = {
         // The normalization pipeline hashes the original and never overwrites
         // an export. Keep report.json outside this immutable rule.
         source:
-          "/media/:collection(normalization-trial-v1|products-normalized-v1|onefit-normalized-v1)/:asset([a-z0-9-]+\\.webp)",
+          "/media/:collection(normalization-trial-v1|products-normalized-v1|onefit-normalized-v1|catalog-normalized-v2)/:asset([a-zA-Z0-9_-]+\\.webp)",
         headers: immutableMediaHeaders,
       },
       {

@@ -19,7 +19,7 @@ function ComboVisual({ offer, imageBase = "", imageUrls = {}, priority = false }
   const photo = offer.imagePath ? imageUrls[offer.imagePath] ||
     (imageBase ? `${imageBase}/${offer.imagePath}` : "") : "";
   return <div className="combo-visual" data-composite={!photo || undefined}>
-    {photo ? <Image src={photo} alt={`Combo ${offer.name}`} fill sizes={priority ? "(max-width: 700px) 90vw, 600px" : "(max-width: 700px) 44vw, (max-width: 1100px) 30vw, 300px"} priority={priority} /> :
+    {photo ? <Image src={photo} alt={`Combo ${offer.name}`} fill sizes={priority ? "(max-width: 700px) calc(100vw - 40px), (max-width: 1440px) 46vw, 636px" : "(max-width: 700px) 44vw, (max-width: 1100px) 30vw, 300px"} quality={85} priority={priority} /> :
       offer.components.map((component) => {
         const image = galleryPhotos(component.product!, component.variantId, imageBase, imageUrls, "card")[0];
         return <div key={component.variantId}>

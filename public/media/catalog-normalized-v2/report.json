@@ -1,0 +1,1227 @@
+{
+  "version": 1,
+  "pipeline": "rembg/u2netp + Pillow",
+  "tools": {
+    "rembg": "2.0.85",
+    "Pillow": "12.3.0",
+    "scipy": "1.18.1"
+  },
+  "canvas": [
+    1000,
+    1000
+  ],
+  "targetHeight": 800,
+  "baseline": 900,
+  "records": [
+    {
+      "id": "3a256086-b6c9-47bb-aa83-948d52ac00c4",
+      "variantId": "26953ed9-c035-4ebf-9046-7f2bde805fec",
+      "sourcePath": "ffc19a88-155b-45f3-b661-16745700d7d9/8944971c-eb0d-4068-b546-862925464629.png",
+      "slug": "star-nutrition-amino-ramif-bcaa-mtor-x-270-grs",
+      "sku": "STAR-0001",
+      "source": {
+        "width": 1113,
+        "height": 1669
+      },
+      "bounds": [
+        187,
+        415,
+        915,
+        1354
+      ],
+      "placement": {
+        "left": 190,
+        "top": 100,
+        "width": 620,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [],
+      "sourceHash": "9550f61994d0f7a653ca9f26bbfe5e3434ccd6d0a8c7f88c0b0213427cc19086",
+      "sourceBytes": 1023731,
+      "matteMode": "existing-alpha",
+      "outputs": {
+        "320": {
+          "filename": "3a256086-b6c9-47bb-aa83-948d52ac00c4-9550f61994d0-v1-320.webp",
+          "bytes": 17220
+        },
+        "600": {
+          "filename": "3a256086-b6c9-47bb-aa83-948d52ac00c4-9550f61994d0-v1-600.webp",
+          "bytes": 40822
+        },
+        "1000": {
+          "filename": "3a256086-b6c9-47bb-aa83-948d52ac00c4-9550f61994d0-v1-1000.webp",
+          "bytes": 79694
+        }
+      },
+      "status": "ready"
+    },
+    {
+      "id": "3fd15de2-d1b5-4067-95c7-a6651aea841a",
+      "variantId": "6e4a6e9f-db23-43bd-84bd-114188a1202c",
+      "sourcePath": "b525db9e-6264-4550-a7d1-0a3714f308ed/0ff26609-c056-4c5c-b7ae-6e1f631e9c36.png",
+      "slug": "star-nutrition-cafeina-200-x-30-caps",
+      "sku": "STAR-0013",
+      "source": {
+        "width": 1113,
+        "height": 1669
+      },
+      "bounds": [
+        299,
+        322,
+        813,
+        1374
+      ],
+      "placement": {
+        "left": 304,
+        "top": 100,
+        "width": 391,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [],
+      "sourceHash": "3786cc74d858b00a87d81c9572aa12fdf89af9e99b1c62bd2a1d69e12e4890f0",
+      "sourceBytes": 1023406,
+      "matteMode": "existing-alpha",
+      "outputs": {
+        "320": {
+          "filename": "3fd15de2-d1b5-4067-95c7-a6651aea841a-3786cc74d858-v1-320.webp",
+          "bytes": 11892
+        },
+        "600": {
+          "filename": "3fd15de2-d1b5-4067-95c7-a6651aea841a-3786cc74d858-v1-600.webp",
+          "bytes": 28684
+        },
+        "1000": {
+          "filename": "3fd15de2-d1b5-4067-95c7-a6651aea841a-3786cc74d858-v1-1000.webp",
+          "bytes": 64908
+        }
+      },
+      "status": "ready"
+    },
+    {
+      "id": "f474df82-797e-4099-a93d-463abcfc8564",
+      "variantId": "cb6cd6ea-d08c-4960-b30a-222f7f56d67c",
+      "sourcePath": "875d8429-4c0e-463e-9e17-28ed43be4014/5fae8a2c-19e3-4e74-a8e3-066ef364acb1.png",
+      "slug": "onefit-citrato-de-magnesio-x-150gr",
+      "sku": "ONE-0018",
+      "source": {
+        "width": 1400,
+        "height": 1400
+      },
+      "bounds": [
+        365,
+        257,
+        1038,
+        1163
+      ],
+      "placement": {
+        "left": 203,
+        "top": 100,
+        "width": 594,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [],
+      "sourceHash": "340954941dd54cf4587de9977f5fb78c5d5af2e1f2d0782388825126f31b8bc5",
+      "sourceBytes": 992613,
+      "matteMode": "existing-alpha",
+      "outputs": {
+        "320": {
+          "filename": "f474df82-797e-4099-a93d-463abcfc8564-340954941dd5-v1-320.webp",
+          "bytes": 16228
+        },
+        "600": {
+          "filename": "f474df82-797e-4099-a93d-463abcfc8564-340954941dd5-v1-600.webp",
+          "bytes": 37104
+        },
+        "1000": {
+          "filename": "f474df82-797e-4099-a93d-463abcfc8564-340954941dd5-v1-1000.webp",
+          "bytes": 69828
+        }
+      },
+      "status": "ready"
+    },
+    {
+      "id": "c2b3db5c-9802-488e-90bb-e24955e40c2c",
+      "variantId": "fe910f0d-916c-48ac-ba16-a3612ad4bd6b",
+      "sourcePath": "250ea8a3-4d7d-46d0-acf9-b75c630703c1/2e10a032-8533-4cd9-be0d-9e0ee9808e91.png",
+      "slug": "onefit-citrato-de-potasio-x-150gr",
+      "sku": "ONE-0019",
+      "source": {
+        "width": 1400,
+        "height": 1400
+      },
+      "bounds": [
+        366,
+        254,
+        1038,
+        1144
+      ],
+      "placement": {
+        "left": 198,
+        "top": 100,
+        "width": 604,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [],
+      "sourceHash": "83a9cbc81a049b6cbe29a0313cde1b2c1fb3b1f6762d7a06f5d61dad501edf6e",
+      "sourceBytes": 973210,
+      "matteMode": "existing-alpha",
+      "outputs": {
+        "320": {
+          "filename": "c2b3db5c-9802-488e-90bb-e24955e40c2c-83a9cbc81a04-v1-320.webp",
+          "bytes": 15176
+        },
+        "600": {
+          "filename": "c2b3db5c-9802-488e-90bb-e24955e40c2c-83a9cbc81a04-v1-600.webp",
+          "bytes": 35368
+        },
+        "1000": {
+          "filename": "c2b3db5c-9802-488e-90bb-e24955e40c2c-83a9cbc81a04-v1-1000.webp",
+          "bytes": 67096
+        }
+      },
+      "status": "ready"
+    },
+    {
+      "id": "a6e17eff-15f6-4dff-8dfb-5993315958e1",
+      "variantId": "a85a31fb-4758-43f1-a008-275a4b5be414",
+      "sourcePath": "9a5cf95c-772b-46f2-9172-99b811f07065/6a585c81-2fda-4ab2-80db-3e02c2178d6d.png",
+      "slug": "xbody-colageno-hydroflex-x-330gr",
+      "sku": "XBO-0005",
+      "source": {
+        "width": 1600,
+        "height": 2133
+      },
+      "bounds": [
+        374,
+        299,
+        1245,
+        1701
+      ],
+      "placement": {
+        "left": 251,
+        "top": 100,
+        "width": 497,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [],
+      "sourceHash": "ed622a4dfb25752981103edf76aba17bda7c5b725841e3c46ebd12571da38100",
+      "sourceBytes": 1470781,
+      "matteMode": "existing-alpha",
+      "outputs": {
+        "320": {
+          "filename": "a6e17eff-15f6-4dff-8dfb-5993315958e1-ed622a4dfb25-v1-320.webp",
+          "bytes": 11262
+        },
+        "600": {
+          "filename": "a6e17eff-15f6-4dff-8dfb-5993315958e1-ed622a4dfb25-v1-600.webp",
+          "bytes": 24940
+        },
+        "1000": {
+          "filename": "a6e17eff-15f6-4dff-8dfb-5993315958e1-ed622a4dfb25-v1-1000.webp",
+          "bytes": 48198
+        }
+      },
+      "status": "ready"
+    },
+    {
+      "id": "56bc5b78-b36f-4afd-bfdc-bed328d425cb",
+      "variantId": "1498c4a9-a8cb-4d2b-b7f1-e82fead2e8df",
+      "sourcePath": "9a5cf95c-772b-46f2-9172-99b811f07065/ebfead82-329b-47a7-afb8-54df2c119902.png",
+      "slug": "xbody-colageno-hydroflex-x-330gr",
+      "sku": "XBO-0006",
+      "source": {
+        "width": 1600,
+        "height": 2133
+      },
+      "bounds": [
+        374,
+        299,
+        1245,
+        1701
+      ],
+      "placement": {
+        "left": 251,
+        "top": 100,
+        "width": 497,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [],
+      "sourceHash": "d6e760fed8d538f1334f72864372fbcd3d8702a7b5c8acd350466416ac6ae5e6",
+      "sourceBytes": 1473709,
+      "matteMode": "existing-alpha",
+      "outputs": {
+        "320": {
+          "filename": "56bc5b78-b36f-4afd-bfdc-bed328d425cb-d6e760fed8d5-v1-320.webp",
+          "bytes": 11474
+        },
+        "600": {
+          "filename": "56bc5b78-b36f-4afd-bfdc-bed328d425cb-d6e760fed8d5-v1-600.webp",
+          "bytes": 25236
+        },
+        "1000": {
+          "filename": "56bc5b78-b36f-4afd-bfdc-bed328d425cb-d6e760fed8d5-v1-1000.webp",
+          "bytes": 49140
+        }
+      },
+      "status": "ready"
+    },
+    {
+      "id": "6407aead-3648-4150-9f7f-b8f47075fb5e",
+      "variantId": "338168d3-1fe4-4127-b5a9-c412f22bd770",
+      "sourcePath": "9a5cf95c-772b-46f2-9172-99b811f07065/b9edd3ca-0617-4cfe-b7d0-6a3c51137d2f.png",
+      "slug": "xbody-colageno-hydroflex-x-330gr",
+      "sku": "XBO-0007",
+      "source": {
+        "width": 1600,
+        "height": 2133
+      },
+      "bounds": [
+        374,
+        299,
+        1245,
+        1701
+      ],
+      "placement": {
+        "left": 251,
+        "top": 100,
+        "width": 497,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [],
+      "sourceHash": "f78730248284ffe2da634a7c642c09f9b6c69e3487a955f126f7df5b8d1ec801",
+      "sourceBytes": 1476166,
+      "matteMode": "existing-alpha",
+      "outputs": {
+        "320": {
+          "filename": "6407aead-3648-4150-9f7f-b8f47075fb5e-f78730248284-v1-320.webp",
+          "bytes": 11298
+        },
+        "600": {
+          "filename": "6407aead-3648-4150-9f7f-b8f47075fb5e-f78730248284-v1-600.webp",
+          "bytes": 25042
+        },
+        "1000": {
+          "filename": "6407aead-3648-4150-9f7f-b8f47075fb5e-f78730248284-v1-1000.webp",
+          "bytes": 48718
+        }
+      },
+      "status": "ready"
+    },
+    {
+      "id": "a0cc2817-4a0e-451e-828a-76f885461044",
+      "variantId": "9929509d-b593-4e5b-aaf3-7cfb38f2b6e9",
+      "sourcePath": "9a5cf95c-772b-46f2-9172-99b811f07065/fc80cdc3-38e6-4915-b2d6-dd50d4271b0d.png",
+      "slug": "xbody-colageno-hydroflex-x-330gr",
+      "sku": "XBO-0008",
+      "source": {
+        "width": 1600,
+        "height": 2133
+      },
+      "bounds": [
+        374,
+        299,
+        1245,
+        1704
+      ],
+      "placement": {
+        "left": 252,
+        "top": 100,
+        "width": 496,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [],
+      "sourceHash": "4e1f62befa35916b237532b1b209fcdec415d3d1975238e9eb031b7fb620298a",
+      "sourceBytes": 1485006,
+      "matteMode": "existing-alpha",
+      "outputs": {
+        "320": {
+          "filename": "a0cc2817-4a0e-451e-828a-76f885461044-4e1f62befa35-v1-320.webp",
+          "bytes": 11586
+        },
+        "600": {
+          "filename": "a0cc2817-4a0e-451e-828a-76f885461044-4e1f62befa35-v1-600.webp",
+          "bytes": 25812
+        },
+        "1000": {
+          "filename": "a0cc2817-4a0e-451e-828a-76f885461044-4e1f62befa35-v1-1000.webp",
+          "bytes": 49476
+        }
+      },
+      "status": "ready"
+    },
+    {
+      "id": "30f0a197-1239-4a43-94ae-35c735b475af",
+      "variantId": "bf8bf5bb-7a56-44ce-83b9-516fa73fadba",
+      "sourcePath": "d47b8df4-d46f-44fd-bd4c-3a841c28f816/9ec4c4a5-922c-455d-8bbe-7ecf207d33a5.png",
+      "slug": "xbody-colageno-hydrosport-x-360gr",
+      "sku": "XBO-0009",
+      "source": {
+        "width": 1600,
+        "height": 2133
+      },
+      "bounds": [
+        374,
+        299,
+        1245,
+        1701
+      ],
+      "placement": {
+        "left": 251,
+        "top": 100,
+        "width": 497,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [],
+      "sourceHash": "5984dc3c2b60d7e7d1b61a573ab04aaebb80350f6d63adfca87b2604ca7de362",
+      "sourceBytes": 1465949,
+      "matteMode": "existing-alpha",
+      "outputs": {
+        "320": {
+          "filename": "30f0a197-1239-4a43-94ae-35c735b475af-5984dc3c2b60-v1-320.webp",
+          "bytes": 11558
+        },
+        "600": {
+          "filename": "30f0a197-1239-4a43-94ae-35c735b475af-5984dc3c2b60-v1-600.webp",
+          "bytes": 25364
+        },
+        "1000": {
+          "filename": "30f0a197-1239-4a43-94ae-35c735b475af-5984dc3c2b60-v1-1000.webp",
+          "bytes": 48556
+        }
+      },
+      "status": "ready"
+    },
+    {
+      "id": "13402f29-aa13-4770-9723-e8ec719e6744",
+      "variantId": "58020977-4e6a-47a8-b02e-8ebf66da107e",
+      "sourcePath": "d47b8df4-d46f-44fd-bd4c-3a841c28f816/21bfadde-373e-47cf-bc4e-86ab084d2d9f.png",
+      "slug": "xbody-colageno-hydrosport-x-360gr",
+      "sku": "XBO-0010",
+      "source": {
+        "width": 1600,
+        "height": 2133
+      },
+      "bounds": [
+        374,
+        299,
+        1245,
+        1701
+      ],
+      "placement": {
+        "left": 251,
+        "top": 100,
+        "width": 497,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [],
+      "sourceHash": "b5705a509a1cde7eff8812156b79511946c9d7f5f428e664121a9dabdc64640a",
+      "sourceBytes": 1465988,
+      "matteMode": "existing-alpha",
+      "outputs": {
+        "320": {
+          "filename": "13402f29-aa13-4770-9723-e8ec719e6744-b5705a509a1c-v1-320.webp",
+          "bytes": 11356
+        },
+        "600": {
+          "filename": "13402f29-aa13-4770-9723-e8ec719e6744-b5705a509a1c-v1-600.webp",
+          "bytes": 24880
+        },
+        "1000": {
+          "filename": "13402f29-aa13-4770-9723-e8ec719e6744-b5705a509a1c-v1-1000.webp",
+          "bytes": 47960
+        }
+      },
+      "status": "ready"
+    },
+    {
+      "id": "66e71531-5c9d-4798-8698-a5c2a8336af1",
+      "variantId": "4454c744-086f-42b3-8b12-ddec52a7c1f8",
+      "sourcePath": "d47b8df4-d46f-44fd-bd4c-3a841c28f816/705c3605-ae3a-4a3a-8ad5-0dab8aa7f2a9.png",
+      "slug": "xbody-colageno-hydrosport-x-360gr",
+      "sku": "XBO-0011",
+      "source": {
+        "width": 1600,
+        "height": 2133
+      },
+      "bounds": [
+        374,
+        299,
+        1245,
+        1701
+      ],
+      "placement": {
+        "left": 251,
+        "top": 100,
+        "width": 497,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [],
+      "sourceHash": "12eeed378d7449e2936654952de11f16138625102e657b34e42c5c3ee9f29045",
+      "sourceBytes": 1452180,
+      "matteMode": "existing-alpha",
+      "outputs": {
+        "320": {
+          "filename": "66e71531-5c9d-4798-8698-a5c2a8336af1-12eeed378d74-v1-320.webp",
+          "bytes": 11128
+        },
+        "600": {
+          "filename": "66e71531-5c9d-4798-8698-a5c2a8336af1-12eeed378d74-v1-600.webp",
+          "bytes": 24114
+        },
+        "1000": {
+          "filename": "66e71531-5c9d-4798-8698-a5c2a8336af1-12eeed378d74-v1-1000.webp",
+          "bytes": 46186
+        }
+      },
+      "status": "ready"
+    },
+    {
+      "id": "b1aa54e3-ff2b-4bf9-93db-cad90e03e6e1",
+      "variantId": "18753271-2994-4ceb-b691-c43a17b84324",
+      "sourcePath": "046813bb-44c3-4df3-9d21-ac1adc9032df/b1bc663a-cd5a-4a99-bd27-fb3281f46834.png",
+      "slug": "onefit-creatina-micronizada-poweraded-x-200gr",
+      "sku": "ONE-0008",
+      "source": {
+        "width": 1400,
+        "height": 1400
+      },
+      "bounds": [
+        390,
+        294,
+        1016,
+        1150
+      ],
+      "placement": {
+        "left": 207,
+        "top": 100,
+        "width": 585,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [],
+      "sourceHash": "d3b67a2c5d3f3d2c970126a0ae33b578a15cf8884c41a57de47b6bb4bb04c875",
+      "sourceBytes": 882770,
+      "matteMode": "existing-alpha",
+      "outputs": {
+        "320": {
+          "filename": "b1aa54e3-ff2b-4bf9-93db-cad90e03e6e1-d3b67a2c5d3f-v1-320.webp",
+          "bytes": 14804
+        },
+        "600": {
+          "filename": "b1aa54e3-ff2b-4bf9-93db-cad90e03e6e1-d3b67a2c5d3f-v1-600.webp",
+          "bytes": 36644
+        },
+        "1000": {
+          "filename": "b1aa54e3-ff2b-4bf9-93db-cad90e03e6e1-d3b67a2c5d3f-v1-1000.webp",
+          "bytes": 68864
+        }
+      },
+      "status": "ready"
+    },
+    {
+      "id": "067384fc-7f1f-4020-ae89-7de8d69af563",
+      "variantId": "735351ec-b0d3-4160-b438-4997ef7616d9",
+      "sourcePath": "8b22e89c-8179-4647-856d-c23473455874/63ec6401-6ebd-442d-a756-980b5346a5bf.png",
+      "slug": "onefit-creatina-micronizada-poweraded-x-500gr",
+      "sku": "ONE-0009",
+      "source": {
+        "width": 1400,
+        "height": 1400
+      },
+      "bounds": [
+        360,
+        212,
+        1048,
+        1199
+      ],
+      "placement": {
+        "left": 221,
+        "top": 100,
+        "width": 558,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [],
+      "sourceHash": "53488b1f074679614361b7e0d75d1f9744b3b1f1346cbeb3b2655429d9707b27",
+      "sourceBytes": 1089675,
+      "matteMode": "existing-alpha",
+      "outputs": {
+        "320": {
+          "filename": "067384fc-7f1f-4020-ae89-7de8d69af563-53488b1f0746-v1-320.webp",
+          "bytes": 14248
+        },
+        "600": {
+          "filename": "067384fc-7f1f-4020-ae89-7de8d69af563-53488b1f0746-v1-600.webp",
+          "bytes": 33446
+        },
+        "1000": {
+          "filename": "067384fc-7f1f-4020-ae89-7de8d69af563-53488b1f0746-v1-1000.webp",
+          "bytes": 64918
+        }
+      },
+      "status": "ready"
+    },
+    {
+      "id": "465e0dd2-ad98-4f95-91fe-2d09428398d0",
+      "variantId": "03c52e4b-826c-4c7b-b114-a7a59d55c3c8",
+      "sourcePath": "922613cc-fc33-4ef2-884a-bc245afdc843/7213d454-8266-42c2-a14e-ceb5b6e4acf9.png",
+      "slug": "star-nutrition-creatina-monohidratada-x-300-grs-dp",
+      "sku": "STAR-0009",
+      "source": {
+        "width": 1113,
+        "height": 1669
+      },
+      "bounds": [
+        195,
+        390,
+        911,
+        1340
+      ],
+      "placement": {
+        "left": 198,
+        "top": 100,
+        "width": 603,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [],
+      "sourceHash": "53c15dc74504ee4cfe8ceb52627d0d4b308400a1081f6a53b669055ded60845f",
+      "sourceBytes": 663954,
+      "matteMode": "existing-alpha",
+      "outputs": {
+        "320": {
+          "filename": "465e0dd2-ad98-4f95-91fe-2d09428398d0-53c15dc74504-v1-320.webp",
+          "bytes": 15580
+        },
+        "600": {
+          "filename": "465e0dd2-ad98-4f95-91fe-2d09428398d0-53c15dc74504-v1-600.webp",
+          "bytes": 32900
+        },
+        "1000": {
+          "filename": "465e0dd2-ad98-4f95-91fe-2d09428398d0-53c15dc74504-v1-1000.webp",
+          "bytes": 62126
+        }
+      },
+      "status": "ready"
+    },
+    {
+      "id": "0f91a8c5-31e9-45fe-8225-28b3506bd3b8",
+      "variantId": "4fd8b66c-9baa-46dc-baf5-9d5259793784",
+      "sourcePath": "4e3b0e36-964b-4b2d-88f5-e9bd1a2d6251/384aa343-8c42-4ee5-9e09-c7e76fc07380.png",
+      "slug": "xbody-creatina-x-300gr-dp",
+      "sku": "XBO-0013",
+      "source": {
+        "width": 1600,
+        "height": 2133
+      },
+      "bounds": [
+        324,
+        549,
+        1276,
+        1793
+      ],
+      "placement": {
+        "left": 194,
+        "top": 100,
+        "width": 612,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [],
+      "sourceHash": "83e8332e3db0c309cf34608eaa6724681b4bc505b542e2d5b31f96dfac17fdd3",
+      "sourceBytes": 1706174,
+      "matteMode": "existing-alpha",
+      "outputs": {
+        "320": {
+          "filename": "0f91a8c5-31e9-45fe-8225-28b3506bd3b8-83e8332e3db0-v1-320.webp",
+          "bytes": 12724
+        },
+        "600": {
+          "filename": "0f91a8c5-31e9-45fe-8225-28b3506bd3b8-83e8332e3db0-v1-600.webp",
+          "bytes": 27760
+        },
+        "1000": {
+          "filename": "0f91a8c5-31e9-45fe-8225-28b3506bd3b8-83e8332e3db0-v1-1000.webp",
+          "bytes": 53522
+        }
+      },
+      "status": "ready"
+    },
+    {
+      "id": "0f27efd5-1f42-476e-9085-eb40644a1304",
+      "variantId": "4fd8b66c-9baa-46dc-baf5-9d5259793784",
+      "sourcePath": "4e3b0e36-964b-4b2d-88f5-e9bd1a2d6251/f0e87307-d2e1-47d7-9441-10089a55fd20.png",
+      "slug": "xbody-creatina-x-300gr-dp",
+      "sku": "XBO-0013",
+      "source": {
+        "width": 1600,
+        "height": 2133
+      },
+      "bounds": [
+        324,
+        549,
+        1276,
+        1793
+      ],
+      "placement": {
+        "left": 194,
+        "top": 100,
+        "width": 612,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [],
+      "sourceHash": "f88c361e718f979a492a115dea860f8cdc1bede52e7792db3435cc81205ee5ce",
+      "sourceBytes": 1892396,
+      "matteMode": "existing-alpha",
+      "outputs": {
+        "320": {
+          "filename": "0f27efd5-1f42-476e-9085-eb40644a1304-f88c361e718f-v1-320.webp",
+          "bytes": 18454
+        },
+        "600": {
+          "filename": "0f27efd5-1f42-476e-9085-eb40644a1304-f88c361e718f-v1-600.webp",
+          "bytes": 50456
+        },
+        "1000": {
+          "filename": "0f27efd5-1f42-476e-9085-eb40644a1304-f88c361e718f-v1-1000.webp",
+          "bytes": 113294
+        }
+      },
+      "status": "ready"
+    },
+    {
+      "id": "6b2d361a-fc1e-4540-babc-17453f4c003b",
+      "variantId": "982ee0c4-5f64-4331-bae7-d0ffb9544c86",
+      "sourcePath": "9df62169-4f91-45e4-aa5b-d307acfcd583/09198e8a-e97f-4ff4-b359-2353e335baf3.webp",
+      "slug": "star-nutrition-ganador-de-peso-mutant-mass-x-1-5-kgs",
+      "sku": "STAR-0012",
+      "source": {
+        "width": 688,
+        "height": 900
+      },
+      "bounds": [
+        62,
+        91,
+        622,
+        826
+      ],
+      "placement": {
+        "left": 195,
+        "top": 100,
+        "width": 610,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [
+        "Original menor de 800 px: ampliar no recupera detalle."
+      ],
+      "sourceHash": "d60f6928581823e25a3c59b0440c8b8bca147c3acbda0a4cd0d78d033da2ca6c",
+      "sourceBytes": 85118,
+      "matteMode": "rembg",
+      "outputs": {
+        "320": {
+          "filename": "6b2d361a-fc1e-4540-babc-17453f4c003b-d60f69285818-v1-320.webp",
+          "bytes": 18254
+        },
+        "600": {
+          "filename": "6b2d361a-fc1e-4540-babc-17453f4c003b-d60f69285818-v1-600.webp",
+          "bytes": 42862
+        },
+        "1000": {
+          "filename": "6b2d361a-fc1e-4540-babc-17453f4c003b-d60f69285818-v1-1000.webp",
+          "bytes": 79592
+        }
+      },
+      "status": "review"
+    },
+    {
+      "id": "ac204beb-52b7-479a-b664-1ccbb1879fc9",
+      "variantId": "857e0d09-dc45-483a-a143-361158d442b5",
+      "sourcePath": "1dedfef0-5624-4478-af4e-1dd9fff06e03/61b2893f-7d22-4147-baf4-72abf9019bbf.png",
+      "slug": "xbody-proteina-whey-blend-protein-x-2lbs-dp",
+      "sku": "XBO-0015",
+      "source": {
+        "width": 1600,
+        "height": 2133
+      },
+      "bounds": [
+        350,
+        546,
+        1295,
+        1756
+      ],
+      "placement": {
+        "left": 187,
+        "top": 100,
+        "width": 625,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [],
+      "sourceHash": "8b3896fba38981f51848ff1dfb83c6025db18a7ac393c0ae0d6fd7ce7c420392",
+      "sourceBytes": 1491346,
+      "matteMode": "existing-alpha",
+      "outputs": {
+        "320": {
+          "filename": "ac204beb-52b7-479a-b664-1ccbb1879fc9-8b3896fba389-v1-320.webp",
+          "bytes": 11810
+        },
+        "600": {
+          "filename": "ac204beb-52b7-479a-b664-1ccbb1879fc9-8b3896fba389-v1-600.webp",
+          "bytes": 25818
+        },
+        "1000": {
+          "filename": "ac204beb-52b7-479a-b664-1ccbb1879fc9-8b3896fba389-v1-1000.webp",
+          "bytes": 49610
+        }
+      },
+      "status": "ready"
+    },
+    {
+      "id": "9f9bdf86-6df2-48cf-90fd-e82cbc1d8d13",
+      "variantId": "3eb37c89-a023-4ab1-98e0-168940b95ddc",
+      "sourcePath": "2908c277-201c-4d5b-87a9-169841e07f41/1d4a66df-55c6-4a4e-a5d1-ce719b5173a7.png",
+      "slug": "onefit-proteina-whey-protein-2lbs-dp",
+      "sku": "ONE-0014",
+      "source": {
+        "width": 1400,
+        "height": 1400
+      },
+      "bounds": [
+        279,
+        125,
+        1122,
+        1232
+      ],
+      "placement": {
+        "left": 195,
+        "top": 100,
+        "width": 609,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [],
+      "sourceHash": "a4718d272ecbf2b870e8b845f4a24c93f67117e0dd973e773db880aff4f95e8e",
+      "sourceBytes": 1358099,
+      "matteMode": "existing-alpha",
+      "outputs": {
+        "320": {
+          "filename": "9f9bdf86-6df2-48cf-90fd-e82cbc1d8d13-a4718d272ecb-v1-320.webp",
+          "bytes": 15154
+        },
+        "600": {
+          "filename": "9f9bdf86-6df2-48cf-90fd-e82cbc1d8d13-a4718d272ecb-v1-600.webp",
+          "bytes": 35988
+        },
+        "1000": {
+          "filename": "9f9bdf86-6df2-48cf-90fd-e82cbc1d8d13-a4718d272ecb-v1-1000.webp",
+          "bytes": 70338
+        }
+      },
+      "status": "ready"
+    },
+    {
+      "id": "abe1f2ff-0c6e-46e7-9ae7-f270778ee6ab",
+      "variantId": "95dc5b7e-5366-4091-95d0-02309322e2fb",
+      "sourcePath": "2908c277-201c-4d5b-87a9-169841e07f41/a29059f1-776c-44ac-a0fd-2de195d974c2.png",
+      "slug": "onefit-proteina-whey-protein-2lbs-dp",
+      "sku": "ONE-0016",
+      "source": {
+        "width": 1400,
+        "height": 1400
+      },
+      "bounds": [
+        279,
+        125,
+        1122,
+        1232
+      ],
+      "placement": {
+        "left": 195,
+        "top": 100,
+        "width": 609,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [],
+      "sourceHash": "336e70eb326c545c66e63aa12c7a8766b05c1cff85b452cce32e91587e09570c",
+      "sourceBytes": 1351087,
+      "matteMode": "existing-alpha",
+      "outputs": {
+        "320": {
+          "filename": "abe1f2ff-0c6e-46e7-9ae7-f270778ee6ab-336e70eb326c-v1-320.webp",
+          "bytes": 14932
+        },
+        "600": {
+          "filename": "abe1f2ff-0c6e-46e7-9ae7-f270778ee6ab-336e70eb326c-v1-600.webp",
+          "bytes": 34528
+        },
+        "1000": {
+          "filename": "abe1f2ff-0c6e-46e7-9ae7-f270778ee6ab-336e70eb326c-v1-1000.webp",
+          "bytes": 68784
+        }
+      },
+      "status": "ready"
+    },
+    {
+      "id": "cb2e2d77-a91e-4fc4-a058-a72c9d512c2b",
+      "variantId": "94188c2e-0d3b-43eb-8d49-3ef794d5cd42",
+      "sourcePath": "2908c277-201c-4d5b-87a9-169841e07f41/a88ba02a-eac3-4bd5-a501-fb372a61b91f.png",
+      "slug": "onefit-proteina-whey-protein-2lbs-dp",
+      "sku": "ONE-0017",
+      "source": {
+        "width": 1400,
+        "height": 1400
+      },
+      "bounds": [
+        278,
+        125,
+        1122,
+        1232
+      ],
+      "placement": {
+        "left": 195,
+        "top": 100,
+        "width": 610,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [],
+      "sourceHash": "497f2ef86ea4863d6a7378ddb00419c71c626e111e29167865509730c421ed51",
+      "sourceBytes": 1350732,
+      "matteMode": "existing-alpha",
+      "outputs": {
+        "320": {
+          "filename": "cb2e2d77-a91e-4fc4-a058-a72c9d512c2b-497f2ef86ea4-v1-320.webp",
+          "bytes": 15144
+        },
+        "600": {
+          "filename": "cb2e2d77-a91e-4fc4-a058-a72c9d512c2b-497f2ef86ea4-v1-600.webp",
+          "bytes": 35046
+        },
+        "1000": {
+          "filename": "cb2e2d77-a91e-4fc4-a058-a72c9d512c2b-497f2ef86ea4-v1-1000.webp",
+          "bytes": 69082
+        }
+      },
+      "status": "ready"
+    },
+    {
+      "id": "aee1c05b-cd71-486b-93c2-fd8cf18dd409",
+      "variantId": "baa2445c-aa97-4cbd-b020-231f40bf5464",
+      "sourcePath": "2908c277-201c-4d5b-87a9-169841e07f41/6b298376-da84-431d-8e2c-84b1d1a52006.png",
+      "slug": "onefit-proteina-whey-protein-2lbs-dp",
+      "sku": "ONE-0015",
+      "source": {
+        "width": 1400,
+        "height": 1400
+      },
+      "bounds": [
+        278,
+        126,
+        1122,
+        1232
+      ],
+      "placement": {
+        "left": 195,
+        "top": 100,
+        "width": 610,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [],
+      "sourceHash": "a280d5000ff3b17d7214c5d34ceebb326473d3acd1d465c01a000d0300a774eb",
+      "sourceBytes": 1334620,
+      "matteMode": "existing-alpha",
+      "outputs": {
+        "320": {
+          "filename": "aee1c05b-cd71-486b-93c2-fd8cf18dd409-a280d5000ff3-v1-320.webp",
+          "bytes": 15142
+        },
+        "600": {
+          "filename": "aee1c05b-cd71-486b-93c2-fd8cf18dd409-a280d5000ff3-v1-600.webp",
+          "bytes": 35388
+        },
+        "1000": {
+          "filename": "aee1c05b-cd71-486b-93c2-fd8cf18dd409-a280d5000ff3-v1-1000.webp",
+          "bytes": 70878
+        }
+      },
+      "status": "ready"
+    },
+    {
+      "id": "84da6a94-0b1c-4501-9e07-cf1c620a2bbd",
+      "variantId": "16af1a1a-e3f5-4526-944d-0b8a72e5af52",
+      "sourcePath": "189bf31e-45ca-494b-967a-292954231b42/257a0686-c1da-4e27-8989-ab873f366ab4.png",
+      "slug": "star-nutrition-proteina-creatina-x-910-gr",
+      "sku": "STAR-0027",
+      "source": {
+        "width": 1800,
+        "height": 2400
+      },
+      "bounds": [
+        236,
+        399,
+        1527,
+        2055
+      ],
+      "placement": {
+        "left": 188,
+        "top": 100,
+        "width": 624,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [],
+      "sourceHash": "f690f04897cacadf45f6ed4400777c33c69380c4f0e57fbe5315cc5daff72263",
+      "sourceBytes": 1912482,
+      "matteMode": "existing-alpha",
+      "outputs": {
+        "320": {
+          "filename": "84da6a94-0b1c-4501-9e07-cf1c620a2bbd-f690f04897ca-v1-320.webp",
+          "bytes": 14190
+        },
+        "600": {
+          "filename": "84da6a94-0b1c-4501-9e07-cf1c620a2bbd-f690f04897ca-v1-600.webp",
+          "bytes": 29298
+        },
+        "1000": {
+          "filename": "84da6a94-0b1c-4501-9e07-cf1c620a2bbd-f690f04897ca-v1-1000.webp",
+          "bytes": 54668
+        }
+      },
+      "status": "ready"
+    },
+    {
+      "id": "c40bc383-e7e7-45e0-b730-d776a8a77ce3",
+      "variantId": "e94d4b85-5625-4e5f-a36d-e70612857ea0",
+      "sourcePath": "189bf31e-45ca-494b-967a-292954231b42/80f870b9-cac7-4446-9f92-cb14fb973388.png",
+      "slug": "star-nutrition-proteina-creatina-x-910-gr",
+      "sku": "STAR-0028",
+      "source": {
+        "width": 1800,
+        "height": 2400
+      },
+      "bounds": [
+        236,
+        399,
+        1527,
+        2055
+      ],
+      "placement": {
+        "left": 188,
+        "top": 100,
+        "width": 624,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [],
+      "sourceHash": "ff5af6311b20545a80cf18bfb7ab2b14eab2ba04acffc7b6bb1c34624e60cbf2",
+      "sourceBytes": 1918187,
+      "matteMode": "existing-alpha",
+      "outputs": {
+        "320": {
+          "filename": "c40bc383-e7e7-45e0-b730-d776a8a77ce3-ff5af6311b20-v1-320.webp",
+          "bytes": 14228
+        },
+        "600": {
+          "filename": "c40bc383-e7e7-45e0-b730-d776a8a77ce3-ff5af6311b20-v1-600.webp",
+          "bytes": 30070
+        },
+        "1000": {
+          "filename": "c40bc383-e7e7-45e0-b730-d776a8a77ce3-ff5af6311b20-v1-1000.webp",
+          "bytes": 55958
+        }
+      },
+      "status": "ready"
+    },
+    {
+      "id": "8f05b69b-6646-458a-b011-8ad86c4eccb0",
+      "variantId": "715f4d6d-b8f8-4543-b165-71591f7e7931",
+      "sourcePath": "36b02068-1086-4fe6-a414-5733ed8b124e/a043f0aa-b89b-43d6-95b3-523613c0e594.png",
+      "slug": "star-nutrition-quemador-de-grasas-ripped-v8-x-60-caps",
+      "sku": "STAR-0014",
+      "source": {
+        "width": 1113,
+        "height": 1669
+      },
+      "bounds": [
+        190,
+        417,
+        910,
+        1355
+      ],
+      "placement": {
+        "left": 193,
+        "top": 100,
+        "width": 614,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [],
+      "sourceHash": "92e73b1175d498d5b7a9df0367e4360e0a4d0d639284e5a59a1356e600884acb",
+      "sourceBytes": 1193463,
+      "matteMode": "existing-alpha",
+      "outputs": {
+        "320": {
+          "filename": "8f05b69b-6646-458a-b011-8ad86c4eccb0-92e73b1175d4-v1-320.webp",
+          "bytes": 19792
+        },
+        "600": {
+          "filename": "8f05b69b-6646-458a-b011-8ad86c4eccb0-92e73b1175d4-v1-600.webp",
+          "bytes": 50182
+        },
+        "1000": {
+          "filename": "8f05b69b-6646-458a-b011-8ad86c4eccb0-92e73b1175d4-v1-1000.webp",
+          "bytes": 102446
+        }
+      },
+      "status": "ready"
+    },
+    {
+      "id": "8cbd7de4-7024-403a-9b9b-222639a313d7",
+      "variantId": "b29356a6-8331-4fb7-9e2a-ba42dbbc756c",
+      "sourcePath": "38586942-817f-476c-8451-a949689924fa/0e6a151e-19cf-498e-be95-03b878ab09ce.png",
+      "slug": "xbody-tri-magnesio-vitalmag-citrato-malato-glicinato-300g",
+      "sku": "XBO-0018",
+      "source": {
+        "width": 1600,
+        "height": 2133
+      },
+      "bounds": [
+        319,
+        450,
+        1311,
+        1702
+      ],
+      "placement": {
+        "left": 183,
+        "top": 100,
+        "width": 634,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [],
+      "sourceHash": "107eb0da879c3b6c117233dd39d8509105789cf7afb092209ec30151efbbb371",
+      "sourceBytes": 1385856,
+      "matteMode": "existing-alpha",
+      "outputs": {
+        "320": {
+          "filename": "8cbd7de4-7024-403a-9b9b-222639a313d7-107eb0da879c-v1-320.webp",
+          "bytes": 12702
+        },
+        "600": {
+          "filename": "8cbd7de4-7024-403a-9b9b-222639a313d7-107eb0da879c-v1-600.webp",
+          "bytes": 27190
+        },
+        "1000": {
+          "filename": "8cbd7de4-7024-403a-9b9b-222639a313d7-107eb0da879c-v1-1000.webp",
+          "bytes": 49218
+        }
+      },
+      "status": "ready"
+    },
+    {
+      "id": "828053bf-aa28-446b-9689-68684435a97d",
+      "variantId": "f0368e70-bc71-414d-904c-c100b7a6a355",
+      "sourcePath": "14be7189-0d20-4b3b-845c-21170e0f5f8a/a66680cb-5957-4dca-b5f0-9cee07f8c054.png",
+      "slug": "onefit-vitamina-c-x-150gr",
+      "sku": "ONE-0022",
+      "source": {
+        "width": 1400,
+        "height": 1400
+      },
+      "bounds": [
+        360,
+        336,
+        1057,
+        1195
+      ],
+      "placement": {
+        "left": 175,
+        "top": 100,
+        "width": 649,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [],
+      "sourceHash": "78d4d19a03401468407b914c6ac0b6a599dabd96ab625cb4f9604b6672a0d0dd",
+      "sourceBytes": 980803,
+      "matteMode": "existing-alpha",
+      "outputs": {
+        "320": {
+          "filename": "828053bf-aa28-446b-9689-68684435a97d-78d4d19a0340-v1-320.webp",
+          "bytes": 17056
+        },
+        "600": {
+          "filename": "828053bf-aa28-446b-9689-68684435a97d-78d4d19a0340-v1-600.webp",
+          "bytes": 39182
+        },
+        "1000": {
+          "filename": "828053bf-aa28-446b-9689-68684435a97d-78d4d19a0340-v1-1000.webp",
+          "bytes": 75816
+        }
+      },
+      "status": "ready"
+    }
+  ],
+  "review": [
+    {
+      "id": "6b2d361a-fc1e-4540-babc-17453f4c003b",
+      "variantId": "982ee0c4-5f64-4331-bae7-d0ffb9544c86",
+      "sourcePath": "9df62169-4f91-45e4-aa5b-d307acfcd583/09198e8a-e97f-4ff4-b359-2353e335baf3.webp",
+      "slug": "star-nutrition-ganador-de-peso-mutant-mass-x-1-5-kgs",
+      "sku": "STAR-0012",
+      "source": {
+        "width": 688,
+        "height": 900
+      },
+      "bounds": [
+        62,
+        91,
+        622,
+        826
+      ],
+      "placement": {
+        "left": 195,
+        "top": 100,
+        "width": 610,
+        "height": 800,
+        "baseline": 900
+      },
+      "warnings": [
+        "Original menor de 800 px: ampliar no recupera detalle."
+      ],
+      "sourceHash": "d60f6928581823e25a3c59b0440c8b8bca147c3acbda0a4cd0d78d033da2ca6c",
+      "sourceBytes": 85118,
+      "matteMode": "rembg",
+      "outputs": {
+        "320": {
+          "filename": "6b2d361a-fc1e-4540-babc-17453f4c003b-d60f69285818-v1-320.webp",
+          "bytes": 18254
+        },
+        "600": {
+          "filename": "6b2d361a-fc1e-4540-babc-17453f4c003b-d60f69285818-v1-600.webp",
+          "bytes": 42862
+        },
+        "1000": {
+          "filename": "6b2d361a-fc1e-4540-babc-17453f4c003b-d60f69285818-v1-1000.webp",
+          "bytes": 79592
+        }
+      },
+      "status": "review"
+    }
+  ]
+}

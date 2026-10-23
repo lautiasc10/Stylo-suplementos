@@ -1,10 +1,18 @@
 import normalizedImages from "./normalized-images.json";
 import renormalizedImages from "./renormalized-images.json";
+import updatedImages from "./updated-images.json";
+import informationImages from "./information-images.json";
 
 const images: Record<string, string> = {
   ...normalizedImages,
   ...renormalizedImages,
+  ...updatedImages,
 };
+
+export function informationMediaSource(source: string, imageBase: string, path: string) {
+  if (!imageBase || source !== `${imageBase}/${path}`) return source;
+  return (informationImages as Record<string, string>)[path] ?? source;
+}
 
 /** Derivatives are selected only for the exact original Storage path. Replacing
  * a photo keeps working immediately; an unprocessed new path uses its original. */
@@ -19,7 +27,7 @@ export function normalizedPhotoProps(
       : undefined;
   if (registered) source = registered;
   if (
-    !/^\/media\/(?:normalization-trial|products-normalized|onefit-normalized)-v1\//.test(
+    !/^\/media\/(?:(?:normalization-trial|products-normalized|onefit-normalized)-v1|catalog-normalized-v2)\//.test(
       source,
     ) ||
     !source.endsWith("-1000.webp")
@@ -29,7 +37,7 @@ export function normalizedPhotoProps(
     source.replace(/-1000\.webp$/, `-${size}.webp`);
   // The updated One Fit profile uses the requested 600px card derivative;
   // older, approved exports keep their existing 640px copies.
-  const cardSize = source.startsWith("/media/onefit-normalized-v1/")
+  const cardSize = /^\/media\/(?:onefit-normalized-v1|catalog-normalized-v2)\//.test(source)
     ? 600
     : 640;
   return {

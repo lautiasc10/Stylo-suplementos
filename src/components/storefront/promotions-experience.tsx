@@ -11,11 +11,17 @@ import { promotionPrice } from "@/modules/commerce/promotion-cart";
 import { formatPrice, variantLabel, type Catalog } from "@/modules/catalog/model";
 import { galleryPhotos } from "@/components/catalog/gallery-images";
 import { catalogMediaSource } from "@/modules/catalog/media-source";
+import { comboHref } from "@/modules/catalog/navigation";
 import { promoBody } from "@/components/storefront/hero-fonts";
 import { ProductArtwork } from "@/components/catalog/product-artwork";
 import { useScrollShowcase } from "./use-scroll-showcase";
 
 type Offer = ReturnType<typeof productOffers>[number];
+
+function offerHref(offer: Offer, prefix: string) {
+  return offer.kind === "bundle" ? comboHref(offer.id, prefix === "/vista-previa")
+    : `${prefix}/producto/${offer.components[0].product!.slug}?variante=${offer.components[0].variantId}`;
+}
 
 function offerImage(offer: Offer, imageBase: string, imageUrls: Record<string, string>) {
   if (offer.kind === "bundle" && offer.imagePath) {
@@ -115,7 +121,7 @@ function HorizontalOffers({ catalog, offers, imageBase, imageUrls, prefix }: { c
           {offers.map((offer, index) => {
             const price = promotionPrice(offer, paymentMethod);
             const first = offer.components[0];
-            const href = `${prefix}/producto/${first.product!.slug}?variante=${first.variantId}`;
+            const href = offerHref(offer, prefix);
             return <article className="promo-horizontal-card" key={offer.id}>
               <span className="promo-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
               <Link className="promo-horizontal-image" href={href} aria-label={`Ver ${offer.name}`}>
@@ -207,7 +213,7 @@ export function PromotionsExperience({ catalog: initialCatalog, imageBase = "", 
           <div className="promo-feature-prices"><del>{formatPrice(promotionPrice(featured, paymentMethod).original, 0)}</del><strong>{formatPrice(promotionPrice(featured, paymentMethod).price, 0)}</strong><small>{paymentMethod === "transferencia" ? "Con transferencia" : "Con Mercado Pago"}</small></div>
           <OfferAction offer={featured} />
         </div>
-        <Link className="promo-feature-visual promo-reveal" href={`${prefix}/producto/${featured.components[0].product!.slug}?variante=${featured.components[0].variantId}`} aria-label={`Ver ${featured.name}`}>
+        <Link className="promo-feature-visual promo-reveal" href={offerHref(featured, prefix)} aria-label={`Ver ${featured.name}`}>
           <OfferImage offer={featured} imageBase={imageBase} imageUrls={imageUrls} priority />
         </Link>
       </section>
@@ -220,6 +226,7 @@ export function PromotionsExperience({ catalog: initialCatalog, imageBase = "", 
             <p className="promo-eyebrow">COMBO</p><h3>{offer.name}</h3>
             <ul>{offer.components.map((part) => <li key={part.variantId}>{part.quantity} × {part.product!.name} · {variantLabel(part.variant!)}</li>)}</ul>
             <div className="promo-bundle-prices">{price.saving > 0 && <del>{formatPrice(price.original, 0)}</del>}<strong>{formatPrice(price.price, 0)}</strong></div>
+            <Link className="promo-custom-link" href={comboHref(offer.id, preview)}>Ver combo <span aria-hidden="true">→</span></Link>
             <OfferAction offer={offer} />
           </article>;
         })}</div> : <p className="promo-bundle-empty">Todavía no hay combos en promoción.</p>}

@@ -6,7 +6,7 @@ import {
 } from "@/modules/catalog/model";
 import { catalogMediaSource } from "@/modules/catalog/media-source";
 import type { GalleryImage } from "./product-gallery";
-import { normalizedPhotoProps } from "@/modules/catalog/normalized-media";
+import { normalizedPhotoProps, informationMediaSource } from "@/modules/catalog/normalized-media";
 
 export function galleryPhotos(
   product: Product,
@@ -68,7 +68,7 @@ export function galleryInformation(
           {
             id: image.id,
             variantId,
-            src,
+            src: informationMediaSource(src, imageBase, image.path),
             alt: image.alt,
             thumbnailSrc: catalogMediaSource(src, imageBase, "thumbnail"),
             information: true,

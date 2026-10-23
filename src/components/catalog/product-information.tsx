@@ -8,6 +8,7 @@ import {
   type ProductImage,
 } from "@/modules/catalog/model";
 import { Icon } from "@/components/ui/icon";
+import { informationMediaSource } from "@/modules/catalog/normalized-media";
 
 export function ProductInformation({
   product,
@@ -30,8 +31,10 @@ export function ProductInformation({
   const opener = useRef<HTMLAnchorElement | null>(null);
   const [selected, setSelected] = useState<ProductImage | null>(null);
   const titleId = useId();
-  const source = (image: ProductImage) =>
-    imageUrls[image.path] || `${imageBase}/${image.path}`;
+  const originalSource = (image: ProductImage) => imageUrls[image.path] || `${imageBase}/${image.path}`;
+  const source = (image: ProductImage) => informationMediaSource(
+    originalSource(image), imageBase, image.path,
+  );
   useEffect(() => {
     if (!selected) return;
     const previous = document.body.style.overflow;
@@ -97,7 +100,7 @@ export function ProductInformation({
               {images.map((image) => (
                 <li key={image.id}>
                   <a
-                    href={source(image)}
+                    href={originalSource(image)}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(event) => {
@@ -167,7 +170,7 @@ export function ProductInformation({
           {selected && (
             <a
               className="text-link"
-              href={source(selected)}
+              href={originalSource(selected)}
               target="_blank"
               rel="noopener noreferrer"
             >

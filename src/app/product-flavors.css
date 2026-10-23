@@ -139,6 +139,9 @@
   --action-border: #d8b474;
   color-scheme: dark;
 }
+.unified-product-detail.flavor-product-detail .product-information-dialog .product-information-viewer-header h2 {
+  color: var(--foreground);
+}
 :root:has(.flavor-product-detail) .mobile-nav {
   background: var(--flavor-nav-background);
   color: #21180e;

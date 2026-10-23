@@ -1,5 +1,7 @@
 # Diseño de STYLO
 
+La Fase 3AK corrige las entradas a combos desde Promociones y normaliza las fotografías nuevas contrastadas con Drive, conservando originales y datos comerciales: [combos y fotos](combos-y-fotos-fase-3ak.md).
+
 La Fase 3AJ estabiliza la cinta inicial y el salto a Atletas, conserva filtros al regresar y añade publicaciones de combo a la tienda: [navegación y combos](navegacion-combos-fase-3aj.md).
 
 La Fase 3AI renueva «Sobre STYLO» con fotografías reales del equipo y enlaza «Atletas» desde el nav: [composición y validación](sobre-stylo-fase-3ai.md).
