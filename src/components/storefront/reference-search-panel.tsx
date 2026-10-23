@@ -247,7 +247,6 @@ export function SearchPanel({ onOpen }: { onOpen: () => void }) {
       >
         <Icon name="search" />
         <span>Buscar productos</span>
-        <kbd>⌘K</kbd>
       </a>
       <dialog
         ref={dialog}

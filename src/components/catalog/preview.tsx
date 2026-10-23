@@ -26,6 +26,8 @@ import { BrandMarquee } from "@/components/storefront/brand-marquee";
 import { AthleteCall } from "@/components/storefront/athlete-call";
 import { homeStoryData } from "@/components/storefront/home-story-data";
 import { HomeProducts } from "@/components/storefront/home-products";
+import { ComboDetail } from "@/components/commerce/combo";
+import { availableBundles } from "@/modules/commerce/catalog-bundles";
 import { heroDisplay, heroBody } from "@/components/storefront/hero-fonts";
 const storageKey = "stylo.catalog-preview.v1";
 type PreviewState = { catalog: Catalog; images: Record<string, string> };
@@ -34,11 +36,15 @@ export function CatalogPreview({
   filters = {},
   slug,
   selectedId,
+  returnHref,
+  comboId,
 }: {
-  mode: "catalog" | "manage" | "product" | "reference";
+  mode: "catalog" | "manage" | "product" | "reference" | "combo";
   filters?: CatalogFilters;
   slug?: string;
   selectedId?: string;
+  returnHref?: string;
+  comboId?: string;
 }) {
   const [state, setState] = useState<PreviewState | null>(null),
     [notice, setNotice] = useState("");
@@ -105,6 +111,7 @@ export function CatalogPreview({
   const data = publicCatalog(state.catalog),
     product = data.products.find((item) => item.slug === slug);
   const story = mode === "reference" ? homeStoryData(data, "", state.images) : null;
+  const bundle = mode === "combo" ? availableBundles(data, promotions).find((item) => item.id === comboId) : undefined;
   return (
     <>
       <p className="preview-notice">
@@ -112,6 +119,8 @@ export function CatalogPreview({
         Los cambios se guardan en este navegador y no modifican la tienda.
       </p>
       {notice && <p role="status">{notice}</p>}
+      {mode === "combo" && (bundle ? <ComboDetail offer={bundle} imageUrls={state.images} preview returnHref={returnHref} /> :
+        <div className="empty-state"><h1>Combo no disponible</h1><p>Revisá las promociones vigentes en la tienda.</p><a href="/vista-previa">Volver a la tienda</a></div>)}
       {mode === "reference" && (
         <div
           className={`reference-landing ${heroDisplay.variable} ${heroBody.variable}`}
@@ -161,6 +170,7 @@ export function CatalogPreview({
               )?.slug ?? ""
             }
             selectedId={selectedId}
+            returnHref={returnHref}
             imageUrls={state.images}
             preview
           />

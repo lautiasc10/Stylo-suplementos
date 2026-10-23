@@ -14,7 +14,9 @@ import "../storefront-header.css";
 import { getEnvironment } from "@/lib/config/server";
 import { navigationCategories } from "@/components/storefront/navigation-model";
 import { StoreParticles } from "@/components/storefront/store-particles";
+import { HomeSectionNavigation } from "@/components/storefront/home-section-navigation";
 import "../promotions-experience.css";
+import "../combos.css";
 
 export default async function StoreLayout({
   children,
@@ -55,6 +57,7 @@ export default async function StoreLayout({
       }
     >
       <HomeIntroProvider>
+        <HomeSectionNavigation />
         <StoreParticles />
         <Header catalogCategories={visible} />
         <main id="contenido">{children}</main>

@@ -1,5 +1,7 @@
 # Diseño de STYLO
 
+La Fase 3AJ estabiliza la cinta inicial y el salto a Atletas, conserva filtros al regresar y añade publicaciones de combo a la tienda: [navegación y combos](navegacion-combos-fase-3aj.md).
+
 La Fase 3AI renueva «Sobre STYLO» con fotografías reales del equipo y enlaza «Atletas» desde el nav: [composición y validación](sobre-stylo-fase-3ai.md).
 
 La Fase 3AG adapta el panel **Premium Admin Studio** de Lovable al administrador real, con resumen de ventas cobradas y reposición: [Admin Premium](admin-premium-fase-3ag.md).

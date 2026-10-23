@@ -858,20 +858,14 @@ test("el panel lateral conserva selección con teclado y al cambiar a celular", 
   await chooseFilter(page, "sabor", "Chocolate");
   await chooseFilter(page, "disponibilidad", "in-stock");
   await page.getByLabel("Desde (ARS)").fill("40000");
-  const maximum = page.getByRole("slider", { name: "Precio máximo (ARS)" });
-  await maximum.focus();
-  await maximum.press("End");
-  for (let step = 0; step < 10; step++) await maximum.press("ArrowLeft");
-  await expect
-    .poll(() => new URL(page.url()).searchParams.get("max"))
-    .toBe("46000");
+  await expect(page.getByRole("slider")).toHaveCount(0);
+  await expect.poll(() => new URL(page.url()).searchParams.get("min")).toBe("40000");
   await expect(page.locator(".product-card")).toHaveCount(1);
   expect(Object.fromEntries(new URL(page.url()).searchParams)).toMatchObject({
     categoria: "proteinas",
     sabor: "Chocolate",
     disponibilidad: "in-stock",
     min: "40000",
-    max: "46000",
   });
 
   await page.setViewportSize({ width: 1440, height: 1000 });

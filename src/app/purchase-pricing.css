@@ -325,6 +325,10 @@
   margin: 0;
 }
 @media (max-width: 959px) {
+  .product-detail > .product-detail-copy {
+    /* Keep the fixed purchase bar above the gallery's return link. */
+    z-index: 4;
+  }
   .product-detail .purchase-price-summary {
     display: flex;
     align-items: baseline;

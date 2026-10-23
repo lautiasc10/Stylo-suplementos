@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { safeShopReturn } from "@/modules/catalog/navigation";
 import {
   Fragment,
   useCallback,
@@ -49,6 +50,7 @@ export type ProductDetailProps = {
   imageUrls?: Record<string, string>;
   preview?: boolean;
   restockAvailable?: boolean;
+  returnHref?: string;
 };
 const emptyImages: Record<string, string> = {};
 
@@ -62,7 +64,9 @@ export function ProductDetail({
   imageUrls = emptyImages,
   preview = false,
   restockAvailable = false,
+  returnHref,
 }: ProductDetailProps) {
+  const returnPath = safeShopReturn(returnHref, preview ? "/vista-previa" : "/catalogo");
   const heroRoot = useRef<HTMLDivElement>(null);
   usePurchaseBarSpace(heroRoot);
   const preloadGallery = useRef<((id: string) => void) | null>(null);
@@ -181,12 +185,13 @@ export function ProductDetail({
     else warmIngredients({ id, variantId: id, src: "", alt: "" });
   };
   // Preserve both the public route and the local image-review route without JS.
-  const variantHref = (id: string) => `?variante=${id}`;
+  const returnQuery = returnHref ? `&volver=${encodeURIComponent(returnPath)}` : "";
+  const variantHref = (id: string) => `?variante=${id}${returnQuery}`;
   const images = useMemo(
     () =>
       product.variants.flatMap((item) => {
         const photos = galleryPhotos(product, item.id, imageBase, imageUrls);
-        const href = `?variante=${item.id}`;
+        const href = `?variante=${item.id}${returnQuery}`;
         return photos.length
           ? photos.map((image) => ({ ...image, href }))
           : [
@@ -199,7 +204,7 @@ export function ProductDetail({
               },
             ];
       }),
-    [product, imageBase, imageUrls],
+    [product, imageBase, imageUrls, returnQuery],
   );
   const selectImage = useCallback((image: GalleryImage) => {
     if (!image.variantId) return;
@@ -258,7 +263,7 @@ export function ProductDetail({
         )
       )}
       <Link
-        href={preview ? "/vista-previa" : "/catalogo"}
+        href={returnPath}
         className="text-link gainer-back-link"
       >
         ← Volver a la tienda
@@ -441,6 +446,7 @@ export function ProductDetail({
           <ProductPricing
             variant={variant}
             animateChange={!choreographed}
+            returnHref={returnHref ? returnPath : undefined}
             selectable
             quantity={Math.max(1, Math.min(variant.stock, quantity + inCart))}
           />

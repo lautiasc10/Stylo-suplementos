@@ -3,7 +3,6 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
   formatPrice,
-  packagingLabel,
   variantLabel,
   type Variant,
 } from "@/modules/catalog/model";
@@ -14,7 +13,7 @@ import { Icon } from "@/components/ui/icon";
 import { Crossfade } from "@/components/ui/Crossfade";
 import { AnimatedAmount } from "@/components/ui/animated-amount";
 import { PaymentSelector } from "./payment-selector";
-import { addPromotionAndRedirect } from "@/modules/commerce/actions";
+import { comboHref } from "@/modules/catalog/navigation";
 
 function useOffers(variant: Variant) {
   const { catalog, promotions, preview } = useCart();
@@ -42,110 +41,38 @@ function ProductOfferDetails({
   offers,
   appliedId,
   preview,
+  returnHref,
 }: {
   offers: ReturnType<typeof productOffers>;
   appliedId?: string | null;
   preview: boolean;
+  returnHref?: string;
 }) {
-  const { paymentMethod, addPromotion, busy, error } = useCart();
-  const [adding, setAdding] = useState(false);
-  const [failed, setFailed] = useState("");
-  const [ready, setReady] = useState(false);
-  useEffect(() => setReady(true), []);
-  const method =
-    paymentMethod === "mercado-pago" ? "Mercado Pago" : "transferencia";
+  const { paymentMethod } = useCart();
+  const method = paymentMethod === "mercado-pago" ? "Mercado Pago" : "transferencia";
   return (
-    <section
-      className="product-offers product-offers-simple"
-      aria-label="Promociones disponibles"
-    >
+    <section className="product-offers product-offers-simple" aria-label="Promociones disponibles">
       {offers.map((offer) => {
-        if (offer.kind === "sale" && offer.id === appliedId) {
-          return (
-            <p className="product-offer-applied" key={offer.id}>
-              <Icon name="bolt" /> Precio promocional aplicado
-            </p>
-          );
-        }
-        const bundle = offer.kind === "bundle";
+        if (offer.kind === "sale" && offer.id === appliedId)
+          return <p className="product-offer-applied" key={offer.id}><Icon name="bolt" /> Precio promocional aplicado</p>;
+        const amount = paymentMethod === "mercado-pago" ? offer.listPrice : offer.cashPrice;
+        if (offer.kind === "bundle") return (
+          <Link className="product-offer-details product-offer-combo-link" key={offer.id}
+            href={comboHref(offer.id, preview, returnHref)} aria-label={`Ver combo ${offer.name}`}>
+            <Icon name="bolt" />
+            <span>Combo disponible: {offer.name}<small>Total del combo con {method}: {formatPrice(amount, 0)}</small></span>
+            <span>Ver combo →</span>
+          </Link>
+        );
         const minimum = offer.components[0].quantity;
-        const amount =
-          paymentMethod === "mercado-pago" ? offer.listPrice : offer.cashPrice;
         return (
           <details className="product-offer-details" key={offer.id}>
-            <summary>
-              <Icon name="bolt" />
-              <span>
-                {bundle
-                  ? "Combo disponible"
-                  : offer.kind === "quantity"
-                    ? `Desde ${minimum} unidades`
-                    : "Oferta disponible"}
-                : {offer.name}
-              </span>
-              <span className="product-offer-expand" aria-hidden="true" />
-            </summary>
+            <summary><Icon name="bolt" /><span>{offer.kind === "quantity" ? `Desde ${minimum} unidades` : "Oferta disponible"}: {offer.name}</span>
+              <span className="product-offer-expand" aria-hidden="true" /></summary>
             <div className="product-offer-content">
-              {bundle ? (
-                <ul>
-                  {offer.components.map((component) => (
-                    <li key={component.variantId}>
-                      {component.quantity} ×{" "}
-                      <Link
-                        href={`${preview ? "/vista-previa" : ""}/producto/${component.product!.slug}?variante=${component.variantId}`}
-                      >
-                        {packagingLabel(component.product!.name)} ·{" "}
-                        {variantLabel(component.variant!)}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              ) : offer.kind === "quantity" ? (
-                <p>Agregá al menos {minimum} unidades de esta presentación.</p>
-              ) : null}
-              <p className="product-offer-total">
-                <span>
-                  {bundle ? "Total del combo" : "Precio por unidad"} con{" "}
-                  {method}
-                </span>
-                <strong>{formatPrice(amount, 0)}</strong>
-              </p>
-              {bundle ? (
-                <form
-                  action={addPromotionAndRedirect}
-                  onSubmit={async (event) => {
-                    event.preventDefault();
-                    if (adding || busy) return;
-                    setFailed("");
-                    setAdding(true);
-                    const origin = event.currentTarget
-                      .querySelector('button[type="submit"]')
-                      ?.getBoundingClientRect();
-                    try {
-                      if (!(await addPromotion(offer.id, origin)))
-                        setFailed(offer.id);
-                    } finally {
-                      setAdding(false);
-                    }
-                  }}
-                >
-                  <input type="hidden" name="promotionId" value={offer.id} />
-                  <button
-                    type="submit"
-                    className="button button-outline"
-                    disabled={busy || (preview && !ready)}
-                    aria-busy={adding}
-                  >
-                    {adding ? "Agregando combo…" : "Agregar combo completo"}
-                  </button>
-                  {failed === offer.id && error && <p role="alert">{error}</p>}
-                </form>
-              ) : (
-                <p className="product-offer-condition">
-                  El descuento se aplica en el carrito si se cumplen las
-                  condiciones y queda cupo.
-                </p>
-              )}
+              {offer.kind === "quantity" && <p>Agregá al menos {minimum} unidades de esta presentación.</p>}
+              <p className="product-offer-total"><span>Precio por unidad con {method}</span><strong>{formatPrice(amount, 0)}</strong></p>
+              <p className="product-offer-condition">El descuento se aplica en el carrito si se cumplen las condiciones y queda cupo.</p>
             </div>
           </details>
         );
@@ -194,6 +121,7 @@ export function ProductPricing({
   selectable = false,
   quantity = 1,
   summaryOnly = false,
+  returnHref,
 }: {
   variant: Variant;
   compact?: boolean;
@@ -204,6 +132,7 @@ export function ProductPricing({
   quantity?: number;
   /** Compact purchase-bar view, using the same promotion and quantity rules. */
   summaryOnly?: boolean;
+  returnHref?: string;
 }) {
   const { offers, now, preview } = useOffers(variant);
   const { paymentMethod } = useCart();
@@ -343,6 +272,7 @@ export function ProductPricing({
           offers={offers}
           appliedId={selected.promotionId}
           preview={preview}
+          returnHref={returnHref}
         />
       )}
       {!compact && !selectable && offers.length > 0 && (
@@ -378,7 +308,7 @@ export function ProductPricing({
                         ? `DESDE ${offer.components[0].quantity} UNIDADES`
                         : "PRECIO REBAJADO"}
                   </span>
-                  <h3>{offer.name}</h3>
+                  <h3>{offer.kind === "bundle" ? <Link href={comboHref(offer.id, preview, returnHref)}>{offer.name} · Ver combo →</Link> : offer.name}</h3>
                 </div>
                 {offer.kind === "bundle" && (
                   <ul>

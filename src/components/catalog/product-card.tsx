@@ -14,6 +14,7 @@ import { BrandLogo } from "./brand-logo";
 import { catalogMediaSource } from "@/modules/catalog/media-source";
 import { AddToCart } from "@/components/commerce/add-to-cart";
 import { ProductArtwork } from "./product-artwork";
+import { productHref } from "@/modules/catalog/navigation";
 import {
   type CatalogGroup,
   type Product,
@@ -80,6 +81,7 @@ export function ProductCard({
   imageUrls,
   preview,
   mediaStyle = "gallery",
+  returnHref,
 }: {
   product: Product;
   variants: Variant[];
@@ -92,6 +94,7 @@ export function ProductCard({
   imageUrls: Record<string, string>;
   preview: boolean;
   mediaStyle?: "gallery" | "reflection";
+  returnHref?: string;
 }) {
   const router = useRouter();
   const [variantId, setVariantId] = useState(initialVariantId);
@@ -110,7 +113,7 @@ export function ProductCard({
       imageBase,
       "brand",
     );
-  const href = `${productPrefix}/${product.slug}?variante=${variant.id}`;
+  const href = productHref(productPrefix, product.slug, variant.id, returnHref);
   const photos = useMemo(() => {
     const ordered = [...variants].sort(
       (a, b) =>
@@ -127,7 +130,7 @@ export function ProductCard({
       return images.length
         ? images.map((image) => ({
             ...image,
-            href: `${productPrefix}/${product.slug}?variante=${item.id}`,
+            href: productHref(productPrefix, product.slug, item.id, returnHref),
           }))
         : variants.length > 1
           ? [
@@ -136,7 +139,7 @@ export function ProductCard({
                 variantId: item.id,
                 src: "",
                 alt: product.name,
-                href: `${productPrefix}/${product.slug}?variante=${item.id}`,
+                href: productHref(productPrefix, product.slug, item.id, returnHref),
               },
             ]
           : [];
@@ -149,6 +152,7 @@ export function ProductCard({
     imageBase,
     imageUrls,
     productPrefix,
+    returnHref,
   ]);
   const selectPhoto = useCallback((image: GalleryImage) => {
     if (image.variantId) setVariantId(image.variantId);

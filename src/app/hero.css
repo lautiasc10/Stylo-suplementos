@@ -274,6 +274,8 @@
 }
 .hero-marquee-group {
   flex-shrink: 0;
+  min-width: 100vw;
+  justify-content: space-around;
 }
 .hero-marquee-group[aria-hidden="true"] {
   display: none;
@@ -336,8 +338,7 @@
     animation: hero-lion-arrive 1.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
   }
   .sport-hero[data-ambient-paused="true"]
-    :is(.hero-title-gold, .hero-lion-ambient, .hero-marquee-track),
-  .hero-marquee:hover .hero-marquee-track {
+    :is(.hero-title-gold, .hero-lion-ambient, .hero-marquee-track) {
     animation-play-state: paused;
   }
   .sport-hero .hero-marquee:has(:focus-visible) {

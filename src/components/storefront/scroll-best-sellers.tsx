@@ -56,6 +56,7 @@ export function ScrollBestSellers({ products }: { products: ReferenceProduct[] }
     const section = root.current;
     const surface = canvas.current;
     if (!section || !surface || products.length === 0) return;
+    if (window.location.hash === "#atletas") finishedThisVisit = true;
     if (reduced !== false || finishedThisVisit) {
       section.dataset.scrollEnhanced = "false";
       return;
@@ -112,7 +113,7 @@ export function ScrollBestSellers({ products }: { products: ReferenceProduct[] }
       }
       context.globalAlpha = 1;
     };
-    const finish = () => {
+    const finish = (compensate = true) => {
       if (frozen) return;
       frozen = true;
       finishedThisVisit = true;
@@ -134,7 +135,7 @@ export function ScrollBestSellers({ products }: { products: ReferenceProduct[] }
       section.dataset.scrollComplete = "true";
       const removed = Math.max(0, before.height - section.getBoundingClientRect().height);
       const consumed = Math.min(removed, Math.max(0, -before.top));
-      if (consumed > 0) window.scrollTo({ top: scrollBefore - consumed, behavior: "instant" });
+      if (compensate && consumed > 0) window.scrollTo({ top: scrollBefore - consumed, behavior: "instant" });
       releaseFrame = requestAnimationFrame(() => {
         releaseFrame = 0;
         restoreAnchor?.();
@@ -195,6 +196,8 @@ export function ScrollBestSellers({ products }: { products: ReferenceProduct[] }
       }
     });
     eligibility();
+    const anchorNavigation = () => finish(false);
+    window.addEventListener("stylo:home-anchor", anchorNavigation);
     observer.observe(section);
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", resize, { passive: true });
@@ -205,6 +208,7 @@ export function ScrollBestSellers({ products }: { products: ReferenceProduct[] }
       if (releaseFrame) cancelAnimationFrame(releaseFrame);
       restoreAnchor?.();
       observer.disconnect();
+      window.removeEventListener("stylo:home-anchor", anchorNavigation);
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", resize);
       desktop.removeEventListener("change", eligibility);

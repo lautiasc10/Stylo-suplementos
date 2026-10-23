@@ -321,6 +321,7 @@ export function SearchResults({
                   imageBase={imageBase}
                   imageUrls={imageUrls}
                   preview={preview}
+                  returnHref={url({ pagina: params.pagina })}
                 />
               </RevealItem>
             );

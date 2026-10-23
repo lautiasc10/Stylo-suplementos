@@ -12,10 +12,10 @@ import type {
   CatalogGroup,
 } from "@/modules/catalog/model";
 import { flavorLabel, filterCatalog } from "@/modules/catalog/model";
-import { CatalogPriceRange } from "./catalog-price-range";
 import type { Promotion } from "@/modules/commerce/promotions";
 import { promotedVariantIds } from "@/modules/commerce/product-offers";
 import { CATALOG_GOALS } from "@/modules/catalog/goals";
+import { availableBundles, matchingBundles } from "@/modules/commerce/catalog-bundles";
 
 type FilterProps = {
   catalog: Catalog;
@@ -143,15 +143,9 @@ export function CatalogFilterSidebar(props: FilterProps) {
     promotions = [],
   } = props;
   const promoted = promotedVariantIds(catalog, promotions);
+  const bundles = availableBundles(catalog, promotions);
   const count = (category?: string) =>
-    filterCatalog(catalog, { ...filters, category }, promoted).length;
-  const maximum = Math.max(
-    10000,
-    ...catalog.products.flatMap((p) =>
-      p.variants.map((v) => v.listPrice / 100),
-    ),
-  );
-  const ceiling = Math.ceil(maximum / 1000) * 1000;
+    filterCatalog(catalog, { ...filters, category }, promoted).length + matchingBundles(catalog, bundles, { ...filters, category }).length;
   const flavors = [
     ...new Set(
       catalog.products.flatMap((p) =>
@@ -235,7 +229,6 @@ export function CatalogFilterSidebar(props: FilterProps) {
               </label>
             ))}
           </fieldset>
-          <CatalogPriceRange value={filters.max} ceiling={ceiling} />
           <fieldset className="catalog-choice-list catalog-toggle-list">
             <legend className="sr-only">Disponibilidad y promociones</legend>
             {filters.availability === "out-of-stock" && (

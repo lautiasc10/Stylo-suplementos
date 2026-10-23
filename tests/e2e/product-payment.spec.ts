@@ -211,21 +211,15 @@ test("el combo es opcional, tiene un solo total identificado y agrega todos sus 
   await expect(page.locator(".gainer-stock")).toContainText("Doypack");
   const price = page.locator(".product-price-main > strong");
   await expect(price).toHaveText("$ 41.000");
-  const offer = page.locator(".product-offer-details");
-  await expect(offer).not.toHaveAttribute("open", "");
-  await expect(offer.locator(".product-offer-total")).not.toBeVisible();
-  await offer.locator("summary").click();
-  await expect(offer.locator(".product-offer-total")).toHaveText(
-    "Total del combo con transferencia$ 40.000",
-  );
-  await expect(offer.locator("strong")).toHaveCount(1);
-  await expect(offer.locator("del")).toHaveCount(0);
-  await expect(offer).not.toContainText("Ahorrás");
+  const offer = page.getByRole("link", { name: "Ver combo Proteína y creatina", exact: true });
+  await expect(offer).toContainText("Total del combo con transferencia: $ 40.000");
+  await offer.click();
+  await expect(page).toHaveURL(/\/vista-previa\/combo\//);
+  await expect(page.locator(".combo-detail-info li")).toHaveCount(2);
+  const total = page.locator(".combo-detail-price .animated-amount-target");
+  await expect(total).toHaveText("$ 40.000");
   await page.getByRole("radio", { name: "Mercado Pago", exact: true }).check();
-  await expect(price).toHaveText("$ 45.000");
-  await expect(offer.locator(".product-offer-total")).toHaveText(
-    "Total del combo con Mercado Pago$ 50.000",
-  );
+  await expect(total).toHaveText("$ 50.000");
   await page
     .getByRole("button", { name: "Agregar combo completo", exact: true })
     .click();
@@ -293,7 +287,7 @@ test("el contador muestra valores intermedios en ficha y promociones, interrumpe
   }
 });
 
-test("las tres colecciones comparten ancho y alineación en escritorio y celular", async ({
+test("las colecciones disponibles comparten ancho y alineación en escritorio y celular", async ({
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -308,9 +302,8 @@ test("las tres colecciones comparten ancho y alineación en escritorio y celular
           return { x, width };
         }),
       );
-    expect(boxes).toHaveLength(3);
+    expect(boxes).toHaveLength(2);
     expect(boxes[0]).toEqual(boxes[1]);
-    expect(boxes[1]).toEqual(boxes[2]);
     expect(boxes[0].width).toBeLessThanOrEqual(1280);
   }
 });

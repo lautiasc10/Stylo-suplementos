@@ -7,6 +7,7 @@ export function AthleteCall() {
   return (
     <section
       id="atletas"
+      tabIndex={-1}
       className="home-athlete-call"
       aria-labelledby="athlete-title"
     >

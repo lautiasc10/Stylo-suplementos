@@ -4,9 +4,9 @@ export default async function PreviewProductPage({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ variante?: string }>;
+  searchParams: Promise<{ variante?: string; volver?: string }>;
 }) {
   const { slug } = await params,
-    { variante } = await searchParams;
-  return <CatalogPreview mode="product" slug={slug} selectedId={variante} />;
+    { variante, volver } = await searchParams;
+  return <CatalogPreview mode="product" slug={slug} selectedId={variante} returnHref={volver} />;
 }

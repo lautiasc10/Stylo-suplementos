@@ -7,6 +7,9 @@ import {
 import { ProductCard } from "./product-card";
 import { RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { ResultsScrollReset } from "./results-scroll-reset";
+import { catalogReturnHref } from "@/modules/catalog/navigation";
+import { availableBundles, matchingBundles } from "@/modules/commerce/catalog-bundles";
+import { ComboCard } from "@/components/commerce/combo";
 import { promotedVariantIds } from "@/modules/commerce/product-offers";
 import type { Promotion } from "@/modules/commerce/promotions";
 import {
@@ -46,6 +49,13 @@ export function CatalogListing({
       { ...filters, sort: filters.sort ?? "featured" },
       promoted,
     );
+  const bundles = matchingBundles(data, availableBundles(data, promotions), filters);
+  const entries = [...bundles.map((offer) => ({ kind: "bundle" as const, offer })),
+    ...results.map((result) => ({ kind: "product" as const, result }))];
+  if (filters.sort === "price-asc" || filters.sort === "price-desc") {
+    const price = (entry: typeof entries[number]) => entry.kind === "bundle" ? entry.offer.listPrice : entry.result.variant.listPrice;
+    entries.sort((a, b) => (price(a) - price(b)) * (filters.sort === "price-desc" ? -1 : 1));
+  }
   return (
     <div className="catalog-store">
       <div className="catalog-store-heading">
@@ -73,16 +83,20 @@ export function CatalogListing({
           />
           <div className="catalog-results-heading">
             <p role="status">
-              {results.length} {results.length === 1 ? "producto" : "productos"}
+              {entries.length} {entries.length === 1 ? "producto" : "productos"}
             </p>
             <CatalogSort filters={filters} action={action} />
           </div>
-          {results.length ? (
+          {entries.length ? (
             <RevealGroup
               className="product-grid"
               revision={JSON.stringify(filters)}
             >
-              {results.map(({ product, variant, brand }, index) => {
+              {entries.map((entry, index) => {
+                if (entry.kind === "bundle") return <RevealItem key={`combo:${entry.offer.id}`} className="reveal-card">
+                  <ComboCard offer={entry.offer} imageBase={imageBase} imageUrls={imageUrls} preview={preview} returnHref={catalogReturnHref(action, filters)} />
+                </RevealItem>;
+                const { product, variant, brand } = entry.result;
                 const category = data.categories.find((item) =>
                   product.categoryIds.includes(item.id),
                 );
@@ -100,6 +114,7 @@ export function CatalogListing({
                       imageBase={imageBase}
                       imageUrls={imageUrls}
                       preview={preview}
+                      returnHref={catalogReturnHref(action, filters)}
                     />
                   </RevealItem>
                 );

@@ -34,10 +34,10 @@ export default async function ProductPage({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ variante?: string }>;
+  searchParams: Promise<{ variante?: string; volver?: string }>;
 }) {
   const { slug } = await params,
-    { variante } = await searchParams,
+    { variante, volver } = await searchParams,
     { catalog, error } = await getCatalog();
   if (error) throw new Error("No pudimos consultar el catálogo.");
   const data = publicCatalog(catalog),
@@ -79,6 +79,7 @@ export default async function ProductPage({
         selectedId={product.variants.find((item) => item.id === variante)?.id}
         imageBase={imageBase}
         restockAvailable={Boolean(restockMailConfig())}
+        returnHref={volver}
       />
     </section>
   );

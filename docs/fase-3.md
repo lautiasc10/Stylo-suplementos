@@ -1,5 +1,7 @@
 # Fase 3 — Comercio
 
+La rama `fase-3aj-navegacion-y-combos` prepara [cinta continua, navegación de Atletas, regreso filtrado y combos publicados](navegacion-combos-fase-3aj.md), usando las promociones y validaciones existentes. No modifica datos reales ni integra cambios a `main`.
+
 La rama `fase-3ai-sobre-stylo` desarrolla la [página editorial Sobre STYLO y el acceso a Atletas](sobre-stylo-fase-3ai.md). Queda separada de `main` hasta su validación.
 
 La rama `fase-3ag-admin-premium` adapta Resumen, Productos, Ventas y retiros y Promociones al proyecto Premium Admin Studio de Lovable. El resumen consulta ventas cobradas mensuales y reposición, sin escrituras de producción ni cambios de esquema: [alcance y verificación](admin-premium-fase-3ag.md).
