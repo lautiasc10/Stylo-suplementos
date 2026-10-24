@@ -167,7 +167,7 @@ test("los números reales cuentan al entrar y el carrusel conserva un loop de do
   await expect(why).toHaveAttribute("data-counting", "done");
 });
 
-test("la postulación de ejemplo valida sin enviar ni guardar información", async ({
+test("la consulta de prueba valida consentimiento y queda solo en el panel local", async ({
   page,
 }, info) => {
   await page.goto("/vista-previa/portada");
@@ -188,10 +188,13 @@ test("la postulación de ejemplo valida sin enviar ni guardar información", asy
       { timeout: 15000 },
     )
     .toBe(true);
-  await expect(athlete).toContainText("Beneficios de ejemplo");
+  await expect(athlete).not.toContainText("Suplementos todos los meses");
+  await expect(athlete).toContainText("Vista previa");
+  await athlete.locator(".home-athlete-photo").first().scrollIntoViewIfNeeded();
+  await expect(athlete.locator(".home-athlete-photo").first()).toHaveCSS("opacity", "1");
   await athlete.getByLabel("Nombre y apellido").fill("Atleta de prueba");
-  await athlete.getByLabel("Instagram", { exact: true }).fill("@prueba");
-  await athlete.getByLabel("Disciplina", { exact: true }).fill("Atletismo");
+  await athlete.getByLabel(/Instagram/).fill("@prueba");
+  await athlete.getByLabel("Disciplina o actividad", { exact: true }).fill("Atletismo");
   await athlete.getByLabel("Email", { exact: true }).fill("prueba@example.com");
   await athlete.screenshot({ path: info.outputPath("athlete-example.png") });
   const before = await page.evaluate(() => JSON.stringify(localStorage));
@@ -199,15 +202,18 @@ test("la postulación de ejemplo valida sin enviar ni guardar información", asy
   page.on("request", (request) => {
     if (request.method() === "POST") submissions.push(request.url());
   });
-  await athlete.getByRole("button", { name: "Quiero ser parte" }).click();
-  await expect(athlete.getByRole("status")).toContainText(
-    "Tu postulación no fue enviada",
-  );
+  await athlete.getByRole("button", { name: "Enviar consulta al Team" }).click();
   expect(await page.evaluate(() => JSON.stringify(localStorage))).toBe(before);
+  await athlete.getByRole("checkbox").check();
+  await athlete.getByRole("button", { name: "Enviar consulta al Team" }).click();
+  await expect(athlete.getByRole("status")).toContainText(
+    "no se envió a STYLO",
+  );
+  expect(await page.evaluate(() => localStorage.getItem("stylo.team-applications-preview.v1"))).toContain("prueba@example.com");
   expect(submissions).toEqual([]);
 });
 
-test("movimiento reducido mantiene números y marcas sin animar; sin JS no expone el formulario de ejemplo", async ({
+test("movimiento reducido mantiene números y marcas; el Team también se lee sin JS", async ({
   page,
   browser,
   baseURL,
@@ -231,7 +237,8 @@ test("movimiento reducido mantiene números y marcas sin animar; sin JS no expon
   await expect(
     noJS.getByRole("heading", { name: "Por qué STYLO" }),
   ).toBeVisible();
-  await expect(noJS.locator(".home-athlete-form")).not.toBeVisible();
-  await expect(noJS.locator("#atletas")).toContainText("requiere JavaScript");
+  await expect(noJS.locator(".home-team-form")).toBeVisible();
+  await expect(noJS.locator("#atletas").getByRole("button", { name: "Enviar consulta al Team" })).toBeDisabled();
+  await expect(noJS.locator("#atletas")).not.toContainText("Beneficios de ejemplo");
   await context.close();
 });
