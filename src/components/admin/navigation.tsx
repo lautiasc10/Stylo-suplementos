@@ -2,7 +2,7 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { Icon } from "@/components/ui/icon";
+import { Icon, type IconName } from "@/components/ui/icon";
 import { BrandMark } from "@/components/storefront/brand-mark";
 import { signOut } from "@/modules/admin/actions";
 import { adminDisplay, adminBody } from "./admin-fonts";
@@ -38,7 +38,7 @@ export function AdminNavigation({ preview = false }: { preview?: boolean }) {
     return null;
   const catalog = preview ? "/vista-previa/gestion" : "/admin/catalogo";
   const currentSection = catalogSection(params.get("seccion"));
-  const groups = [
+  const groups: { label: string; links: { href: string; label: string; icon: IconName; section?: string }[] }[] = [
     {
       label: "Operación",
       links: [
@@ -59,6 +59,10 @@ export function AdminNavigation({ preview = false }: { preview?: boolean }) {
           icon: "bolt" as const,
         },
       ],
+    },
+    {
+      label: "Comunidad",
+      links: [{ href: preview ? "/vista-previa/atletas" : "/admin/atletas", label: "Atletas y profesores", icon: "shield" as const }],
     },
     {
       label: "Catálogo",
@@ -164,6 +168,7 @@ export function PreviewFrame({ children }: { children: ReactNode }) {
     "/vista-previa/promociones",
     "/vista-previa/pedidos",
     "/vista-previa/resumen",
+    "/vista-previa/atletas",
   ].includes(pathname);
   return management ? (
     <div className={`admin-shell admin-preview ${adminDisplay.variable} ${adminBody.variable}`}>

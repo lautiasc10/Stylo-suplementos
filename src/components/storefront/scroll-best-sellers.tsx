@@ -10,22 +10,22 @@ let finishedThisVisit = false;
 const FINALE_SPAN = 0.55;
 const PRODUCT_SCROLL_VH = 110;
 
-function SellersPodium({ products, className, showHeading = true }: { products: ReferenceProduct[]; className: string; showHeading?: boolean }) {
+function SellersPodium({ products, className, showHeading = true, example = true, period }: { products: ReferenceProduct[]; className: string; showHeading?: boolean; example?: boolean; period?: string }) {
   const { change, busy } = useCart();
   return (
     <div className={className}>
       {showHeading && <div className="scroll-sellers-podium-heading">
         <div>
-          <p className="reference-eyebrow">SELECCIÓN DE EJEMPLO · STYLO</p>
+          <p className="reference-eyebrow">{example ? "SELECCIÓN DE EJEMPLO · STYLO" : `RANKING DE ${period ?? "ESTE MES"}`}</p>
           <h2>Los más <span className="reference-text-gold">vendidos</span></h2>
         </div>
-        <p>Explorá tres presentaciones del catálogo.</p>
+        <p>{example ? "Explorá tres presentaciones del catálogo." : "Los tres productos más elegidos en las ventas cobradas del mes."}</p>
       </div>}
       <div className="scroll-sellers-podium-grid">
         {products.map((item, index) => (
           <article className="scroll-sellers-podium-card" data-rank={index + 1} key={item.id}>
             <span className="scroll-sellers-podium-number" aria-hidden="true">{index + 1}</span>
-            {index === 0 && <span className="scroll-sellers-podium-badge">Ejemplo destacado</span>}
+            {index === 0 && <span className="scroll-sellers-podium-badge">{example ? "Ejemplo destacado" : "N.º 1 del mes"}</span>}
             <Link className="scroll-sellers-podium-link" href={item.href}>
               <img src={item.image.src} srcSet={item.image.srcSet} sizes="(min-width: 960px) 340px, (min-width: 620px) 40vw, 75vw" width={600} height={600} loading="lazy" decoding="async" alt={item.image.alt} />
               <span className="scroll-sellers-podium-brand">{item.brand}</span>
@@ -44,7 +44,7 @@ function SellersPodium({ products, className, showHeading = true }: { products: 
 }
 
 /** One sticky stage: protein dust forms each pack as the page advances. */
-export function ScrollBestSellers({ products }: { products: ReferenceProduct[] }) {
+export function ScrollBestSellers({ products, example = true, period }: { products: ReferenceProduct[]; example?: boolean; period?: string }) {
   const root = useRef<HTMLElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const [active, setActive] = useState(0);
@@ -224,14 +224,15 @@ export function ScrollBestSellers({ products }: { products: ReferenceProduct[] }
       ref={root}
       id="mas-vendidos"
       className="scroll-sellers"
-      aria-label="Los más vendidos, selección de ejemplo"
+      aria-label={example ? "Los más vendidos, selección de ejemplo" : "Los más vendidos del mes"}
+      data-ranking={example ? "example" : "monthly"}
       style={{ "--seller-scroll-vh": 100 + (products.length + FINALE_SPAN) * PRODUCT_SCROLL_VH } as React.CSSProperties}
     >
       <div className="scroll-sellers-stage">
         <canvas ref={canvas} aria-hidden="true" />
         <div className="scroll-sellers-top">
           <div>
-            <p className="reference-eyebrow">SELECCIÓN DE EJEMPLO · STYLO</p>
+            <p className="reference-eyebrow">{example ? "SELECCIÓN DE EJEMPLO · STYLO" : `RANKING DE ${period ?? "ESTE MES"}`}</p>
             <h2 id="sellers-heading">Los más <span className="reference-text-gold">vendidos</span></h2>
           </div>
           <div className="scroll-sellers-index" aria-label={`Producto ${active + 1} de ${products.length}`}>
@@ -262,16 +263,16 @@ export function ScrollBestSellers({ products }: { products: ReferenceProduct[] }
             ))}
             <div className="scroll-sellers-purchase">
               <strong>{product.facts[1]?.value}</strong>
-              <button type="button" disabled={busy} onClick={(event) => change(product.variantId, "add", 1, event.currentTarget.getBoundingClientRect())}>+ Agregar</button>
+              <button type="button" disabled={busy || product.facts[3]?.value !== "Disponible"} onClick={(event) => change(product.variantId, "add", 1, event.currentTarget.getBoundingClientRect())}>+ Agregar</button>
             </div>
           </div>
         </div>
         <div className="scroll-sellers-podium-overlay" inert={!podiumShown} aria-hidden={!podiumShown}>
-          <SellersPodium products={products} className="scroll-sellers-podium" showHeading={false} />
+          <SellersPodium products={products} className="scroll-sellers-podium" showHeading={false} example={example} period={period} />
         </div>
         <p className="scroll-sellers-hint" aria-hidden="true">Seguí bajando</p>
       </div>
-      <SellersPodium products={products} className="reference-container scroll-sellers-fallback scroll-sellers-podium" />
+      <SellersPodium products={products} className="reference-container scroll-sellers-fallback scroll-sellers-podium" example={example} period={period} />
     </section>
   );
 }

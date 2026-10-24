@@ -139,7 +139,7 @@ export function CatalogPreview({
           <CustomComboBuilder categories={comboOptions(data, "", state.images)} />
           {story && <WhyStylo stats={story.stats} />}
           {story && <BrandMarquee brands={story.brands} catalogHref="/vista-previa" />}
-          <AthleteCall />
+          <AthleteCall preview />
         </div>
       )}
       {mode === "catalog" && (

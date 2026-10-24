@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { catalogSection } from "./section-navigation";
 import { ProductThumbnail } from "@/components/ui/product-thumbnail";
 import { Icon } from "@/components/ui/icon";
+import { isNewArrival, setNewArrivalTags } from "@/modules/catalog/home-collections";
 import { IconAction } from "@/components/admin/icon-action";
 import { AdminTable } from "@/components/admin/data-table";
 import { ProductImagesEditor } from "./product-images-editor";
@@ -797,6 +798,10 @@ export function CatalogManager({
                     }
                   />
                   Destacado
+                </label>
+                <label>
+                  <input type="checkbox" checked={isNewArrival(draft)} onChange={(event) => updateDraft("tags", setNewArrivalTags(draft.tags, event.target.checked))} />
+                  Mostrar en Novedades
                 </label>
               </div>
               <details className="editor-seo">

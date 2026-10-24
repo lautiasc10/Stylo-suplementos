@@ -81,3 +81,22 @@
   .home-athlete-photo img { transition: none; transform: none; }
   .home-athlete-cta::before { display: none; }
 }
+.home-team-form[hidden] { display: none; }
+.home-team-form fieldset { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 16px; min-width: 0; margin: 0; padding: 0; border: 0; }
+.home-team-form label { display: flex; flex-direction: column; gap: 8px; min-width: 0; font-size: 14px; color: var(--foreground); }
+.home-team-form label > span { color: var(--muted); font-size: 12px; }
+.home-team-form label > .home-team-label { color: var(--foreground); font-size: 14px; }
+.home-team-label small { color: var(--muted); font-size: 12px; font-weight: 400; }
+.home-team-form :is(input:not([type=checkbox]),select,textarea) { width: 100%; min-width: 0; min-height: 48px; padding: 12px; color: var(--foreground); background: var(--background); border: 1px solid var(--control-border); border-radius: 0; font: inherit; }
+.home-team-form textarea { resize: vertical; }
+.home-team-wide { grid-column: 1/-1; }
+.home-team-form .home-team-consent { flex-direction: row; align-items: start; gap: 12px; line-height: 1.6; cursor: pointer; }
+.home-team-consent input { flex: none; width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--gold); }
+.home-team-purpose { margin: 0; font-size: 12px; line-height: 1.6; color: var(--foreground); }
+.home-team-unavailable { padding: 16px; border: 1px solid var(--action-border); color: var(--gold-light); line-height: 1.6; }
+.home-team-form fieldset:disabled { opacity: .6; }
+.home-team-form .home-athlete-cta { justify-self: start; }
+.home-team-confirmation { padding: 24px; border: 1px solid var(--action-border); background: var(--surface); }
+.home-team-confirmation h3 { font-size: 32px; color: var(--gold-light); margin: 0 0 16px; }
+.home-team-confirmation p { line-height: 1.7; }
+@media(max-width:600px) { .home-team-form fieldset { grid-template-columns: 1fr; } .home-team-form .home-athlete-cta { width: 100%; } .home-athlete-call .home-athlete-copy h2 { font-size: clamp(2.75rem, 10vw, 3.75rem); } }
