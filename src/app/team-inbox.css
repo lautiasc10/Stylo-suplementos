@@ -1,0 +1,31 @@
+.admin-team-inbox { max-width: 1280px; margin-inline: auto; }
+.team-inbox-filters { display: grid; grid-template-columns: minmax(0,1fr) minmax(180px,260px); gap: 24px; margin-top: 32px; }
+.team-inbox-filters label,.team-review-form label { display: grid; gap: 8px; font-size: 14px; font-weight: 600; }
+.admin-team-inbox :is(input:not([type=hidden]),select,textarea) { width: 100%; min-width: 0; min-height: 48px; padding: 12px; border: 1px solid var(--control-border); border-radius: var(--radius-control); background: var(--admin-card); color: var(--admin-ink); font: inherit; }
+.team-inbox-count { margin-block: 24px 16px; color: var(--admin-muted); font-size: 14px; }
+.team-inbox-list { display: grid; gap: 16px; }
+.team-inbox-item { border: 1px solid var(--admin-line); border-radius: var(--radius-panel); background: var(--admin-card); overflow: clip; }
+.team-inbox-item > summary { display: grid; grid-template-columns: minmax(0,1fr) 120px 110px; align-items: center; gap: 24px; padding: 24px; cursor: pointer; list-style: none; }
+.team-inbox-item > summary::-webkit-details-marker { display: none; }
+.team-inbox-item > summary::after { content: "+ Ver consulta"; grid-column: 1/-1; color: var(--admin-gold); font-size: 13px; }
+.team-inbox-item[open] > summary::after { content: "− Cerrar consulta"; }
+.team-inbox-item > summary > span:first-child { display: grid; gap: 8px; min-width: 0; overflow-wrap: anywhere; }
+.team-inbox-item > summary strong { font-size: 18px; }
+.team-inbox-item > summary > span:first-child > span,.team-inbox-item time { color: var(--admin-muted); font-size: 13px; }
+.team-inbox-item time > span { display: block; margin-top: 4px; }
+.team-inbox-state { display: inline-flex; justify-content: center; padding: 8px 12px; border: 1px solid var(--admin-line); border-radius: var(--radius-pill); font-size: 12px; font-weight: 700; }
+.team-inbox-state[data-state=new] { color: var(--admin-gold); border-color: var(--action-border); }
+.team-inbox-detail { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 32px; padding: 24px; border-top: 1px solid var(--admin-line); }
+.team-inbox-detail dl { display: grid; gap: 24px; margin: 0; }
+.team-inbox-detail dt { margin-bottom: 8px; color: var(--admin-muted); font-size: 12px; font-weight: 600; }
+.team-inbox-detail dd { margin: 0; overflow-wrap: anywhere; line-height: 1.7; font-size: 14px; }
+.team-inbox-detail dd a { text-decoration: underline; text-underline-offset: 3px; color: var(--admin-gold); }
+.team-inbox-message { white-space: pre-wrap; }
+.team-review-form { display: grid; gap: 16px; align-content: start; }
+.team-review-form textarea { resize: vertical; }
+.team-review-form p { font-size: 12px; color: var(--admin-muted); line-height: 1.7; margin: 0; }
+.team-inbox-empty { padding: 40px 24px; border: 1px dashed var(--admin-line); border-radius: var(--radius-panel); }
+.team-inbox-empty h2 { font: 600 28px var(--font-admin-display); margin: 0 0 12px; }
+.team-inbox-empty p { color: var(--admin-muted); font-size: 14px; }
+.team-inbox-pagination { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 24px; }
+@media(max-width:650px) { .team-inbox-filters,.team-inbox-detail { grid-template-columns: 1fr; } .team-inbox-item > summary { grid-template-columns: minmax(0,1fr) auto; gap: 16px; padding: 20px; } .team-inbox-item time { grid-column: 1/-1; } .team-inbox-item time > span { display: inline; margin-left: 8px; } .team-inbox-detail { padding: 20px; } .team-inbox-filters { gap: 16px; } }

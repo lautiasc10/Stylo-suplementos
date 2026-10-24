@@ -1,9 +1,8 @@
 import Image from "next/image";
 import { Reveal } from "@/components/ui/Reveal";
-import { AthleteApplicationExample } from "./athlete-application-example";
+import { TeamApplicationForm } from "./team-application-form";
 
-// Reference benefits and the form are explicitly examples until defined by STYLO.
-export function AthleteCall() {
+export function AthleteCall({ available = false, preview = false }: { available?: boolean; preview?: boolean }) {
   return (
     <section
       id="atletas"
@@ -38,21 +37,18 @@ export function AthleteCall() {
         <div className="home-athlete-copy">
           <p className="reference-eyebrow">Team STYLO</p>
           <h2 id="athlete-title">
-            ¿Sos atleta? <span className="reference-text-gold">Sumate</span>
+            ¿Sos atleta o profe? <span className="reference-text-gold">Conectemos.</span>
           </h2>
           <p>
-            Buscamos gente que entrene en serio y quiera representar a la marca.
-            Competís, das clases o creás contenido: contanos.
-          </p>
-          <p className="home-athlete-example">
-            Beneficios de ejemplo · A confirmar por STYLO
+            Competís, das clases o acompañás a otros a entrenar: queremos conocerte.
+            Contanos sobre tu actividad y conversemos sobre una posible colaboración.
           </p>
           <ul>
             {[
-              "Suplementos todos los meses",
-              "Código de descuento propio",
-              "Contenido y eventos STYLO",
-              "Comisión por cada venta",
+              "Tu disciplina y tu recorrido",
+              "Tu actividad como profe o atleta",
+              "Tu perfil y tu comunidad",
+              "Tu propuesta de colaboración",
             ].map((item) => (
               <li key={item}>
                 <span aria-hidden="true">✓</span>
@@ -60,7 +56,7 @@ export function AthleteCall() {
               </li>
             ))}
           </ul>
-          <AthleteApplicationExample />
+          <TeamApplicationForm available={available} preview={preview} />
         </div>
       </div>
     </section>

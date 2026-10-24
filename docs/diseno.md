@@ -1,5 +1,7 @@
 # Diseño de STYLO
 
+La Fase 3AS completa Contacto con canales oficiales y fotografía del equipo, sustituye beneficios ficticios del Team por una invitación de colaboración y prepara consultas privadas, ranking mensual y selección explícita de Novedades: [contacto y contenidos](contacto-team-contenidos-fase-3as.md).
+
 La Fase 3AR corrige la columna reservada al menú en el acceso administrativo y centra su formulario, con controles amplios y cabecera proporcionada: [login administrativo](login-admin-fase-3ar.md).
 
 La Fase 3AQ adelanta la roca compartida del catálogo y reutiliza medidas durante el reveal, conservando la composición y el movimiento. Incluye comparación alternada, mejoras parciales y límites pendientes: [rendimiento y geometría](rendimiento-fase-3aq.md).

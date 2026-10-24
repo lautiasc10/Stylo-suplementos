@@ -5,7 +5,9 @@ import { CinematicHero } from "@/components/storefront/cinematic-hero";
 import { HomeProducts } from "@/components/storefront/home-products";
 import { readPromotions } from "@/modules/commerce/promotions-server";
 import { ScrollBestSellers } from "@/components/storefront/scroll-best-sellers";
-import { bestSellerExamples } from "@/modules/catalog/best-seller-examples";
+import { homeRanking } from "@/modules/catalog/home-ranking";
+import { homeArrivals } from "@/modules/catalog/home-collections";
+import { readStorefrontContent } from "@/modules/storefront/content-server";
 import { CustomComboBuilder } from "@/components/storefront/custom-combo-builder";
 import { comboOptions } from "@/modules/catalog/combo-options";
 import { ReferenceGoals } from "@/components/storefront/reference-goals";
@@ -34,9 +36,10 @@ export function generateMetadata() {
 }
 
 export default async function HomePage() {
-  const [{ catalog, error }, promotions] = await Promise.all([
+  const [{ catalog, error }, promotions, content] = await Promise.all([
     getCatalog(),
     readPromotions(),
+    readStorefrontContent(),
   ]);
   const data = publicCatalog(catalog);
   const config = getEnvironment().supabase;
@@ -45,29 +48,18 @@ export default async function HomePage() {
     : "";
   const featured = data.products.filter((p) => p.featured);
   const story = homeStoryData(data, imageBase);
-  // There is no creation date in the catalog. Editorial tags control this section.
-  const taggedArrivals = data.products
-    .filter((p) =>
-      p.tags.some((tag) =>
-        /^(nuevo|novedad|novedades)$/.test(
-          tag.trim().toLocaleLowerCase("es-AR"),
-        ),
-      ),
-    )
-    .slice(0, 4);
-  const arrivalsAreExamples = taggedArrivals.length === 0;
-  const arrivals = arrivalsAreExamples
-    ? data.products
-        .filter((product) => product.images.length && product.variants.some((variant) => variant.stock > 0))
-        .slice(-4)
-    : taggedArrivals;
+  const arrivals = homeArrivals(data.products);
+  const ranking = homeRanking(data, imageBase, promotions.state.promotions, content.ranking);
+  const period = new Intl.DateTimeFormat("es-AR", { month: "long", year: "numeric", timeZone: "America/Argentina/Buenos_Aires" }).format(new Date());
   return (
     <div
       className={`reference-landing ${heroDisplay.variable} ${heroBody.variable}`}
     >
       <CinematicHero composition="reference" />
       <ScrollBestSellers
-        products={bestSellerExamples(data, imageBase, promotions.state.promotions)}
+        products={ranking.products}
+        example={ranking.example}
+        period={period}
       />
       <ReferenceGoals />
       <HomeProducts
@@ -82,7 +74,7 @@ export default async function HomePage() {
       <HomeProducts
         id="novedades"
         title="Novedades"
-        eyebrow={arrivalsAreExamples ? "SELECCIÓN DE EJEMPLO · STYLO" : "PARA TU PRÓXIMA RUTINA"}
+        eyebrow="PARA TU PRÓXIMA RUTINA"
         products={arrivals}
         catalog={data}
         imageBase={imageBase}
@@ -91,7 +83,7 @@ export default async function HomePage() {
       <CustomComboBuilder categories={comboOptions(data, imageBase)} />
       <WhyStylo stats={story.stats} />
       <BrandMarquee brands={story.brands} />
-      <AthleteCall />
+      <AthleteCall available={content.teamApplications} />
     </div>
   );
 }

@@ -97,6 +97,7 @@ test("admin y MFA no habilitan acceso sin configuración", async ({
     "/admin/catalogo",
     "/admin/pedidos",
     "/admin/promociones",
+    "/admin/atletas",
   ]) {
     await page.goto(path);
     await expect(page).toHaveURL(/\/admin\/login$/);
