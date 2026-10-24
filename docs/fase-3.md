@@ -1,5 +1,7 @@
 # Fase 3 — Comercio
 
+La continuación 3AT mejora búsqueda de SKU, cierre atómico de retiros, historial paginado, reposición enlazada, costos privados y estadísticas mensuales del administrador: [alcance y verificación](admin-ventas-fase-3at.md). Se desarrolla en `fase-3at-admin-ventas` desde `main`, sin aplicar la migración a Supabase real ni integrar la rama hasta revisión. La Fase 3AS permanece separada.
+
 La continuación 3AR mejora la composición del login de escritorio en `fase-3ar-login-admin`, conservando fuentes, identidad y controles de acceso: [diseño y comprobaciones](login-admin-fase-3ar.md). El usuario autorizó su integración y subida a `main` el 24 de octubre de 2026.
 
 La continuación 3AQ comprueba las regresiones con compilaciones alternadas y optimiza descubrimiento de la roca, partículas y geometría del cambio de sabor: [resultados y pendientes](rendimiento-fase-3aq.md). El usuario autorizó el 24 de octubre consolidar 3AO/3AP/3AQ e integrar las mejoras verificadas a `main`, cerrando las mediciones adicionales y conservando documentados los límites pendientes.

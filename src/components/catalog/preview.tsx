@@ -4,6 +4,7 @@ import { demoCatalog } from "@/modules/catalog/demo";
 import {
   validateCatalog,
   publicCatalog,
+  parseMoney,
   type Catalog,
   type CatalogFilters,
 } from "@/modules/catalog/model";
@@ -49,6 +50,11 @@ export function CatalogPreview({
   const [state, setState] = useState<PreviewState | null>(null),
     [notice, setNotice] = useState("");
   const [promotions, setPromotions] = useState<Promotion[]>([]);
+  const [purchaseCosts, setPurchaseCosts] = useState<Record<string, number>>({});
+  useEffect(() => {
+    try { setPurchaseCosts(JSON.parse(localStorage.getItem("stylo.purchase-costs-preview.v1") ?? "{}")); }
+    catch { setPurchaseCosts({}); }
+  }, []);
   useEffect(() => {
     const sync = () => {
       try {
@@ -184,6 +190,17 @@ export function CatalogPreview({
         <CatalogManager
           catalog={state.catalog}
           imageUrls={state.images}
+          costs={purchaseCosts}
+          saveCost={async (id, value) => {
+            try {
+              const cost = value.trim() ? parseMoney(value) : null;
+              const next = { ...purchaseCosts };
+              if (cost === null) delete next[id]; else next[id] = cost;
+              localStorage.setItem("stylo.purchase-costs-preview.v1", JSON.stringify(next));
+              setPurchaseCosts(next);
+              return { cost };
+            } catch { return { error: "No pudimos guardar el costo de prueba. Revisá el valor o el espacio local." }; }
+          }}
           commit={async (catalog) =>
             store({
               images: state.images,

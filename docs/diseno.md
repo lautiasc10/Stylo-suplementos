@@ -1,5 +1,7 @@
 # Diseño de STYLO
 
+La Fase 3AT mantiene los tokens del administrador y reorganiza su resumen con datos mensuales, gráfico de barras, lista de reposición enlazada y búsqueda accesible de SKU: [administración de ventas](admin-ventas-fase-3at.md).
+
 La Fase 3AR corrige la columna reservada al menú en el acceso administrativo y centra su formulario, con controles amplios y cabecera proporcionada: [login administrativo](login-admin-fase-3ar.md).
 
 La Fase 3AQ adelanta la roca compartida del catálogo y reutiliza medidas durante el reveal, conservando la composición y el movimiento. Incluye comparación alternada, mejoras parciales y límites pendientes: [rendimiento y geometría](rendimiento-fase-3aq.md).

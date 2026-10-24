@@ -6,6 +6,10 @@ export type OrderRecord = {
   customer: { name: string; phone?: string };
   snapshot: {
     total: number;
+    base?: number;
+    discount?: number;
+    promotion?: string | null;
+    paymentMethod?: string;
     lines?: {
       variantId: string;
       name: string;
@@ -14,10 +18,21 @@ export type OrderRecord = {
       flavor?: string;
       size?: string;
       presentation?: string;
+      sku?: string;
+      unitPrice?: number;
+      subtotal?: number;
     }[];
   };
   created_at: string;
+  operation_at?: string;
+  paid_at?: string | null;
+  picked_up_at?: string | null;
   payment_status?: string;
+  fulfillment_status?: string;
+  fee_total?: number;
+  expense_total?: number;
+  refund_total?: number;
+  cost_total?: number | null;
 };
 export type ManualOrderInput = {
   requestId: string;

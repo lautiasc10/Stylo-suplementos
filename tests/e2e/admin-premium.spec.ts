@@ -33,7 +33,8 @@ test("productos, ventas y promociones comparten la composición premium y editor
   await page.keyboard.press("Escape");
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   await page.goto("/vista-previa/resumen");
-  await page.getByRole("link", { name: "Cargar producto", exact: true }).click();
+  await page.getByRole("link", { name: "Ver catálogo", exact: true }).click();
+  await page.getByRole("button", { name: "Nuevo producto", exact: true }).click();
   await expect(page.getByLabel("Nombre", { exact: true })).toBeVisible();
 });
 
@@ -43,11 +44,13 @@ test("el resumen premium conserva navegación y muestra solo métricas reales o 
   await page.goto("/vista-previa/resumen");
   await expect(page.getByRole("heading", { name: "Resumen de la tienda" })).toBeVisible();
   const summary = page.getByRole("term");
-  await expect(summary).toHaveCount(3);
-  await expect(summary.nth(0)).toHaveText("Ventas del mes");
-  await expect(summary.nth(1)).toHaveText("Cantidad de ventas");
-  await expect(summary.nth(2)).toHaveText("Reponer");
-  await expect(page.getByText("No pudimos consultar las ventas").first()).toBeVisible();
+  await expect(summary).toHaveCount(5);
+  await expect(summary.nth(0)).toHaveText("Facturación mensual");
+  await expect(summary.nth(1)).toHaveText("Ventas del mes");
+  await expect(summary.nth(2)).toHaveText("Ganancias");
+  await expect(summary.nth(3)).toHaveText("Ticket promedio");
+  await expect(summary.nth(4)).toHaveText("Pendientes de retiro");
+  await expect(page.getByRole("heading", { name: "Facturación histórica" })).toBeVisible();
   if (isMobile) await page.getByText("Menú de administración").click();
   await expect(page.getByRole("navigation", { name: "Administración" }).getByRole("link", { name: "Resumen" })).toBeVisible();
   await page.screenshot({ path: info.outputPath(`admin-resumen-${isMobile ? "mobile" : "desktop"}.png`), fullPage: true });

@@ -40,6 +40,9 @@ export function CatalogManager({
   imageUrls = {},
   imageBase = "",
   dispatchPending,
+  costs = {},
+  costError = "",
+  saveCost,
 }: {
   catalog: Catalog;
   commit: (next: Catalog) => Promise<{ error?: string }>;
@@ -51,6 +54,9 @@ export function CatalogManager({
   imageUrls?: Record<string, string>;
   imageBase?: string;
   dispatchPending?: () => Promise<{ message: string }>;
+  costs?: Record<string, number>;
+  costError?: string;
+  saveCost?: (id: string, value: string) => Promise<{ cost?: number | null; error?: string }>;
 }) {
   const params = useSearchParams();
   const tab = catalogSection(params.get("seccion"));
@@ -63,6 +69,7 @@ export function CatalogManager({
   const [productQuery, setProductQuery] = useState("");
   const [productFilter, setProductFilter] = useState<"all" | "restock" | "hidden">("all");
   const [productBrandPage, setProductBrandPage] = useState(0);
+  const [costDrafts, setCostDrafts] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false),
     [message, setMessage] = useState("");
   const [group, setGroup] = useState<CatalogGroup | null>(null),
@@ -167,6 +174,17 @@ export function CatalogManager({
     url.searchParams.delete("nuevo");
     window.history.replaceState(null, "", url);
   }, [params, newProduct]);
+  useEffect(() => {
+    const productId = params.get("producto");
+    const variantId = params.get("variante");
+    if (!productId || !variantId) return;
+    const target = catalog.products.find((item) => item.id === productId && item.variants.some((variant) => variant.id === variantId));
+    if (!target) return;
+    productTriggerId.current = `edit-product-${productId}`;
+    setDraft(structuredClone(target));
+    const frame = requestAnimationFrame(() => document.getElementById(`variant-${variantId}`)?.scrollIntoView({ block: "center" }));
+    return () => cancelAnimationFrame(frame);
+  }, [params, catalog.products]);
   function updateDraft(key: keyof Product, value: Product[keyof Product]) {
     setDraft((previous) => (previous ? { ...previous, [key]: value } : null));
   }
@@ -817,10 +835,12 @@ export function CatalogManager({
                     : "presentaciones"}
                 </span>
               </div>
-              {draft.variants.map((variant, index) => (
+              {costError && <p role="status" className="ui-notice">{costError}</p>}
+                {draft.variants.map((variant, index) => (
                 <fieldset
                   key={variant.id}
                   className="editor-fields variant-editor"
+                  id={`variant-${variant.id}`}
                   disabled={busy}
                 >
                   <legend>Variante {index + 1}</legend>
@@ -890,6 +910,21 @@ export function CatalogManager({
                       defaultValue={(variant.cashPrice / 100).toFixed(2)}
                     />
                   </label>
+                  {saveCost && <div className="admin-purchase-cost editor-wide">
+                    <label htmlFor={`cost-${variant.id}`}>Costo de compra por unidad (ARS) · privado</label>
+                    <div><input id={`cost-${variant.id}`} inputMode="decimal" pattern="[0-9]+([.,][0-9]{1,2})?" placeholder="Pendiente" value={costDrafts[variant.id] ?? (costs[variant.id] === undefined ? "" : (costs[variant.id] / 100).toFixed(2))} onChange={(event) => setCostDrafts((previous) => ({ ...previous, [variant.id]: event.target.value }))} />
+                    <button type="button" className="button button-outline" disabled={busy || !catalog.products.some((product) => product.variants.some((item) => item.id === variant.id))} onClick={async () => {
+                      setBusy(true); setMessage("");
+                      try {
+                        const value = costDrafts[variant.id] ?? (costs[variant.id] === undefined ? "" : (costs[variant.id] / 100).toFixed(2));
+                        const result = await saveCost(variant.id, value);
+                        setMessage(result.error ?? "Costo de compra guardado. No modifica ventas anteriores.");
+                        if (!result.error) setCostDrafts((previous) => { const next = { ...previous }; delete next[variant.id]; return next; });
+                      } catch { setMessage("No pudimos guardar el costo."); }
+                      finally { setBusy(false); }
+                    }}>Guardar costo</button></div>
+                    <small>{catalog.products.some((product) => product.variants.some((item) => item.id === variant.id)) ? "Se usa en ventas cobradas después de guardarlo; las anteriores conservan costo desconocido." : "Primero guardá el producto y su SKU."}</small>
+                  </div>}
                   <label>
                     Stock
                     <input

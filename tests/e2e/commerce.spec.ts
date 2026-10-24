@@ -336,9 +336,10 @@ test("gestión permite editar un combo y registra un retiro una vez sin desconta
   await page
     .getByRole("button", { name: "Agregar presentación", exact: true })
     .click();
-  await page
-    .getByRole("combobox", { name: "Presentación 2", exact: true })
-    .selectOption("00000000-0000-4000-8000-000000000052");
+  await page.getByRole("combobox", { name: "Presentación 1", exact: true }).fill("proteina");
+  await page.getByRole("listbox", { name: "Resultados para presentación 1" }).getByRole("option").first().click();
+  await page.getByRole("combobox", { name: "Presentación 2", exact: true }).fill("creatina");
+  await page.getByRole("listbox", { name: "Resultados para presentación 2" }).getByRole("option").first().click();
   await page
     .getByRole("button", { name: "Registrar retiro pendiente", exact: true })
     .click();
@@ -354,24 +355,25 @@ test("gestión permite editar un combo y registra un retiro una vez sin desconta
   ).toContainText("49.000,00");
   await expect(
     page.locator(".promotions-table tbody tr, .orders-table tbody tr"),
-  ).toContainText("Pago pendiente");
+  ).toContainText("Pendiente de retiro");
   const records = page.getByRole("table", {
     name: "Ventas y retiros registrados",
   });
-  await expect(records.getByRole("columnheader")).toHaveCount(5);
-  await expect(records).toContainText("Tel.: 000-0000");
-  await expect(records).toContainText("1 × Proteína de prueba");
-  await expect(records).toContainText("1 × Creatina de prueba");
-  await expect(records).toContainText("Chocolate");
-  await expect(records).not.toContainText("Referencia");
-  await expect(records).not.toContainText("00000000-");
+  await expect(records.getByRole("columnheader")).toHaveCount(4);
+  await records.getByRole("row", { name: /Retiro ficticio/ }).click();
+  const detail = page.getByRole("dialog", { name: "Detalle del registro" });
+  await expect(detail).toContainText("000-0000");
+  await expect(detail).toContainText("Proteína de prueba");
+  await expect(detail).toContainText("Creatina de prueba");
+  await expect(detail).toContainText("Chocolate");
+  await page.keyboard.press("Escape");
   await page.goto("/vista-previa/producto/proteina-de-prueba");
   await expect(
     page.getByRole("region", { name: "Promociones disponibles" }),
   ).toContainText("Combo de prueba");
   await expect(
     page.getByRole("region", { name: "Promociones disponibles" }),
-  ).toContainText("Creatina de prueba");
+  ).toContainText("Ver combo");
   await expect(
     page.getByRole("region", { name: "Promociones disponibles" }),
   ).toContainText("49.000");
@@ -423,6 +425,8 @@ test("venta presencial requiere confirmar cobro y entrega, y descuenta stock una
   await page
     .getByRole("button", { name: "Agregar presentación", exact: true })
     .click();
+  await page.getByRole("combobox", { name: "Presentación 1", exact: true }).fill("proteina");
+  await page.getByRole("listbox", { name: "Resultados para presentación 1" }).getByRole("option").first().click();
   await page.getByLabel("Cantidad 1", { exact: true }).fill("8");
   const submit = page.getByRole("button", {
     name: "Registrar venta en efectivo",
@@ -440,7 +444,7 @@ test("venta presencial requiere confirmar cobro y entrega, y descuenta stock una
   ).toHaveCount(1);
   await expect(
     page.locator(".promotions-table tbody tr, .orders-table tbody tr"),
-  ).toContainText("Efectivo cobrado");
+  ).toContainText("Cobrado y entregado");
   await expect(submit).toHaveCount(0);
   await page
     .getByRole("button", { name: "Crear venta o retiro", exact: true })
