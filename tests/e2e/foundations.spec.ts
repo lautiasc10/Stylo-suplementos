@@ -68,6 +68,25 @@ test("categorías conservan su selección sin simular productos", async ({
   await expect(page.locator(".product-card")).toHaveCount(0);
 });
 
+test("el acceso administrativo ocupa una columna centrada en escritorio y móvil", async ({ page }) => {
+  for (const width of [1440, 1920, 375, 320]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/admin/login");
+    const card = page.locator(".auth-card");
+    await expect(card).toBeVisible();
+    const bounds = (await card.boundingBox())!;
+    expect(Math.abs(bounds.x + bounds.width / 2 - width / 2)).toBeLessThan(2);
+    expect(bounds.width).toBeGreaterThan(width >= 960 ? 440 : width - 48);
+    expect(bounds.x).toBeGreaterThanOrEqual(16);
+    const field = (await page.getByLabel("Correo electrónico").boundingBox())!;
+    expect(field.width).toBeGreaterThan(bounds.width - 112);
+    const overflow = await page.evaluate(() =>
+      document.documentElement.scrollWidth > innerWidth + 1,
+    );
+    expect(overflow).toBe(false);
+  }
+});
+
 test("admin y MFA no habilitan acceso sin configuración", async ({
   page,
   request,

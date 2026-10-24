@@ -6,6 +6,7 @@ import { AdminWorkspaceScope } from "@/components/admin/workspace-navigation";
 import { adminDisplay, adminBody } from "@/components/admin/admin-fonts";
 import "../commerce.css";
 import "../admin-premium.css";
+import "../admin-auth.css";
 
 
 export const dynamic = "force-dynamic";
