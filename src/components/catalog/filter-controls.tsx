@@ -281,9 +281,8 @@ export function FilterPanel({
         ref={dialog}
         className="catalog-filter-dialog"
         open
-        role={modal ? "dialog" : "none"}
         aria-modal={modal || undefined}
-        aria-labelledby={modal ? titleId : undefined}
+        aria-labelledby={titleId}
         data-modal={modal || undefined}
         onClose={() => {
           // Closing an inline dialog to promote it with showModal queues a

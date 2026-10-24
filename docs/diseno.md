@@ -1,5 +1,11 @@
 # Diseño de STYLO
 
+La Fase 3AQ adelanta la roca compartida del catálogo y reutiliza medidas durante el reveal, conservando la composición y el movimiento. Incluye comparación alternada, mejoras parciales y límites pendientes: [rendimiento y geometría](rendimiento-fase-3aq.md).
+
+La Fase 3AP optimiza la descarga de poses del león y variantes, la pintura móvil del hero y la pausa detrás de paneles, conservando el reveal y los fondos por sabor: [carga y animaciones](rendimiento-fase-3ap.md).
+
+La Fase 3AO corrige la semántica accesible de filtros y enlaces y mantiene completas las leyendas de transferencia en tarjetas móviles, conservando la identidad y las animaciones: [primera etapa de la auditoría](auditoria-etapa-1-fase-3ao.md).
+
 La Fase 3AN añade [procesamiento automático en la carga](carga-imagenes-fase-3an.md): fotos SF en canvas común, tablas completas y logos oficiales conservados. El administrador muestra el resultado antes de guardar el producto.
 
 La Fase 3AM incorpora [dos frentes transparentes de XBODY](imagenes-xbody-fase-3am.md) en el canvas común del catálogo: conserva los envases, su línea base y los originales de Storage, con WebP 320/600/1000 para cada contexto.

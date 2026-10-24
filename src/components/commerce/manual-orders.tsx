@@ -18,6 +18,7 @@ import { AdminTable } from "@/components/admin/data-table";
 import { IconAction } from "@/components/admin/icon-action";
 import { Icon } from "@/components/ui/icon";
 import { AdminDrawer } from "@/components/admin/drawer";
+import { orderDate } from "@/modules/admin/order-date";
 const noOrders: OrderRecord[] = [];
 const noPromotions: Promotion[] = [];
 
@@ -199,13 +200,10 @@ export function ManualOrders({
                       </td>
                       <td role="cell" data-label="Fecha">
                         <time dateTime={row.created_at}>
-                          {new Date(row.created_at).toLocaleDateString("es-AR")}
+                          {orderDate(row.created_at).date}
                         </time>
                         <small>
-                          {new Date(row.created_at).toLocaleTimeString(
-                            "es-AR",
-                            { hour: "2-digit", minute: "2-digit" },
-                          )}
+                          {orderDate(row.created_at).time}
                         </small>
                       </td>
                       <td role="cell" data-label="Estado">

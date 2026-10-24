@@ -109,19 +109,17 @@
 @media (prefers-reduced-motion: no-preference) {
   .reference-hero[data-presentation="animated"] .hero-lion-ambient {
     animation-name: reference-lion-arrive;
-    animation-delay: 300ms;
+    animation-delay: 0ms;
   }
 }
 @keyframes reference-lion-arrive {
   from {
-    opacity: 0;
+    opacity: 0.85;
     transform: scale(1.08);
-    filter: blur(12px);
   }
   to {
     opacity: 1;
     transform: scale(1);
-    filter: none;
   }
 }
 @media (prefers-reduced-motion: reduce) {

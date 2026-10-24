@@ -98,7 +98,7 @@ function Countdown({ end }: { end: string }) {
     String(Math.floor(remaining / 60000) % 60).padStart(2, "0"),
     String(Math.floor(remaining / 1000) % 60).padStart(2, "0"),
   ];
-  return <div className="promo-countdown" aria-label="Tiempo restante de la promoción">
+  return <div className="promo-countdown" role="group" aria-label="Tiempo restante de la promoción">
     {units.map((value, index) => <span key={index}><strong>{value}</strong><small>{["horas", "min", "seg"][index]}</small></span>)}
   </div>;
 }
@@ -124,7 +124,7 @@ function HorizontalOffers({ catalog, offers, imageBase, imageUrls, prefix }: { c
             const href = offerHref(offer, prefix);
             return <article className="promo-horizontal-card" key={offer.id}>
               <span className="promo-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
-              <Link className="promo-horizontal-image" href={href} aria-label={`Ver ${offer.name}`}>
+              <Link className="promo-horizontal-image" href={href} aria-label={`Ver ${offer.name}${price.percentage > 0 ? `, −${price.percentage}%` : ""}`}>
                 <OfferImage offer={offer} imageBase={imageBase} imageUrls={imageUrls} />
                 {price.percentage > 0 && <span className="promo-percent">−{price.percentage}%</span>}
               </Link>
@@ -197,7 +197,8 @@ export function PromotionsExperience({ catalog: initialCatalog, imageBase = "", 
       <a className="promo-scroll-cue" href="#oferta-destacada">Seguí bajando ↓</a>
     </section>
 
-    <div className="promo-marquee" aria-label={ticker.join(" · ")}>
+    <div className="promo-marquee">
+      <p className="sr-only">{ticker.join(" · ")}</p>
       <div aria-hidden="true">{[0, 1, 2, 3].map((repeat) => <span key={repeat}>{ticker.map((label, index) => <span key={index}>{label}<b>★</b></span>)}</span>)}</div>
     </div>
 

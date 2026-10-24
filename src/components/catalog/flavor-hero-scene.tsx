@@ -2,6 +2,7 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useMotionPreference } from "@/components/ui/use-motion-preference";
+import { useModalOpen } from "@/components/ui/use-modal-open";
 import { IngredientLayer } from "./flavor-scene";
 import type { SceneFlavor } from "@/modules/catalog/flavor-scenes";
 import {
@@ -25,6 +26,7 @@ export function FlavorHeroScene({
   const root = useRef<HTMLDivElement>(null);
   const incoming = useRef<HTMLDivElement>(null);
   const content = useRef<HTMLDivElement>(null);
+  const sceneSize = useRef<{ width: number; height: number } | null>(null);
   const [expired, setExpired] = useState<number | null>(null);
   const [ambientFlavor, setAmbientFlavor] = useState<SceneFlavor | null>(
     flavor,
@@ -32,6 +34,7 @@ export function FlavorHeroScene({
   const [visible, setVisible] = useState(false);
   const [documentVisible, setDocumentVisible] = useState(true);
   const reduced = useMotionPreference();
+  const modalOpen = useModalOpen();
   const hasPrevious = Boolean(
     change && expired !== change.token && previousFlavor !== flavor,
   );
@@ -68,6 +71,7 @@ export function FlavorHeroScene({
     const positionVeil = () => {
       const scene = element.getBoundingClientRect(),
         info = copy.getBoundingClientRect();
+      sceneSize.current = { width: scene.width, height: scene.height };
       element.style.setProperty(
         "--flavor-copy-center-x",
         `${info.left - scene.left + info.width / 2}px`,
@@ -110,13 +114,18 @@ export function FlavorHeroScene({
     // Cache the assembled old scene as one compositor surface as well. Without
     // this hint a changing clip can repeatedly repaint its large ingredients.
     if (outgoing && full) outgoing.style.willChange = "transform";
-    const bounds = element.getBoundingClientRect();
+    // ResizeObserver already measures this surface. Reading layout here, after
+    // inserting the incoming scene and promoting layers, forces a synchronous
+    // style/layout pass inside React's commit on every flavor change.
+    const bounds = sceneSize.current ?? element.getBoundingClientRect();
     const { x, y, radius } = revealGeometry(
       bounds.width,
       bounds.height,
       change.point,
     );
-    layer.style.willChange = full ? "clip-path, opacity" : "opacity";
+    layer.style.willChange = full ? "transform, clip-path, opacity" : "opacity";
+    // Request a compositor surface for the assembled scene during clipping.
+    if (full) layer.style.transform = "translateZ(0)";
     const reveal = layer.animate(
       full
         ? [
@@ -163,6 +172,7 @@ export function FlavorHeroScene({
         // At this point both effects end at scale(1) and a fully open circle.
         animations.forEach((animation) => animation.cancel());
         layer.style.willChange = inner.style.willChange = "";
+        layer.style.transform = "";
         if (outgoing) outgoing.style.willChange = "";
         setExpired(change.token);
         setAmbientFlavor(flavor);
@@ -171,6 +181,7 @@ export function FlavorHeroScene({
     return () => {
       animations.forEach((animation) => animation.cancel());
       layer.style.willChange = inner.style.willChange = "";
+      layer.style.transform = "";
       if (outgoing) outgoing.style.willChange = "";
     };
   }, [change, flavor, previousFlavor]);
@@ -182,7 +193,7 @@ export function FlavorHeroScene({
       className="flavor-scene-decorations flavor-hero-scenes"
       aria-hidden="true"
       data-ambient={activeAmbient ? "true" : undefined}
-      data-playing={visible && documentVisible ? "true" : undefined}
+      data-playing={visible && documentVisible && !modalOpen ? "true" : undefined}
     >
       {layers.map((value, index) => {
         const active = index === layers.length - 1;

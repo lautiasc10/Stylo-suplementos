@@ -17,7 +17,7 @@ export function ArrivalCard({ product, catalog, imageBase, example, imageUrls = 
   const displayName = product.name.match(/["“]([^"”]+)["”]/)?.[1] ?? packagingLabel(product.name);
   return (
     <article className="arrival-card">
-      <Link href={`${prefix}/producto/${product.slug}?variante=${variant.id}`} aria-label={`Ver ${product.name}`}>
+      <Link href={`${prefix}/producto/${product.slug}?variante=${variant.id}`}>
         <div className="arrival-card-image product-reflection-stage">
           <span className="arrival-card-badge">{example ? "Ejemplo" : "Nuevo"}</span>
           {photo && <ProductArtwork photo={photo} alt="" sizes="(min-width: 960px) 320px, 76vw" />}

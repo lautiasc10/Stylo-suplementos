@@ -16,6 +16,7 @@ import {
 } from "@/modules/catalog/model";
 import { createGalleryPhotoCache } from "./gallery-photo-cache";
 import { scheduleMediaWarmup } from "./media-warmup";
+import { useModalOpen } from "@/components/ui/use-modal-open";
 import type { GalleryImage } from "./product-gallery";
 import {
   elementPoint,
@@ -50,6 +51,7 @@ export function FlavorHeroGallery({
   const [enhanced, setEnhanced] = useState(false);
   const [settled, setSettled] = useState<number | null>(null);
   const [error, setError] = useState("");
+  const modalOpen = useModalOpen();
   const photo = useCallback(
     (id: string) => images.find((item) => item.variantId === id),
     [images],
@@ -59,7 +61,7 @@ export function FlavorHeroGallery({
   latest.current = { activeId, variants, photo, onPrepareImage };
 
   const warm = useCallback(() => {
-    if (document.hidden) return;
+    if (document.hidden || document.querySelector("dialog:modal")) return;
     const {
       activeId: id,
       variants: list,
@@ -104,9 +106,10 @@ export function FlavorHeroGallery({
     };
   }, [warm, preload]);
   useEffect(() => {
+    if (modalOpen) return;
     const hero = root.current?.closest(".product-detail");
     if (hero) return scheduleMediaWarmup(hero, warm, m.idlePreload);
-  }, [activeId, warm]);
+  }, [activeId, warm, modalOpen]);
 
   useLayoutEffect(() => {
     if (!change) return;

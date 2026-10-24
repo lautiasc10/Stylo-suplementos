@@ -41,7 +41,7 @@ export function ComboCard({ offer, imageBase, imageUrls, preview = false, return
       <p className="combo-card-kicker">STYLO · {offer.components.reduce((n, c) => n + c.quantity, 0)} productos</p>
       <h2><Link href={href}>{offer.name}</Link></h2>
       <p className="combo-card-components">{offer.components.map((c) => `${c.quantity} × ${packagingLabel(c.product!.name)}`).join(" + ")}</p>
-      <div className="combo-card-prices"><strong>{formatPrice(offer.listPrice, 0)}</strong><p><b>{formatPrice(offer.cashPrice, 0)}</b> con transferencia</p></div>
+      <div className="combo-card-prices"><strong>{formatPrice(offer.listPrice, 0)}</strong><p><b>{formatPrice(offer.cashPrice, 0)}</b> <span>con transferencia</span></p></div>
       <Link href={href} className="combo-card-link">Ver combo <span aria-hidden="true">↗</span></Link>
     </div>
   </article>;

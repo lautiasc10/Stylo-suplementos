@@ -25,7 +25,7 @@ test("piloto de cinco productos: encuadre cuadrado, alineación y responsive sin
           width: stage.width,
           stageHeight: stage.height,
           priceTop:
-            card.querySelector(".product-prices")!.getBoundingClientRect().top -
+            card.querySelector(".editorial-pricing")!.getBoundingClientRect().top -
             c.top,
         };
       }),

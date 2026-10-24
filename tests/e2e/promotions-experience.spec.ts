@@ -40,6 +40,10 @@ test("la página independiente muestra solo promociones comprables y agrega un c
   await expect(scene.locator(".promo-hero h1")).toContainText("−29%");
   await expect(page.locator("canvas.store-particles")).toHaveCount(1);
   await expect(scene.locator(".promo-horizontal-card").first().locator(".promo-horizontal-price strong")).toHaveText("$ 30.000");
+  const offerImage = scene.locator(".promo-horizontal-image").first();
+  const discount = await offerImage.locator(".promo-percent").innerText();
+  await expect(offerImage).toHaveAccessibleName(`Ver Rebaja de prueba, ${discount}`);
+  await expect(scene.locator(".promo-marquee .sr-only")).toHaveCount(1);
   await scene.locator(".promo-feature").scrollIntoViewIfNeeded();
   await expect(scene.locator(".promo-feature-copy")).toHaveCSS("opacity", "1");
   await scene.locator(".promo-feature").screenshot({ path: testInfo.outputPath(`promotions-feature-${isMobile ? "mobile" : "desktop"}.png`), animations: "disabled" });

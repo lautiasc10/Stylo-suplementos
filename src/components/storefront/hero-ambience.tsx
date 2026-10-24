@@ -52,9 +52,12 @@ export function HeroAmbience({
     let height = 0;
     let bounds = root.getBoundingClientRect();
     let inView = false;
-    let covered = document.querySelector("dialog[open]") !== null;
+    let covered = document.querySelector("dialog:modal") !== null;
     let frame: number | null = null;
     let previous = 0;
+    let lastX = NaN;
+    let lastY = NaN;
+    let dustElapsed = 0;
     let seed = 3032;
     const particles: Particle[] = [];
     const random = () => {
@@ -70,10 +73,20 @@ export function HeroAmbience({
       current.y += (target.y - current.y) * ease;
       const dx = current.x - 0.5;
       const dy = current.y - 0.5;
-      if (text)
-        text.style.transform = `translate3d(${-30 * dx}px, ${-20 * dy}px, 0)`;
-      if (lion)
-        lion.style.transform = `rotateX(${-8 * dy}deg) rotateY(${10 * dx}deg)`;
+      // Avoid style invalidation once the pointer has settled.
+      if (
+        !Number.isFinite(lastX) ||
+        Math.abs(current.x - lastX) > 0.00001 ||
+        Math.abs(current.y - lastY) > 0.00001
+      ) {
+        if (text)
+          text.style.transform = `translate3d(${-30 * dx}px, ${-20 * dy}px, 0)`;
+        if (lion)
+          lion.style.transform = `rotateX(${-8 * dy}deg) rotateY(${10 * dx}deg)`;
+        light!.style.transform = `translate3d(${current.x * width - 600}px, ${current.y * height - 600}px, 0)`;
+        lastX = current.x;
+        lastY = current.y;
+      }
       // Match the reference's 40% / 60% dead zone. Keep the current pose
       // through the center so slow mouse movement cannot make it flicker.
       const left = target.x < 0.4;
@@ -81,11 +94,15 @@ export function HeroAmbience({
         facingLeft = left;
         poses.dataset.facing = left ? "left" : "right";
       }
-      light!.style.transform = `translate3d(${current.x * width - 600}px, ${current.y * height - 600}px, 0)`;
+      dustElapsed += dt;
+      // Preserve the particle speed/count on touch devices, painting at 30 Hz.
+      if (!fine.matches && dt > 0 && dustElapsed < 1 / 30 - 0.001) return;
+      const particleDt = dustElapsed;
+      dustElapsed = 0;
       context!.clearRect(0, 0, width, height);
       for (const p of particles) {
-        p.y -= p.vy * p.z * dt * 60;
-        p.a += dt * 0.6;
+        p.y -= p.vy * p.z * particleDt * 60;
+        p.a += particleDt * 0.6;
         if (p.y < -0.05) {
           p.y = 1.05;
           p.x = random();
@@ -114,6 +131,7 @@ export function HeroAmbience({
         if (frame !== null) cancelAnimationFrame(frame);
         frame = null;
         previous = 0;
+        dustElapsed = 0;
       } else if (frame === null) frame = requestAnimationFrame(tick);
     }
     function measure() {
@@ -141,6 +159,7 @@ export function HeroAmbience({
         });
       particles.length = count;
       if (!fine.matches) target.x = target.y = 0.5;
+      lastX = lastY = NaN;
       paint(0);
     }
     function move(event: PointerEvent) {
@@ -179,7 +198,7 @@ export function HeroAmbience({
     const dialogs = new MutationObserver((records) => {
       if (!records.some(({ target }) => target instanceof HTMLDialogElement))
         return;
-      covered = document.querySelector("dialog[open]") !== null;
+      covered = document.querySelector("dialog:modal") !== null;
       sync();
     });
     syncRef.current = sync;

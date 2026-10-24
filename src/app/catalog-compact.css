@@ -338,6 +338,10 @@
   .product-card .editorial-pricing-transfer strong {
     font-size: var(--text-base);
   }
+  .product-card .editorial-pricing-transfer > span:not(.transfer-saving) {
+    flex-basis: 100%;
+    white-space: nowrap;
+  }
   .product-card-actions {
     gap: var(--space-1);
   }

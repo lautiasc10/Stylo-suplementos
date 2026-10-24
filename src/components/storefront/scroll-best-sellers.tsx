@@ -26,7 +26,7 @@ function SellersPodium({ products, className, showHeading = true }: { products: 
           <article className="scroll-sellers-podium-card" data-rank={index + 1} key={item.id}>
             <span className="scroll-sellers-podium-number" aria-hidden="true">{index + 1}</span>
             {index === 0 && <span className="scroll-sellers-podium-badge">Ejemplo destacado</span>}
-            <Link className="scroll-sellers-podium-link" href={item.href} aria-label={`Ver ${item.displayName}, ${item.description}`}>
+            <Link className="scroll-sellers-podium-link" href={item.href}>
               <img src={item.image.src} srcSet={item.image.srcSet} sizes="(min-width: 960px) 340px, (min-width: 620px) 40vw, 75vw" width={600} height={600} loading="lazy" decoding="async" alt={item.image.alt} />
               <span className="scroll-sellers-podium-brand">{item.brand}</span>
               <h3>{item.displayName}</h3>

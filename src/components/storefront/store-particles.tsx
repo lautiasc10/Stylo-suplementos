@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 
-type Particle = { x: number; y: number; angle: number; radius: number; size: number };
+type Particle = { x: number; y: number; cos: number; sin: number; radius: number; size: number };
 
 /** One decorative canvas for the public storefront, adapted from the owner's Lovable reference. */
 export function StoreParticles() {
@@ -32,13 +32,15 @@ export function StoreParticles() {
       canvas.width = Math.ceil(width * ratio);
       canvas.height = Math.ceil(height * ratio);
       context.setTransform(ratio, 0, 0, ratio, 0, 0);
-      particles = Array.from({ length: 160 }, () => ({
-        x: Math.random(),
-        y: Math.random(),
-        angle: Math.random() * Math.PI * 2,
-        radius: 0.15 + Math.random() * 0.35,
-        size: 0.4 + Math.random() * 1.6,
-      }));
+      particles = Array.from({ length: 160 }, () => {
+        const x = Math.random(), y = Math.random();
+        const angle = Math.random() * Math.PI * 2;
+        return {
+          x, y, cos: Math.cos(angle), sin: Math.sin(angle),
+          radius: 0.15 + Math.random() * 0.35,
+          size: 0.4 + Math.random() * 1.6,
+        };
+      });
     }
 
     function paint(timestamp: number) {
@@ -48,14 +50,18 @@ export function StoreParticles() {
       previous = timestamp;
       phase += elapsed * 0.00024;
       const convergence = (Math.sin(phase) + 1) / 2;
+      // Angle addition preserves the exact trajectories with two trigonometric
+      // calls per frame instead of two per particle. Alpha is shared, but each
+      // disc still paints separately to preserve overlapping translucency.
+      const cos = Math.cos(phase), sin = Math.sin(phase);
       context.clearRect(0, 0, width, height);
       context.fillStyle = gold;
+      context.globalAlpha = 0.35 + convergence * 0.5;
       for (const particle of particles) {
-        const centerX = width / 2 + Math.cos(particle.angle + phase) * particle.radius * width * 0.35 * convergence;
-        const centerY = height / 2 + Math.sin(particle.angle + phase) * particle.radius * height * 0.6 * convergence;
+        const centerX = width / 2 + (particle.cos * cos - particle.sin * sin) * particle.radius * width * 0.35 * convergence;
+        const centerY = height / 2 + (particle.sin * cos + particle.cos * sin) * particle.radius * height * 0.6 * convergence;
         const x = particle.x * width * (1 - convergence) + centerX * convergence;
         const y = particle.y * height * (1 - convergence) + centerY * convergence;
-        context.globalAlpha = 0.35 + convergence * 0.5;
         context.beginPath();
         context.arc(x, y, particle.size, 0, Math.PI * 2);
         context.fill();

@@ -9,6 +9,9 @@ export function useFlavorDetailsMotion(
   enabled: boolean,
   change: FlavorChange | null,
 ) {
+  const chipGeometry = useRef(new Map<HTMLElement, {
+    x: number; y: number; width: number; height: number;
+  }>());
   const previous = useRef<{
     x: number;
     y: number;
@@ -28,15 +31,23 @@ export function useFlavorDetailsMotion(
     );
     if (!options || !indicator || !selected) return;
     let animation: Animation | undefined;
-    const position = (animate: boolean) => {
-      const box = selected.getBoundingClientRect(),
-        parent = options.getBoundingClientRect();
-      const next = {
-        x: box.left - parent.left,
-        y: box.top - parent.top,
-        width: box.width,
-        height: box.height,
-      };
+    const position = (animate: boolean, refresh = false) => {
+      if (refresh || !chipGeometry.current.has(selected)) {
+        const parent = options.getBoundingClientRect();
+        const measured = new Map<HTMLElement, {
+          x: number; y: number; width: number; height: number;
+        }>();
+        for (const chip of options.querySelectorAll<HTMLElement>("a")) {
+          const box = chip.getBoundingClientRect();
+          measured.set(chip, {
+            x: box.left - parent.left, y: box.top - parent.top,
+            width: box.width, height: box.height,
+          });
+        }
+        chipGeometry.current = measured;
+      }
+      const next = chipGeometry.current.get(selected);
+      if (!next) return;
       const old = previous.current;
       indicator.style.width = `${next.width}px`;
       indicator.style.height = `${next.height}px`;
@@ -62,8 +73,11 @@ export function useFlavorDetailsMotion(
       previous.current = next;
     };
     position(true);
-    const observer = new ResizeObserver(() => position(false));
+    // Cache all chips together after resize/font changes; a selection only
+    // writes the indicator instead of forcing layout between scene animations.
+    const observer = new ResizeObserver(() => position(false, true));
     observer.observe(options);
+    for (const chip of options.querySelectorAll("a")) observer.observe(chip);
     return () => {
       if (animation?.playState === "running") {
         const matrix = new DOMMatrixReadOnly(

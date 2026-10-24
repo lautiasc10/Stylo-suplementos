@@ -16,6 +16,7 @@ import { createGalleryPhotoCache } from "./gallery-photo-cache";
 import { PackageTurn, type PackageTurnState } from "./package-turn";
 import { ProductThumbnailRail } from "./product-thumbnail-rail";
 import { VariantSpinner } from "./VariantSpinner";
+import { useModalOpen } from "@/components/ui/use-modal-open";
 import type { Variant } from "@/modules/catalog/model";
 
 export type GalleryImage = {
@@ -161,12 +162,66 @@ export function ProductGallery(props: ProductGalleryProps) {
         prepareImage={props.prepareImage}
       />
     );
+  // A normalized single-photo card has no gallery state to hydrate. Keep its
+  // native image/link and the outer card's hover/tilt, without mounting timers,
+  // observers, caches or a second settling copy of the same photograph.
+  if (
+    props.mode !== "detail" &&
+    props.images.length === 1 &&
+    props.images[0].normalized
+  )
+    return <StaticCardPhoto {...props} />;
   return (
     <LegacyProductGallery
       {...props}
       flavorNavigation={false}
       transition={props.mode === "detail" ? "fade" : props.transition}
     />
+  );
+}
+
+function StaticCardPhoto({
+  images: [image],
+  href,
+  linkLabel,
+  eager = false,
+}: ProductGalleryProps) {
+  const frame = (
+    <span className="product-frame-pair">
+      <img
+        className="product-frame product-frame-current"
+        src={image.src}
+        srcSet={image.srcSet}
+        sizes={image.sizes}
+        alt={image.alt}
+        width={720}
+        height={720}
+        crossOrigin="anonymous"
+        decoding="async"
+        loading={eager ? "eager" : "lazy"}
+        fetchPriority={eager ? "high" : "auto"}
+      />
+    </span>
+  );
+  return (
+    <div
+      className="product-image-gallery product-image-gallery-card"
+      data-normalized="true"
+    >
+      <div className="product-image-stage">
+        {href ? (
+          <Link
+            className="product-frame-link"
+            href={image.href ?? href}
+            aria-label={linkLabel}
+          >
+            {frame}
+          </Link>
+        ) : (
+          <div className="product-frame-link">{frame}</div>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -213,6 +268,8 @@ function LegacyProductGallery({
   const [documentVisible, setDocumentVisible] = useState(true);
   const [paused, setPaused] = useState(false);
   const [interacting, setInteracting] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const modalOpen = useModalOpen();
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [readyImage, setReadyImage] = useState<string | null>(null);
@@ -234,7 +291,8 @@ function LegacyProductGallery({
     !interacting &&
     readyImage === images[active]?.src &&
     visible &&
-    documentVisible;
+    documentVisible &&
+    !modalOpen;
 
   useLayoutEffect(() => {
     root.current
@@ -304,7 +362,7 @@ function LegacyProductGallery({
 
   useEffect(() => {
     visibleRef.current = visible;
-    if (!visible || !documentVisible) {
+    if (!visible || !documentVisible || modalOpen) {
       finishTurn.current?.();
       setPackageTurn(null);
       // A mobile swatch may be below the photograph. Finish that explicit
@@ -319,12 +377,14 @@ function LegacyProductGallery({
       setPrevious(null);
       photoCache.current?.cancelPending();
     }
-  }, [visible, documentVisible]);
+  }, [visible, documentVisible, modalOpen]);
 
   useEffect(() => {
     if (
       !automatic ||
       reduced ||
+      modalOpen ||
+      (mode === "card" && !hovered && !interacting) ||
       !visible ||
       !documentVisible ||
       readyImage !== images[active].src
@@ -348,6 +408,10 @@ function LegacyProductGallery({
   }, [
     automatic,
     reduced,
+    modalOpen,
+    mode,
+    hovered,
+    interacting,
     visible,
     documentVisible,
     active,
@@ -358,6 +422,8 @@ function LegacyProductGallery({
   useEffect(() => {
     if (
       !flavorNavigation ||
+      modalOpen ||
+      (mode === "card" && !hovered && !interacting) ||
       !visible ||
       !documentVisible ||
       (images[active].src && readyImage !== images[active].src)
@@ -389,6 +455,10 @@ function LegacyProductGallery({
     return () => window.clearTimeout(timer);
   }, [
     flavorNavigation,
+    modalOpen,
+    mode,
+    hovered,
+    interacting,
     visible,
     documentVisible,
     active,
@@ -418,7 +488,10 @@ function LegacyProductGallery({
         finishTurn.current = null;
         setPackageTurn(null);
         setPrevious(
-          !withTransition || reduced || !visibleRef.current
+          !withTransition ||
+            reduced ||
+            !visibleRef.current ||
+            document.querySelector("dialog:modal")
             ? null
             : activeIndex.current,
         );
@@ -443,6 +516,7 @@ function LegacyProductGallery({
           from.variantId !== images[index].variantId &&
           !reduced &&
           visibleRef.current &&
+          !document.querySelector("dialog:modal") &&
           images[index].src
         ) {
           finishTurn.current = () => settleImage(false);
@@ -717,6 +791,17 @@ function LegacyProductGallery({
       data-flavor-navigation={flavorNavigation ? "true" : undefined}
       data-loading={loading && !packageTurn ? "true" : undefined}
       data-animated={previous !== null && !reduced ? "true" : undefined}
+      onPointerEnter={(event) => {
+        if (event.pointerType === "mouse") setHovered(true);
+      }}
+      onPointerLeave={() => setHovered(false)}
+      onPointerDownCapture={(event) => {
+        if (event.pointerType !== "mouse") setHovered(true);
+      }}
+      onPointerUpCapture={(event) => {
+        if (event.pointerType !== "mouse") setHovered(false);
+      }}
+      onPointerCancel={() => setHovered(false)}
       onFocusCapture={() => setInteracting(true)}
       onBlurCapture={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget))

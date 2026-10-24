@@ -47,6 +47,36 @@ async function seed(page: Page, data = fixture()) {
   return data.catalog.products[0];
 }
 
+test("el indicador y el círculo se adaptan al redimensionar y cambiar sabores", async ({ page }) => {
+  const product = await seed(page);
+  await page.goto("/vista-previa/producto/whey-protein");
+  await page.evaluate(() => document.fonts.ready);
+  for (const [index, width] of [375, 768, 1440, 390].entries()) {
+    await page.setViewportSize({ width, height: 844 });
+    const target = product.variants[(index + 1) % product.variants.length];
+    const chip = page.locator(`.variant-chip[href*="${target.id}"]`);
+    await chip.click();
+    await expect(page.locator(".flavor-hero-gallery")).toHaveAttribute("data-active-variant", target.id);
+    await expect(page.locator(".flavor-hero-background")).toHaveCount(1);
+    await expect.poll(async () => {
+      const actual = await page.locator(".flavor-chip-indicator").boundingBox();
+      const expected = await chip.boundingBox();
+      return actual && expected ? Math.max(
+        Math.abs(actual.x - expected.x), Math.abs(actual.y - expected.y),
+        Math.abs(actual.width - expected.width), Math.abs(actual.height - expected.height),
+      ) : Infinity;
+    }).toBeLessThan(1.5);
+    expect(new URL(page.url()).searchParams.get("variante")).toBe(target.id);
+    const scene = page.locator(".flavor-hero-scenes");
+    const coverage = await scene.evaluate((element) => {
+      const bounds = element.getBoundingClientRect();
+      const layer = element.querySelector(".flavor-hero-background")!.getBoundingClientRect();
+      return layer.width >= bounds.width - 1 && layer.height >= bounds.height - 1;
+    });
+    expect(coverage).toBe(true);
+  }
+});
+
 test("coreografía: origen circular, datos inmediatos y relevo continuo de envases", async ({
   page,
 }) => {

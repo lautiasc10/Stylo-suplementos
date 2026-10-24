@@ -53,6 +53,10 @@ test("el escenario de ejemplo avanza por productos con el scroll y conserva los 
     await expect(section.locator(".scroll-sellers-top h2")).toBeVisible();
     await expect(section.locator(".scroll-sellers-podium-overlay h2")).toHaveCount(0);
     await expect(section.locator(".scroll-sellers-podium-overlay .scroll-sellers-podium-card")).toHaveCount(3);
+    for (const link of await section.locator(".scroll-sellers-podium-overlay .scroll-sellers-podium-link").all()) {
+      const brand = await link.locator(".scroll-sellers-podium-brand").innerText();
+      await expect(link).toHaveAccessibleName(new RegExp(brand, "i"));
+    }
     await page.screenshot({ path: testInfo.outputPath("sellers-desktop.png") });
     await section.locator(".scroll-sellers-podium-overlay .scroll-sellers-podium-link").first().click();
     await expect(page).toHaveURL(/\/vista-previa\/producto\//);

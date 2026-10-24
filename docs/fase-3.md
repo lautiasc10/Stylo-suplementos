@@ -1,5 +1,11 @@
 # Fase 3 — Comercio
 
+La continuación 3AQ comprueba las regresiones con compilaciones alternadas y optimiza descubrimiento de la roca, partículas y geometría del cambio de sabor: [resultados y pendientes](rendimiento-fase-3aq.md). El usuario autorizó el 24 de octubre consolidar 3AO/3AP/3AQ e integrar las mejoras verificadas a `main`, cerrando las mediciones adicionales y conservando documentados los límites pendientes.
+
+La continuación 3AP implementa la segunda etapa de la auditoría en `fase-3ap-rendimiento`: [carga y animaciones](rendimiento-fase-3ap.md). Conserva las correcciones locales anteriores, sin integración ni despliegue hasta validación.
+
+La continuación 3AO implementa la [primera etapa de correcciones de la auditoría](auditoria-etapa-1-fase-3ao.md): fechas estables de pedidos, semántica accesible y lectura de precios móviles. Se desarrolla en `fase-3ao-auditoria-accesibilidad`, pendiente de validación antes de integrar a `main`.
+
 La continuación 3AN prepara la [normalización al subir imágenes](carga-imagenes-fase-3an.md), con original archivado, copias responsive y validación de fotos SF. Incluye una migración de compatibilidad probada localmente, pendiente de activación en Supabase y de integración a `main`.
 
 Las entregas hasta 3AK y la [actualización de seguridad de Next.js](seguridad-next-fase-3al.md) quedaron integradas a `main` por autorización del usuario, en `151f9f7`. La continuación 3AM prepara las [fotos transparentes de XBODY](imagenes-xbody-fase-3am.md) en una rama separada: normaliza dos envases y reduce sus copias de tarjeta y detalle sin cambiar datos comerciales ni originales.

@@ -233,10 +233,18 @@ test("las etiquetas largas, la promoción y el stock quedan dentro de las tarjet
       (layout) => layout.inside && !layout.overlaps && !layout.coversControl,
     ),
   ).toBe(true);
-  await expect(page.locator(".product-placeholder").first()).toHaveCSS(
-    "background-color",
-    "rgb(8, 8, 8)",
-  );
+  // CSS Color 4 may serialize the approved dark token as lab()/oklch().
+  // Check the rendered color, without forcing a different brand token.
+  const placeholder = await page.locator(".product-placeholder").first().evaluate((el) => {
+    const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = 1;
+    const context = canvas.getContext("2d")!;
+    context.fillStyle = getComputedStyle(el).backgroundColor;
+    context.fillRect(0, 0, 1, 1);
+    return Array.from(context.getImageData(0, 0, 1, 1).data);
+  });
+  expect(placeholder[3]).toBe(255);
+  expect(Math.max(...placeholder.slice(0, 3))).toBeLessThan(24);
   for (const marker of await page.locator(".product-card-marker").all())
     expect((await marker.boundingBox())!.height).toBeLessThanOrEqual(44);
 });

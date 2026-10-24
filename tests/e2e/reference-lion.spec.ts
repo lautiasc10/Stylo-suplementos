@@ -116,8 +116,10 @@ test("en móvil conserva el león sin seguimiento ni descargas de video", async 
 }, info) => {
   test.skip(info.project.name !== "mobile");
   const videos: string[] = [];
+  const unusedPoses: string[] = [];
   page.on("request", (request) => {
     if (request.url().includes("stylo-lion-motion")) videos.push(request.url());
+    if (request.url().includes("stylo-lion-poster-left")) unusedPoses.push(request.url());
   });
   await page.goto("/");
   await expect(page.locator(".reference-lion-right")).toHaveCSS("opacity", "1");
@@ -134,4 +136,5 @@ test("en móvil conserva el león sin seguimiento ni descargas de video", async 
     ),
   ).toBe(true);
   expect(videos).toEqual([]);
+  expect(unusedPoses).toEqual([]);
 });

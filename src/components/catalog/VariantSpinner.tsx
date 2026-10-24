@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Icon } from "@/components/ui/icon";
 import { useMotionPreference } from "@/components/ui/use-motion-preference";
+import { useModalOpen } from "@/components/ui/use-modal-open";
 import {
   flavorLabel,
   variantLabel,
@@ -87,6 +88,8 @@ export function VariantSpinner(props: VariantSpinnerProps) {
   const [visible, setVisible] = useState(false);
   const [documentVisible, setDocumentVisible] = useState(true);
   const [focused, setFocused] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const modalOpen = useModalOpen();
   const [manual, setManual] = useState(false);
   const [saveData, setSaveData] = useState(false);
   const [message, setMessage] = useState("");
@@ -283,7 +286,12 @@ export function VariantSpinner(props: VariantSpinnerProps) {
           !transition.from.photo.information &&
           !reducedRef.current;
         const sign = transition.to.direction || 1;
-        if (document.hidden || !visibleRef.current || !to.animate) {
+        if (
+          document.hidden ||
+          !visibleRef.current ||
+          document.querySelector("dialog:modal") ||
+          !to.animate
+        ) {
           settle();
           return;
         }
@@ -387,6 +395,9 @@ export function VariantSpinner(props: VariantSpinnerProps) {
     if (reduced) finish.current?.();
   }, [reduced]);
   useEffect(() => {
+    if (modalOpen) finish.current?.();
+  }, [modalOpen]);
+  useEffect(() => {
     const selection = props.selectionRequest;
     if (!selection || selectionSeen.current === selection) return;
     selectionSeen.current = selection;
@@ -414,6 +425,7 @@ export function VariantSpinner(props: VariantSpinnerProps) {
     reduced === false &&
     visible &&
     documentVisible &&
+    !modalOpen &&
     !focused &&
     !manual &&
     !saveData &&
@@ -450,6 +462,8 @@ export function VariantSpinner(props: VariantSpinnerProps) {
       !enhanced ||
       !visible ||
       !documentVisible ||
+      modalOpen ||
+      (mode === "card" && !hovered && !focused) ||
       phase !== "idle" ||
       (current.photo.src && readyPhoto !== current.photo.src)
     )
@@ -476,6 +490,10 @@ export function VariantSpinner(props: VariantSpinnerProps) {
     enhanced,
     visible,
     documentVisible,
+    modalOpen,
+    mode,
+    hovered,
+    focused,
     phase,
     current.index,
     variants.length,
@@ -569,6 +587,10 @@ export function VariantSpinner(props: VariantSpinnerProps) {
       data-inspecting={inspected || undefined}
       data-active-variant={variant.id}
       aria-busy={phase === "loading"}
+      onPointerEnter={(event) => {
+        if (event.pointerType === "mouse") setHovered(true);
+      }}
+      onPointerLeave={() => setHovered(false)}
       onFocusCapture={() => setFocused(true)}
       onBlurCapture={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget))
@@ -600,13 +622,16 @@ export function VariantSpinner(props: VariantSpinnerProps) {
           )
             return;
           swipe.current = { x: event.clientX, y: event.clientY };
+          setHovered(true);
         }}
         onPointerCancel={() => {
           swipe.current = null;
+          setHovered(false);
         }}
         onPointerUp={(event) => {
           const start = swipe.current;
           swipe.current = null;
+          if (event.pointerType !== "mouse") setHovered(false);
           if (!start) return;
           const x = event.clientX - start.x,
             y = event.clientY - start.y;

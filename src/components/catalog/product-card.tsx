@@ -7,6 +7,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { preload } from "react-dom";
 import { CategoryIllustration } from "@/components/storefront/category-illustration";
 import { ProductGallery, type GalleryImage } from "./product-gallery";
 import { galleryPhotos } from "./gallery-images";
@@ -157,6 +158,19 @@ export function ProductCard({
   const selectPhoto = useCallback((image: GalleryImage) => {
     if (image.variantId) setVariantId(image.variantId);
   }, []);
+
+  // CSS backgrounds are otherwise discovered only after the stylesheet and
+  // layout. Share one early request for the visible normalized card stages;
+  // reflection scenes and catalogs without these photos do not need the rock.
+  // On narrow screens keep the original discovery/priority: early promotion
+  // did not improve mobile LCP in the paired loading measurements.
+  if (index < 2 && mediaStyle === "gallery" && photos[0]?.normalized) {
+    preload("/media/normalization-trial-v1/rock-square-v1.webp", {
+      as: "image",
+      fetchPriority: "high",
+      media: "(min-width: 960px)",
+    });
+  }
 
   return (
     <article
