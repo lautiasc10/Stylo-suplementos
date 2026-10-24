@@ -70,14 +70,11 @@ test("entrar en Resumen desde cualquier tarea usa el historial local sin esperar
   }
 });
 
-test("los accesos del Resumen también cambian de tarea en el panel cargado", () => {
+test("el enlace de reposición del Resumen abre el catálogo en el panel cargado", () => {
   renderToStaticMarkup(
     createElement(AdminOverview, { catalog: demoCatalog() }),
   );
-  for (const href of [
-    "/admin/catalogo",
-    "/admin/promociones",
-  ]) {
+  for (const href of ["/admin/catalogo"]) {
     const pushState = vi.fn();
     vi.stubGlobal("window", {
       location: { href: "http://127.0.0.1:3000/admin" },
@@ -93,16 +90,17 @@ test("los accesos del Resumen también cambian de tarea en el panel cargado", ()
   }
 });
 
-test("Resumen presenta ingreso cobrado, ventas y reposición sin usar pedidos pendientes", () => {
+test("Resumen separa facturación, ganancia y retiros pendientes", () => {
   const html = renderToStaticMarkup(createElement(AdminOverview, {
     catalog: demoCatalog(),
-    monthlySales: { amount: 2750000, count: 2 },
+    monthlySales: { month: "2026-10", pendingPickups: 3, history: [{ month: "2026-10", revenue: 2750000, sales: 2, profit: null, missing_costs: 1 }] },
   }));
-  expect(html).toContain("Ventas del mes");
-  expect(html).toContain("Cantidad de ventas");
-  expect(html).toContain("Reponer");
+  expect(html).toContain("Facturación mensual");
+  expect(html).toContain("Ganancias");
+  expect(html).toContain("Pendientes de retiro");
   expect(html).toContain("27.500");
-  expect(html).toContain("Pedidos cobrados este mes");
+  expect(html).toContain("1 venta sin costo comprobable");
+  expect(html).not.toContain("Accesos rápidos");
   expect(html).not.toContain("Productos publicados");
 });
 

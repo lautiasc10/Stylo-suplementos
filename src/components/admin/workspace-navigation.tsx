@@ -35,7 +35,10 @@ export function navigateWorkspace(href: string, section?: string) {
   const previousPath = next.pathname;
   const target = new URL(href, next);
   next.pathname = target.pathname;
-  if (target.search) next.search = target.search;
+  // Keep unrelated context (for example a preview origin) while replacing
+  // section-specific state when the sidebar changes tasks.
+  for (const key of ["seccion", "producto", "variante", "nuevo"]) next.searchParams.delete(key);
+  target.searchParams.forEach((value, key) => next.searchParams.set(key, value));
   next.hash = "";
   if (section) next.searchParams.set("seccion", section);
   else next.searchParams.delete("seccion");

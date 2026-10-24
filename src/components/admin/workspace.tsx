@@ -20,6 +20,8 @@ import type { AdminWorkspaceData } from "@/modules/admin/workspace";
 import { refreshAdminWorkspace } from "@/modules/admin/workspace-actions";
 import { useWorkspaceNavigation, workspacePaths } from "./workspace-navigation";
 import { AdminOverview } from "./overview";
+import { previewSalesSummary } from "@/modules/admin/sales-history";
+import { buenosAiresMonthBounds } from "@/modules/admin/monthly-sales";
 
 const emptyData: AdminWorkspaceData = {
   catalog: null,
@@ -168,6 +170,14 @@ export function AdminWorkspace({
       document.removeEventListener("visibilitychange", visible);
     };
   }, [refresh]);
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      const currentMonth = buenosAiresMonthBounds(new Date()).start.slice(0, 7);
+      if (preview) setData((previous) => ({ ...previous }));
+      else if (data.monthlySales?.month !== currentMonth) void refresh(true);
+    }, 60_000);
+    return () => window.clearInterval(timer);
+  }, [preview, data.monthlySales?.month, refresh]);
 
   const task = workspacePaths(preview).indexOf(pathname);
   const available = Boolean(
@@ -207,7 +217,7 @@ export function AdminWorkspace({
         )}
         {available ? (
           <>
-            {task === 3 && <AdminOverview catalog={data.catalog} monthlySales={data.monthlySales} preview={preview} />}
+            {task === 3 && <AdminOverview catalog={data.catalog} monthlySales={preview ? previewSalesSummary(data.orders ?? []) : data.monthlySales} preview={preview} />}
             {task === 0 &&
               (preview ? (
                 <CatalogPreview mode="manage" />

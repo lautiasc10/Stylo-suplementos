@@ -1,6 +1,6 @@
 # Diseño de STYLO
 
-La Fase 3AS completa Contacto con canales oficiales y fotografía del equipo, sustituye beneficios ficticios del Team por una invitación de colaboración y prepara consultas privadas, ranking mensual y selección explícita de Novedades: [contacto y contenidos](contacto-team-contenidos-fase-3as.md).
+La Fase 3AT mantiene los tokens del administrador y reorganiza su resumen con datos mensuales, gráfico de barras, lista de reposición enlazada y búsqueda accesible de SKU: [administración de ventas](admin-ventas-fase-3at.md).
 
 La Fase 3AR corrige la columna reservada al menú en el acceso administrativo y centra su formulario, con controles amplios y cabecera proporcionada: [login administrativo](login-admin-fase-3ar.md).
 

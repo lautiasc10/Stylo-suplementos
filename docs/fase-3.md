@@ -1,6 +1,6 @@
 # Fase 3 — Comercio
 
-La continuación 3AS implementa Contacto, consultas de atletas/profesores en el admin y contenido real del Home en `fase-3as-contacto-contenidos`: [alcance, migración y verificación](contacto-team-contenidos-fase-3as.md). La migración está preparada y probada localmente; no se aplicó en Supabase real. Resend y cupones quedan aplazados por pedido del usuario. Pendiente de integración a `main`.
+La continuación 3AT mejora búsqueda de SKU, cierre atómico de retiros, historial paginado, reposición enlazada, costos privados y estadísticas mensuales del administrador: [alcance y verificación](admin-ventas-fase-3at.md). Se desarrolla en `fase-3at-admin-ventas` desde `main`, sin aplicar la migración a Supabase real ni integrar la rama hasta revisión. La Fase 3AS permanece separada.
 
 La continuación 3AR mejora la composición del login de escritorio en `fase-3ar-login-admin`, conservando fuentes, identidad y controles de acceso: [diseño y comprobaciones](login-admin-fase-3ar.md). El usuario autorizó su integración y subida a `main` el 24 de octubre de 2026.
 

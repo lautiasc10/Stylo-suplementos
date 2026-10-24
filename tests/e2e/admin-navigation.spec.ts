@@ -113,6 +113,8 @@ test("volver a otra tarea conserva promociones, ventas y el stock actualizado", 
   await page
     .getByRole("button", { name: "Agregar presentación", exact: true })
     .click();
+  await page.getByRole("combobox", { name: "Presentación 1", exact: true }).fill("proteina");
+  await page.getByRole("listbox", { name: "Resultados para presentación 1" }).getByRole("option").first().click();
   await page
     .getByRole("checkbox", {
       name: "Confirmo que cobré el efectivo y entregué los productos.",

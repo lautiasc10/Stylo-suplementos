@@ -14,11 +14,11 @@ import { previewCatalog, previewPromotions } from "./cart-provider";
 import type { CartItem } from "@/modules/commerce/cart";
 import { quoteCart } from "@/modules/commerce/cart";
 import type { Promotion } from "@/modules/commerce/promotions";
-import { AdminTable } from "@/components/admin/data-table";
 import { IconAction } from "@/components/admin/icon-action";
 import { Icon } from "@/components/ui/icon";
 import { AdminDrawer } from "@/components/admin/drawer";
-import { orderDate } from "@/modules/admin/order-date";
+import { OrderHistory } from "./order-history";
+import { VariantFinder } from "./variant-finder";
 const noOrders: OrderRecord[] = [];
 const noPromotions: Promotion[] = [];
 
@@ -40,7 +40,7 @@ export function ManualOrders({
   const [rows, setRows] = useState(orders),
     [notice, setNotice] = useState(""),
     [busy, setBusy] = useState(false);
-  const [filter, setFilter] = useState<"all" | "pending" | "paid">("all");
+  const [historyVersion, setHistoryVersion] = useState(0);
   const attempt = useRef<string | null>(null),
     lock = useRef(false);
   const [kind, setKind] = useState<"pickup" | "cash-sale">("pickup");
@@ -52,7 +52,7 @@ export function ManualOrders({
   const editor = useRef<HTMLFormElement>(null);
   useEffect(() => {
     if (editorOpen)
-      editor.current?.querySelector<HTMLSelectElement>("select")?.focus();
+      editor.current?.querySelector<HTMLInputElement>('input[role="combobox"]')?.focus();
   }, [editorOpen]);
   function closeEditor() {
     setEditorOpen(false);
@@ -77,18 +77,55 @@ export function ManualOrders({
       }
   }, [preview]);
   if (!catalog) return <p role="status">Preparando pedidos…</p>;
-  const variants = catalog.products.flatMap((p) =>
+  const variants = catalog.products.filter((p) => p.active).flatMap((p) =>
     p.variants
       .filter((v) => v.active)
       .map((v) => ({
         id: v.id,
         name: `${p.name} · ${variantLabel(v)} · ${v.sku}`,
+        stock: v.stock,
       })),
   );
-  const visibleRows = rows.filter((row) => filter === "all" || (filter === "paid" ? row.payment_status === "paid" : row.payment_status !== "paid"));
-  const localDay = (date: Date) => new Intl.DateTimeFormat("en-CA", { timeZone: "America/Argentina/Buenos_Aires" }).format(date);
-  const paidToday = rows.filter((row) => row.payment_status === "paid" && localDay(new Date(row.created_at)) === localDay(new Date()));
-  const pendingRows = rows.filter((row) => row.payment_status !== "paid");
+  const stockIssues = items.flatMap((item) => {
+    const variant = variants.find((candidate) => candidate.id === item.variantId);
+    if (!variant) return ["Elegí una presentación para cada línea."];
+    if (variant.stock === 0) return [`${variant.name}: sin stock.`];
+    if (item.quantity > variant.stock) return [`${variant.name}: pediste ${item.quantity} y quedan ${variant.stock}.`];
+    if (!Number.isInteger(item.quantity) || item.quantity < 1) return ["Ingresá una cantidad válida."];
+    return [];
+  });
+  function previewCostTotal(lines: { variantId: string; quantity: number }[]) {
+    try {
+      const costs = JSON.parse(localStorage.getItem("stylo.purchase-costs-preview.v1") ?? "{}") as Record<string, number>;
+      if (lines.some((line) => !Number.isSafeInteger(costs[line.variantId]) || costs[line.variantId] < 0)) return null;
+      return lines.reduce((total, line) => total + costs[line.variantId] * line.quantity, 0);
+    } catch { return null; }
+  }
+  function collectPreview(id: string) {
+    const target = rows.find((row) => row.id === id);
+    if (!target) return { error: "No encontramos el pedido." };
+    if (target.payment_status === "paid") return { row: target };
+    const current = previewCatalog();
+    const lines = target.snapshot.lines ?? [];
+    for (const line of lines) {
+      const variant = current.products.flatMap((product) => product.variants).find((item) => item.id === line.variantId);
+      if (!variant || variant.stock < line.quantity) return { error: `No hay stock suficiente para ${line.name}.` };
+    }
+    const updated = { ...current, revision: current.revision + 1, products: current.products.map((product) => ({ ...product,
+      variants: product.variants.map((variant) => ({ ...variant, stock: variant.stock - lines.filter((line) => line.variantId === variant.id).reduce((sum, line) => sum + line.quantity, 0) })),
+    })) };
+    const source = localStorage.getItem("stylo.catalog-preview.v1");
+    const saved = source ? JSON.parse(source) : { images: {} };
+    localStorage.setItem("stylo.catalog-preview.v1", JSON.stringify({ ...saved, catalog: updated }));
+    setCatalog(updated);
+    window.dispatchEvent(new Event("stylo-preview-change"));
+    const at = new Date().toISOString();
+    const row = { ...target, payment_status: "paid", fulfillment_status: "picked_up", paid_at: at, picked_up_at: at, operation_at: at, cost_total: previewCostTotal(lines) };
+    const nextRows = rows.map((item) => item.id === id ? row : item);
+    setRows(nextRows);
+    onRecorded?.(nextRows);
+    return { row };
+  }
   return (
     <section className="manual-orders">
       <p className="eyebrow">RETIROS MANUALES</p>
@@ -131,111 +168,7 @@ export function ManualOrders({
         </p>
       )}
       <div className="management-layout management-create-flow">
-        <dl className="admin-overview admin-sales-stats">
-          <div className="admin-stat"><dt>Cobrado hoy</dt><dd>{formatPrice(paidToday.reduce((total, row) => total + row.snapshot.total, 0), 0)}</dd><small>{paidToday.length} operaciones en los registros cargados</small></div>
-          <div className="admin-stat admin-stat-alert"><dt>Esperando retiro</dt><dd>{pendingRows.length}</dd><small>{formatPrice(pendingRows.reduce((total, row) => total + row.snapshot.total, 0), 0)} a cobrar en estos registros</small></div>
-          <div className="admin-stat"><dt>Entregados</dt><dd>{rows.length - pendingRows.length}</dd><small>Entre los {rows.length} registros cargados</small></div>
-        </dl>
-        {(
-          <div className="promotions-list">
-            <div className="admin-records-toolbar"><h2 className="management-section-title">Últimos registros</h2><div className="admin-product-filter-chips">{([['all', 'Todos'], ['pending', 'Esperando retiro'], ['paid', 'Entregados']] as const).map(([value, label]) => <button type="button" key={value} aria-pressed={filter === value} onClick={() => setFilter(value)}>{label}</button>)}</div></div>
-            {!rows.length && (
-              <p className="management-empty">
-                Todavía no hay registros. Usá «Crear venta o retiro» para cargar
-                el primero.
-              </p>
-            )}
-            {rows.length > 0 && (
-              <AdminTable
-                label="Ventas y retiros registrados"
-                className="orders-table"
-              >
-                <thead>
-                  <tr role="row">
-                    <th scope="col">Cliente</th>
-                    <th scope="col">Productos</th>
-                    <th scope="col">Fecha</th>
-                    <th scope="col">Estado</th>
-                    <th scope="col">Total</th>
-                  </tr>
-                </thead>
-                <tbody role="rowgroup">
-                  {visibleRows.map((row) => (
-                    <tr role="row" key={row.id}>
-                      <td
-                        role="cell"
-                        data-label="Cliente"
-                        className="admin-identity"
-                      >
-                        <strong>{row.customer.name}</strong>
-                        {row.customer.phone && (
-                          <small>Tel.: {row.customer.phone}</small>
-                        )}
-                        <small>
-                          {row.payment_status === "paid"
-                            ? "Venta presencial"
-                            : "Retiro manual"}
-                        </small>
-                      </td>
-                      <td role="cell" data-label="Productos">
-                        {row.snapshot.lines?.length ? (
-                          <ul className="admin-line-items">
-                            {row.snapshot.lines.map((line, index) => (
-                              <li key={`${line.variantId}-${index}`}>
-                                <strong>
-                                  {line.quantity} × {line.name}
-                                </strong>
-                                <small>
-                                  {line.label ||
-                                    [line.flavor, line.size, line.presentation]
-                                      .filter(Boolean)
-                                      .join(" · ")}
-                                </small>
-                              </li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <small>Detalle no disponible.</small>
-                        )}
-                      </td>
-                      <td role="cell" data-label="Fecha">
-                        <time dateTime={row.created_at}>
-                          {orderDate(row.created_at).date}
-                        </time>
-                        <small>
-                          {orderDate(row.created_at).time}
-                        </small>
-                      </td>
-                      <td role="cell" data-label="Estado">
-                        <span
-                          className="status-badge"
-                          data-active={row.payment_status === "paid"}
-                        >
-                          {row.payment_status === "paid"
-                            ? "Efectivo cobrado"
-                            : "Pago pendiente"}
-                        </span>
-                        <small>
-                          {row.payment_status === "paid"
-                            ? "Entregado"
-                            : "Pendiente de retiro"}
-                        </small>
-                      </td>
-                      <td
-                        role="cell"
-                        data-label="Total"
-                        className="admin-prices"
-                      >
-                        <strong>{formatPrice(row.snapshot.total)}</strong>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </AdminTable>
-            )}
-            {rows.length > 0 && visibleRows.length === 0 && <p className="management-empty">No hay registros con este estado.</p>}
-          </div>
-        )}
+        <OrderHistory preview={preview} previewRows={rows} refreshKey={historyVersion} onPreviewCollect={collectPreview} onChanged={() => { setHistoryVersion((value) => value + 1); if (!preview) void onRecorded?.(rows); }} />
         {editorOpen && (
           <AdminDrawer title="Nuevo registro" onClose={closeEditor} busy={busy}>
           <form
@@ -251,6 +184,7 @@ export function ManualOrders({
             onSubmit={async (event) => {
               event.preventDefault();
               if (lock.current) return;
+              if (stockIssues.length) { setNotice(stockIssues.join(" ")); return; }
               lock.current = true;
               setBusy(true);
               setNotice("");
@@ -314,10 +248,18 @@ export function ManualOrders({
                         customer: order.customer,
                         snapshot: {
                           total: order.total,
-                          lines: order.snapshot.lines,
+                          base: order.snapshot.cashPricing.base,
+                          discount: order.snapshot.cashPricing.discount,
+                          promotion: order.snapshot.cashPricing.promotion,
+                          lines: order.snapshot.lines.map((line) => ({ ...line, unitPrice: line.cashPrice, subtotal: line.cashPrice * line.quantity })),
+                          paymentMethod: "efectivo",
                         },
                         created_at: order.createdAt,
+                        operation_at: order.createdAt,
                         payment_status: order.paymentStatus,
+                        fulfillment_status: order.fulfillmentStatus,
+                        paid_at: kind === "cash-sale" ? order.createdAt : null,
+                        cost_total: kind === "cash-sale" ? previewCostTotal(order.snapshot.lines) : null,
                       },
                       ...rows,
                     ];
@@ -344,6 +286,7 @@ export function ManualOrders({
                         created_at: new Date().toISOString(),
                         payment_status:
                           kind === "cash-sale" ? "paid" : "pending",
+                        fulfillment_status: kind === "cash-sale" ? "delivered" : "pending_pickup",
                       },
                       ...rows,
                     ];
@@ -356,6 +299,7 @@ export function ManualOrders({
                     ? "Venta en efectivo registrada. Stock actualizado."
                     : "Pedido manual registrado: pendiente de cobro y retiro.",
                 );
+                setHistoryVersion((value) => value + 1);
                 closeEditor();
               } catch (error) {
                 setNotice(
@@ -388,34 +332,23 @@ export function ManualOrders({
               <div className="bundle-components">
                 {items.map((item, index) => (
                   <div className="checkout-fields" key={index}>
-                    <label>
-                      Presentación {index + 1}
-                      <select
-                        value={item.variantId}
-                        onChange={(e) => {
+                    <VariantFinder catalog={catalog} value={item.variantId} index={index} excluded={items.filter((_, i) => i !== index).map((other) => other.variantId)}
+                      onSelect={(id) => {
                           attempt.current = null;
                           setItems(
                             items.map((i, j) =>
                               j === index
-                                ? { ...i, variantId: e.target.value }
+                                ? { ...i, variantId: id }
                                 : i,
                             ),
                           );
-                        }}
-                      >
-                        {variants.map((v) => (
-                          <option value={v.id} key={v.id}>
-                            {v.name}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
+                        }} />
                     <label>
                       Cantidad {index + 1}
                       <input
                         type="number"
                         min={1}
-                        max={999}
+                        max={Math.min(999, variants.find((variant) => variant.id === item.variantId)?.stock ?? 999)}
                         required
                         value={item.quantity}
                         onChange={(e) => {
@@ -450,10 +383,7 @@ export function ManualOrders({
                     setItems([
                       ...items,
                       {
-                        variantId:
-                          variants.find(
-                            (v) => !items.some((i) => i.variantId === v.id),
-                          )?.id ?? variants[0].id,
+                        variantId: "",
                         quantity: 1,
                       },
                     ]);
@@ -462,6 +392,7 @@ export function ManualOrders({
                   Agregar presentación
                 </button>
               </div>
+              {stockIssues.length > 0 && <p className="admin-stock-warning" role="alert">{stockIssues.join(" ")}</p>}
               {items.length > 0 && (
                 <p className="manual-total">
                   {recordedTotal !== null
@@ -508,7 +439,7 @@ export function ManualOrders({
               <button
                 className="button button-gold"
                 disabled={
-                  busy || !items.length || (kind === "cash-sale" && !received)
+                  busy || !items.length || stockIssues.length > 0 || (kind === "cash-sale" && !received)
                 }
               >
                 {kind === "cash-sale"
